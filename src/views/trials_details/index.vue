@@ -1,0 +1,435 @@
+<template>
+  <div class="page-index">
+    <div class="pages-content">
+      <div class="head-crumbs">
+        <span class=" gray-s">Trials > Home</span> 
+      </div>
+    <div class="blank explain"></div>
+      <explain :is-active="0" class="trials-explain"></explain>
+      <div class="details-content clearfix">
+        <div class="left inline">
+          <details-left :isTop="isTop" class="trials-details-left" ></details-left>      
+        </div>
+        <div class="right inline">
+          <div class="promotion">
+            <img class="img"  src="../../assets/amazon.png" alt="">
+            <div class="title">
+              <span>
+                2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers
+              </span>
+            </div>
+            <div class="describe">
+              <div class="time"> <i class="iconfont icon-icon-test">
+                </i> Ends in <strong>3</strong>  days <strong>16</strong> hours <strong>52</strong> minutes</div>
+            </div>
+            <div class="price-details">
+                <div class="price">Price: <del>$198.00</del> </div>
+              <div class="refund-price">Refund: <span >$198.00</span> </div>
+              <div class="reminder">Specifications: <span> Multi-color optiona</span>  </div>
+              <div class="reason">Reason: 
+                <span>
+                   Walmart.com has 2-Pack Ozark Trail Double-Wall Vacuum-Sealed Tumblers on sale with prices below.
+                </span>
+              </div>
+            </div>
+            <div class="btn-promotion">
+                <div class="inline-b add-promo">
+                  <button ><span>Apply</span></button>
+                </div>
+                 <span class="share">
+                   <i class="text">Share on:</i> 
+                   <a class="share-a" href="#"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" href="#"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" href="#"><i class="iconfont icon-tuite_twitter"></i></a>
+                 </span>
+            </div>
+          </div>
+          <div class="promotion-template">
+            <div class="tabs">
+              <div class="head-s clearfix">
+                <div class="tabs-label" 
+                    v-for="(item, index) in tabsHead"  
+                    @click="selectTabs(index)"
+                    :class="{active: selected == index}">
+                  {{item}}
+                </div>
+              </div>
+              <div class="tabs-body">
+                <div v-if="selected == 0" class="content">
+                  <img src="../../assets/details.png" alt="">
+                </div>
+                <div v-if="selected == 1" class="content">
+                  <div class="head">
+                    In order to ensure your rights, we would like you to read this process carefully.
+                  </div>
+                  <div class="process" v-for="item in processData">
+                    <div class="text">
+                      <div class="title">{{item.title}}</div>
+                      <div class="text-s">
+                        {{item.content}}
+                      </div>
+                    </div>
+                    <img class="img-l" :src="item.imgL">
+                    <img class="img-r" :src="item.imgR" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- not get trials -->
+      <el-dialog  :visible.sync="notGetTrialsDialog" class="not-trials-dialog" size="tiny">
+          <p>You did not get trials</p>
+
+          <div class="try-again">
+            <button @click="gotoTrials">Try out other gifs</button>
+          </div>
+
+      </el-dialog>
+  </div>
+</template>
+
+<script>
+import detailsLeft from "@/components/coupons/details_left.vue";
+import explain from '@/components/trials/explain.vue'
+export default {
+  name: "coupons",
+  components: {
+    detailsLeft,
+    explain
+  },
+  data() {
+    return {
+      isTop: false,
+      selected: 0,
+      added: true,
+      imgtest:require("../../assets/process01.png"),
+      processData: [
+        {
+          "title":'Register users, apply for products',
+          "content": "Register as a user of our website, select your favorite product, click the Apply option to submit the application.",
+          "imgL": require("../../assets/process01.png"),
+          "imgR": require("../../assets/VCG41157399986.jpg")
+        },
+        {
+          "title":'Submit the application and know the  results timely',
+          "content": 'Aftersubmitting the application, the system will promptly inform you of the results of the application, also the system will randomly selectusers, but a usercan only apply for the same product once, if unsuccessful, maybe you can try again for another product.',
+          "imgL": require("../../assets/process02.png"),
+          "imgR": require("../../assets/VCG41AA023536.jpg")
+        },
+        {
+          "title":'Buy immediately, upload order number',
+          "content": 'If you have a chance to get a trial, please place an order and complete the paymentwithin 4 hours, then return to our website, to find the taskin your member center, and upload the order number, the system will verify the authenticity of your order. If you do not upload the order number within 4 hours, your trial task will be canceled and you will not be able to proceed to the next step, also will not be refunded.',
+          "imgL": require("../../assets/process03.png"),
+          "imgR": require("../../assets/process_r_03.png")
+        },
+        {
+          "title":'Confirmreceipt, submit review',
+          "content": 'After receiving the goods, please carefully use your product, andupload your honest review within 7-15 days after receipt. The system will not allow you to submit an review until submission of the evaluation time. An objective and impartial review will help other customers to fully understand the product and contribute to improvingproducts for seller.',
+          "imgL": require("../../assets/process04.png"),
+          "imgR": require("../../assets/VCG4194739362.jpg")
+        },
+        {
+          "title":'Confirm the review, system refund',
+          "content": 'Our professional review team will assess the authenticity of your evaluation, our review is objective and fair, afterreviewing, the system will refundwithin 3-5 business days.',
+          "imgL": require("../../assets/process05.png"),
+          "imgR": require("../../assets/VCG41477120854.jpg")
+        },
+
+      ],
+      notGetTrialsDialog: false,
+      tabsHead: [
+        'Description', 'Novice Process'
+      ]
+
+    };
+  },
+  mounted() {
+
+  },
+  methods: {
+    getImgUrl(data) {
+      this.imgUrl = data;
+    },
+    submit () {
+
+    },
+    gotoTrials () {
+      this.$router.push({path: '/trials'})
+    },
+    selectTabs (index) {
+      this.selected = index
+    } 
+  }
+};
+</script>
+
+<style lang="less" scoped >
+@import url("../../styles/mixin.less");
+.head-crumbs {
+  position: fixed;
+  width: 100%;
+  background: #e4e4e4;
+  z-index: 222;
+  height: 3rem;
+  line-height: 3rem;
+}
+.pages-content {
+  position: relative;
+  padding: 0;
+}
+.details-content {
+  position: relative;
+  top: 4rem;
+}
+.el-dialog--small {
+  width: 40rem !important;
+}
+.el-dialog {
+  width: 40rem;
+}
+.inline {
+  display: inline-block;
+  &.left {
+  }
+  &.right {
+    float: right;
+    width: 53.5rem;
+    margin-top: 3.1rem;
+    .promotion {
+      position: relative;
+      height: 22rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      .img {
+        position: absolute;
+        right: 1.5rem;
+        top: 2rem;
+      }
+      .title {
+        width: 70%;
+        font-size: 1.33rem;
+        color: #1a1a1a;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+      .describe {
+        width: 90%;
+        font-size: 0.9rem;
+        color: #808080;
+        margin-bottom: 1rem;
+      }
+      .price-details {
+        padding: 1rem 0 1rem .5rem;
+        height: 10rem;
+        background: #fafafa;
+        color: #808080;
+        span {
+          display: inline-block;
+          font-size: 0.88rem;
+          color: #1a1a1a;
+        }
+        .price {
+          margin-bottom: .6rem;
+        }
+        .refund-price {
+          margin-bottom: .6rem;
+          span {
+            font-size: 1.3rem;
+            font-weight: bold;
+          }
+        }
+        .reminder {
+          margin-bottom: .6rem;
+        }
+      }
+      .data-info {
+        height: 2rem;
+        line-height: 2rem;
+        color: #808080;
+        font-size: 0.78rem;
+        margin-top: 0.5rem;
+        .right {
+          float: right;
+        }
+        .expried {
+          margin-right: 2rem;
+          margin-left: 1rem;
+        }
+      }
+      .select {
+        position: relative;
+        font-weight: normal;
+        height: 2rem;
+
+        select {
+          position: absolute;
+          right: 0;
+          color: #808080;
+          font-size: 0.78rem;
+          min-width: 6rem;
+          option {
+            color: #808080;
+            font-size: 0.78rem;
+          }
+        }
+      }
+      .btn-promotion {
+        margin-top: 1rem;
+        .add-promo {
+          margin-right: 4rem;
+          button {
+            .btn-h;
+            width: 12rem;
+            height: 3rem;
+            color: white;
+            line-height: 3rem;
+            background: #85bb3b;
+            border-color: #85bb3b;
+            text-align: center;
+            line-height: 0.8;
+            span {
+              font-size: 1.5rem;
+            }
+            &:hover {
+              background: darken(#85bb3b, 5%);
+              border-color: darken(#85bb3b, 5%);
+            }
+            &:active {
+              background: lighten(#85bb3b, 10%);
+              border-color: lighten(#85bb3b, 10%);
+            }
+          }
+        }
+        .share {
+          float: right;
+          margin-right: 2rem;
+          a {
+            color: #808080;
+            .iconfont {
+              font-size: 2rem;
+            }
+          }
+        }
+      }
+    }
+ 
+    .promotion-template {
+      min-height: 10rem;
+      background: white;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 5rem;
+      .tabs {
+        .head-s {
+          font-size: 1.33rem;
+          height: 4rem;
+          background: #f9f9f9;
+          border-bottom: 1px solid #e1e1e1;
+          margin-left: -1px;
+          .tabs-label {
+            width: 13rem;
+            height: 100%;
+            float: left;
+            text-align: center;
+            line-height: 4rem;
+            cursor: pointer;
+            color: #1a1a1a;
+            &:hover {
+              color: #808080;
+            }
+            &.active {
+              height: 4.01rem;
+              background: white;
+              border-left: 1px solid #e1e1e1;
+              border-right: 1px solid #e1e1e1;
+            }
+            
+          }
+        }
+        .tabs-body {
+          margin-top: 1rem;
+          .content {
+            padding: 0 3rem;
+              .head {
+                margin: 3rem 0;
+                font-size: 0.78rem;
+                color: #808080;
+              }
+              .process {
+                position: relative;
+                height: 13.66rem;
+                margin-bottom: 2rem;
+                img {
+                  position: absolute;
+                  top: 0;
+                }
+                .img-r {
+                  right: 0;
+                  width: 20rem;
+                  height: 13rem;
+                }
+                .text {
+                  width: 18rem;
+                  margin-left: 7rem;
+
+                }
+                .title {
+                  color: #1a1a1a;
+                  font-size: 1rem;
+                  margin-bottom: 1rem;
+                }
+                .text-s {
+                  font-size: 0.88rem;
+                  color: #808080;
+                  line-height: 1.2;
+                }
+               
+              }
+            }
+        }
+      }
+    }
+  }
+}
+  // trials申请失败
+.not-trials-dialog {
+    p, div {
+      text-align: center;
+    }
+    div {
+      button {
+        .btn-h(50%, 2rem);
+        background: #84BA39;
+        border-color: #84BA39;
+        color: white;
+        &:active {
+          background: darken(#84BA39, 10%);
+          border-color: darken(#84BA39, 10%);
+        }
+      }
+    }
+  }
+
+.explain {
+  width: inherit;
+  height: 2rem;
+}
+.trials-explain {
+  position: fixed;
+  margin-top: 1rem;
+  z-index: 666;
+  width: 83.333rem !important;
+}
+.trials-details-left {
+  position: fixed;
+  top: 9rem;
+  margin-top: 6.2rem !important
+}
+</style>
+

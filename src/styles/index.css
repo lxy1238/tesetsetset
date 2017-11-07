@@ -1,0 +1,224 @@
+.code-dialog .el-dialog.el-dialog--small {
+  width: 40rem;
+}
+.code-dialog .el-dialog__header {
+  padding-bottom: 1rem;
+  border: 1px solid #e1e1e1;
+}
+.code-dialog .el-dialog__body {
+  padding: 0;
+}
+.login-dialog .el-dialog.el-dialog--small {
+  width: 24rem;
+}
+.login-dialog .el-dialog__header {
+  padding-bottom: 1rem;
+}
+.login-dialog .el-dialog__body {
+  padding: 0 1rem;
+}
+.login-dialog .el-form-item {
+  width: 80%;
+  margin: 20px auto;
+}
+.sign-dialog .el-dialog.el-dialog--small {
+  width: 24rem;
+}
+.sign-dialog .el-dialog__header {
+  padding-bottom: 1rem;
+}
+.sign-dialog .el-dialog__body {
+  padding: 0 1rem;
+}
+.sign-dialog .el-form-item {
+  width: 80%;
+  margin: 20px auto;
+}
+.template-dialog .el-dialog.el-dialog--small {
+  width: 1000px;
+}
+.pages-content {
+  width: 83.333rem;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+.page-index {
+  background: #e4e4e4;
+  min-width: 83.333rem;
+}
+.fixed {
+  position: fixed !important;
+}
+.blank {
+  height: 100px;
+  background: transparent;
+}
+.inline-b {
+  display: inline-block;
+}
+.gray-s {
+  color: #898989;
+}
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Arial;
+}
+ul {
+  padding-left: 0;
+}
+li {
+  list-style: none;
+}
+i {
+  font-style: normal;
+}
+html {
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  word-break: break-word;
+  text-rendering: optimizeLegibility;
+}
+button,
+input,
+select,
+textarea {
+  font-family: Arial, Helvetica, sans-serif;
+  /* 1 */
+  font-size: 100%;
+  /* 2 */
+  margin: 0;
+  /* 3 */
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+a:focus,
+a:hover {
+  outline: none;
+}
+a,
+a:focus {
+  cursor: pointer;
+  color: blue;
+  text-decoration: none;
+}
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+.center {
+  text-align: center;
+}
+.left {
+  text-align: left;
+}
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  text-align: center;
+}
+table td,
+table th {
+  border: 1px solid #d9d9d9;
+}
+table th {
+  background: #ebebeb;
+}
+table td,
+th {
+  padding: 10px 0 10px 0;
+  font-weight: normal;
+}
+table tbody tr td {
+  vertical-align: middle;
+}
+.table-self {
+  width: 100%;
+  border: 1px solid #d9d9d9;
+}
+.form-control-bootstrap {
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
+  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  outline: none;
+}
+.form-control-bootstrap:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+.form-control-bootstrap::-moz-placeholder {
+  color: #999;
+  opacity: 1;
+}
+.form-control-bootstrap:-ms-input-placeholder {
+  color: #999;
+}
+.form-control-bootstrap::-webkit-input-placeholder {
+  color: #999;
+}
+@media screen and (max-width: 1557px) {
+  html {
+    font-size: 14.9px;
+  }
+  .coupons-product {
+    height: 365px !important;
+  }
+  .trials-details-left {
+    top: 10.3rem !important;
+  }
+}
+@media screen and (max-width: 1389px) {
+  .coupons-product {
+    height: 365px !important;
+  }
+}
+@media screen and (max-width: 1280px) {
+  html {
+    font-size: 12px;
+  }
+  .coupons-product {
+    height: 340px !important;
+  }
+  .trials-explain {
+    width: 98% !important;
+  }
+  .merchant {
+    width: 98% !important;
+  }
+  .home-content {
+    width: 98% !important;
+  }
+  .trials-details-left {
+    top: 12.09rem !important;
+  }
+  .login-y.user-info {
+    padding: 0 !important;
+  }
+}
+@media screen and (max-width: 1000px) {
+  .broadside {
+    display: none;
+  }
+}
