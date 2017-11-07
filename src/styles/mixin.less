@@ -1,0 +1,61 @@
+@Width_content: 83.33rem;
+.p(r) {
+  position: relative;
+}
+.p(a) {
+  position: absolute;
+}
+.p(f) {
+  position: fixed;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+
+.pct(@width) {
+  width: @width;
+  margin: 0 auto;
+}
+
+.btn-h(@width:80px, @height:30px, @bgcolor: #ffffff, @border: #c4c4c4, @color: #1f2d3d) {
+  width: @width;
+  height: @height;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: 0;
+  text-transform: none;
+  -webkit-appearance: button;
+  display: inline-block;
+  line-height: 0.8;
+  white-space: nowrap;
+  background: @bgcolor;
+  border: 1px solid @border;
+  color: @color;
+  margin: 0;
+  // padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.el-input-self {
+  -webkit-appearance: none;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #d8dce5;
+  box-sizing: border-box;
+  color: #5a5e66;
+  display: inline-block;
+  font-size: inherit;
+  height: 40px;
+  line-height: 1;
+  outline: none;
+  padding: 0 15px;
+  transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+  width: 100%;
+}
+
+
+
