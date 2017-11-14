@@ -9,7 +9,7 @@
   padding: 0;
 }
 .login-dialog .el-dialog.el-dialog--small {
-  width: 24rem;
+  width: 360px;
 }
 .login-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -22,7 +22,7 @@
   margin: 20px auto;
 }
 .sign-dialog .el-dialog.el-dialog--small {
-  width: 24rem;
+  width: 360px;
 }
 .sign-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -104,7 +104,7 @@ a:hover {
 a,
 a:focus {
   cursor: pointer;
-  color: blue;
+  color: #0072bc;
   text-decoration: none;
 }
 .clearfix:after {
@@ -132,6 +132,7 @@ table th {
 }
 table th {
   background: #ebebeb;
+  text-align: center;
 }
 table td,
 th {
@@ -144,6 +145,9 @@ table tbody tr td {
 .table-self {
   width: 100%;
   border: 1px solid #d9d9d9;
+}
+.red {
+  color: red;
 }
 .form-control-bootstrap {
   height: 34px;
@@ -178,6 +182,27 @@ table tbody tr td {
 .form-control-bootstrap::-webkit-input-placeholder {
   color: #999;
 }
+.title {
+  font-size: 26px;
+  margin: .7rem 0;
+  font-weight: normal;
+  position: relative;
+}
+.title-bottom {
+  position: relative;
+  font-size: 26px;
+  margin: .7rem 0;
+  font-weight: normal;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 0.7rem 0;
+}
+.title-s {
+  margin-bottom: 1rem;
+  font-size: 18px;
+  line-height: 36px;
+  color: #1a1a1a;
+  border-bottom: 1px solid #e6e6e6;
+}
 @media screen and (max-width: 1557px) {
   html {
     font-size: 14.9px;
@@ -194,7 +219,7 @@ table tbody tr td {
     height: 365px !important;
   }
 }
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1270px) {
   html {
     font-size: 12px;
   }
@@ -217,7 +242,7 @@ table tbody tr td {
     padding: 0 !important;
   }
 }
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1280px) {
   .broadside {
     display: none;
   }

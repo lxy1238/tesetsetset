@@ -1,7 +1,7 @@
 <template>
   <div class="withdraw">
     <div class="title">My Wallet</div>
-    <div class="title-s">Withdraw</div>
+    <div class="title-s">Recharge</div>
     <el-form>
       <div class="balance">
         <label class="left-label">
@@ -12,7 +12,7 @@
         </span>
       </div>
       <div class="withdrawals">
-        <label class="left-label">Withdrawals:</label>
+        <label class="left-label">recharges:</label>
         <el-form-item>
           <el-input ></el-input>
         </el-form-item>

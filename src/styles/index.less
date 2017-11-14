@@ -84,7 +84,7 @@ a,
 a:focus,
  {
   cursor: pointer;
-  color: blue;
+  color: #0072bc;
   text-decoration: none;
 }
 
@@ -115,6 +115,7 @@ table {
   }
   th {
     background: #ebebeb;
+    text-align: center;
   }
 }
 table td,th {
@@ -129,7 +130,9 @@ table tbody tr td {
   border: 1px solid #d9d9d9;
 }
 
-
+.red {
+  color: red;
+}
 
 .form-control-bootstrap {
   // width: 100%;
@@ -167,7 +170,28 @@ table tbody tr td {
 }
 
 
-
+//个人中心公用样式
+.title {
+  font-size: 26px;
+  margin: .7rem 0;
+  font-weight: normal;
+  position: relative;
+}
+.title-bottom {
+  position: relative;
+  font-size: 26px;
+  margin: .7rem 0;
+  font-weight: normal;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 0.7rem 0;
+}
+.title-s {
+  margin-bottom: 1rem;
+  font-size: 18px;
+  line-height: 36px;
+  color: #1a1a1a;
+  border-bottom: 1px solid #e6e6e6;
+}
 
 
 
@@ -208,7 +232,7 @@ table tbody tr td {
   }
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1270px) {
   html {
     font-size: 12px;
   }
@@ -238,7 +262,7 @@ table tbody tr td {
 //   }
 // }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1280px) {
   //侧边栏隐藏
   .broadside {
     display: none;

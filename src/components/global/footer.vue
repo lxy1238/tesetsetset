@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-content">
+      <div class="footer-content clearfix">
         <div class="left">
           ©2006-2017 dealsbank.com All rights reserved.
         </div>
@@ -83,7 +83,7 @@ export default {
         //ie9 不兼容
         // display: flex;
         // justify-content: space-between;
-        margin-top: .5rem;
+        margin-top: -8px;
         width: 54rem;
         color: white;
         dl {
@@ -101,7 +101,7 @@ export default {
             margin: 1.5rem 0 1.5rem;
           }
           dd {
-            font-size: 14px;
+            font-size: 0.78rem;
             margin: 0 0 1.5rem 0 ;
             a {
               animation-delay: 1s;

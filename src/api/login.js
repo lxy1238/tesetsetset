@@ -1,25 +1,42 @@
 import fetch from '@/utils/fetch.js'
 import qs from 'qs'
 
-//登录
-
-export const login = data => fetch({
-  url: '/user/login',
+//本地数据测试
+export const getTestData = data => fetch({
+  url: '/api/v1/user/register',
   method: 'POST',
   data: qs.stringify(data)
 })
+
+
+//注册
+export const sign = data => fetch({
+  url: '/api/v1/user/register',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//登录
+
+export const login = data => fetch({
+  url: '/api/v1/user/login',
+  method: 'POST',
+  params: data
+})
+
+
+//获取用户基本信息
+
+export const getInfo = data => fetch({
+  url: '/api/v1/user/register/get_info',
+  method: 'GET',
+  data: qs.stringify(data)
+})
+
 
 //登出
 
 export const logOut = () => fetch({
   url: '/user/logOut',
   method: 'GET'
-})
-
-//获取用户基本信息
-
-export const getInfo = (data) => fetch({
-  url: 'user/getInfo',
-  method: 'POST',
-  data: qs.stringify(data)
 })

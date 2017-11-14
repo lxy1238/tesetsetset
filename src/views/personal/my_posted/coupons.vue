@@ -54,7 +54,75 @@
     </pagination>
   </template>
   <template v-else>
-    this is coupons page add;
+     <div class="title">
+       Add Coupons
+    </div>
+    <div class="title-s">
+      Product Information
+    </div>
+    <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
+      <el-form-item label="Product URL: " prop="name" required="">
+        <el-input class="url-input"></el-input>
+        <button class="get-pro-info"  type="button" @click="getProInfo">get</button>
+      </el-form-item>
+      <el-form-item label="Wedsite: " prop="" class="item-inline" required="">
+        <el-select></el-select>
+      </el-form-item>
+      <el-form-item label="Category: " prop="" class="item-inline" required="">
+        <el-select></el-select>
+      </el-form-item>
+      <el-form-item label="List price: " prop="" class="item-inline" required="">
+        <el-select></el-select>
+      </el-form-item>
+      <el-form-item label="Shipping fee: " prop="" class="item-inline" required="">
+        <el-select></el-select>
+      </el-form-item>
+      <el-form-item label="Image" >
+        <el-upload 
+              class="upload-demo-img" 
+              action="https://jsonplaceholder.typicode.com/posts/" 
+              :limit="6"
+              :on-remove="handleRemoveP" 
+              :on-success="uploadPho" 
+              :before-upload="beforeAvatarUploadP" 
+              :file-list="fileList2"
+              list-type="picture">
+            <el-button size="small" type="primary">Upload</el-button>
+            <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
+            </div>
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="Title: " prop="" required="">
+        <el-input></el-input>
+      </el-form-item>
+      <el-form-item label="Reason: " prop="" required="">
+        <el-input type="textarea" class="textarea"></el-input>
+      </el-form-item>
+    <div class="title-s">
+       Coupon Information
+    </div>
+    <el-form-item label="Valid date: " class="item-inline" required >
+      <el-date-picker size="large" placeholder="Please select the date"></el-date-picker>
+    </el-form-item>
+     <el-form-item label="Discount rate: " class="item-inline" required>
+       <el-select></el-select>
+    </el-form-item>
+    <el-form-item label="Quantity per day: " class="item-inline1" required>
+       <el-input></el-input>
+    </el-form-item>
+    <el-form-item label="Type: " class="item-inline1" >
+       <el-radio class="radio" v-model="radio" label="1">Unllimited</el-radio>
+       <el-radio class="radio" v-model="radio" label="2">Alone</el-radio>
+    </el-form-item>
+    <el-form-item label="Coupon code: " class="item-inline"required>
+       <el-input></el-input>
+    </el-form-item>
+    <el-form-item class="footer-btn" required>
+      <button type="button" class="save">Save</button>
+      <button type="button" class="cancel">Cancel</button>
+    </el-form-item>
+    </el-form>
+   
   </template>
   </div>
 </template>
@@ -69,7 +137,22 @@ export default {
       trLists: [1, 2, 3],
       allpage: 30,
       showItem: 7,
-      gotoAddPage: false
+      gotoAddPage: false,
+      couponsForm: {
+
+      },
+      rules: {
+
+      },
+      fileList2: [
+        { url: 'http://www.ghostxy.top/dealsbank/img/01.png'}, 
+        { url: 'http://www.ghostxy.top/dealsbank/img/02.png'}, 
+        { url: 'http://www.ghostxy.top/dealsbank/img/03.png'}, 
+        { url: 'http://www.ghostxy.top/dealsbank/img/04.png'}, 
+        { url: 'http://www.ghostxy.top/dealsbank/img/05.png'}, 
+        { url: 'http://www.ghostxy.top/dealsbank/img/01.png'}, 
+      ],
+      radio: "1"
     }
   },
   components: {
@@ -81,6 +164,18 @@ export default {
     },
     add () {
       this.gotoAddPage = !this.gotoAddPage
+    },
+    getProInfo () {
+      console.log("获取产品信息")
+    },
+    beforeAvatarUploadP () {
+
+    },
+    uploadPho () {
+
+    },
+    handleRemoveP () {
+      
     }
   }
 }
@@ -96,8 +191,15 @@ export default {
   }
   .title {
     font-size: 1.5rem;
-    margin: .7rem 0;
+    margin: 1rem 0;
     font-weight: normal;
+  }
+  .title-s {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 2rem;
+    color: #1a1a1a;
+    border-bottom: 1px solid #e6e6e6;
   }
   .search-form {
     position: relative;
@@ -145,6 +247,59 @@ export default {
       }
       .items {
         background: #fff;
+      }
+    }
+  }
+}
+.coupons-form {
+  .item-inline {
+    width: 42.9%;
+    display: inline-block;
+  }
+  .item-inline1 {
+    width: 33%;
+    display: inline-block;
+  }
+  .textarea {
+    textarea {
+      height: 108px;
+      resize: none;
+    }
+  }
+  .get-pro-info {
+    .btn-h(80px, 36px, #3399ff, #3399ff, #fff);
+    &:active {
+      background: darken(#3399ff, 10%);
+      border-color: darken(#3399ff, 10%);
+    }
+  }
+  .el-input {
+    &.url-input {
+      width: 68%;
+      margin-right: 5%;
+    }
+  }
+  .el-upload-list__item {
+    width: 100px;
+    float: left;
+    margin-right: 1%;
+  }
+  .footer-btn {
+    text-align: center;
+    margin-top: 2rem;
+    .save {
+      .btn-h(120px, 45px, #85bb3b, #85bb3b, #fff);
+      margin-right: 3rem;
+      &:active {
+        background: darken(#85bb3b, 10%);
+        border-color: darken(#85bb3b, 10%);
+      }
+    }
+    .cancel {
+      .btn-h(120px, 45px, #79b6e0, #79b6e0, #fff);
+       &:active {
+        background: darken(#79b6e0, 10%);
+        border-color: darken(#79b6e0, 10%);
       }
     }
   }

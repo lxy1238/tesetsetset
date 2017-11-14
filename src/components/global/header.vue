@@ -7,7 +7,7 @@
              <a href="#/" > 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
-             <a class="inline-b coupons " href="javascript:void(0);" @click="coupons">Coupons</a>
+             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
              <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" />  
@@ -96,7 +96,7 @@
      </div>
      <div class="blank"></div>
 
-     <!-- login -->
+     <!-- login-form -->
      <el-dialog :visible.sync = "loginDialog" class="sign-dialog">
       <span slot="title" class="title">Log In / Sign Up</span>
         <div class="dialog-body">
@@ -113,16 +113,16 @@
                 <span>OR</span>
                 <div class="line"></div>
             </div>
-            <el-form :model="loginform" :rules="rules" ref="loginform" >
+            <el-form :model="loginform" :rules="rulesLogin" ref="loginform" >
               <el-form-item  prop="email">
-                <el-input v-model="loginform.email" placeholder="Email Address or username "></el-input>
+                <el-input v-model="loginform.email" placeholder="Email Address"></el-input>
               </el-form-item>
               <el-form-item  prop="password">
-                <el-input v-model="loginform.password" placeholder="Password (8 to 20 characters)"></el-input>
+                <el-input type="password" v-model="loginform.password" placeholder="Password"></el-input>
               </el-form-item>
               <div class="remember">
                 <div class="box">
-                  <el-checkbox label="Remember me" name="type"></el-checkbox> 
+                  <el-checkbox v-model="loginform.remember" label="Remember me" name="type"></el-checkbox> 
                   <span class="forget" @click="forgetPass"><a href="javascript:void(0);">Forgot password?</a></span>
                 </div>
               </div>
@@ -143,7 +143,7 @@
         </div>
      </el-dialog>
 
-     <!-- sign -->
+     <!-- sign-form -->
 
      <el-dialog :visible.sync = "signDialog" class="sign-dialog" >
        <span slot="title" class="title">Log In / Sign Up</span>
@@ -161,18 +161,18 @@
                 <span>OR</span>
                 <div class="line"></div>
             </div>
-            <el-form :model="signform" :rules="rules" ref="signform" >
+            <el-form :model="signform" :rules="rulesSign" ref="signform" >
               <el-form-item  prop="email">
-                <el-input v-model="signform.email" placeholder="Email Address "></el-input>
+                <el-input v-model="signform.email" placeholder="Email Address"></el-input>
               </el-form-item>
-              <el-form-item  prop="nickname">
-                <el-input v-model="signform.nickname" placeholder="Nickname"></el-input>
+              <el-form-item  prop="username">
+                <el-input v-model="signform.username" placeholder="Nickname"></el-input>
               </el-form-item>
               <el-form-item  prop="password">
-                <el-input v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
+                <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
               </el-form-item>
               <el-form-item>
-                <button class="sign-up-btn">Sign up</button>
+                <button type="button" class="sign-up-btn" @click="signUp">Sign up</button>
               </el-form-item>
             </el-form>
             <div class="footer">
@@ -188,7 +188,7 @@
         </div>
      </el-dialog>
 
-      <!-- reset password -->
+      <!-- reset-password -->
        <el-dialog :visible.sync = "resetPassword" class="sign-dialog" >
        <span slot="title" class="title">Reset Password</span>
         <div class="dialog-body">
@@ -230,35 +230,62 @@
 </template>
 
 <script>
-import { getUser } from '@/utils/auth.js'
+import { getEmail, getPass } from '@/utils/auth.js'
+import { validateEmail } from '@/utils/validate.js'
+import { sign, login } from '@/api/login.js'
+import { mapGetters } from 'vuex'
 export default {
   name: "header",
   data() {
+    const validateEmailRule =  (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error("Please enter your Email"))
+        } else if (!validateEmail(value)) {
+          return callback(new Error("Please enter the correct mailbox"))
+        } else {
+          callback()
+        }
+    }
     return {
       signform: {
-        email: 'Enter you email',
-        nickname: '',
+        email: '',
+        username: '',
         password:'',
       },
       loginform: {
         email: '',
-        nickname: '',
+        username: '',
         password:'',
+        remember: false
       },
       resetform: {
-        nickname: '',
+        username: '',
         password:'',
       },
-      rules: {
-        nickname: [
-          { required: true, message: 'Please enter your email', trigger: 'blur' },
+      rulesSign: {
+        email: [
+          {  validator:validateEmailRule , trigger: 'blur' },
         ],
+        username: [
+          { required: true, message: 'Please enter your nickname', trigger: 'blur' },
+        ],
+        password: [
+          { required: true, message: 'Please enter your password', trigger: 'blur' },
+          { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' }
+        ]
+      },
+      rulesLogin: {
         email: [
           { required: true, message: 'Please enter your email', trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
           { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' }
+        ]
+      },
+      rules: {
+        email: [
+           {  validator:validateEmailRule , trigger: 'blur' },
         ]
       },
       classifyList: [
@@ -312,11 +339,30 @@ export default {
       this.showDropdownC = false
       this.showDropdownL = false
     }, false)
+    window.addEventListener('keyup', (e) => {
+      if (e.keyCode === 13 && this.signDialog === true) {
+        this.signUp()
+        return
+      } else if(e.keyCode === 13 && this.loginDialog === true) {
+        this.Login()
+      } else if (e.keyCode === 13 && this.resetPassword === true) {
+
+      } else {
+        return false
+      }
+    })
+    // this.loginform.email = getEmail()
+    // this.loginform.password = getPass()
+    // this.loginDialog = true
   },
   computed: {
     isLogin () {
-      return Boolean(this.$store.getters.username) || Boolean(getUser())
-    }
+      return Boolean(this.$store.getters.email) || Boolean(getEmail())
+    },
+    ...mapGetters([
+      'username',
+      'token'
+    ])
   },
   methods: {
     selectClassify(item, index) {
@@ -336,20 +382,23 @@ export default {
       this.$store.dispatch("setLevel", 1)
     },
     ShowLoginDialog() {
+      // this.loginform.email = getEmail()
+      // this.loginform.password = getPass()
       this.signDialog = false
       this.resetPassword = false
       this.loginDialog = true
+     
     },
     ShowSignDialog() {
       this.resetPassword = false
       this.loginDialog = false
       this.signDialog = true
     },
-    signSubmit(formName) {
+    signSubmit(formName, callback) {
       //element-ui 的表单验证
        this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!')
+            callback()
           } else {
             console.log('error submit!!');
             return false
@@ -359,10 +408,6 @@ export default {
     forgetPass () {
       this.loginDialog = false
       this.resetPassword = true
-    },
-    Login () {
-      this.$store.dispatch('Login', 'luoxuyou')
-      this.loginDialog = false
     },
     showDropdownUser (e) {
       setTimeout( () => {
@@ -387,7 +432,33 @@ export default {
     },
     showAllLanguage () {
       this.isShowAllLanguage = !this.isShowAllLanguage
-    }
+    },
+    signUp () {
+      this.signSubmit('signform', () => {
+        sign(this.signform).then(res => {
+          console.log(res)
+          this.signDialog = false
+          this.$message.success("Please login to the mailbox for activation validation")
+          this.$refs['signform'].resetFields();
+        }).catch(error => {
+          console.error("sign fail")
+        })
+      })
+    },
+    Login () {
+      this.signSubmit('loginform', () => {
+        this.$store.dispatch('Login', this.loginform).then(res => {
+          // const roles = res.data.roles
+          this.loginDialog = false
+          // this.$message.success("login success")
+          // this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
+          //     this.$router.addRoutes(this.$store.getters.addRouters)
+          // })
+        }).catch(err => {
+          console.log(err+ ' login2')
+        })    
+      })
+    },
   }
 };
 </script>
@@ -485,7 +556,7 @@ export default {
                 left: 0;
                 &.img {
                   top: 0.6rem;
-                  left: 10%;
+                  left: .8rem;
                   img {
                     width: 2rem;
                     height: 2rem;
@@ -494,14 +565,14 @@ export default {
                 }
                 &.username {
                   top: -6px;
-                  left: 35%;
+                  left: 3.5rem;
                   font-size: 0.833rem;
                 }
                 &.tag {
                   // display: inline-block;
                   height: 1rem;
-                  top: 7px;
-                  left: 35%;
+                  top: 10px;
+                  left: 3.5rem;
                   span {
                   background: #ec5d1c;
                   font-size: 11px;
@@ -610,7 +681,10 @@ export default {
           }
         }
         .coupons-t {
-          margin-right: 4rem;
+          margin-right: 3rem;
+        }
+        .coupons-c {
+          margin-left: 1rem;
         }
         .search {
           .p(r);
@@ -714,7 +788,7 @@ export default {
     text-align: center;
     margin-left: 5rem;
     font-weight: bold;
-    font-size: 1.44rem;
+    font-size: 26px;
   }
   .dialog-body {
     text-align: center;
