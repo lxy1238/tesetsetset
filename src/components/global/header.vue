@@ -9,6 +9,7 @@
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
              <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
+              <a class="inline-b coupons commissions" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" />  
                 <i class="iconfont icon-icon_huaban"></i>                
@@ -26,7 +27,7 @@
                  <div class="absolute img">
                    <img src="http://www.ghostxy.top/dealsbank/img/user.png" />
                  </div>
-                 <div class="absolute username">Nickname</div>
+                 <div class="absolute username">{{username}}</div>
                  <div class="absolute tag">
                    <span>Influencer</span>
                  </div>
@@ -37,9 +38,12 @@
                </div>
                <div v-if="showDropdownU" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <li class="items-li"> <router-link to="/personal">coup0ons</router-link></li>
+                   <!-- <li class="items-li"> <router-link to="/personal">coup0ons</router-link></li>
                    <li> <router-link to="/combine">combine</router-link></li>
-                   <li> <router-link to="/successTrials">successTrials</router-link></li>
+                   <li> <router-link to="/successTrials">successTrials</router-link></li> -->
+                   <li v-for="syncRouter in addRouters">
+                     <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
+                   </li>
                  </ul>
                </div>
              </div>
@@ -97,7 +101,7 @@
      <div class="blank"></div>
 
      <!-- login-form -->
-     <el-dialog :visible.sync = "loginDialog" class="sign-dialog">
+     <el-dialog :visible.sync = "loginDialog" class="sign-dialog" >
       <span slot="title" class="title">Log In / Sign Up</span>
         <div class="dialog-body">
           <div class="top">
@@ -113,7 +117,7 @@
                 <span>OR</span>
                 <div class="line"></div>
             </div>
-            <el-form :model="loginform" :rules="rulesLogin" ref="loginform" >
+            <el-form :model="loginform" :rules="rulesLogin" ref="loginform"  >
               <el-form-item  prop="email">
                 <el-input v-model="loginform.email" placeholder="Email Address"></el-input>
               </el-form-item>
@@ -126,8 +130,8 @@
                   <span class="forget" @click="forgetPass"><a href="javascript:void(0);">Forgot password?</a></span>
                 </div>
               </div>
-              <el-form-item>
-                <el-button class="sign-up-btn login" @click="Login">Login in</el-button>
+              <el-form-item >
+                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Login in</el-button>
               </el-form-item>
 
             </el-form>
@@ -172,7 +176,7 @@
                 <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
               </el-form-item>
               <el-form-item>
-                <button type="button" class="sign-up-btn" @click="signUp">Sign up</button>
+                <el-button type="button" class="sign-up-btn" @click="signUp">Sign up</el-button>
               </el-form-item>
             </el-form>
             <div class="footer">
@@ -230,7 +234,7 @@
 </template>
 
 <script>
-import { getEmail, getPass } from '@/utils/auth.js'
+import { getEmail, getPass, getToken } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
 import { sign, login } from '@/api/login.js'
 import { mapGetters } from 'vuex'
@@ -254,7 +258,6 @@ export default {
       },
       loginform: {
         email: '',
-        username: '',
         password:'',
         remember: false
       },
@@ -324,7 +327,8 @@ export default {
       showDropdownL: false,
       showDropdownU: false,
       selectedCountry: '中文(简体)',
-      isShowAllLanguage: false
+      isShowAllLanguage: false,
+      loginLoading: false,
     }
   },
   props: {
@@ -351,20 +355,26 @@ export default {
         return false
       }
     })
-    // this.loginform.email = getEmail()
-    // this.loginform.password = getPass()
+   
+    this.loginform.email = getEmail()
+    this.loginform.password = getPass()
     // this.loginDialog = true
+    console.log(this.addRouters)
   },
   computed: {
     isLogin () {
-      return Boolean(this.$store.getters.email) || Boolean(getEmail())
+      return (Boolean(this.$store.getters.email) || Boolean(getEmail())) && getToken()
     },
     ...mapGetters([
       'username',
-      'token'
+      'token',
+      'addRouters'
     ])
   },
   methods: {
+    gotoCommissions () {
+      this.$router.push({path: '/'})
+    },
     selectClassify(item, index) {
       //请求数据
       this.selectedC = index
@@ -447,13 +457,19 @@ export default {
     },
     Login () {
       this.signSubmit('loginform', () => {
+        this.loginLoading = true
         this.$store.dispatch('Login', this.loginform).then(res => {
-          // const roles = res.data.roles
-          this.loginDialog = false
-          // this.$message.success("login success")
-          // this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
-          //     this.$router.addRoutes(this.$store.getters.addRouters)
-          // })
+          if (res.code == 605) {
+            this.$notify.error(res.message)
+          } else if (res.code == 200) {
+            this.loginDialog = false
+            this.$notify.success("login success")
+          }
+          this.$store.dispatch('GetInfo').then(res => {
+            console.log(res.data)
+            this.loginLoading = false
+            window.location.reload()
+          })
         }).catch(err => {
           console.log(err+ ' login2')
         })    
@@ -681,14 +697,14 @@ export default {
           }
         }
         .coupons-t {
-          margin-right: 3rem;
+          margin-right: 1rem;
         }
         .coupons-c {
           margin-left: 1rem;
         }
         .search {
           .p(r);
-          width: 30rem;
+          width: 20rem;
           height: 36px;
           margin-right: 0.90rem;
           input {

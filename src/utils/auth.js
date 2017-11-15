@@ -3,14 +3,15 @@ import Cookie from 'js-cookie'
 const EMAIL = 'email'
 const PASSWORD = 'password'
 const TOKEN = 'token'
+const expiresData = 30
 
 export function getEmail () {
   return Cookie.get(EMAIL)
 }
 
 export function setEmail (email) {
-  return Cookie.set(EMAIL, email)
-  // return Cookie.set(EMAIL, email, { expires: 30 })
+  // return Cookie.set(EMAIL, email)
+  return Cookie.set(EMAIL, email, { expires: expiresData })
 }
 
 export function removeEmail() {
@@ -23,8 +24,8 @@ export function getPass () {
 }
 
 export function setPass (pass) {
-  return Cookie.set(PASSWORD, pass)
-  // return Cookie.set(PASSWORD, pass, { expires: 30 })
+  // return Cookie.set(PASSWORD, pass)
+  return Cookie.set(PASSWORD, pass, { expires: expiresData })
 }
 
 export function removePass() {
@@ -37,7 +38,7 @@ export function getToken () {
 
 export function setToken (token) {
   return Cookie.set(TOKEN, token)
-  // return Cookie.set(USERKEY, name, { expires: 30 })
+  // return Cookie.set(TOKEN, token, { expires: expiresData })
 }
 
 export function removeToken() {

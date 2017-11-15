@@ -81,7 +81,7 @@ export const asyncRouterMap = [
       hasChilds: true,
       isToggle: false,
       text: 'My Posted',
-      meta: {role: ['merchants', 'reds']},
+      meta: {role: ['merchant', 'celebrity']},
       children: [
         {
           path: '/posted/coupons',
@@ -92,12 +92,13 @@ export const asyncRouterMap = [
           path: '/posted/trials',
           text: 'Trials',
           component: _import('personal/my_posted/trials'),
-          meta: {role: ['merchants']}
+          meta: {role: ['merchant']}
         }
       ]
     },
     {
       path: '/wallet',
+      redirect: '/wallet/financial',
       component: p_center,
       hasChilds: true,
       isToggle: false,
@@ -117,7 +118,7 @@ export const asyncRouterMap = [
           path: '/wallet/recharge',
           text: 'Recharge',
           component: _import('personal/wallet/recharge'),
-          meta: {role: ['merchants']}
+          meta: {role: ['merchant']}
         }
       ]
     },
@@ -160,7 +161,7 @@ export const asyncRouterMap = [
           path: '/settingsshop',
           text: 'Shop Settings',
           component: _import('personal/settings/shop'),
-          meta: {role: ['merchants']}
+          meta: {role: ['merchant']}
         },
         {
           path: '/settings/apiManagement',

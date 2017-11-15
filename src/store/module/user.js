@@ -1,6 +1,7 @@
 import { login, logOut, getInfo } from '@/api/login.js'
 import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from '@/utils/auth'
 import store from '../../store'
+import router from '../../router'
 import { setPass, removePass } from '../../utils/auth';
 
 const user = {
@@ -51,33 +52,32 @@ const user = {
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
-          console.log(res)
-          return false;
-          if (userInfo.remember === true) {
-            setPass(userInfo.password)
-          } else {
-            removePass()
-          }
-          setEmail(userInfo.email)
-          setToken(res.data.roles[0])
-          commit('SET_USERNAME', res.data.username)
-          commit('SET_ROLES', res.data.roles)
-          commit('SET_EMAIL', userInfo.email)
-          commit('SET_TOKEN', res.data.roles[0])
+          setToken(res.data)
+          commit('SET_TOKEN', res.data)
           resolve(res)
         }).catch(err => {
-          reject()
+          reject(err)
         })
-        
       })
     },
     GetInfo({ commit , state }) {
       return new Promise((resolve, reject) => {
-        getInfo().then(res => {
+        getInfo({'api_token':getToken()}).then(res => {
           console.log(res)
           const data = res.data
-          commit('SET_ROLES', data.roles)
-          commit('SET_USERNAME', data.username)
+          if (res.code === 200) {
+            setEmail(data.email)
+            commit('SET_ROLES', [data.type])
+            commit('SET_USERNAME', data.username)
+            commit('SET_EMAIL',data.email)   
+            console.log(store)  
+          } else if (res.code === 500) {
+            removeEmail()
+            removeToken()
+            commit('SET_EMAIL', '')
+            commit('SET_TOKEN', '')
+            router.push({path: '/'})
+          }
           resolve(res)
         }).catch(err => {
           reject(err)

@@ -136,7 +136,7 @@
     </div>
     
     <el-form-item class="footer-btn" required>
-      <button type="button" class="save">Save</button>
+      <button type="button" class="save" @click="trialsSave">Save</button>
       <button type="button" class="cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -204,7 +204,7 @@ export default {
         console.log($('#summernote').summernote)
         $('#summernote').summernote({
         height: 300,
-        tabsize: 2
+        // tabsize: 2
       })
     },10)
     },
@@ -219,6 +219,10 @@ export default {
     },
     handleRemoveP () {
       
+    },
+    trialsSave () {
+      var markupStr = $('#summernote').summernote('code')
+      console.log(markupStr)
     }
   }
 }

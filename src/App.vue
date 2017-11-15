@@ -5,8 +5,15 @@
 </template>
 
 <script>
+import { setPass, setEmail } from '@/utils/auth.js'
 export default {
   name: 'app',
+  mounted () {
+    window.onbeforeunload = function() { 
+      setPass("luoxuyou")
+      setEmail("1243433362@qq.com")
+    } 
+  }
 }
 </script>
 

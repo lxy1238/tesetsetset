@@ -21,16 +21,16 @@ export const sign = data => fetch({
 export const login = data => fetch({
   url: '/api/v1/user/login',
   method: 'POST',
-  params: data
+  data: qs.stringify(data)
 })
 
 
 //获取用户基本信息
 
 export const getInfo = data => fetch({
-  url: '/api/v1/user/register/get_info',
+  url: '/api/v1/user/info',
   method: 'GET',
-  data: qs.stringify(data)
+  params: data
 })
 
 
