@@ -9,7 +9,7 @@
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
              <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
-              <a class="inline-b coupons commissions" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
+              <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" />  
                 <i class="iconfont icon-icon_huaban"></i>                
@@ -44,6 +44,7 @@
                    <li v-for="syncRouter in addRouters">
                      <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
                    </li>
+                   <li  @click="logOut"> <a href="javascript:void(0);">log out</a></li>
                  </ul>
                </div>
              </div>
@@ -373,7 +374,7 @@ export default {
   },
   methods: {
     gotoCommissions () {
-      this.$router.push({path: '/'})
+      this.$router.push({path: '/commissions'})
     },
     selectClassify(item, index) {
       //请求数据
@@ -459,8 +460,15 @@ export default {
       this.signSubmit('loginform', () => {
         this.loginLoading = true
         this.$store.dispatch('Login', this.loginform).then(res => {
-          if (res.code == 605) {
+          if (res.code === 402) {
             this.$notify.error(res.message)
+            this.loginLoading = false
+            return false
+          } else if (res.code === 401) {
+            const errorMsg = JSON.parse(res.message).email[0]
+            this.$notify.error(errorMsg)
+            this.loginLoading = false
+            return false
           } else if (res.code == 200) {
             this.loginDialog = false
             this.$notify.success("login success")
@@ -475,6 +483,9 @@ export default {
         })    
       })
     },
+    logOut () {
+      this.$store.dispatch('LogOut')
+    }
   }
 };
 </script>
@@ -490,7 +501,7 @@ export default {
   z-index: 999;
   width: 100%;
   color: white;
-  height: 110px;
+  height: 70px;
   .header-top {
     background: #31393f;
     width: 100%;

@@ -5,10 +5,12 @@ const _import = require('./_import_' + process.env.NODE_ENV)
 //主体通用部分
 const home = _import('home/index')
 const p_center = _import('personal/index')
+const another = _import('another/index')
 
 Vue.use(Router)
 
-export const constantRouterMap = [{
+export const constantRouterMap = [
+  {
     path: '/',
     component: home,
     children: [{
@@ -35,7 +37,30 @@ export const constantRouterMap = [{
       {
         path: '/successTrials',
         component: _import('trials_details/apply_success')
-      }
+      },
+     
+    ]
+  },
+  {
+    path: '/enter',
+    component: another,
+    children: [
+      {
+        path: '/enter',
+        component: _import('enter_s/index')
+      },
+      {
+        path: '/enter/seller',
+        component: _import('enter_s/seller')
+      },
+      {
+        path: '/enter/reds',
+        component: _import('enter_s/reds')
+      },
+      {
+        path: '/commissions',
+        component: _import('commissions/index')
+      },
     ]
   },
   {
@@ -176,7 +201,6 @@ export const asyncRouterMap = [
       ]
     },
   ]
-
 
 
 

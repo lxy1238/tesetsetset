@@ -20,9 +20,11 @@
           </dl>
           <dl>
             <dt>Join Us</dt>
-            <dd><a href="#">Seller</a></dd>
-            <dd><a href="#">Sensation</a></dd>
-            <dd><a href="#">Member</a></dd>
+            <dd>
+              <router-link to="/enter">Seller</router-link>
+            </dd>
+            <!-- <dd><a href="#">Sensation</a></dd>
+            <dd><a href="#">Member</a></dd> -->
           </dl>
           <dl class="last">
             <dt>Help</dt>

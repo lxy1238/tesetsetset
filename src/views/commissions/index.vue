@@ -15,6 +15,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" > 
+.commissions {
+  height: 1000px;
+}
 
 </style>

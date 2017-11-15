@@ -52,6 +52,7 @@ const user = {
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
+          console.log(res)
           setToken(res.data)
           commit('SET_TOKEN', res.data)
           resolve(res)
@@ -83,6 +84,12 @@ const user = {
           reject(err)
         })
       })
+    },
+    LogOut ({ commit }) {
+      removeToken()
+      commit('SET_TOKEN', '')
+      router.push({path: '/'})
+      window.location.reload()
     }
 
   }
