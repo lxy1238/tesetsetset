@@ -8,22 +8,23 @@ require('es6-promise').polyfill()
 import router from './router'  // 路由配置文件
 import store from './store'    // 全局状态管理
 
-// import Element from 'element-ui'
-// Vue.use(Element)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.js'
+import 'summernote/dist/summernote.css'
+import 'summernote'
 
-import { Message, Dialog, Input, Button,Form ,FormItem, Checkbox} from 'element-ui'
-Vue.prototype.$message = Message
-Vue.use( Dialog )
-Vue.use( Input )
-Vue.use( Button )
-Vue.use( Form )
-Vue.use( FormItem )
-Vue.use( Checkbox )
+import $ from 'jquery'
+
+
+
+import Element from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/en'
+Vue.use(Element ,{ locale })
+
 
 // 全局css样式,重置样式
 // import 'normalize.css'
 import 'element-ui/lib/theme-default/index.css'
-// import 'bootstrap/dist/css/bootstrap.css'
 
 import './permission'
 

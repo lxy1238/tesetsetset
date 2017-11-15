@@ -4,7 +4,7 @@
       <img v-if="!loading" src="../../assets/timg.gif" >
       <img v-show="loading" :src="couponsDetails.imgUrl" @load="loadImg($event, couponsDetails)"  alt="img">
     </div>
-     <div class="promo-copy">
+     <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo">
           <span>{{addPromoMsg}}</span>
         </div>
@@ -50,6 +50,10 @@ export default {
           coupons: '$15.00',
         }
       }
+    },
+    addpromo: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
@@ -109,8 +113,8 @@ export default {
       img {
         display: inline-block;
         margin-top: 10px;
-        width: 10rem;
-        height: 8rem;
+        width: 80%;
+        height: 40%;
       }
     }
     .promo-copy {
@@ -153,12 +157,12 @@ export default {
     .descript {
       font-size: 13px;
       color: rgb(51, 51, 51);
-      // height: 2rem;
-      // overflow: hidden;/*内容超出后隐藏*/
+      height: 2.2rem;
+      overflow: hidden;/*内容超出后隐藏*/
       // text-overflow: ellipsis;/* 超出内容显示为省略号*/
       // white-space: nowrap;/*文本不进行换行*/
       margin-top: 0.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: .5rem;
     }
     .price {
       font-size: 15px;

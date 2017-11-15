@@ -3,21 +3,20 @@
    <div class="pages-content clearfix">
      <div class="subnav-l">
        <div class="nav">
-          <div class="nav-items" v-for="(items, index_p) in routers" v-if="!items.hidden">
+          <div class="nav-items" v-for="(items, index_p) in routers" :class="{last: index_p == routers.length}">
             <div class="nav-header" @click="clickHeader(items, index_p)">
-              <router-link :to="items.path"  v-if="!items.childs"  :class="{active: index_p == selected}">
+              <router-link :to="items.path"  v-if="!items.hasChilds"  :class="{active: items.redirect == currentRouter}">
                 {{items.text}}
-                <span v-if="index_p == selected">></span>
+                <span v-if="items.redirect == currentRouter">></span>
               </router-link>
               <a href="javascript:void(0);" v-else>{{items.text}}</a>
             </div>
-            <template v-if="items.childs && items.isToggle">
+            <template  v-if="items.hasChilds && items.isToggle">
               <div class="nav-child" 
-                  v-for="(item, index) in items.childs"  
-                  @click="selectLink(items, index , index_p)"
-                  :class="{last: index == items.childs.length - 1}">
-                <router-link :to="item.path"  :class="{active: index == selected_s && index_p == selected }">{{item.text}}
-                  <span v-if="index == selected_s && index_p == selected">></span>
+                  v-for="(item, index) in items.children"  
+                  :class="{last: index == items.children.length - 1}">
+                <router-link :to="item.path"  :class="{active: item.path == currentRouter }">{{item.text}}
+                  <span v-if="item.path == currentRouter">></span>
                 </router-link>
               </div>
             </template>
@@ -32,122 +31,46 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { asyncRouterMap } from '../../router'
 export default {
   name: 'subnav',
   data () {
     return {
-      selected: 0,
-      selected_s: undefined,
-      routers: [
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'Profile Overview',
-          path: '/personal',
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'My Promotion',
-          path: '/personal/promotion'
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'My Posted',
-          childs: [
-            {
-              path: '/personal/coupons',
-              text: 'Coupons'
-            },
-            {
-              path: '/personal/trials',
-              text: 'Trials'
-            }
-          ]
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'Performance report',
-          childs: [
-            {
-              path: '/personal/statistical',
-              text: 'Statistical Analysis'
-            },
-            {
-              path: '/personal/transaction',
-              text: 'Transaction Details'
-            }
-          ]
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'My Wallet',
-          childs: [
-            {
-              path: '/personal/financial',
-              text: 'Financial Record'
-            },
-            {
-              path: '/personal/withdraw',
-              text: 'Withdraw'
-            }
-          ]
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'My Coupons',
-          path: '/personal/my_coupons'
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'My Trials',
-          path: '/personal/my_trials'
-        },
-        {
-          isActive: false,
-          isToggle: false,
-          text: 'Settings',
-          childs: [
-            {
-              path: '/personal/account',
-              text: 'Account Basics'
-            },
-            {
-              path: '/personal/shop',
-              text: 'Shop Settings'
-            },
-            {
-              path: '/personal/apiManagement',
-              text: 'API Management'
-            },
-            {
-              path: '/personal/modify',
-              text: 'Modify Password'
-            }
-          ]
-        },
-     
-      ],
+      isToggle: 1,
+      routers: []
+    }
+  },
+  mounted () {
+    console.log(asyncRouterMap)
+    this.routers = this.$store.getters.addRouters
+    // console.log(this.$store.getters)
+  },
+  computed : {
+    ...mapGetters([
+      'currentRouter'
+    ]),
+  },
+  watch: {
+    // 如果 `question` 发生改变，这个函数就会运行
+    currentRouter: function (value) {
+      this.routers.forEach((parent) => {
+        if (parent.children) {
+           parent.children.forEach((e) => {
+          if (e.path == value) {
+            parent.isToggle = true
+          }
+        })
+        }
+      })
     }
   },
   methods: {
     clickHeader (items, index_p) {
-      if (items.childs) {
-        items.isToggle = !items.isToggle
-      } else {
-        this.selected_s = undefined
-        this.selected = index_p
+      if (items.children) {
+          items.isToggle = !items.isToggle
       }
-    },
-    selectLink(items, index, index_p) {
-      this.selected = index_p
-      this.selected_s = index
-    },
+    }
   }
 }
 </script>
@@ -155,20 +78,22 @@ export default {
 <style lang="less" scoped>
 @import url('../../styles/mixin.less');
 .subnav-center {
- 
   .subnav-l {
     float: left;
     width: 18.9%;
-    height: 1000px;
+    height: 800px;
     margin-right: 4.1%;
     
     .nav {
       font-size: 1rem;
       color: #666;
       border-right: 1px solid #e6e6e6;
-      height: 1000px;
+      height: 800px;
     
       .nav-items {
+        &.last {
+          border-bottom: none;
+        }
         border-bottom: 1px solid #e6e6e6;
         width: 80%;
         .nav-header {

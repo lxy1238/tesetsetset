@@ -117,7 +117,7 @@ export default {
           text-align: left;
           color: #1a1a1a;
           margin-bottom: 1.3rem;
-          height: 1.8rem;
+          height: 2.0rem;
           overflow: hidden;
         }
         .price-remove {
