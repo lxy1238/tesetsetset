@@ -13,10 +13,11 @@
             </div>
             <template  v-if="items.hasChilds && items.isToggle">
               <div class="nav-child" 
-                  v-for="(item, index) in items.children"  
+                  v-for="(item, index) in items.children"
+                  v-if="item.hidden !== true"
                   :class="{last: index == items.children.length - 1}">
-                <router-link :to="item.path"  :class="{active: item.path == currentRouter }">{{item.text}}
-                  <span v-if="item.path == currentRouter">></span>
+                <router-link  :to="item.path"  :class="{active: currentRouter.search(item.path) != -1 }">{{item.text}}
+                  <span v-if="currentRouter.search(item.path) != -1">></span>
                 </router-link>
               </div>
             </template>
@@ -52,7 +53,6 @@ export default {
     ]),
   },
   watch: {
-    // 如果 `question` 发生改变，这个函数就会运行
     currentRouter: function (value) {
       this.routers.forEach((parent) => {
         if (parent.children) {

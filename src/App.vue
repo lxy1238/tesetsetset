@@ -13,6 +13,7 @@ export default {
       setPass("luoxuyou")
       setEmail("1243433362@qq.com")
     } 
+    console.log("app vue")
   }
 }
 </script>

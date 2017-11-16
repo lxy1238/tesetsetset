@@ -114,9 +114,31 @@ export const asyncRouterMap = [
           component: _import('personal/my_posted/coupons'),
         },
         {
+          path: '/posted/coupons/add',
+          hidden: true,
+          component: _import('personal/my_posted/coupons_add'),
+        },
+        {
+          path: '/posted/coupons/add',
+          hidden: true,
+          component: _import('personal/my_posted/coupons_add'),
+        },
+        {
           path: '/posted/trials',
           text: 'Trials',
           component: _import('personal/my_posted/trials'),
+          meta: {role: ['merchant']}
+        },
+        {
+          path: '/posted/trials/add',
+          hidden: true,
+          component: _import('personal/my_posted/trials'),
+          meta: {role: ['merchant']}
+        },
+        {
+          path: '/posted/trials/receiptor',
+          hidden: true,
+          component: _import('personal/my_posted/trials_receiptor'),
           meta: {role: ['merchant']}
         }
       ]

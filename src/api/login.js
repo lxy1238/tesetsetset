@@ -34,9 +34,9 @@ export const getInfo = data => fetch({
 })
 
 
-//登出
-
-export const logOut = () => fetch({
-  url: '/user/logOut',
-  method: 'GET'
+//新增优惠券
+export const addCoupon = data => fetch({
+  url: '/api/v1/coupon/add',
+  method: 'POST',
+  data: qs.stringify(data)
 })

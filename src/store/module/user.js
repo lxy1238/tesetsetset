@@ -8,6 +8,7 @@ const user = {
   state: {
     username: '',
     roles: [],
+    user_id: '',
     email: getEmail(),
     avatar: '',
     joinedDate: '',
@@ -44,6 +45,9 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_USERID: (state, user_id) => {
+      state.user_id = user_id
     }
 
   },
@@ -71,6 +75,7 @@ const user = {
             commit('SET_ROLES', [data.type])
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   
+            commit('SET_USERID',data.id)   
             console.log(store)  
           } else if (res.code === 500) {
             removeEmail()
