@@ -28,8 +28,11 @@
                    <img src="http://www.ghostxy.top/dealsbank/img/user.png" />
                  </div>
                  <div class="absolute username">{{username}}</div>
-                 <div class="absolute tag">
-                   <span>Influencer</span>
+                 <div class="absolute tag " v-if="roles[0] == 'celebrity'">
+                   <span class="reds-color">Influencer</span>
+                 </div>
+                 <div class="absolute tag " v-if="roles[0] == 'merchant'">
+                   <span class="merchant-color">Merchant</span>
                  </div>
                  <div class="icon">
                    <i v-if="!showDropdownU" class="iconfont icon-xiangxia"></i>
@@ -369,6 +372,7 @@ export default {
     ...mapGetters([
       'username',
       'token',
+      'roles',
       'addRouters'
     ])
   },
@@ -601,11 +605,10 @@ export default {
                   top: 10px;
                   left: 3.5rem;
                   span {
-                  background: #ec5d1c;
-                  font-size: 11px;
-                  padding:0px 5px;
-                  border-radius: 4px;
-                    
+                    // background: #ec5d1c;
+                    font-size: 11px;
+                    padding:0px 5px;
+                    border-radius: 4px;
                   }
                 }
               }

@@ -29,14 +29,24 @@ export const login = data => fetch({
 
 export const getInfo = data => fetch({
   url: '/api/v1/user/info',
-  method: 'GET',
-  params: data
+  method: 'POST',
+  data: qs.stringify(data)
 })
 
 
 //新增优惠券
 export const addCoupon = data => fetch({
   url: '/api/v1/coupon/add',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+
+//上传图片
+export const uploadImg = data => fetch({
+  url: '/api/v1/common/upload-file',
   method: 'POST',
   data: qs.stringify(data)
 })

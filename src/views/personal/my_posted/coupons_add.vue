@@ -40,8 +40,9 @@
       <el-form-item label="Image"  prop="product_img">
         <el-upload 
               class="upload-demo-img" 
-              action="https://jsonplaceholder.typicode.com/posts/" 
-              :limit="6"
+              action="upload_img" 
+              
+              :data="uploadData"
               :on-remove="handleRemoveP" 
               :on-success="uploadSuccess" 
               :before-upload="beforeAvatarUploadP" 
@@ -51,6 +52,13 @@
             <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
             </div>
         </el-upload>
+
+        <!-- <form  enctype="multipart/form-data" action="http://dealsbank.zhuo.com/api/v1/common/upload-file" method="post" >
+           <input :value="token"  name="api_token" />
+           <input type="file" name="file"  multiple  id="file"/>
+          <button type="submit">test</button>
+        </form> -->
+       
       </el-form-item>
       <el-form-item label="Title: " prop="product_title" >
         <el-input v-model="couponsForm.product_title"></el-input>
@@ -88,7 +96,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { addCoupon }  from '@/api/login'
+import { addCoupon, uploadImg }  from '@/api/login'
+import axios from 'axios'
+import qs from 'qs'
 export default {
   name: 'coupoons-add',
   data () {
@@ -187,20 +197,23 @@ export default {
         { url: 'http://www.ghostxy.top/dealsbank/img/01.png'}, 
         { url: 'http://www.ghostxy.top/dealsbank/img/02.png'}, 
         { url: 'http://www.ghostxy.top/dealsbank/img/03.png'}, 
-        { url: 'http://www.ghostxy.top/dealsbank/img/04.png'}, 
-        { url: 'http://www.ghostxy.top/dealsbank/img/05.png'}, 
-        { url: 'http://www.ghostxy.top/dealsbank/img/01.png'}, 
       ],
+      uploadData: {
+        api_token: '',
+        file: ''
+      }
     }
   },
   mounted () {
     this.couponsForm.user_id = this.user_id
     this.couponsForm.user_name = this.username
+    this.uploadData.api_token = this.token
   },  
   computed: {
     ...mapGetters([
       'user_id',
-      'username'
+      'username',
+      'token'
     ])
   },
   methods: {
@@ -225,7 +238,23 @@ export default {
           this.$message.error('最多只能上传6张图片！')
           limitF = false
       }
-      console.log(this.fileList2)
+      this.uploadData.file = file
+      var fetch = axios.create({
+        baseURL:"http://dealsbank.zhuo.com",
+        timeout:20000,
+        headers: {'Content-Type':'multipart/form-data'}
+      });
+      console.log(this.uploadData)
+      const uploadImgTest = data => fetch({
+        url: '/api/v1/common/upload-file',
+        method: 'POST',
+        data: qs.stringify(data)
+      })
+      uploadImgTest(this.uploadData).then(res => {
+        console.log(res)
+      }).catch(error => {
+        console.log(error)
+      })
       return (isJPG || isGIF || isPNG) && isLt500K && limitF
     },
     uploadSuccess (res, file, fileList) {
@@ -240,6 +269,15 @@ export default {
       this.fileList2 = fileList
       console.log(file)
     },
+    selfUploadImg () {
+      
+    },
+    testUploadImg () {
+      console.log(this.uploadData)
+      uploadImg(this.uploadData).then(res => {
+        console.log(res)
+      })
+    } ,  
     issueCoupon () {
       addCoupon(this.couponsForm).then(res => {
         console.log(res)

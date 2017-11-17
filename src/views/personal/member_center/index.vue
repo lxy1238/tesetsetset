@@ -13,8 +13,9 @@
         </div>
         <div class="personal-info">
           <div class="name-level">
-            <span class="name">Nickname</span>
-            <span class="level">Influencer</span>
+            <span class="name">{{username}}</span>
+            <span class="level reds-color" v-if="roles[0] == 'celebrity'">Influencer</span>
+            <span class="level merchant-color" v-if="roles[0] == 'merchant'">Merchant</span>
           </div>
           <div class="icon-info">
             <span><i class="iconfont icon-riqi1"> </i> Joined Dec 2015</span>
@@ -84,10 +85,24 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { getInfo } from '@/api/login.js'
 export default {
   name: 'member_center',
   mounted () {
-  }
+    getInfo({'api_token':this.token}).then(res => {
+      console.log(res)
+    }).catch(error => {
+      console.log(error)
+    })
+  },
+  computed: {
+    ...mapGetters([
+      'username',
+      'token',
+      'roles'
+    ])
+  },
 }
 </script>
 
@@ -137,7 +152,7 @@ export default {
           top: -3px;
           font-size: 0.61rem;
           color: white;
-          background: #ec5d1c;
+          // background: #ec5d1c;
           padding: 2px 5px;
           border-radius: 2px;
           
