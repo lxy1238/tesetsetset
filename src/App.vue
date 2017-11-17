@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import { setPass, setEmail } from '@/utils/auth.js'
+import { setPass, setEmail, getToken } from '@/utils/auth.js'
+import { updateLogin } from '@/api/login.js'
 export default {
   name: 'app',
   mounted () {
@@ -13,7 +14,13 @@ export default {
       setPass("luoxuyou")
       setEmail("1243433362@qq.com")
     } 
-    console.log("app vue")
+    if (getToken()) {
+      updateLogin({'api_token': getToken()}).then(res => {
+
+      }).catch(error => {
+        console.log('登录记录更新失败')
+      })
+    }
   }
 }
 </script>

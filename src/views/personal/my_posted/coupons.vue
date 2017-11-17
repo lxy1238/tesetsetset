@@ -49,23 +49,23 @@
             <td>
               <div>amazon</div>
               <div class="table-product-title">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item.coupon_id)">Electronics</a>
+              <a href="javascript:void(0);" @click="gotoDetails(item.id)">Electronics</a>
             </td>
 
             <td class="prcie">
               <div>${{item.product_price}}</div>
             </td>
             <td class="discount">
-              <div>{{item.discount_rate}}</div>
+              <div>{{item.discount_rate}}%</div>
             </td>
             <td class="qty">
               <div>
-                <a href="javascript:void(0);" @click="gotoReceiptor">{{item.total_receiptor}}</a>/
+                <a href="javascript:void(0);" @click="gotoReceiptor">{{item.pick_numbers}}</a>/
                 <span>{{item.total_quantity}}</span>
               </div>
             </td>
             <td class="valid-date">
-              <div>{{item.valid_date.toLocaleDateString()}}</div>
+              <div>{{item.valid_date}}</div>
             </td>
             <td class="status">
               <div class="blue" v-if="item.status === 1">
@@ -76,8 +76,8 @@
               <div> <a href="javascript:void(0)">Edit</a></div>
               <div> <a href="javascript:void(0)">Open</a></div>
               <div> <a href="javascript:void(0)">Close</a></div>
-              <div> <a href="javascript:void(0)">Delete</a></div>
-              <div> <a href="javascript:void(0)">Details</a></div>
+              <!-- <div> <a href="javascript:void(0)">Delete</a></div>
+              <div> <a href="javascript:void(0)">Details</a></div> -->
             </td>
           </tr>
         </tbody>
@@ -95,6 +95,8 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
+import { mapGetters } from 'vuex'
+import { userPickCoupons } from '@/api/login'
 export default {
   name: 'center_coupons',
   data () {
@@ -131,12 +133,19 @@ export default {
         total_receiptor: 365,
         status: 1,
       }],
+
       allpage: 30,
       showItem: 7,
       searchForm: {
         title: "",
         category: '',
         status: "",
+      },
+      requestdata: {
+        user_id: '',
+        api_token: '',
+        page: 1,
+        page_size: 5
       }
      
     }
@@ -144,11 +153,35 @@ export default {
   components: {
     pagination
   },
- 
+  mounted () {
+    this.requestdata.user_id = this.user_id
+    this.requestdata.api_token = this.token
+    console.log(this.requestdata)
+    userPickCoupons(this.requestdata).then(res => {
+      console.log(res)
+      this.trLists = res.data.data
+      this.allpage = res.data.last_page
+    }).catch(error => {
+      console.log(error)
+    })
+  },
+  computed: {
+    ...mapGetters([
+      'user_id',
+      'token'
+    ])
+  },
   methods: {
     //分页跳转
     gotoPage (i) {
       console.log(`跳转到指定页面 ${ i }`)
+      this.requestdata.page = i
+      console.log(this.requestdata)
+      userPickCoupons(this.requestdata).then(res => {
+        console.log(res)
+        this.trLists = res.data.data
+        // this.allpage = res.data.last_page
+      })
     },
 
     //跳转到添加优惠券页面

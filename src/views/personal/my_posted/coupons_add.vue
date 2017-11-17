@@ -40,7 +40,7 @@
       <el-form-item label="Image"  prop="product_img">
         <el-upload 
               class="upload-demo-img" 
-              action="upload_img" 
+              action="http://dealsbank.zhuo.com/api/v1/common/upload-file"
               
               :data="uploadData"
               :on-remove="handleRemoveP" 
@@ -97,6 +97,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { addCoupon, uploadImg }  from '@/api/login'
+import { getToken } from '@/utils/auth'
 import axios from 'axios'
 import qs from 'qs'
 export default {
@@ -160,6 +161,7 @@ export default {
         platform_reward: '55',   //  支付平台总费用， 否
         total_fee: '123', //总费用
         // shipping_fee: ' '  // 运费  
+        api_token: getToken()
       },
       rules: {
         product_url: [
@@ -248,7 +250,7 @@ export default {
       const uploadImgTest = data => fetch({
         url: '/api/v1/common/upload-file',
         method: 'POST',
-        data: qs.stringify(data)
+        data: data
       })
       uploadImgTest(this.uploadData).then(res => {
         console.log(res)

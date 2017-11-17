@@ -1,4 +1,4 @@
-import { login, logOut, getInfo } from '@/api/login.js'
+import { login, logOut, getInfo, updateLogin } from '@/api/login.js'
 import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from '@/utils/auth'
 import store from '../../store'
 import router from '../../router'
@@ -52,13 +52,14 @@ const user = {
 
   },
   actions: {
-    // 登录
+    // 登录s
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
           console.log(res)
           setToken(res.data)
           commit('SET_TOKEN', res.data)
+          updateLogin({'api_token': res.data})
           resolve(res)
         }).catch(err => {
           reject(err)

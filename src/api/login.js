@@ -34,6 +34,14 @@ export const getInfo = data => fetch({
 })
 
 
+//登录次数更新接口
+export const updateLogin = data => fetch({
+  url: '/api/v1/user/login-records',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 //新增优惠券
 export const addCoupon = data => fetch({
   url: '/api/v1/coupon/add',
@@ -41,7 +49,19 @@ export const addCoupon = data => fetch({
   data: qs.stringify(data)
 })
 
+//优惠券详情
+export const couponDetails = data => fetch({
+  url: '/api/v1/user/login-records',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 
+//用户领取的优惠券
+export const userPickCoupons = data => fetch({
+  url: 'api/v1/coupon/user-coupons',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 
 
 //上传图片
