@@ -132,7 +132,7 @@ export const asyncRouterMap = [
         {
           path: '/posted/trials/add',
           hidden: true,
-          component: _import('personal/my_posted/trials'),
+          component: _import('personal/my_posted/trials_add'),
           meta: {role: ['merchant']}
         },
         {

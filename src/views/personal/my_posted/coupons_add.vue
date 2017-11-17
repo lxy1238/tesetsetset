@@ -143,7 +143,7 @@ export default {
         discount_rate: '12%',   //折扣率    否
         valid_date: new Date(),      //到期时间  int
         total_quantity: 100,  // 总数量   int
-        quantity_per_day: '10', // 每天上限数量 int
+        quantity_per_day: "10", // 每天上限数量 int
         influencer_reward:'1.5',// 推荐费用/每个
         platform_fee: '2.2',    //支付平台费用/每个
         influencer_reward_count: '66',    //推荐总费用
@@ -256,6 +256,7 @@ export default {
           if (typeof this.couponsForm.valid_date != 'number') {
             this.couponsForm.valid_date = parseInt(this.couponsForm.valid_date.getTime()/1000) 
           }
+          this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
           this.issueCoupon(this.couponsForm)
           console.log(this.couponsForm)
         } else {
