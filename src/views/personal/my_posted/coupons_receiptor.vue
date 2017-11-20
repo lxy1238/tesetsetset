@@ -58,11 +58,11 @@
             </td>
             <td class="receiptor">
               <div>
-                {{item.receiptor}}
+                {{item.pick_username}}
               </div>
             </td>
             <td class="applied-date">
-              <div>{{item.applied_date.toLocaleDateString()}}</div>
+              <div>领取时间</div>
             </td>
             <td class="coupon-code">
               <div>{{item.coupon_code}}</div>
@@ -83,6 +83,9 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
+import { mapGetters } from 'vuex'
+import { pickCoupons } from '@/api/login'
+import { getToken } from '@/utils/auth'
 export default {
   name: 'center_coupons',
   data () {
@@ -115,7 +118,7 @@ export default {
         product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',     // 产品图片， string, 用逗号拼接 , 否
         coupon_id: 1,
         total_receiptor: 365,
-        receiptor: 'Skyer',                //领取人
+        pick_username: 'Skyer',                //领取人
         coupon_code: 'QAKLWEFALWEKFJ',     //优惠券
         applied_date: new Date(),          //领取时间
         status: 1,
@@ -126,6 +129,12 @@ export default {
         title: "",
         category: '',
         status: "",
+      },
+      requestdata: {
+        coupon_id: '',
+        api_token: '',
+        page: 1,
+        page_size: 5
       }
      
     }
@@ -133,7 +142,20 @@ export default {
   components: {
     pagination
   },
- 
+  computed: {
+    ...mapGetters([
+      'token', 
+      'couponId'
+    ])
+  },
+  mounted () {
+    this.requestdata.api_token = this.token
+    this.requestdata.coupon_id = this.couponId
+    pickCoupons(this.requestdata).then(res => {
+      console.log(res)
+      this.trLists[0].pick_username = res.data.data[0].pick_username
+    })
+  },  
   methods: {
     //分页跳转
     gotoPage (i) {

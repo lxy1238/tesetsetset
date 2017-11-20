@@ -69,7 +69,6 @@ const user = {
     GetInfo({ commit , state }) {
       return new Promise((resolve, reject) => {
         getInfo({'api_token':getToken()}).then(res => {
-          console.log(res)
           const data = res.data
           if (res.code === 200) {
             setEmail(data.email)
@@ -77,7 +76,6 @@ const user = {
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   
             commit('SET_USERID',data.id)   
-            console.log(store)  
           } else if (res.code === 500) {
             removeEmail()
             removeToken()

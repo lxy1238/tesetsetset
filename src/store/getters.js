@@ -11,6 +11,7 @@ const getters = {
   lastPostedDate: state => state.user.lastPostedDate, 
   oneLevel: state => state.product.oneLevel,
   productId: state => state.product.productId,
+  couponId: state => state.product.couponId,
   currentRouter: state => state.personal.currentRouter,
   addRouters: state => state.permisstion.addRouters
 }

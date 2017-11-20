@@ -1,6 +1,5 @@
 <template>
   <div class="posted-coupons">
-  <template>
     <div class="pro-header">
       <h3 class="title">Coupons Posted</h3>
     </div>
@@ -60,7 +59,7 @@
             </td>
             <td class="qty">
               <div>
-                <a href="javascript:void(0);" @click="gotoReceiptor">{{item.pick_numbers}}</a>/
+                <a href="javascript:void(0);" @click="gotoReceiptor(item)">{{item.pick_numbers}}</a>/
                 <span>{{item.total_quantity}}</span>
               </div>
             </td>
@@ -88,8 +87,6 @@
       :show-item="showItem"
       @handlecurrent="gotoPage">
     </pagination>
-  </template>
- 
   </div>
 </template>
 
@@ -102,7 +99,7 @@ export default {
   data () {
     return {
       thLists: ["Image", "Title", "Price", "Discount", "Qty", "Valid Date", "Status", "Operation"],
-      trLists: [{
+      trListsTest: [{
         user_id: undefined,  // 用户ID ， 是，
         user_name: '',       // 发布用户名称， 是
         category_id: 1,     // 所属分类 , 是   int
@@ -111,7 +108,7 @@ export default {
        
         product_reason: 'This is a product I like very much',  //产品描述  是
         use_type: 'Unlimited',
-        coupon_code: 'QAKLWEFALWEKFJ',     //优惠券
+        coupon_code: 'QAKLWEFALWEKFJ',     //优惠券码
         reward_type: '1.5',     //PerOrder:按每订单奖励,
         product_price: '65',   //商品价格
         shipping_fee: '1.11',   //运费   否
@@ -133,7 +130,7 @@ export default {
         total_receiptor: 365,
         status: 1,
       }],
-
+      trLists: [],
       allpage: 30,
       showItem: 7,
       searchForm: {
@@ -174,9 +171,7 @@ export default {
   methods: {
     //分页跳转
     gotoPage (i) {
-      console.log(`跳转到指定页面 ${ i }`)
       this.requestdata.page = i
-      console.log(this.requestdata)
       userPickCoupons(this.requestdata).then(res => {
         console.log(res)
         this.trLists = res.data.data
@@ -196,13 +191,13 @@ export default {
 
     //跳转到优惠券详情页面
     gotoDetails (id) {
-
+      
     },
     //跳转到 领取优惠券的用户页面
-    gotoReceiptor () {
+    gotoReceiptor (item) {
       this.$router.push({path: '/posted/coupons/receiptor'})
+      this.$store.dispatch('setCouponId', item.id)
     }
- 
   }
 }
 </script>

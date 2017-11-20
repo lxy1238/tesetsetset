@@ -2,7 +2,7 @@
   <div class="pagination-all">
     <ul class="pagination" >
         <li   class="left">
-          <button @click="current-- && goto(current)"  class="items btn-s" href="javascript:void(0);" :class="{notallow: current == 1}"> 
+          <button @click="current-- && goto(current--)"  class="items btn-s" href="javascript:void(0);" :class="{notallow: current == 1}"> 
             <i class="el-icon-caret-left"></i>
           </button>
         </li>

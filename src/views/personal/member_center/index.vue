@@ -23,7 +23,9 @@
             <span><i class="iconfont icon-jifenqianbi"> </i> Points: {{userData.base.score}}</span>
           </div>
           <div class="footer">
-            <span>Professional to create exclusive coupons, directional marketing plan, cabbage cost-effective product explosion!</span>
+            <span>Professional to create exclusive coupons, directional marketing plan, cabbage cost-effective product explosion!
+              Find this site interesting, <a href="javascript:void(0);">Invite Friends</a> to join.
+            </span>
           </div>
         </div>
       </div>

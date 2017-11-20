@@ -49,9 +49,9 @@ export const addCoupon = data => fetch({
   data: qs.stringify(data)
 })
 
-//优惠券详情
+//优惠券详情  通过优惠卷ID查看优惠卷详情
 export const couponDetails = data => fetch({
-  url: '/api/v1/user/login-records',
+  url: '/api/v1/coupon/detail',
   method: 'POST',
   data: qs.stringify(data)
 })
@@ -62,6 +62,24 @@ export const userPickCoupons = data => fetch({
   method: 'POST',
   data: qs.stringify(data)
 })
+
+
+//通过优惠卷ID查看该优惠券领取的用户接口
+
+export const pickCoupons = data => fetch({
+  url: '/api/v1/coupon/coupon-pick',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+//通过用户ID查看该用户获取的优惠券接口
+export const userCoupons = data => fetch({
+  url: '/api/v1/coupon/user-pick',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 //上传图片
