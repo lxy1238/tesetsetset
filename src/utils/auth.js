@@ -3,6 +3,9 @@ import Cookie from 'js-cookie'
 const EMAIL = 'email'
 const PASSWORD = 'password'
 const TOKEN = 'token'
+
+//查询领取人的信息时要用到的，防止页面强制刷新后数据丢失
+
 const expiresData = 30
 
 export function getEmail () {

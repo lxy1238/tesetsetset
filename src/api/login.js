@@ -25,6 +25,13 @@ export const login = data => fetch({
 })
 
 
+//首页获取所有的优惠券的信息
+export const getAllCoupons = data => fetch({
+  url: '/api/v1/coupon/show',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 //获取用户基本信息
 
 export const getInfo = data => fetch({
@@ -79,7 +86,6 @@ export const userCoupons = data => fetch({
   method: 'POST',
   data: qs.stringify(data)
 })
-
 
 
 //上传图片

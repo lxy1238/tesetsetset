@@ -2,7 +2,7 @@
   <div  class="coupons-product" >
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img v-if="!loading" src="../../assets/timg.gif" >
-      <img v-show="loading" :src="couponsDetails.imgUrl" @load="loadImg($event, couponsDetails)"  alt="img">
+      <img v-show="loading" :src="couponsDetails.product_img" @load="loadImg($event, couponsDetails)"  alt="img">
     </div>
      <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo">
@@ -11,8 +11,8 @@
         <div class="line"></div>
         <div class="span-btn" @click="copy">Copy</div>
       </div>
-      <p class="platfrom content" >{{couponsDetails.platfrom}}</p>
-      <p class="descript content" :title="couponsDetails.descript">{{couponsDetails.descript}}</p>
+      <p class="platfrom content" >{{couponsDetails.website}}</p>
+      <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <!-- <p class="price content">{{couponsDetails.price}}</p>
       <p class="coupons content">
         <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>

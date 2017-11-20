@@ -3,12 +3,12 @@
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
-        <coupons-pro v-for="n in 60"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
           <template slot="price">
-          <p class="price content">{{couponsDetails.price}}</p>
+          <p class="price content">{{couponsDetails.product_price}}</p>
           <p class="coupons content">
-            <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>
-            <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
+            <span><i class="gray-s">Coupons</i> <strong>${{couponsDetails.product_price * couponsDetails.discount_rate / 100}}</strong></span>
+            <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
           </p>
           </template>
           <template slot="btn">
@@ -19,7 +19,7 @@
     <pagination 
       :allpage="allpage"
       :show-item="showItem"
-      @handlecurrent="test">
+      @handlecurrent="gotoPage">
     </pagination>
   </div>
 </template>
@@ -28,10 +28,12 @@
 import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import pagination from "@/components/page_index_coupons/pagination.vue"
 import { couponsDetails } from '@/mock/trials/index.js'
+import { getAllCoupons } from '@/api/login'
+import { setStore } from '@/utils/utils'
 export default {
   name: "page_index",
   data() {
-    return {
+    return {  
       msg: "pageindex",
       showItem: 7,
       allpage: 30,
@@ -58,24 +60,32 @@ export default {
           descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
           price: "$98.00",
           coupons: "$18.00",
+      },
+      requestData: {
+        page: 1,
+        page_size: 5,
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination,
   },
   mounted() {
-    this.$root.eventHub.$on("selectClassify", data => {
-      this.msg = "";
-      setTimeout(() => {
-        this.msg = data;
-      }, 500);
-    });
+    getAllCoupons(this.requestData).then(res => {
+      console.log(res)
+      this.arrcouponsDetails = res.data.data
+      this.allpage = res.data.last_page
+    })   
   },
   methods: {
-    test(index) {
-      console.log(`当前跳转到 ${index} 页`);
+    gotoPage(index) {
+      this.requestData.page = index
+      getAllCoupons(this.requestData).then(res => {
+        console.log(res)
+        this.arrcouponsDetails = res.data.data
+        this.allpage = res.data.last_page
+      }) 
     },
     gotodetails (id) {
       this.$router.push({ path: '/coupons' })

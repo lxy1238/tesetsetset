@@ -43,18 +43,18 @@
         <tbody >
           <tr v-for="item in trLists">
             <td>
-              <img class="product-img" :src="item.product_img" alt="">
+              <img class="product-img" :src="couponsDetails.product_img" alt="">
             </td>
             <td>
               <div>amazon</div>
-              <div class="table-product-title">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item.coupon_id)">Electronics</a>
+              <div class="table-product-title">{{couponsDetails.product_title}}</div>
+              <a href="javascript:void(0);" @click="gotoDetails(item.id)">Electronics</a>
             </td>
             <td class="prcie">
-              <div>${{item.product_price}}</div>
+              <div>${{couponsDetails.product_price}}</div>
             </td>
             <td class="discount">
-              <div>{{item.discount_rate}}</div>
+              <div>{{couponsDetails.discount_rate}}</div>
             </td>
             <td class="receiptor">
               <div>
@@ -65,7 +65,7 @@
               <div>领取时间</div>
             </td>
             <td class="coupon-code">
-              <div>{{item.coupon_code}}</div>
+              <div>{{couponsDetails.coupon_code}}</div>
             </td>
           </tr>
         </tbody>
@@ -86,6 +86,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
 import { pickCoupons } from '@/api/login'
 import { getToken } from '@/utils/auth'
+import { setStore, getStore, removeStore } from '@/utils/utils'
 export default {
   name: 'center_coupons',
   data () {
@@ -135,6 +136,13 @@ export default {
         api_token: '',
         page: 1,
         page_size: 5
+      },
+      couponsDetails: {
+        product_img:'',
+        product_title: '',
+        product_price: '',
+        discount_rate: '',
+        coupon_code: '',
       }
      
     }
@@ -145,21 +153,32 @@ export default {
   computed: {
     ...mapGetters([
       'token', 
-      'couponId'
     ])
   },
   mounted () {
     this.requestdata.api_token = this.token
-    this.requestdata.coupon_id = this.couponId
+    this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
+    var couponsDetails = JSON.parse(getStore('couponDetails'))
+    for (var i in this.couponsDetails) {
+      this.couponsDetails[i] = couponsDetails[i]
+    }
     pickCoupons(this.requestdata).then(res => {
-      console.log(res)
-      this.trLists[0].pick_username = res.data.data[0].pick_username
+      this.trLists = res.data.data
+      this.allpage = res.data.last_page
     })
   },  
+  //组件销毁前执行的回调
+  beforeDestroy () {
+    removeStore('couponDetails')
+  },
   methods: {
     //分页跳转
     gotoPage (i) {
-      console.log(`跳转到指定页面 ${ i }`)
+      this.requestdata.page = i
+      pickCoupons(this.requestdata).then(res => {
+        this.trLists = res.data.data
+        this.allpage = res.data.last_page
+    })
     },
 
     //发布的优惠券查询

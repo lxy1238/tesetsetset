@@ -94,6 +94,7 @@
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
 import { userPickCoupons } from '@/api/login'
+import { setStore, getStore, removeStore } from '@/utils/utils'
 export default {
   name: 'center_coupons',
   data () {
@@ -196,7 +197,7 @@ export default {
     //跳转到 领取优惠券的用户页面
     gotoReceiptor (item) {
       this.$router.push({path: '/posted/coupons/receiptor'})
-      this.$store.dispatch('setCouponId', item.id)
+      setStore('couponDetails', JSON.stringify(item))
     }
   }
 }
