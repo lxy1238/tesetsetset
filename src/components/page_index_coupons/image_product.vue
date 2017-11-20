@@ -2,7 +2,7 @@
   <div  class="coupons-product" >
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img v-if="!loading" src="../../assets/timg.gif" >
-      <img v-show="loading" :src="couponsDetails.product_img" @load="loadImg($event, couponsDetails)"  alt="img">
+      <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg($event, couponsDetails)"  alt="img">
     </div>
      <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo">

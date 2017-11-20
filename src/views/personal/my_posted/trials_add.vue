@@ -74,7 +74,7 @@
        <el-form-item label="Specifications: " prop="specifications" >
         <el-input v-model="trialsForm.specifications" type="textarea" class="textarea"></el-input>
       </el-form-item>
-      <el-form-item label="Coupon code: " >
+      <el-form-item label="Product details: " required>
         <div id="summernote"></div>
       </el-form-item>
       <div class="title-s">
@@ -117,6 +117,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'trials_add',
   data () {
@@ -140,29 +142,30 @@ export default {
         }
       ],
       trialsForm: {
-        product_url: 'http://www.baidu.com',
-        wobsite: '',
-        store: '',
+        url: 'http://www.baidu.com',
+        website: 'amazon',
+        price: '123.11',           //decimal  价格
+        country: '',         //string 国家
         category_id: "",     // 所属分类 , 是   int
-        product_price: '565',
+        store_id: '',        // int
         shipping_fee: '1.2',                       //运费
-        product_img: '',                        //产品图片
-        product_title: 'this is trials title', 
-        product_reason: 'this is reason',
+        img: '',                        //产品图片
+        title: 'this is trials title', 
+        reason: 'this is reason',
         specifications: 'spaecaefaef',
-        product_details: '<h1>jerry</h1>',
+        detais: '<h1>jerry</h1>',
         active_date: '',
         active_date_start: new Date(),
         active_date_end: new Date(),
-        quantity_per_day: '10',               //每天上限数量 int
+        quantity_per_day: '10',                //每天上限数量 int
         total_quantity: 1000 ,                 //发行总量
+        total_fee: '1234.54',                  //总费用
         is_full_return: "yes",
 
+        api_token: '',
         user_id: undefined,  // 用户ID ， 是，
         user_name: '',       // 发布用户名称， 是
         country: '美国' ,    // 国家  是
-
-
       },
       rules: {
         product_url: [
@@ -216,8 +219,18 @@ export default {
       })
       $('#summernote').summernote('code', '<div>初始化设置的内容</div>')
     },10)
+    this.trialsForm.api_token = this.token
+    this.trialsForm.user_id = this.user_id
+    this.trialsForm.user_name = this.username
    
   },
+  computed : {
+    ...mapGetters([
+      'token',
+      'user_id',
+      'username'
+    ])
+  },  
   methods: {
     getProInfo () {
       console.log("获取产品信息")
@@ -236,7 +249,7 @@ export default {
       var markupStr = $('#summernote').summernote('code')
       //插入内容
        $('#summernote').summernote('code', '<div>aefawe</div>')
-      console.log(markupStr)
+      console.log(markupStr === '<br>')
       // $('#summernote').summernote('insertText', '<div>aefawe</div>');
     }
   }

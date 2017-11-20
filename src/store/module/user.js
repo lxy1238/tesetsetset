@@ -3,6 +3,7 @@ import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from
 import store from '../../store'
 import router from '../../router'
 import { setPass, removePass } from '../../utils/auth';
+import { setStore, removeStore } from '../../utils/utils'
 
 const user = {
   state: {
@@ -72,6 +73,7 @@ const user = {
           const data = res.data
           if (res.code === 200) {
             setEmail(data.email)
+            setStore('userInfo', JSON.stringify(res.data))
             commit('SET_ROLES', [data.type])
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   
@@ -91,6 +93,7 @@ const user = {
     },
     LogOut ({ commit }) {
       removeToken()
+      removeStore('userInfo')
       commit('SET_TOKEN', '')
       router.push({path: '/'})
       window.location.reload()

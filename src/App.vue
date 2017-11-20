@@ -7,6 +7,7 @@
 <script>
 import { setPass, setEmail, getToken } from '@/utils/auth.js'
 import { updateLogin } from '@/api/login.js'
+import { removeStore } from '@/utils/utils'
 export default {
   name: 'app',
   mounted () {
@@ -21,6 +22,9 @@ export default {
         console.log('登录记录更新失败')
       })
     }
+  },
+  beforeDestroy () {
+    removeStore('userInfo')
   }
 }
 </script>

@@ -41,7 +41,6 @@
         <el-upload 
               class="upload-demo-img" 
               action="http://dealsbank.zhuo.com/api/v1/common/upload-file"
-              :auto-upload="false"
               :on-remove="handleRemoveP" 
               :on-success="uploadSuccess" 
               :before-upload="beforeAvatarUploadP" 
@@ -196,11 +195,9 @@ export default {
         ],
       },
       fileList2: [
-        { url: 'http://www.ghostxy.top/dealsbank/img/01.png'}, 
-        { url: 'http://www.ghostxy.top/dealsbank/img/02.png'}, 
-        { url: 'http://www.ghostxy.top/dealsbank/img/03.png'}, 
+    
       ],
-      uploadData: {
+      uploadData: { 
         api_token: '',
         file: ''
       }
@@ -240,28 +237,19 @@ export default {
           this.$message.error('最多只能上传6张图片！')
           limitF = false
       }
-      var formData = new FormData();
-      formData.append('api_token', this.token)
-      formData.append('file', file)
-      uploadImg(formData).then(res => {
-        console.log(res)
-        this.$refs['couponsForm'].validate((valid) => {
-        if (valid) {
-          if (typeof this.couponsForm.valid_date != 'number') {
-            this.couponsForm.valid_date = parseInt(this.couponsForm.valid_date.getTime()/1000) 
-          }
-          this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
-          this.issueCoupon(this.couponsForm)
-          console.log(this.couponsForm)
-        } else {
-          console.log('error submit!!');
-          return false
-        }
-      });
-      }).catch(error => {
-        console.log(error)
-      })
-      return (isJPG || isGIF || isPNG) && isLt500K && limitF
+      if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
+        var formData = new FormData();
+        formData.append('api_token', this.token)
+        formData.append('file', file)
+        uploadImg(formData).then(res => {
+          console.log(res)
+          this.fileList2.push({url: "http://" + res.data})
+        }).catch(error => {
+          console.log(error)
+        })
+      } else {
+        return false
+      }
     },
     uploadSuccess (res, file, fileList) {
       if (fileList > 6) {
@@ -273,7 +261,6 @@ export default {
     },
     handleRemoveP (file, fileList) {
       this.fileList2 = fileList
-      console.log(file)
     },
     issueCoupon () {
       addCoupon(this.couponsForm).then(res => {
@@ -286,8 +273,25 @@ export default {
     },
     Submit(callback) {
       //element-ui 的表单验证
-      this.$refs.upload.submit();
-     
+      // this.$refs.upload.submit();
+      this.$refs['couponsForm'].validate((valid) => {
+        if (valid) {
+          if (typeof this.couponsForm.valid_date != 'number') {
+            this.couponsForm.valid_date = parseInt(this.couponsForm.valid_date.getTime()/1000) 
+          }
+          this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
+          var imgArr = []
+          for (var i of this.fileList2) {
+            imgArr.push(i.url)
+          }
+          this.couponsForm.product_img = imgArr.join(",")
+          this.issueCoupon(this.couponsForm)
+          console.log(this.couponsForm)
+        } else {
+          console.log('error submit!!');
+          return false
+        }
+      });
     },
   }
 }

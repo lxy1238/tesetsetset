@@ -23,9 +23,8 @@
             <span><i class="iconfont icon-jifenqianbi"> </i> Points: {{userData.base.score}}</span>
           </div>
           <div class="footer">
-            <span>Professional to create exclusive coupons, directional marketing plan, cabbage cost-effective product explosion!
-              Find this site interesting, <a href="javascript:void(0);">Invite Friends</a> to join.
-            </span>
+            <span v-if="userData.base.introduce">{{userData.base.introduce}} </span><br />
+             <span> Find this site interesting, <a href="javascript:void(0);">Invite Friends</a> to join.</span>
           </div>
         </div>
       </div>
@@ -89,6 +88,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getInfo } from '@/api/login.js'
+import { setStore } from '@/utils/utils'
 export default {
   name: 'member_center',
   data () {
@@ -104,7 +104,7 @@ export default {
   },
   mounted () {
     getInfo({'api_token':this.token}).then(res => {
-      console.log(res)
+      console.log(res.data)
       this.userData.account = res.data.account[0]
       this.userData.base = res.data.base[0]
       var joined_date = new Date()

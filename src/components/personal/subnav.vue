@@ -110,7 +110,7 @@ export default {
           }
         }
         .nav-child {
-          padding: 5px 30px 5px 5px;
+          padding: 5px 18px 5px 5px;
           color: #a6a6a6;
           animation: 0.5s;
           margin-bottom: 1rem;

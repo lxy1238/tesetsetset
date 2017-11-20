@@ -92,9 +92,14 @@ export default {
             this.pidForm.api_token = this.token
             this.pidForm.user_id = this.user_id
             resetPassword(this.pidForm).then(res => {
-              console.log(res)
-              this.$notify.success("reset password success!!!")
-              this.$router.push({path: '/personal/index'})
+              if (res.code === 402) {
+                this.$notify.error(res.message)
+                return false
+              } else {
+                console.log(res)
+                this.$notify.success("reset password success!!!")
+                this.$router.push({path: '/personal/index'})
+              }
             })
           } else {
             console.log('error submit!!');

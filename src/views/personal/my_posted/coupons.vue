@@ -43,7 +43,7 @@
         <tbody >
           <tr v-for="item in trLists">
             <td>
-              <img class="product-img" :src="item.product_img" alt="">
+              <img class="product-img" :src="item.product_img.split(',')[0]" alt="">
             </td>
             <td>
               <div>amazon</div>

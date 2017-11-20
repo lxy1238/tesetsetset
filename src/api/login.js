@@ -103,7 +103,7 @@ export const userCoupons = data => fetch({
 
 
 //商户新增试用品
-export const addTrials = data => fetch({
+export const trialsAdd = data => fetch({
   url: '/api/v1/trial/add',
   method: 'POST',
   data: qs.stringify(data)
