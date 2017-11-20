@@ -3,7 +3,7 @@
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
-        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="1" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">{{couponsDetails.product_price}}</p>
           <p class="coupons content">
@@ -63,7 +63,7 @@ export default {
       },
       requestData: {
         page: 1,
-        page_size: 5,
+        page_size: 12,
       }
     }
   },
@@ -73,7 +73,6 @@ export default {
   },
   mounted() {
     getAllCoupons(this.requestData).then(res => {
-      console.log(res)
       this.arrcouponsDetails = res.data.data
       this.allpage = res.data.last_page
     })   
@@ -82,10 +81,11 @@ export default {
     gotoPage(index) {
       this.requestData.page = index
       getAllCoupons(this.requestData).then(res => {
-        console.log(res)
         this.arrcouponsDetails = res.data.data
         this.allpage = res.data.last_page
-      }) 
+      }).catch(error => {
+        console.log(error)
+      })
     },
     gotodetails (id) {
       this.$router.push({ path: '/coupons' })

@@ -11,7 +11,11 @@
           <el-input ></el-input>
         </el-form-item>
         <el-form-item label="Avatar: " prop="" class="account-item" >
-          <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+          <el-upload class="avatar-uploader" 
+                    action="https://jsonplaceholder.typicode.com/posts/" 
+                    :show-file-list="false" :on-success="handleAvatarSuccess" 
+                    :before-upload="beforeAvatarUpload"
+                    >
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -53,8 +57,9 @@ export default {
       accountForm: {
         username:'ghost'
       },
-      imageUrl: '',
-      radio: '1'
+      imageUrl: 'http://www.ghostxy.top/dealsbank/img/user.png',
+      radio: '1',
+
     }
   },
   methods: {

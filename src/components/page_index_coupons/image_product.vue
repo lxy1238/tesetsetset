@@ -114,7 +114,7 @@ export default {
         display: inline-block;
         margin-top: 10px;
         width: 80%;
-        height: 40%;
+        height: 150px;
       }
     }
     .promo-copy {

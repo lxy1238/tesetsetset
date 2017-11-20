@@ -48,6 +48,20 @@ export const updateLogin = data => fetch({
   data: qs.stringify(data)
 })
 
+//修改密码
+export const resetPassword = data => fetch({
+  url: '/api/v1/user/reset-password',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//用户基本信息设置
+export const userInfoSet = data => fetch({
+  url: '/api/v1/user/base-setting',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 //新增优惠券
 export const addCoupon = data => fetch({
@@ -88,9 +102,25 @@ export const userCoupons = data => fetch({
 })
 
 
+//商户新增试用品
+export const addTrials = data => fetch({
+  url: '/api/v1/trial/add',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+
+
+
+
+
+//公用
+
 //上传图片
 export const uploadImg = data => fetch({
   url: '/api/v1/common/upload-file',
   method: 'POST',
-  data: qs.stringify(data)
+  data: data
 })

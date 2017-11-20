@@ -41,12 +41,12 @@
         <el-upload 
               class="upload-demo-img" 
               action="http://dealsbank.zhuo.com/api/v1/common/upload-file"
-              
-              :data="uploadData"
+              :auto-upload="false"
               :on-remove="handleRemoveP" 
               :on-success="uploadSuccess" 
               :before-upload="beforeAvatarUploadP" 
               :file-list="fileList2"
+              ref="upload"
               list-type="picture">
             <el-button size="small" type="primary">Upload</el-button>
             <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
@@ -143,7 +143,7 @@ export default {
         category_id: 1,     // 所属分类 , 是   int
         country: '美国' ,    // 国家  是
         website: '亚马逊2',         // 平台   是 
-        product_title: 'this is project',   // 商品标题   是 ，
+        product_title: '2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers',   // 商品标题   是 ，
         product_img: '12',     // 产品图片， string, 用逗号拼接 , 否
         product_reason: 'This is a product I like very much',  //产品描述  是
         use_type: 'Unlimited',
@@ -240,20 +240,24 @@ export default {
           this.$message.error('最多只能上传6张图片！')
           limitF = false
       }
-      this.uploadData.file = file
-      var fetch = axios.create({
-        baseURL:"http://dealsbank.zhuo.com",
-        timeout:20000,
-        headers: {'Content-Type':'multipart/form-data'}
-      });
-      console.log(this.uploadData)
-      const uploadImgTest = data => fetch({
-        url: '/api/v1/common/upload-file',
-        method: 'POST',
-        data: data
-      })
-      uploadImgTest(this.uploadData).then(res => {
+      var formData = new FormData();
+      formData.append('api_token', this.token)
+      formData.append('file', file)
+      uploadImg(formData).then(res => {
         console.log(res)
+        this.$refs['couponsForm'].validate((valid) => {
+        if (valid) {
+          if (typeof this.couponsForm.valid_date != 'number') {
+            this.couponsForm.valid_date = parseInt(this.couponsForm.valid_date.getTime()/1000) 
+          }
+          this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
+          this.issueCoupon(this.couponsForm)
+          console.log(this.couponsForm)
+        } else {
+          console.log('error submit!!');
+          return false
+        }
+      });
       }).catch(error => {
         console.log(error)
       })
@@ -271,15 +275,6 @@ export default {
       this.fileList2 = fileList
       console.log(file)
     },
-    selfUploadImg () {
-      
-    },
-    testUploadImg () {
-      console.log(this.uploadData)
-      uploadImg(this.uploadData).then(res => {
-        console.log(res)
-      })
-    } ,  
     issueCoupon () {
       addCoupon(this.couponsForm).then(res => {
         console.log(res)
@@ -291,19 +286,8 @@ export default {
     },
     Submit(callback) {
       //element-ui 的表单验证
-      this.$refs['couponsForm'].validate((valid) => {
-        if (valid) {
-          if (typeof this.couponsForm.valid_date != 'number') {
-            this.couponsForm.valid_date = parseInt(this.couponsForm.valid_date.getTime()/1000) 
-          }
-          this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
-          this.issueCoupon(this.couponsForm)
-          console.log(this.couponsForm)
-        } else {
-          console.log('error submit!!');
-          return false
-        }
-      });
+      this.$refs.upload.submit();
+     
     },
   }
 }
