@@ -71,6 +71,7 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo({'api_token':getToken()}).then(res => {
           const data = res.data
+          console.log(res)
           if (res.code === 200) {
             setEmail(data.email)
             setStore('userInfo', JSON.stringify(res.data))
@@ -78,6 +79,7 @@ const user = {
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   
             commit('SET_USERID',data.id)   
+            commit('SET_AVATAR',data.base.avatar_img)   
           } else if (res.code === 500) {
             removeEmail()
             removeToken()

@@ -12,8 +12,7 @@ export default {
   name: 'app',
   mounted () {
     window.onbeforeunload = function() { 
-      setPass("luoxuyou")
-      setEmail("1243433362@qq.com")
+      removeStore('userInfo')
     } 
     if (getToken()) {
       updateLogin({'api_token': getToken()}).then(res => {
@@ -24,7 +23,7 @@ export default {
     }
   },
   beforeDestroy () {
-    removeStore('userInfo')
+    // removeStore('userInfo')
   }
 }
 </script>

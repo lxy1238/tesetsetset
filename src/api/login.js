@@ -1,13 +1,8 @@
 import fetch from '@/utils/fetch.js'
 import qs from 'qs'
 
-//本地数据测试
-export const getTestData = data => fetch({
-  url: '/api/v1/user/register',
-  method: 'POST',
-  data: qs.stringify(data)
-})
 
+//用户基本信息
 
 //注册
 export const sign = data => fetch({
@@ -63,6 +58,20 @@ export const userInfoSet = data => fetch({
 })
 
 
+//用户公开信息  发布优惠券的人的信息获取， 不用登录校验就可以获取
+export const postedUserInfo = data => fetch({
+  url: '/api/v1/user/open-info',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+/*
+ *优惠券信息 
+ * 
+ * 
+ */
 //新增优惠券
 export const addCoupon = data => fetch({
   url: '/api/v1/coupon/add',
@@ -77,7 +86,7 @@ export const couponDetails = data => fetch({
   data: qs.stringify(data)
 })
 
-//用户领取的优惠券
+//用户发布的优惠券
 export const userPickCoupons = data => fetch({
   url: 'api/v1/coupon/user-coupons',
   method: 'POST',
@@ -94,13 +103,36 @@ export const pickCoupons = data => fetch({
 })
 
 
-//通过用户ID查看该用户获取的优惠券接口
+//通过用户ID查看该用户领取的优惠券
 export const userCoupons = data => fetch({
   url: '/api/v1/coupon/user-pick',
   method: 'POST',
   data: qs.stringify(data)
 })
 
+//优惠券领取
+
+export const userGetCoupon = data => fetch({
+  url: '/api/v1/coupon/receive',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//检测优惠券时候已经领取
+export const isUserGetCoupon = data => fetch({
+  url: '/api/v1/coupon/check-receive',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+/**
+ * 
+ * @param 试用品
+ * 
+ * 
+ */
 
 //商户新增试用品
 export const trialsAdd = data => fetch({

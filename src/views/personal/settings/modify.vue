@@ -47,7 +47,7 @@ export default {
       }
     }
     return {
-      msg: '',
+      modifyShow: true,
       pidForm: {
         oldpassword: '', 
         password: '',
@@ -76,15 +76,13 @@ export default {
     ])
   },
   mounted () {
-       window.addEventListener('keyup', (e) => {
-      if (e.keyCode === 13 ) {
-        this.changePassword()
-        return
-      } else {
-        return false
-      }
-    })
+    this.modifyShow = true
+    window.addEventListener('keyup', this.keyupSubmit, false)
   },
+  beforeDestroy () {
+    this.modifyShow = false
+    window.removeEventListener('keyup', this.keyupSubmit)
+  },  
   methods: {
     changePassword () {
        this.$refs['pidForm'].validate((valid) => {
@@ -106,6 +104,13 @@ export default {
             return false
           }
         });
+    },
+    keyupSubmit (e) {
+      if (e.keyCode === 13 && this.modifyShow === true) {
+        this.changePassword()
+      } else {
+        return false
+      }
     }
   }
 }

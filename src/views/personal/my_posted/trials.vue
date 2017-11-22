@@ -133,6 +133,7 @@
         </table>
       </div>
       <pagination class="coupons-pagination"
+        v-if="allpage"
         :allpage="allpage"
         :show-item="showItem"
         @handlecurrent="gotoPage">
@@ -171,7 +172,7 @@ export default {
 
 
       }],
-      allpage: 30,
+      allpage: undefined,
       showItem: 7,
       searchForm: {
         title: "",

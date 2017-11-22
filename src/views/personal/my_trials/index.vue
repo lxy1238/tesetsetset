@@ -47,6 +47,7 @@
                 </div>
               </div>
               <pagination
+               v-if="allpage"
               :allpage="allpage"
               :show-item="showItem"
               @handlecurrent="test">
@@ -124,6 +125,7 @@
                 </div>
               </div>
               <pagination
+               v-if="allpage"
               :allpage="allpage"
               :show-item="showItem"
               @handlecurrent="test">
@@ -179,6 +181,7 @@
                 </div>
               </div>
               <pagination
+               v-if="allpage"
                 :allpage="allpage"
                 :show-item="showItem"
                 @handlecurrent="test">
@@ -218,6 +221,7 @@ you will exceed the time limit of task.</p>
                 </div>
               </div>
               <pagination
+               v-if="allpage"
               :allpage="allpage"
               :show-item="showItem"
               @handlecurrent="test">
@@ -242,7 +246,7 @@ export default {
         'Waiting for Order', 'Waiting for Review', 'Completed', 'Expired'
       ],
       selected: 0,
-      allpage: 50,
+      allpage: undefined,
       showItem: 7,
       value5: 3.6
 

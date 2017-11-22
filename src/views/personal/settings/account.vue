@@ -17,6 +17,7 @@
                     :before-upload="beforeAvatarUpload"
                     >
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-else src="../../../assets/user.png" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <div class="limit-text">Only support .jpg, .gif, .png, and the images shall not be exceed 1MB. </div>
@@ -52,8 +53,8 @@
 <script>
 import { getStore } from '@/utils/utils'
 import { mapGetters } from 'vuex'
-import {userInfoSet} from '@/api/login'
-export default {
+import {userInfoSet, uploadImg} from '@/api/login'
+export default { 
   name: 'settings-account',
   data () {
     return {
@@ -82,31 +83,44 @@ export default {
     this.userInfo = JSON.parse(getStore('userInfo')) 
     this.accountForm.api_token = this.token
     this.accountForm.user_id = this.user_id
-    this.accountForm.sex = this.userInfo.base[0].sex
-    this.accountForm.birthday = this.userInfo.base[0].birthday
-    this.accountForm.introduce = this.userInfo.base[0].introduce
-    this.accountForm.avatar_img = this.userInfo.base[0].avatar_img
+    this.accountForm.sex = this.userInfo.base.sex
+    this.accountForm.birthday = this.userInfo.base.birthday
+    this.accountForm.introduce = this.userInfo.base.introduce
+    this.accountForm.avatar_img = this.userInfo.base.avatar_img
+    this.imageUrl = this.accountForm.avatar_img
   },
   methods: {
     handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.imageUrl = URL.createObjectURL(file.raw)
       },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      var isJPG = file.type === 'image/jpeg'
+      var isGIF = file.type === 'image/gif'
+      var isPNG = file.type === 'image/png'
+      var isLt500K = file.size / 1024 / 500 < 1
 
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+      if (!(isJPG || isGIF || isPNG)) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+      if (!isLt500K) {
+        this.$message.error('上传头像图片大小不能超过 500kb!')
       }
-      return isJPG && isLt2M;
+      if ((isJPG || isGIF || isPNG) && isLt500K) {
+        var formData = new FormData();
+        formData.append('api_token', this.token)
+        formData.append('file', file)
+        uploadImg(formData).then(res => {
+          this.accountForm.avatar_img = "http://" + res.data
+          this.imageUrl = this.accountForm.avatar_img
+        }).catch(error => {
+          console.log(error)
+        })
+      } else {
+        return false
+      }
     },
     changeUserInfo () {
-      console.log(this.accountForm)
      userInfoSet(this.accountForm).then(res => {
-       console.log(res)
        this.$notify.success('reset info success')
        this.$store.dispatch('GetInfo')
      }).catch(error => {

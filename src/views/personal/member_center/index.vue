@@ -9,7 +9,8 @@
       </div>
       <div class="about-me">
         <div class="avatar">
-          <img class="avatar-img" src="http://www.ghostxy.top/dealsbank/img/user.png" alt="">
+          <img v-if="userData.base.avatar_img" class="avatar-img" :src="userData.base.avatar_img" alt="">
+          <img v-else src="../../../assets/user.png" />
         </div>
         <div class="personal-info">
           <div class="name-level">
@@ -104,14 +105,13 @@ export default {
   },
   mounted () {
     getInfo({'api_token':this.token}).then(res => {
-      console.log(res.data)
-      this.userData.account = res.data.account[0]
-      this.userData.base = res.data.base[0]
+      this.userData.account = res.data.account
+      this.userData.base = res.data.base
       var joined_date = new Date()
       joined_date.setTime(res.data.joined_date * 1000)
       this.userData.joined_date =  joined_date.toDateString()
     }).catch(error => {
-      console.log(error)
+      console.log(error + " getInfo member")
     })
   },
   computed: {

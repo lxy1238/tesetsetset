@@ -7,7 +7,7 @@
       <div class="pro-card" v-for="item in couponLists">
         <div class="expried">EXPRIED</div>
         <div class="card-top">
-          <img class="card-top-img" :src="item.product_img" alt="">
+          <img class="card-top-img" :src="item.product_img.split(',')[0]" alt="">
           <div class="pro-title">
               {{item.product_title}} 
           </div>
@@ -23,7 +23,8 @@
         </div>
       </div>
     </div>
-    <pagination class="coupons-pagination"
+    <pagination class="coupons-pagination" 
+      v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
@@ -39,7 +40,7 @@ export default {
   name: 'my_coupons',
   data () {
     return {
-      allpage: 30,
+      allpage: undefined,
       showItem: 7,
       requestData: {
         api_token: '',
@@ -71,8 +72,10 @@ export default {
       this.requestData.api_token = this.token
       this.requestData.user_id = this.user_id
       userCoupons(this.requestData).then(res => {
-        this.couponLists = res.data.data
-        this.allpage = res.data.last_page
+        if (res.data.total !== 0) {
+          this.couponLists = res.data.data
+          this.allpage = res.data.last_page
+        }
       }).catch(error => {
         console.log(error + 'my_coupons error')
       })

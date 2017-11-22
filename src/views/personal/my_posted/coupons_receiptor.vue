@@ -71,7 +71,7 @@
         </tbody>
       </table>
     </div>
-    <pagination class="coupons-pagination"
+    <pagination class="coupons-pagination" v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
@@ -124,7 +124,7 @@ export default {
         applied_date: new Date(),          //领取时间
         status: 1,
       }],
-      allpage: 30,
+      allpage: undefined,
       showItem: 7,
       searchForm: {
         title: "",

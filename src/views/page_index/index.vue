@@ -5,11 +5,11 @@
       </div>
         <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="1" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
           <template slot="price">
-          <p class="price content">{{couponsDetails.product_price}}</p>
-          <p class="coupons content">
-            <span><i class="gray-s">Coupons</i> <strong>${{couponsDetails.product_price * couponsDetails.discount_rate / 100}}</strong></span>
-            <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
+          <p class="price content">
+            <span class="price-left">${{couponsDetails.product_price}}</span>
+            <span class="price-right">${{couponsDetails.discount_price}}</span>
           </p>
+          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
           </template>
           <template slot="btn">
             View Coupons
@@ -17,6 +17,7 @@
         </coupons-pro>
     </div>
     <pagination 
+      v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
@@ -36,31 +37,9 @@ export default {
     return {  
       msg: "pageindex",
       showItem: 7,
-      allpage: 30,
+      allpage: undefined,
       arrcouponsDetails: [
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon1",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        },
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        }
       ],
-      couponsDetails: {
-          id: 1,
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00",
-      },
       requestData: {
         page: 1,
         page_size: 12,
@@ -87,8 +66,11 @@ export default {
         console.log(error)
       })
     },
-    gotodetails (id) {
-      this.$router.push({ path: '/coupons' })
+
+    //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
+    gotodetails (id, user_id) {
+      console.log(id, user_id)
+      this.$router.push({ path: '/coupons/' + id  + '/' + user_id})
     }
   }
 };

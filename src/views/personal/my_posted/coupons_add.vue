@@ -44,12 +44,11 @@
               :on-remove="handleRemoveP" 
               :on-success="uploadSuccess" 
               :before-upload="beforeAvatarUploadP" 
-              :file-list="fileList2"
+              :file-list="couponsForm.product_img"
               ref="upload"
               list-type="picture">
             <el-button size="small" type="primary">Upload</el-button>
-            <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
-            </div>
+            <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.</div>
         </el-upload>
 
         <!-- <form  enctype="multipart/form-data" action="http://dealsbank.zhuo.com/api/v1/common/upload-file" method="post" >
@@ -86,7 +85,7 @@
     </el-form-item>
     <el-form-item class="footer-btn" >
       <button type="button" class="save" @click="Submit">Save</button>
-      <button type="button" class="cancel">Cancel</button>
+      <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
    
@@ -143,14 +142,14 @@ export default {
         country: '美国' ,    // 国家  是
         website: '亚马逊2',         // 平台   是 
         product_title: '2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers',   // 商品标题   是 ，
-        product_img: '12',     // 产品图片， string, 用逗号拼接 , 否
+        product_img: [],     // 产品图片， string, 用逗号拼接 , 否
         product_reason: 'This is a product I like very much',  //产品描述  是
         use_type: 'Unlimited',
         coupon_code: 'QAKLWEFALWEKFJ',     //优惠券
         reward_type: '1.5',     //PerOrder:按每订单奖励,
         product_price: '65',   //商品价格
         shipping_fee: '1.11',   //运费   否
-        discount_rate: '12%',   //折扣率    否
+        discount_rate: '12',   //折扣率    否
         valid_date: new Date(),      //到期时间  int
         total_quantity: 100,  // 总数量   int
         quantity_per_day: "10", // 每天上限数量 int
@@ -173,7 +172,7 @@ export default {
           { required: true, trigger: 'blur' },
         ],
         product_img: [
-          { required: true, trigger: 'change'}
+          {type: 'array', required: true, message: 'Please Upload image', trigger: 'change' }
         ],
         product_title: [
           { required: true, message: 'title is required', trigger: 'blur'}
@@ -233,7 +232,7 @@ export default {
       if (!isLt500K) {
           this.$message.error('上传图片文件大小 不能超过 500kb!')
       }
-      if (this.fileList2.length >= 6) {
+      if (this.couponsForm.length >= 6) {
           this.$message.error('最多只能上传6张图片！')
           limitF = false
       }
@@ -243,7 +242,7 @@ export default {
         formData.append('file', file)
         uploadImg(formData).then(res => {
           console.log(res)
-          this.fileList2.push({url: "http://" + res.data})
+          this.couponsForm.product_img.push({url: "http://" + res.data})
         }).catch(error => {
           console.log(error)
         })
@@ -253,14 +252,14 @@ export default {
     },
     uploadSuccess (res, file, fileList) {
       if (fileList > 6) {
-        this.fileList2 = fileList.pop()
+        this.couponsForm = fileList.pop()
       } else {
-         this.fileList2 = fileList
+         this.couponsForm = fileList
       }
-      console.log(this.fileList2)
+      console.log(this.couponsForm)
     },
     handleRemoveP (file, fileList) {
-      this.fileList2 = fileList
+      this.couponsForm = fileList
     },
     issueCoupon () {
       addCoupon(this.couponsForm).then(res => {
@@ -281,7 +280,7 @@ export default {
           }
           this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
           var imgArr = []
-          for (var i of this.fileList2) {
+          for (var i of this.couponsForm.product_img) {
             imgArr.push(i.url)
           }
           this.couponsForm.product_img = imgArr.join(",")
@@ -293,6 +292,10 @@ export default {
         }
       });
     },
+    //退出
+    Cancel () {
+      this.$router.go(-1)
+    }
   }
 }
 </script>

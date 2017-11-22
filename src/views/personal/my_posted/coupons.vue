@@ -41,11 +41,12 @@
           </tr>
         </thead>
         <tbody >
-          <tr v-for="item in trLists">
+          <tr v-for="item in trLists" >
             <td>
-              <img class="product-img" :src="item.product_img.split(',')[0]" alt="">
+              <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
+              <img v-else class="product-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
             </td>
-            <td>
+            <td class="coupons-table-title">
               <div>amazon</div>
               <div class="table-product-title">{{item.product_title}}</div>
               <a href="javascript:void(0);" @click="gotoDetails(item.id)">Electronics</a>
@@ -67,26 +68,60 @@
               <div>{{item.valid_date}}</div>
             </td>
             <td class="status">
-              <div class="blue" v-if="item.status === 1">
-                pedding
-              </div>
+              <div class="blue" v-if="item.status === 0">Pedding</div>
+              <div class="blue" v-if="item.status === 1">Stop</div>
+              <div class="red" v-if="item.status === 2">Close</div>
+              <div class="red" v-if="item.status === 3">Decline</div>
+              <div class="green" v-if="item.status === 4">Article</div>
+              <div class="red" v-if="item.status === 5">Expired</div>
             </td>
             <td class="operation">
-              <div> <a href="javascript:void(0)">Edit</a></div>
-              <div> <a href="javascript:void(0)">Open</a></div>
-              <div> <a href="javascript:void(0)">Close</a></div>
-              <!-- <div> <a href="javascript:void(0)">Delete</a></div>
-              <div> <a href="javascript:void(0)">Details</a></div> -->
+              <template v-if="item.status === 0">
+                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+              </template>
+              <template v-if="item.status === 1">
+                <div> <a href="javascript:void(0)">Open</a></div>
+                <div> <a href="javascript:void(0)">Close</a></div>
+              </template>
+              <template v-if="item.status === 2"> 
+                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+              </template>
+              <template v-if="item.status === 3">
+                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
+              </template>
+              <template v-if="item.status === 4">
+                <div> <a href="javascript:void(0)">Stop</a></div>
+                <div> <a href="javascript:void(0)">Close</a></div>
+              </template>
+              <template v-if="item.status === 5">
+                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+              </template>
             </td>
+          </tr>
+          <tr v-if="trLists.length === 0">
+            <td colspan="10">no data</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <pagination class="coupons-pagination"
+    <pagination class="coupons-pagination" v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
     </pagination>
+
+
+    <!-- 查看详情弹窗 -->
+    <el-dialog  :visible.sync="detailsDialog" title="Decline details" class="details-dialog" size="tiny">
+        <p class="dialog-title">Decline details</p>
+
+        <div class="details-reason">
+          Insufficient balance
+        </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -131,8 +166,9 @@ export default {
         total_receiptor: 365,
         status: 1,
       }],
+      detailsDialog: false,
       trLists: [],
-      allpage: 30,
+      allpage: undefined,
       showItem: 7,
       searchForm: {
         title: "",
@@ -143,7 +179,7 @@ export default {
         user_id: '',
         api_token: '',
         page: 1,
-        page_size: 5
+        page_size: 6
       }
      
     }
@@ -157,8 +193,11 @@ export default {
     console.log(this.requestdata)
     userPickCoupons(this.requestdata).then(res => {
       console.log(res)
-      this.trLists = res.data.data
-      this.allpage = res.data.last_page
+      if (res.data.total !== 0) {
+        this.trLists = res.data.data
+        this.allpage = res.data.last_page
+      }
+  
     }).catch(error => {
       console.log(error)
     })
@@ -194,10 +233,41 @@ export default {
     gotoDetails (id) {
       
     },
+
     //跳转到 领取优惠券的用户页面
     gotoReceiptor (item) {
+      if (item.pick_numbers === 0) {
+        return false
+      }
       this.$router.push({path: '/posted/coupons/receiptor'})
       setStore('couponDetails', JSON.stringify(item))
+    },
+
+    //编辑待审核状态下和审核未通过的优惠券
+    EditCoupon (item) {
+      console.log(item)
+      this.$router.push({path: '/posted/coupons/add'})
+    },
+
+    //删除优惠券
+    DeleteCoupon (id) {
+      this.$confirm('Determine deleting coupons?', 'reminder', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        type: 'warning'
+      }).then(() => {
+        this.$notify({
+          type: 'success',
+          message: 'delete success!'
+        });
+      }).catch(() => {
+        console.log("cancel")         
+      });
+    },
+
+    //显示详情弹窗
+    showDetails () {
+      this.detailsDialog = true
     }
   }
 }
@@ -276,10 +346,19 @@ export default {
 
 
 .coupons-table {
+  font-size: 12px;
   .product-img {
     width: 5rem;
     height: 4rem;
   }
+  .coupons-table-title {
+    text-align: left;
+    width: 250px;
+  }
+}
+
+.details-dialog {
+  text-align: center;
 }
 
 
