@@ -11,22 +11,22 @@
             <span class="right" @click="next"> <i class="iconfont icon-huidaodingbu-copy"></i> </span>
           </div>
         </div>
-        <div class="user" @click="gotouser">
+        <div class="user" @click="gotouser"   >
           <div class=" head inline-b">
-            <img src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+            <img  :src="userInfo.avatar_img" alt="">
           </div>
           <div class=" details inline-b">
               <p>
-                <span class="name">Nickname</span>
-                <span class="tag">Influencer</span>
+                <span class="name">{{userInfo.username}}</span>
+                <span class="tag" v-if="userInfo.type == 'celebrity'">Influencer</span>
+                <span class="tag" v-if="userInfo.type == 'merchant'">Merchant</span>
               </p>
               <p class="join">
-                <span><i class="iconfont icon-date"></i> Joined Dec 2015</span>
-                <span><i class="iconfont icon-huiyuandengji0101"> </i> L4: APPrenlice</span>
+                <span><i class="iconfont icon-date"></i> Joined {{userInfo.joined_date}}</span>
+                <span><i class="iconfont icon-huiyuandengji0101"> </i> Level{{userInfo.level}}</span>
               </p>
               <p class="coupons-posted">
-                 <span><i class="iconfont icon-youhuiquan1"></i> 35 Coupons Posted</span>
-                <span><i class="iconfont icon-time"> </i> Posted 09-19-2017 05:39 PM</span>
+                 <span ><i class="iconfont icon-youhuiquan1"></i> {{userInfo.coupon_posteds}} Coupons Posted</span>
               </p>
           </div>
         </div>
@@ -35,19 +35,22 @@
 </template>
 
 <script>
+import { getStore } from '@/utils/utils'
+import { postedUserInfo } from '@/api/login'
+import { timestampFormat } from '@/utils/date'
 export default {
   name: "detailsLeft",
   data() {
     return {
-      imgList: [
-        "http://www.ghostxy.top/dealsbank/img/01.png",
-        "http://www.ghostxy.top/dealsbank/img/02.png",
-        "http://www.ghostxy.top/dealsbank/img/03.png",
-        "http://www.ghostxy.top/dealsbank/img/04.png",
-        "http://www.ghostxy.top/dealsbank/img/05.png",
-        // "http://www.ghostxy.top/dealsbank/img/05.png",
-      ],
-      activeNum: 0
+      activeNum: 0,
+      userInfo: {
+        avatar_img: '',
+        username: '',
+        type: '',
+        level: '',
+        joined_date: '',
+        coupon_posteds: ''
+      },
     };
   },
   props: {
@@ -55,12 +58,36 @@ export default {
       type: Boolean,
       default: true
     },
-    imgLists: {
-      type: Array
-    }
+    imgList: {
+      default: function () {
+        return [
+        ]
+      }
+    },
+    // userInfo: {
+    //   default: function () {
+    //     return {
+    //       avatar_img: '',
+    //       username: '',
+    //       type: '',
+    //       level: '',
+    //       joined_date: '',
+    //       coupon_posteds: ''
+    //     }
+    //   }
+    // }
+  },
+  created () {
+    this.activeNum = 0
   },
   mounted() {
-   
+    this.getPostUserInfo()
+    this.activeNum = 0
+  },
+  watch: {
+    userInfo () {
+      console.log(this.imgList, this.activeNum)
+    }
   },
   computed: {
     imgLen() {
@@ -94,6 +121,17 @@ export default {
     },
     gotouser () {
       this.$router.push({path: '/merchant'})
+    },
+      //获取发布人的信息
+    getPostUserInfo () {
+      var request = { 'user_id': this.$route.params.postUserId }
+      postedUserInfo (request).then(res => {
+        console.log(res)
+        res.data.joined_date = timestampFormat(res.data.joined_date)
+        this.userInfo = res.data
+      }).catch(error => {
+        console.log(error + " postedUserInfo")
+      })
     }
   }
 };
@@ -115,8 +153,8 @@ export default {
       padding-top: 2rem;
       height: 15rem;
       img {
-        max-width: 10rem;
-        max-height: 10rem;
+        min-width: 16rem;
+        max-height: 14rem;
       }
     }
     .img-small {
@@ -156,7 +194,7 @@ export default {
   }
   .user {
     position: relative;
-    height: 8.3rem;
+    height: 140px;
     background: white;
     margin-top: 0.4rem;
     border-radius: 5px;

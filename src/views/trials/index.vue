@@ -14,6 +14,7 @@
       </coupons-pro>
     </div>
     <pagination 
+      v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="test">
@@ -31,7 +32,7 @@ export default {
   data() {
     return {
       showItem: 7,
-      allpage: 30,
+      allpage: undefined,
       arrcouponsDetails: [
         {
           imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",

@@ -17,10 +17,10 @@
 And timely upload your order number, or your trial qualification 
 will be canceled.</div>
               <div class="code">
-                <img src="../../assets/code.png" alt="">
+                <!-- <img src="../../assets/code.png" alt="">
                 <div class="text">
                     Scan the QR code code to find the product
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="footer">

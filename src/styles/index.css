@@ -9,7 +9,7 @@
   padding: 0;
 }
 .login-dialog .el-dialog.el-dialog--small {
-  width: 360px;
+  width: 420px;
 }
 .login-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -22,7 +22,7 @@
   margin: 20px auto;
 }
 .sign-dialog .el-dialog.el-dialog--small {
-  width: 360px;
+  width: 420px;
 }
 .sign-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -202,6 +202,21 @@ table tbody tr td {
   line-height: 36px;
   color: #1a1a1a;
   border-bottom: 1px solid #e6e6e6;
+}
+.merchant-color {
+  background: #ec5d1c;
+}
+.reds-color {
+  background: #FF3366;
+}
+.blue {
+  color: blue;
+}
+.red {
+  color: red;
+}
+.green {
+  color: green;
 }
 @media screen and (max-width: 1557px) {
   html {

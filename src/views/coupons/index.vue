@@ -6,29 +6,33 @@
       </div>
       <div class="details-content clearfix">
         <div class="left inline">
-          <details-left :isTop="isTop" @send="getImgUrl" class="details-left-coupons"></details-left>      
+          <details-left :isTop="isTop" 
+                        :imgList="imgList" 
+                        :userInfo="userInfo"
+                        @send="getImgUrl" 
+                        class="details-left-coupons"
+                        ></details-left>      
         </div>
         <div class="right inline">
           <div class="promotion">
             <img class="img"  src="../../assets/amazon.png" alt="">
             <div class="title">
-              <span>
-                2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers
+              <span >
+                {{couponDetail.product_title}}
               </span>
             </div>
             <div class="describe">
-              <span>Walmart.com has 2-Pack Ozark Trail Double-Wall Vacuum-Sealed Tumblers on sale 
-                with prices below.
+              <span>{{couponDetail.product_reason}}
               </span>
             </div>
             <div class="price-details">
-              <span class="inline-b n-price">$98.00</span>
-              <span class="inline-b o-price">$155.00</span>
-              <span class="inline-b c-price">Coupons $15.00</span>
-              <span class="inline-b ratio">35%off</span>
+              <span class="inline-b n-price">${{couponDetail.discount_price}}</span>
+              <span class="inline-b o-price">${{couponDetail.product_price}}</span>
+              <span class="inline-b c-price">Coupons ${{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
+              <span class="inline-b ratio">{{couponDetail.discount_rate}}%off</span>
             </div>
             <div class="data-info">
-              <span class="inline-b expried">Expried:09-19-2017</span>
+              <span class="inline-b expried">Expried:{{couponDetail.valid_date}}</span>
               <span class="inline-b">Free shopping</span>
               <span class="inline-b right"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
             </div>
@@ -39,8 +43,8 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="added"><span>Added</span> <i class=" el-icon-check"></i></button>
-                  <button v-else><span>Add Promo</span></button>
+                  <button v-if="!added" @click="addPromotion"><span>Added</span> <i class=" el-icon-check"></i></button>
+                  <button v-else  @click="removePromotion"><span>Add Promo</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
@@ -55,7 +59,7 @@
             </div>
           </div>
           <div class="commission">
-             <div class="title">
+             <div class="commission-title">
               <span>
                 Extra commissions
               </span>
@@ -107,7 +111,7 @@
               <span class="re-head-l">recommend</span>
               <span class="re-head-r">more></span>
             </div>
-              <coupons-pro v-for="n in 12"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+              <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="1" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
                 <template slot="price">
                 <p class="price content">{{couponsDetails.price}}</p>
                 <p class="coupons content">
@@ -126,16 +130,20 @@
     <!-- 弹出窗  getcode-->
       <el-dialog  :visible.sync="showGetCodeDialog" class="code-dialog">
         <span slot="title" class="title">
-          2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers
+          {{couponDetail.product_title}}
           <img src="../../assets/amazon.png" alt="">
         </span>
         <div class="dialog-body">
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
             <div class="goto-amazon"><span ><a href="#">Go to Amszon</a> and paste this code at checkout</span></div>
-            <div class="discount" ><button>Discount Coupon Worth $ 15</button></div>
+            <div class="discount" @click="getCouponCode" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
+            <div class="coupon-code"  v-else>
+              <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
+              <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
+              </div>
           </div>
-          <div class="bottom">
+          <div class="bottom" v-if="false">
             <div class="head"><span>Get great coupons - like this - delivered straight to your inbo</span></div>
             <div class="submit">
               <input type="text" placeholder="Enter your email address" /><button>Submit</button>
@@ -213,7 +221,13 @@ import detailsLeft from "@/components/coupons/details_left.vue";
 import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import codeDialog from "@/components/coupons/code_dialog.vue"
 import explain from '@/components/trials/explain.vue'
-import Clip from "@/utils/clipboard.js";
+import Clip from "@/utils/clipboard.js"
+
+import { getStore, removeStore } from '@/utils/utils'
+import { timestampFormat } from '@/utils/date'
+import { getAllCoupons, couponDetails, postedUserInfo ,userGetCoupon, isUserGetCoupon} from '@/api/login'
+import { getToken } from '@/utils/auth'
+import { mapGetters } from 'vuex'
 export default {
   name: "coupons",
   components: {
@@ -225,6 +239,22 @@ export default {
   data() {
     return {
       isTop: true,
+      userInfo: {
+        avatar_img: '',
+        username: '',
+        type: '',
+        level: '',
+        joined_date: '',
+        coupon_posteds: ''
+      },
+      imgList: [
+        "http://www.ghostxy.top/dealsbank/img/01.png",
+        "http://www.ghostxy.top/dealsbank/img/02.png",
+        "http://www.ghostxy.top/dealsbank/img/03.png",
+        "http://www.ghostxy.top/dealsbank/img/04.png",
+        "http://www.ghostxy.top/dealsbank/img/05.png",
+        "http://www.ghostxy.top/dealsbank/img/05.png",
+      ],
       html: "hello",
       options: [
         "Choose areason",
@@ -238,22 +268,67 @@ export default {
       ],
       selected: 0,
       added: true,
-      imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-      couponsDetails: {
-          id: 1,
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00",
+      imgUrl: '',
+      arrcouponsDetails: [
+      ],
+      couponDetail: {
+        
       },
       showGetCodeDialog: false,
       templateDialog: false,
       notGetTrialsDialog: false,
+      getCodeSuccess: false,      //是否领取优惠券成功
+
+      requestData: {
+        page: 1,
+        page_size: 9,
+      },
+      requestCouponDetails: {
+        id: "",
+      },
+      reqGetCodeData : {
+        api_token: getToken(),
+        coupon_id: '',
+        pick_uid: '',
+        pick_username: '',
+        generalize_uid: '',
+        generalize_username: ''
+      },
+      checkGetCodeData: {
+        api_token: getToken(),
+        coupon_id: '',
+        pick_uid: '',
+      }
+
 
     };
   },
-  mounted() {},
+  computed : {
+    ...mapGetters([
+      'username',
+      'user_id'
+    ])
+  },
+  mounted() {
+    getAllCoupons(this.requestData).then(res => {
+      this.arrcouponsDetails = res.data.data
+      // this.allpage = res.data.last_page
+    }).catch(error => {
+      console.log(error + 'getAllCoupons')
+    })
+    this.getCouponsDetails()
+    // this.getPostUserInfo()
+    this.reqGetCodeData.pick_uid = this.user_id
+    this.reqGetCodeData.pick_username = this.username
+    this.reqGetCodeData.coupon_id =  this.$route.params.couponsId
+
+   
+    
+  },
+  //组件销毁前
+  beforeDestroy () {
+    // removeStore('couponId')
+  },
   methods: {
     test() {
       var a = document.getElementById("test").value;
@@ -261,17 +336,34 @@ export default {
       document.getElementById("box").innerHTML = b;
       console.log(this.selected);
     },
+
+    //获取左边的图片信息
     getImgUrl(data) {
       this.imgUrl = data;
     },
+
+    //复制
     handleClip(e) {
       Clip(e);
     },
+    //跳转到产品详情页面
     gotodetails (id) {
+      this.requestCouponDetails.id = id
+      document.body.scrollTop = document.documentElement.scrollTop = 0
+      this.getCouponsDetails(this.requestCouponDetails)
       this.$router.push({ path: '/coupons' })
     },
     getCode () {
-      this.showGetCodeDialog = true;
+      this.checkGetCodeData.pick_uid = this.user_id
+      this.checkGetCodeData.coupon_id =  this.$route.params.couponsId
+      isUserGetCoupon(this.checkGetCodeData).then(res => {
+        console.log(res.data)
+        this.showGetCodeDialog = true
+        if (!res.data) {
+        } else {
+          this.getCodeSuccess = true
+        }
+      })
     },
     close () {
       this.showGetCodeDialog = false
@@ -284,6 +376,72 @@ export default {
     },
     saveTemplate () {
 
+    },
+    //获取优惠券详情
+    getCouponsDetails () {
+      this.requestCouponDetails.id = this.$route.params.couponsId
+      couponDetails(this.requestCouponDetails).then(res => {
+        console.log(res)
+        this.userInfo = res.data.user_base
+        this.imgList = res.data.product_img.split(',')
+        this.imgUrl = this.imgList[0]
+        this.couponDetail = res.data
+        var valid_date = new Date()
+        valid_date.setTime(res.data.valid_date * 1000)
+        this.couponDetail.valid_date =  valid_date.toLocaleDateString()
+      }).catch(error => {
+        console.log(error + 'couponDetails')
+      })
+    },
+
+       //获取发布人的信息
+    getPostUserInfo () {
+      var request = { 'user_id': this.$route.params.postUserId }
+      postedUserInfo (request).then(res => {
+        this.reqGetCodeData.pick_username = res.data.username
+        this.reqGetCodeData.pick_uid =  this.$route.params.postUserId
+        this.reqGetCodeData.coupon_id =  this.$route.params.couponsId
+      }).catch(error => {
+        console.log(error + " postedUserInfo")
+      })
+    },
+
+    //取消推广
+    removePromotion () {
+      if (this.isLogin()) {
+        this.added = !this.added
+      }
+    },
+
+    //加入推广
+    addPromotion () {
+      if (this.isLogin()) {
+        this.added = !this.added
+      }
+    },
+
+    //领取优惠券
+    getCouponCode () {
+      if (this.isLogin()) {
+        userGetCoupon(this.reqGetCodeData).then(res => {
+          this.getCodeSuccess = true
+        })
+      }
+    },
+    copyCode (e) {
+      Clip(e)
+    },
+
+    //判断是否登录，否则提醒请登录
+    isLogin () {
+      if (!getToken()) {
+        this.$alert('please log in first', 'reminder', {
+          confirmButtonText: 'confirm',
+        });
+        return false
+      } else {
+        return true
+      }
     }
   }
 };
@@ -488,12 +646,12 @@ export default {
       border-radius: 5px;
       margin-bottom: 1rem;
       padding: 1rem;
-      .title {
+      .commission-title {
         width: 70%;
         font-size: 1.33rem;
         color: #1a1a1a;
         font-weight: bold;
-        margin-bottom: 1rem;
+        margin-bottom: 10px;
       }
       .describe {
         width: 90%;
@@ -543,7 +701,8 @@ export default {
             padding: 2rem 0 0 0;
             text-align: center;
             img {
-              width: 25rem;
+              width: 23rem;
+              height: 20rem;
             }
           }
           .text-describe {
@@ -629,7 +788,7 @@ export default {
       }
       .coupons-product {
         width: 16.1rem;
-        height: 420px;
+        height: 370px;
         margin: .5rem 1rem .5rem .35rem;
       }
     }
@@ -644,8 +803,8 @@ export default {
       font-size: 1rem;
       img {
         position: absolute;
-        left: 2rem;
-        top: 1.3rem;
+        left: -110px;
+        top: 0;
       }
     }
     .dialog-body {
@@ -676,6 +835,35 @@ export default {
                background: darken(#85bb3b,10%) ;
             border-color:  darken(#85bb3b,10%) ;
             }
+          }
+        }
+        .coupon-code {
+          position: relative;
+          width: 20rem;
+          height: 3rem;
+          margin: 0 auto;
+          text-align: left;
+          padding-left: 4rem;
+          line-height: 3rem;
+          background: #e5f0e1;
+          button {
+            position: absolute;
+            top: .5rem;
+            right: 1rem;
+             .btn-h(5rem,2rem);
+            color: white;
+            font-size: 1rem;
+            background: #85bb3b;
+            border-color: #85bb3b;
+            &:active {
+               background: darken(#85bb3b,10%) ;
+            border-color:  darken(#85bb3b,10%) ;
+            }
+          }
+          .code {
+            color: #49663f;
+            font-size: 1rem;
+            font-weight: bold;
           }
         }
       }

@@ -9,20 +9,23 @@
       </div>
       <div class="about-me">
         <div class="avatar">
-          <img class="avatar-img" src="http://www.ghostxy.top/dealsbank/img/user.png" alt="">
+          <img v-if="userData.base.avatar_img" class="avatar-img" :src="userData.base.avatar_img" alt="">
+          <img v-else src="../../../assets/user.png" />
         </div>
         <div class="personal-info">
           <div class="name-level">
-            <span class="name">Nickname</span>
-            <span class="level">Influencer</span>
+            <span class="name">{{username}}</span>
+            <span class="level reds-color" v-if="roles[0] == 'celebrity'">Influencer</span>
+            <span class="level merchant-color" v-if="roles[0] == 'merchant'">Merchant</span>
           </div>
           <div class="icon-info">
-            <span><i class="iconfont icon-riqi1"> </i> Joined Dec 2015</span>
-            <span><i class="iconfont icon-level-2"> </i> Joined Dec 2015</span>
-            <span><i class="iconfont icon-jifenqianbi"> </i> Joined Dec 2015</span>
+            <span><i class="iconfont icon-riqi1"> </i> Joined {{userData.joined_date}}</span>
+            <span><i class="iconfont icon-level-2"> </i> Level{{userData.base.level}}</span>
+            <span><i class="iconfont icon-jifenqianbi"> </i> Points: {{userData.base.score}}</span>
           </div>
           <div class="footer">
-            <span>Professional to create exclusive coupons, directional marketing plan, cabbage cost-effective product explosion!</span>
+            <span v-if="userData.base.introduce">{{userData.base.introduce}} </span><br />
+             <span> Find this site interesting, <a href="javascript:void(0);">Invite Friends</a> to join.</span>
           </div>
         </div>
       </div>
@@ -31,27 +34,27 @@
       </div>
       <div class="statistics clearfix">
         <div class="statistics-child">
-          <span class="count">36</span>
+          <span class="count" @click="gotoAnotherRouter('/posted/coupons')">{{userData.account.coupon_posteds}}</span>
           <p>Coupons posted</p>
         </div>
         <div class="statistics-child">
-          <span class="count">18</span>
+          <span class="count"  @click="gotoAnotherRouter('/posted/trials')" >{{userData.account.trial_posteds}}</span>
           <p>Trials posted</p>
         </div>
         <div class="statistics-child">
-          <span class="count">9</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/my_coupons/index')">{{userData.account.coupons}}</span>
           <p>My Coupons</p>
         </div>
         <div class="statistics-child">
-          <span class="count">12</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/my_trials/index')">{{userData.account.trials}}</span>
           <p>My Trials</p>
         </div>
         <div class="statistics-child">
-          <span class="count">36</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/promotion/index')">{{userData.account.promotions}}</span>
           <p>My Promotions</p>
         </div>
         <div class="statistics-child last">
-          <span class="count">66</span>
+          <span class="count invite-friends">{{userData.account.invite_friends}}</span>
           <p>Invite friends</p>
         </div>
         
@@ -62,20 +65,20 @@
       <div class="center-wallet">
         <div class="withdraw wallet">
           <div class="wallet-child">
-            <span class="money">$1234.76</span>
+            <span class="money">${{userData.account.amount}}</span>
             <p>Balance</p>
           </div>
           <div class="money-btn">
-            <button><i class="iconfont icon-quqian"></i> Withdraw</button>
+            <button  @click="gotoAnotherRouter('/wallet/withdraw')"><i class="iconfont icon-quqian"></i> Withdraw</button>
           </div>
         </div>
         <div class="recharge wallet">
           <div class="wallet-child">
-            <span class="money">$123.45</span>
+            <span class="money">${{userData.account.frozen_amount}}</span>
             <p>Security deposit</p>
           </div>
           <div class="money-btn">
-            <button><i class="iconfont icon-cunqian"></i> Recharge</button>
+            <button @click="gotoAnotherRouter('/wallet/recharge')"><i class="iconfont icon-cunqian"></i> Recharge</button>
           </div>
         </div>
       </div>
@@ -84,9 +87,45 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { getInfo } from '@/api/login.js'
+import { setStore } from '@/utils/utils'
 export default {
   name: 'member_center',
+  data () {
+    return {
+      userData: {
+        account: {
+        },
+        base: {
+        },
+        joined_date: '',
+      }
+    }
+  },
   mounted () {
+    getInfo({'api_token':this.token}).then(res => {
+      this.userData.account = res.data.account
+      this.userData.base = res.data.base
+      var joined_date = new Date()
+      joined_date.setTime(res.data.joined_date * 1000)
+      this.userData.joined_date =  joined_date.toDateString()
+    }).catch(error => {
+      console.log(error + " getInfo member")
+    })
+  },
+  computed: {
+    ...mapGetters([
+      'username',
+      'token',
+      'roles'
+    ])
+  },
+  methods: {
+    //路由跳转
+    gotoAnotherRouter(url) {
+      this.$router.push({path: url})
+    }
   }
 }
 </script>
@@ -137,7 +176,7 @@ export default {
           top: -3px;
           font-size: 0.61rem;
           color: white;
-          background: #ec5d1c;
+          // background: #ec5d1c;
           padding: 2px 5px;
           border-radius: 2px;
           

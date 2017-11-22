@@ -1,7 +1,8 @@
 <template>
   <div class="posted-coupons">
+  <template>
     <div class="pro-header">
-      <h3 class="title">Coupons Posted</h3>
+      <h3 class="title">Coupons</h3>
     </div>
     <div class="search-form">
       <label for="title">
@@ -31,7 +32,6 @@
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
-      <button class="add-coupons" @click="add"><i class="el-icon-plus"></i> Add</button>
     </div>
     <div class="table-box">
       <table class="table table-bordered coupons-table">
@@ -41,68 +41,32 @@
           </tr>
         </thead>
         <tbody >
-          <tr v-for="item in trLists" >
+          <tr v-for="item in trLists">
             <td>
-              <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
-              <img v-else class="product-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+              <img class="product-img" :src="couponsDetails.product_img.split(',')[0]" alt="">
             </td>
-            <td class="coupons-table-title">
+            <td>
               <div>amazon</div>
-              <div class="table-product-title">{{item.product_title}}</div>
+              <div class="table-product-title">{{couponsDetails.product_title}}</div>
               <a href="javascript:void(0);" @click="gotoDetails(item.id)">Electronics</a>
             </td>
-
             <td class="prcie">
-              <div>${{item.product_price}}</div>
+              <div>${{couponsDetails.product_price}}</div>
             </td>
             <td class="discount">
-              <div>{{item.discount_rate}}%</div>
+              <div>{{couponsDetails.discount_rate}}</div>
             </td>
-            <td class="qty">
+            <td class="receiptor">
               <div>
-                <a href="javascript:void(0);" @click="gotoReceiptor(item)">{{item.pick_numbers}}</a>/
-                <span>{{item.total_quantity}}</span>
+                {{item.pick_username}}
               </div>
             </td>
-            <td class="valid-date">
-              <div>{{item.valid_date}}</div>
+            <td class="applied-date">
+              <div>领取时间</div>
             </td>
-            <td class="status">
-              <div class="blue" v-if="item.status === 0">Pedding</div>
-              <div class="blue" v-if="item.status === 1">Stop</div>
-              <div class="red" v-if="item.status === 2">Close</div>
-              <div class="red" v-if="item.status === 3">Decline</div>
-              <div class="green" v-if="item.status === 4">Article</div>
-              <div class="red" v-if="item.status === 5">Expired</div>
+            <td class="coupon-code">
+              <div>{{couponsDetails.coupon_code}}</div>
             </td>
-            <td class="operation">
-              <template v-if="item.status === 0">
-                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-              </template>
-              <template v-if="item.status === 1">
-                <div> <a href="javascript:void(0)">Open</a></div>
-                <div> <a href="javascript:void(0)">Close</a></div>
-              </template>
-              <template v-if="item.status === 2"> 
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
-              </template>
-              <template v-if="item.status === 3">
-                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
-              </template>
-              <template v-if="item.status === 4">
-                <div> <a href="javascript:void(0)">Stop</a></div>
-                <div> <a href="javascript:void(0)">Close</a></div>
-              </template>
-              <template v-if="item.status === 5">
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-              </template>
-            </td>
-          </tr>
-          <tr v-if="trLists.length === 0">
-            <td colspan="10">no data</td>
           </tr>
         </tbody>
       </table>
@@ -112,30 +76,23 @@
       :show-item="showItem"
       @handlecurrent="gotoPage">
     </pagination>
-
-
-    <!-- 查看详情弹窗 -->
-    <el-dialog  :visible.sync="detailsDialog" title="Decline details" class="details-dialog" size="tiny">
-        <p class="dialog-title">Decline details</p>
-
-        <div class="details-reason">
-          Insufficient balance
-        </div>
-    </el-dialog>
+  </template>
+ 
   </div>
 </template>
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
-import { userPickCoupons } from '@/api/login'
+import { pickCoupons } from '@/api/login'
+import { getToken } from '@/utils/auth'
 import { setStore, getStore, removeStore } from '@/utils/utils'
 export default {
   name: 'center_coupons',
   data () {
     return {
-      thLists: ["Image", "Title", "Price", "Discount", "Qty", "Valid Date", "Status", "Operation"],
-      trListsTest: [{
+      thLists: ["Image", "Title", "List Price", "Discount", "Receiptor", "Applied date", "Coupon Code"],
+      trLists: [{
         user_id: undefined,  // 用户ID ， 是，
         user_name: '',       // 发布用户名称， 是
         category_id: 1,     // 所属分类 , 是   int
@@ -144,14 +101,13 @@ export default {
        
         product_reason: 'This is a product I like very much',  //产品描述  是
         use_type: 'Unlimited',
-        coupon_code: 'QAKLWEFALWEKFJ',     //优惠券码
         reward_type: '1.5',     //PerOrder:按每订单奖励,
         product_price: '65',   //商品价格
         shipping_fee: '1.11',   //运费   否
         discount_rate: '12%',   //折扣率    否
         valid_date: new Date(),      //到期时间  int
        
-        quantity_per_day: 10, // 每天上限数量 int
+        quantity_per_day: '10', // 每天上限数量 int
         influencer_reward:'1.5',// 推荐费用/每个
         platform_fee: '2.2',    //支付平台费用/每个
         influencer_reward_count: '66',    //推荐总费用
@@ -162,12 +118,12 @@ export default {
         product_title: 'this is project',   // 商品标题   是 ，
         product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',     // 产品图片， string, 用逗号拼接 , 否
         coupon_id: 1,
-        total_quantity: 1000,  // 总数量   int
         total_receiptor: 365,
+        pick_username: 'Skyer',                //领取人
+        coupon_code: 'QAKLWEFALWEKFJ',     //优惠券
+        applied_date: new Date(),          //领取时间
         status: 1,
       }],
-      detailsDialog: false,
-      trLists: [],
       allpage: undefined,
       showItem: 7,
       searchForm: {
@@ -176,10 +132,17 @@ export default {
         status: "",
       },
       requestdata: {
-        user_id: '',
+        coupon_id: '',
         api_token: '',
         page: 1,
-        page_size: 6
+        page_size: 5
+      },
+      couponsDetails: {
+        product_img:'',
+        product_title: '',
+        product_price: '',
+        discount_rate: '',
+        coupon_code: '',
       }
      
     }
@@ -187,41 +150,35 @@ export default {
   components: {
     pagination
   },
-  mounted () {
-    this.requestdata.user_id = this.user_id
-    this.requestdata.api_token = this.token
-    console.log(this.requestdata)
-    userPickCoupons(this.requestdata).then(res => {
-      console.log(res)
-      if (res.data.total !== 0) {
-        this.trLists = res.data.data
-        this.allpage = res.data.last_page
-      }
-  
-    }).catch(error => {
-      console.log(error)
-    })
-  },
   computed: {
     ...mapGetters([
-      'user_id',
-      'token'
+      'token', 
     ])
+  },
+  mounted () {
+    this.requestdata.api_token = this.token
+    this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
+    var couponsDetails = JSON.parse(getStore('couponDetails'))
+    for (var i in this.couponsDetails) {
+      this.couponsDetails[i] = couponsDetails[i]
+    }
+    pickCoupons(this.requestdata).then(res => {
+      this.trLists = res.data.data
+      this.allpage = res.data.last_page
+    })
+  },  
+  //组件销毁前执行的回调
+  beforeDestroy () {
+    removeStore('couponDetails')
   },
   methods: {
     //分页跳转
     gotoPage (i) {
       this.requestdata.page = i
-      userPickCoupons(this.requestdata).then(res => {
-        console.log(res)
+      pickCoupons(this.requestdata).then(res => {
         this.trLists = res.data.data
-        // this.allpage = res.data.last_page
-      })
-    },
-
-    //跳转到添加优惠券页面
-    add () {
-      this.$router.push({path: '/posted/coupons/add'})
+        this.allpage = res.data.last_page
+    })
     },
 
     //发布的优惠券查询
@@ -231,44 +188,13 @@ export default {
 
     //跳转到优惠券详情页面
     gotoDetails (id) {
-      
-    },
 
+    },
     //跳转到 领取优惠券的用户页面
-    gotoReceiptor (item) {
-      if (item.pick_numbers === 0) {
-        return false
-      }
+    gotoReceiptor () {
       this.$router.push({path: '/posted/coupons/receiptor'})
-      setStore('couponDetails', JSON.stringify(item))
-    },
-
-    //编辑待审核状态下和审核未通过的优惠券
-    EditCoupon (item) {
-      console.log(item)
-      this.$router.push({path: '/posted/coupons/add'})
-    },
-
-    //删除优惠券
-    DeleteCoupon (id) {
-      this.$confirm('Determine deleting coupons?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
-        type: 'warning'
-      }).then(() => {
-        this.$notify({
-          type: 'success',
-          message: 'delete success!'
-        });
-      }).catch(() => {
-        console.log("cancel")         
-      });
-    },
-
-    //显示详情弹窗
-    showDetails () {
-      this.detailsDialog = true
     }
+ 
   }
 }
 </script>
@@ -346,20 +272,12 @@ export default {
 
 
 .coupons-table {
-  font-size: 12px;
   .product-img {
     width: 5rem;
     height: 4rem;
   }
-  .coupons-table-title {
-    text-align: left;
-    width: 250px;
-  }
-}
-
-.details-dialog {
-  text-align: center;
 }
 
 
 </style>
+

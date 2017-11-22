@@ -3,6 +3,7 @@ const product = {
   state : {
     oneLevel: 0,
     productId: '',
+    couponId: '',
   },
 
   mutations: {
@@ -11,6 +12,9 @@ const product = {
     },
     SET_PRODUCT_ID (state, id) {
       state.productId = id
+    },
+    SET_COUPON_ID (state, id) {
+      state.couponId = id
     }
   },
   
@@ -20,6 +24,9 @@ const product = {
     },
     setProductId ({ commit }, id) {
       commit('SET_PRODUCT_ID', id)
+    },
+    setCouponId ({ commit }, id) {
+      commit('SET_COUPON_ID', id) 
     }
   }
 }

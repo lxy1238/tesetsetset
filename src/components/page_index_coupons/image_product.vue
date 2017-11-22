@@ -1,8 +1,10 @@
 <template>
   <div  class="coupons-product" >
-    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
-      <img v-if="!loading" src="../../assets/timg.gif" >
-      <img v-show="loading" :src="couponsDetails.imgUrl" @load="loadImg($event, couponsDetails)"  alt="img">
+    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
+      <!-- <img v-if="!loading" src="../../assets/timg.gif" > -->
+      <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
+      <img v-if="!loading" src="http://www.ghostxy.top/dealsbank/img/01.png"   alt="img">
+      <!-- <img v-if="loading" src="http://www.ghostxy.top/dealsbank/img/01.png"   alt="img"> -->
     </div>
      <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo">
@@ -11,16 +13,11 @@
         <div class="line"></div>
         <div class="span-btn" @click="copy">Copy</div>
       </div>
-      <p class="platfrom content" >{{couponsDetails.platfrom}}</p>
-      <p class="descript content" :title="couponsDetails.descript">{{couponsDetails.descript}}</p>
-      <!-- <p class="price content">{{couponsDetails.price}}</p>
-      <p class="coupons content">
-        <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>
-        <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
-      </p> -->
+      <p class="platfrom content" >{{couponsDetails.website}}</p>
+      <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <slot name="price"></slot>
       <div class="content viewcoupons">
-        <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id)">
+        <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
           <slot name="btn"></slot>
         </button>
       </div>
@@ -40,16 +37,6 @@ export default {
   props: {
     couponsDetails: {
       type: Object,
-      default: function () {
-        return {
-          id: 1,
-          imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
-          platfrom: 'amazon2',
-          descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress ',
-          price: '$98.00',
-          coupons: '$15.00',
-        }
-      }
     },
     addpromo: {
       type: Boolean,
@@ -57,11 +44,11 @@ export default {
     }
   },
   methods: {
-    goToCouponsPage (id) {
+    goToCouponsPage (id, user_id) {
       this.$store.dispatch('setProductId', id)
-      this.$emit('gotodetails', id)
+      this.$emit('gotodetails', id, user_id)
     },
-    loadImg (e, data) {
+    loadImg () {
       this.loading = true
     },
     addPromo () {
@@ -105,7 +92,21 @@ export default {
     .content {
       margin-left: 10px;
       margin-bottom: 0;
-      margin-top: 5px;
+      margin-top: 2px;
+      color: rgb(137, 137, 137);
+      .price-left {
+        margin-right: 10px;
+        text-decoration: line-through;
+      }
+      .price-right {
+        color: #1a1a1a;
+        font-size: 0.88rem;
+      }
+      .com-right {
+        margin-left: 10px;
+        font-size: 0.88rem;
+        color: red;
+      }
     }
     .img {
       cursor: pointer;
@@ -114,7 +115,7 @@ export default {
         display: inline-block;
         margin-top: 10px;
         width: 80%;
-        height: 40%;
+        height: 150px;
       }
     }
     .promo-copy {
@@ -129,7 +130,7 @@ export default {
       .span-btn {
         display: inline-block;
         font-size: 13px;
-        width: 49.2%;
+        width: 49%;
         text-align: center;
         background: #bfbfbf;
         color: rgb(255, 255, 255);
@@ -166,9 +167,6 @@ export default {
     }
     .price {
       font-size: 15px;
-      color: rgb(26, 26, 26);
-      // font-weight: bold;
-      // margin-top: 0.3rem;
     }
     .coupons {
       font-size: 10px;

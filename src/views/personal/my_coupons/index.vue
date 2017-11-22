@@ -4,36 +4,87 @@
       My Coupons
     </div>
     <div class="coupons-content">
-      <div class="pro-card" v-for="n in 10">
+      <div class="pro-card" v-for="item in couponLists">
         <div class="expried">EXPRIED</div>
         <div class="card-top">
-          <img class="card-top-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+          <img class="card-top-img" :src="item.product_img.split(',')[0]" alt="">
           <div class="pro-title">
-            STATE Geo Mesh CoidGeoMesh Cold
-              Shoulder Shift Dress 
+              {{item.product_title}} 
           </div>
           <div class="pro-info">
-            <span class="old-price">$98.00</span>
-            <span class="coupons-price"><i>coupons</i><b>$15.00</b></span>
-            <span class="proportion"><b>35%</b><i>off</i></span>
+            <span class="old-price">${{item.product_price}}</span>
+            <span class="coupons-price"><i>coupons</i><b>${{item.product_price * item.discount_rate / 100}}</b></span>
+            <span class="proportion"><b>{{item.discount_rate}}%</b><i>off</i></span>
           </div>
         </div>
         <div class="card-bottom">
-          <span class="code">SDGHSHGSA</span>
-          <button class="go-to-amazon">go to amazon</button>
+          <span class="code">{{item.coupon_code}}</span>
+          <button class="go-to-amazon"> <a :href="item.product_url" target="_blank">go to amazon </a> </button>
         </div>
       </div>
     </div>
+    <pagination class="coupons-pagination" 
+      v-if="allpage"
+      :allpage="allpage"
+      :show-item="showItem"
+      @handlecurrent="gotoPage">
+    </pagination>
   </div>
 </template>
 
 <script>
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import { userCoupons, couponDetails } from '@/api/login'
+import { mapGetters } from 'vuex'
 export default {
-
+  name: 'my_coupons',
+  data () {
+    return {
+      allpage: undefined,
+      showItem: 7,
+      requestData: {
+        api_token: '',
+        user_id: '',
+        page: 1,
+        page_size: 9
+      },
+      couponLists : [],
+    }
+  },
+  computed : {
+    ...mapGetters([
+      'token',
+      'user_id'
+    ])
+  },
+  components: {
+    pagination
+  },
+  mounted () {
+    this.getUserCoupons()
+  },
+  methods : {
+    gotoPage (i) {
+      this.requestData.page = i
+      this.getUserCoupons()
+    },
+    getUserCoupons () {
+      this.requestData.api_token = this.token
+      this.requestData.user_id = this.user_id
+      userCoupons(this.requestData).then(res => {
+        if (res.data.total !== 0) {
+          this.couponLists = res.data.data
+          this.allpage = res.data.last_page
+        }
+      }).catch(error => {
+        console.log(error + 'my_coupons error')
+      })
+    }
+  }
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 @import url('../../../styles/mixin.less');
 .coupons-content {
   width: 102%;
@@ -123,11 +174,11 @@ export default {
           width: 100%;
           background: #f2f2f2;
           .code {
-            font-size: 1.1rem;
+            font-size: 12px;
             // line-height: 1.5rem;
             color: #1a1a1a;
             display: inline-block;
-            margin-right: 15px;
+            margin-right: 5px;
             font-weight: bold;
           }
           .go-to-amazon {
@@ -139,11 +190,30 @@ export default {
               background:darken(#84ba3a, 10%);
               border-color:darken(#84ba3a, 10%);
             }
+            a {
+              color: white;
+            }
 
           }
         }
        
       }
-     
+     .coupons-pagination {
+      .pagination {
+        width: 100%;
+        text-align: right;
+        padding-right: 15rem;
+        li {
+          &.active {
+            .items {
+              border: none;
+            }
+          }
+          .items {
+            background: #fff;
+          }
+        }
+      }
+    }
 
 </style>

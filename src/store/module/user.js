@@ -1,13 +1,15 @@
-import { login, logOut, getInfo } from '@/api/login.js'
+import { login, logOut, getInfo, updateLogin } from '@/api/login.js'
 import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from '@/utils/auth'
 import store from '../../store'
 import router from '../../router'
 import { setPass, removePass } from '../../utils/auth';
+import { setStore, removeStore } from '../../utils/utils'
 
 const user = {
   state: {
     username: '',
     roles: [],
+    user_id: '',
     email: getEmail(),
     avatar: '',
     joinedDate: '',
@@ -44,17 +46,21 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_USERID: (state, user_id) => {
+      state.user_id = user_id
     }
 
   },
   actions: {
-    // 登录
+    // 登录s
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
           console.log(res)
           setToken(res.data)
           commit('SET_TOKEN', res.data)
+          updateLogin({'api_token': res.data})
           resolve(res)
         }).catch(err => {
           reject(err)
@@ -64,14 +70,16 @@ const user = {
     GetInfo({ commit , state }) {
       return new Promise((resolve, reject) => {
         getInfo({'api_token':getToken()}).then(res => {
-          console.log(res)
           const data = res.data
+          console.log(res)
           if (res.code === 200) {
             setEmail(data.email)
+            setStore('userInfo', JSON.stringify(res.data))
             commit('SET_ROLES', [data.type])
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   
-            console.log(store)  
+            commit('SET_USERID',data.id)   
+            commit('SET_AVATAR',data.base.avatar_img)   
           } else if (res.code === 500) {
             removeEmail()
             removeToken()
@@ -87,6 +95,7 @@ const user = {
     },
     LogOut ({ commit }) {
       removeToken()
+      removeStore('userInfo')
       commit('SET_TOKEN', '')
       router.push({path: '/'})
       window.location.reload()

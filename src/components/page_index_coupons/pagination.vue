@@ -1,8 +1,8 @@
 <template>
-  <div class="pagination-all">
+  <div class="pagination-all" >
     <ul class="pagination" >
         <li   class="left">
-          <button @click="current-- && goto(current)"  class="items btn-s" href="javascript:void(0);" :class="{notallow: current == 1}"> 
+          <button @click="current-- && goto(current--)"  class="items btn-s" href="javascript:void(0);" :class="{notallow: current == 1}"> 
             <i class="el-icon-caret-left"></i>
           </button>
         </li>
@@ -96,6 +96,10 @@ export default {
   },
   mounted() {
     document.getElementsByClassName("btn-s")[0].disabled = true
+    if (this.allpage === 1) {
+      document.getElementsByClassName("btn-s")[1].disabled = true
+      document.getElementsByClassName("btn-s")[0].disabled = true
+    }
   }
 };
 </script>

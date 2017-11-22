@@ -2,7 +2,7 @@
   <div class="posted-coupons">
     <template>
        <div class="pro-header">
-        <h3 class="title">Trials Posted</h3>
+        <h3 class="title">Trials Applied</h3>
       </div>
  <div class="search-form">
       <label for="title">
@@ -32,7 +32,6 @@
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
-      <button class="add-coupons" @click="add"><i class="el-icon-plus"></i> Add</button>
     </div>
       <div class="table-box">
         <table class="table table-bordered table-trials-posted">
@@ -52,53 +51,68 @@
                 <div class="trials-title-text">{{item.product_title}}</div>
                 <a href="javascript:void(0);">Electronics</a>
               </td>
-              <!-- store -->
-              <td class="trials-store">
-                <div class="trials-store-content">
-                  {{item.store}}
-                </div>
-              </td>
               <!-- List price -->
               <td>
                 <div >
                   {{item.product_prcie}}
                 </div>
               </td>
-              <!-- quantity -->
+              <!-- user -->
               <td>
                 <div>
-                  {{item.quantity}}
+                  {{item.receiptor_user}}
                 </div>
               </td>
-              <!-- applied -->
+
+              <!-- order_date -->
               <td>
-                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor">
-                   {{item.applied}}
-                </a>
-               
+                <div>
+                  {{item.order_date}}
+                </div>
               </td>
-              <!-- shipping_fee -->
+              
+              <!-- order_number -->
+              <td>
+                <div>
+                  {{item.order_number}}
+                </div>
+              </td>
+
+              <!-- review -->
+              <td class="trials-receiptor-review-td">
+                <div class="trials-receiptor-review">
+                  <el-rate  class="rate"
+                      v-model="item.review.rate"
+                      disabled
+                      text-color="#ff9900"
+                      >
+                    </el-rate>
+                    <div class="picture-video">
+                      <span class="picture">Picture: {{item.review.picture}}</span>
+                      <span class="video">Video: {{item.review.video}}</span>
+                    </div>
+                    <div class="view">
+                      <a :href="item.review.link">View</a>
+                    </div>
+                </div>
+              </td>
+              <!-- shipping fee -->
               <td>
                 <div>
                   {{item.shipping_fee}}
                 </div>
-              </td> 
-              <!-- promotion_fee -->
+              </td>
+
+              <!-- platform_fee -->
               <td>
                 <div>
-                  {{item.promotion_fee}}
+                  {{item.platform_fee}}
                 </div>
               </td>
               <!-- refund -->
               <td>
                 <div>
                   {{item.refund}}
-                </div>
-              </td>
-              <!-- security_deposit -->
-              <td>
-                <div>
-                  {{item.security_deposit}}
                 </div>
               </td>
 
@@ -108,19 +122,15 @@
                   {{item.cost}}
                 </div>
               </td>
-                <!-- valid_date -->
-              <td>
-                <div>
-                  {{item.valid_date}}
-                </div>
-              </td>
+           
                 <!-- Status -->
               <td>
                 <div>
                   pedding
                 </div>
               </td>
-                <!-- security_deposit -->
+            
+                <!-- Operation -->
               <td>
                 <div> <a href="javascript:void(0)">Edit</a></div>
                 <div> <a href="javascript:void(0)">Open</a></div>
@@ -150,25 +160,36 @@ export default {
   name: 'posted_trials',
   data () {
     return {
-      thLists: ['Image', 'Title', 'Store' , 'List Price', 'Quantity', 'Applied', 
-                'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
-                'Cost', 'Valid date', 'Status', 'Operation'
+      thLists: ['Image', 'Title', 'Price' , 'User', 'Order date', 'Order number', 
+                'Review', 'Shipping fee', 'Platform fee', 'Refund', 
+                'Cost', 'Status', 'Operation'
       ],
       trLists: [{
         product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',
         product_title: 'this is title',
         platform: 'Amazon',
-        store: 'A11',
         product_prcie: '98.00',
+        receiptor_user: 'Skyer',
+        order_date: '2017-09-08 10:26:35',
+        order_number: '116-7827885-8849945',
+        review: {
+          rate: 4.1,
+          picture: 3,
+          video: 0,
+          link: 'http://www.baidu.com'
+        },
+        shipping_fee: '68.00',
+        platform_fee: '11.00',
+        refund: '1969.00',
+        cost: '0',            
+        status: '1',
+        
+
         quantity: '20',
         applied: '15',
-        shipping_fee: '68.00',
         promotion_fee: '85.00',
-        refund: '1969.00',
         security_deposit: '2060.00',
-        cost: '0',            
         valid_date: '2017-09-08 to 2017-10-01',
-        status: '1',
 
 
       }],
@@ -192,19 +213,12 @@ export default {
     gotoPage (i) {
       console.log(i)
     },
-    add () {
-      this.$router.push({path: '/posted/trials/add'})
-    },
 
     //查询 trails
     postedCouponsSearch () {
       console.log(this.searchForm)
     },
 
-    // 跳转到领取人详情页面
-    gotoTrailsreceiptor () {
-      this.$router.push({path: '/posted/trials/receiptor'})
-    }
   
   }
 }
@@ -273,6 +287,9 @@ export default {
   .trials-table-img {
     width: 5rem;
     height: 4rem;
+  }
+  .trials-receiptor-review-td {
+    width: 180px;
   }
   
 }

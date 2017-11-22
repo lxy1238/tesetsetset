@@ -5,14 +5,25 @@
 </template>
 
 <script>
-import { setPass, setEmail } from '@/utils/auth.js'
+import { setPass, setEmail, getToken } from '@/utils/auth.js'
+import { updateLogin } from '@/api/login.js'
+import { removeStore } from '@/utils/utils'
 export default {
   name: 'app',
   mounted () {
     window.onbeforeunload = function() { 
-      setPass("luoxuyou")
-      setEmail("1243433362@qq.com")
+      removeStore('userInfo')
     } 
+    if (getToken()) {
+      updateLogin({'api_token': getToken()}).then(res => {
+
+      }).catch(error => {
+        console.log('登录记录更新失败')
+      })
+    }
+  },
+  beforeDestroy () {
+    // removeStore('userInfo')
   }
 }
 </script>

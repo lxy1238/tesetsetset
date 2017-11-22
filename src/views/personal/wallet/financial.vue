@@ -24,6 +24,7 @@
         </table>
       </div>
       <pagination class="coupons-pagination"
+         v-if="allpage"
         :allpage="allpage"
         :show-item="showItem"
         @handlecurrent="test">
@@ -39,7 +40,7 @@ export default {
     return {
       thLists: [1, 2, 3],
       trLists: [1, 2, 3],
-      allpage: 30,
+      allpage: undefined,
       showItem: 7,
     }
   },

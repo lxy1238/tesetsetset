@@ -23,7 +23,7 @@ export const constantRouterMap = [
         component: _import('trials/index')
       },
       {
-        path: '/coupons',
+        path: '/coupons/:couponsId/:postUserId',
         component: _import('coupons/index')
       },
       {
@@ -114,9 +114,31 @@ export const asyncRouterMap = [
           component: _import('personal/my_posted/coupons'),
         },
         {
+          path: '/posted/coupons/add',
+          hidden: true,
+          component: _import('personal/my_posted/coupons_add'),
+        },
+        {
+          path: '/posted/coupons/receiptor',
+          hidden: true,
+          component: _import('personal/my_posted/coupons_receiptor'),
+        },
+        {
           path: '/posted/trials',
           text: 'Trials',
           component: _import('personal/my_posted/trials'),
+          meta: {role: ['merchant']}
+        },
+        {
+          path: '/posted/trials/add',
+          hidden: true,
+          component: _import('personal/my_posted/trials_add'),
+          meta: {role: ['merchant']}
+        },
+        {
+          path: '/posted/trials/receiptor',
+          hidden: true,
+          component: _import('personal/my_posted/trials_receiptor'),
           meta: {role: ['merchant']}
         }
       ]

@@ -5,27 +5,32 @@
     <div class="form-content">
       <el-form :model="accountForm" class="account-form" label-width="100px">
         <el-form-item label="Username: " prop="username" class="account-item" >
-          <el-input disabled=""></el-input>
+          <el-input disabled  v-model="userInfo.username"></el-input>
         </el-form-item>
         <el-form-item label="Email: " prop="" class="account-item" >
-          <el-input ></el-input>
+          <el-input disabled v-model="userInfo.email"></el-input>
         </el-form-item>
         <el-form-item label="Avatar: " prop="" class="account-item" >
-          <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+          <el-upload class="avatar-uploader" 
+                    action="https://jsonplaceholder.typicode.com/posts/" 
+                    :show-file-list="false" :on-success="handleAvatarSuccess" 
+                    :before-upload="beforeAvatarUpload"
+                    >
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-else src="../../../assets/user.png" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
           <div class="limit-text">Only support .jpg, .gif, .png, and the images shall not be exceed 1MB. </div>
         </el-form-item>
         <el-form-item label="Gende: " prop="" class="account-item" >
-          <el-radio v-model="radio" label="1"><img class="sex-img" src="../../../assets/setting-account_1.png" alt="">Boy</el-radio>
-          <el-radio v-model="radio" label="2"><img class="sex-img" src="../../../assets/setting-account_02.png" alt="">Gril</el-radio>
+          <el-radio v-model="accountForm.sex" label="男"><img class="sex-img" src="../../../assets/setting-account_1.png" alt="">Boy</el-radio>
+          <el-radio v-model="accountForm.sex" label="女"><img class="sex-img" src="../../../assets/setting-account_02.png" alt="">Gril</el-radio>
         </el-form-item>
         <el-form-item label="Date of birth: " prop="" class="account-item" >
-          <el-input ></el-input>
+          <el-date-picker type="date" v-model="accountForm.birthday" ></el-date-picker>
         </el-form-item>
         <el-form-item label="Introduce: " prop="" class="account-item" >
-          <el-input type="textarea" ></el-input>
+          <el-input type="textarea" v-model="accountForm.introduce" ></el-input>
         </el-form-item>
       </el-form>
       <div class="title-s">Linked Accounts</div>
@@ -39,39 +44,88 @@
       </div>
 
       <div class="footer-account">
-        <button>Save Setting</button>
+        <button @click="changeUserInfo">Save Setting</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {
+import { getStore } from '@/utils/utils'
+import { mapGetters } from 'vuex'
+import {userInfoSet, uploadImg} from '@/api/login'
+export default { 
   name: 'settings-account',
   data () {
     return {
       accountForm: {
-        username:'ghost'
+        api_token: '',
+        user_id: '',
+        birthday: '',
+        introduce: '',
+        sex: '男',
+        avatar_img: 'http://www.ghostxy.top/dealsbank/img/user.png',
+
       },
-      imageUrl: '',
-      radio: '1'
+      imageUrl: 'http://www.ghostxy.top/dealsbank/img/user.png',
+      radio: '男',
+      userInfo: {
+      }
     }
+  },
+  computed: {
+    ...mapGetters([
+      'token',
+      'user_id'
+    ])
+  },
+  mounted () {
+    this.userInfo = JSON.parse(getStore('userInfo')) 
+    this.accountForm.api_token = this.token
+    this.accountForm.user_id = this.user_id
+    this.accountForm.sex = this.userInfo.base.sex
+    this.accountForm.birthday = this.userInfo.base.birthday
+    this.accountForm.introduce = this.userInfo.base.introduce
+    this.accountForm.avatar_img = this.userInfo.base.avatar_img
+    this.imageUrl = this.accountForm.avatar_img
   },
   methods: {
     handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.imageUrl = URL.createObjectURL(file.raw)
       },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      var isJPG = file.type === 'image/jpeg'
+      var isGIF = file.type === 'image/gif'
+      var isPNG = file.type === 'image/png'
+      var isLt500K = file.size / 1024 / 500 < 1
 
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+      if (!(isJPG || isGIF || isPNG)) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+      if (!isLt500K) {
+        this.$message.error('上传头像图片大小不能超过 500kb!')
       }
-      return isJPG && isLt2M;
+      if ((isJPG || isGIF || isPNG) && isLt500K) {
+        var formData = new FormData();
+        formData.append('api_token', this.token)
+        formData.append('file', file)
+        uploadImg(formData).then(res => {
+          this.accountForm.avatar_img = "http://" + res.data
+          this.imageUrl = this.accountForm.avatar_img
+        }).catch(error => {
+          console.log(error)
+        })
+      } else {
+        return false
+      }
+    },
+    changeUserInfo () {
+     userInfoSet(this.accountForm).then(res => {
+       this.$notify.success('reset info success')
+       this.$store.dispatch('GetInfo')
+     }).catch(error => {
+       console.log(error)
+     })
     }
   }
 }

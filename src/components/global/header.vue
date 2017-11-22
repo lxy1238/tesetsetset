@@ -25,11 +25,15 @@
                   @click.stop="showDropdownUser($event)">
                <div class="user-info-content">
                  <div class="absolute img">
-                   <img src="http://www.ghostxy.top/dealsbank/img/user.png" />
+                   <img v-if="avatar_img" :src="avatar_img" />
+                   <img v-else src="../../assets/user.png" alt="user" />
                  </div>
                  <div class="absolute username">{{username}}</div>
-                 <div class="absolute tag">
-                   <span>Influencer</span>
+                 <div class="absolute tag " v-if="roles[0] == 'celebrity'">
+                   <span class="reds-color">Influencer</span>
+                 </div>
+                 <div class="absolute tag " v-if="roles[0] == 'merchant'">
+                   <span class="merchant-color">Merchant</span>
                  </div>
                  <div class="icon">
                    <i v-if="!showDropdownU" class="iconfont icon-xiangxia"></i>
@@ -239,6 +243,7 @@ import { getEmail, getPass, getToken } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
 import { sign, login } from '@/api/login.js'
 import { mapGetters } from 'vuex'
+import { getStore } from '@/utils/utils'
 export default {
   name: "header",
   data() {
@@ -363,14 +368,19 @@ export default {
     console.log(this.addRouters)
   },
   computed: {
-    isLogin () {
+  isLogin () {
       return (Boolean(this.$store.getters.email) || Boolean(getEmail())) && getToken()
     },
     ...mapGetters([
       'username',
       'token',
-      'addRouters'
-    ])
+      'roles',
+      'addRouters',
+      'avatar'
+    ]),
+    avatar_img () {
+       return this.avatar
+    }
   },
   methods: {
     gotoCommissions () {
@@ -469,6 +479,9 @@ export default {
             this.$notify.error(errorMsg)
             this.loginLoading = false
             return false
+          }else if (res.code === 403) {
+            this.$notify.error('Please log in after activation')
+            return
           } else if (res.code == 200) {
             this.loginDialog = false
             this.$notify.success("login success")
@@ -601,11 +614,10 @@ export default {
                   top: 10px;
                   left: 3.5rem;
                   span {
-                  background: #ec5d1c;
-                  font-size: 11px;
-                  padding:0px 5px;
-                  border-radius: 4px;
-                    
+                    // background: #ec5d1c;
+                    font-size: 11px;
+                    padding:0px 5px;
+                    border-radius: 4px;
                   }
                 }
               }

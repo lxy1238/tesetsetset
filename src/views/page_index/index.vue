@@ -3,13 +3,13 @@
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
-        <coupons-pro v-for="n in 60"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="1" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
           <template slot="price">
-          <p class="price content">{{couponsDetails.price}}</p>
-          <p class="coupons content">
-            <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>
-            <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
+          <p class="price content">
+            <span class="price-left">${{couponsDetails.product_price}}</span>
+            <span class="price-right">${{couponsDetails.discount_price}}</span>
           </p>
+          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
           </template>
           <template slot="btn">
             View Coupons
@@ -17,9 +17,10 @@
         </coupons-pro>
     </div>
     <pagination 
+      v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
-      @handlecurrent="test">
+      @handlecurrent="gotoPage">
     </pagination>
   </div>
 </template>
@@ -28,57 +29,48 @@
 import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import pagination from "@/components/page_index_coupons/pagination.vue"
 import { couponsDetails } from '@/mock/trials/index.js'
+import { getAllCoupons } from '@/api/login'
+import { setStore } from '@/utils/utils'
 export default {
   name: "page_index",
   data() {
-    return {
+    return {  
       msg: "pageindex",
       showItem: 7,
-      allpage: 30,
+      allpage: undefined,
       arrcouponsDetails: [
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon1",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        },
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        }
       ],
-      couponsDetails: {
-          id: 1,
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00",
+      requestData: {
+        page: 1,
+        page_size: 12,
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination,
   },
   mounted() {
-    this.$root.eventHub.$on("selectClassify", data => {
-      this.msg = "";
-      setTimeout(() => {
-        this.msg = data;
-      }, 500);
-    });
+    getAllCoupons(this.requestData).then(res => {
+      this.arrcouponsDetails = res.data.data
+      this.allpage = res.data.last_page
+    })   
   },
   methods: {
-    test(index) {
-      console.log(`当前跳转到 ${index} 页`);
+    gotoPage(index) {
+      this.requestData.page = index
+      getAllCoupons(this.requestData).then(res => {
+        this.arrcouponsDetails = res.data.data
+        this.allpage = res.data.last_page
+      }).catch(error => {
+        console.log(error)
+      })
     },
-    gotodetails (id) {
-      this.$router.push({ path: '/coupons' })
+
+    //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
+    gotodetails (id, user_id) {
+      console.log(id, user_id)
+      this.$router.push({ path: '/coupons/' + id  + '/' + user_id})
     }
   }
 };
