@@ -40,8 +40,8 @@ export function getToken () {
 }
 
 export function setToken (token) {
-  return Cookie.set(TOKEN, token)
-  // return Cookie.set(TOKEN, token, { expires: expiresData })
+  // return Cookie.set(TOKEN, token)
+  return Cookie.set(TOKEN, token, { expires: expiresData })
 }
 
 export function removeToken() {

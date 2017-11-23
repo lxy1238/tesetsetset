@@ -51,7 +51,10 @@ export default {
       default: true
     },
     promotions: {
-      type: Array
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
   methods: {
@@ -69,6 +72,10 @@ export default {
       if (this.addPromoMsg == 'Add Promo') {
         this.addPromoMsg = this.runningMsg
         promotionAddCoupon(this.addPromoRequestData).then(res => {
+          if (res.code === 500) {
+            this.addPromoMsg = 'Add Promo'
+            return 
+          }
           this.addPromoMsg = 'Cancel Promo'
         }).catch(error => {
           console.log(error + 'promotionaddcoupon')
@@ -99,8 +106,7 @@ export default {
       if(this.promotions.indexOf(this.couponsDetails.id) >= 0) {
         this.addPromoMsg = 'Cancel Promo'
       }
-    }, 50)
-   
+    }, 10)
   }
 }
 </script>
@@ -161,9 +167,9 @@ export default {
       background: #bfbfbf;
       visibility: hidden;
       .span-btn {
-        display: inline-block;
+        float: left;
         font-size: 13px;
-        width: 49%;
+        width: 50%;
         text-align: center;
         background: #bfbfbf;
         color: rgb(255, 255, 255);

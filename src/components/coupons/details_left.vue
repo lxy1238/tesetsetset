@@ -64,18 +64,6 @@ export default {
         ]
       }
     },
-    // userInfo: {
-    //   default: function () {
-    //     return {
-    //       avatar_img: '',
-    //       username: '',
-    //       type: '',
-    //       level: '',
-    //       joined_date: '',
-    //       coupon_posteds: ''
-    //     }
-    //   }
-    // }
   },
   created () {
     this.activeNum = 0
@@ -120,7 +108,7 @@ export default {
       this.emitdata(this.activeNum)
     },
     gotouser () {
-      this.$router.push({path: '/merchant'})
+      this.$router.push({path: '/merchant/' + this.$route.params.postUserId})
     },
       //获取发布人的信息
     getPostUserInfo () {

@@ -30,65 +30,95 @@
 </template>
 
 <script>
-import couponsPro from "@/components/page_index_coupons/image_product.vue"
-import pagination from "@/components/page_index_coupons/pagination.vue"
-import { couponsDetails } from '@/mock/trials/index.js'
-import { getAllCoupons, getInfo } from '@/api/login'
-import { getToken } from '@/utils/auth'
-import { mapGetters } from 'vuex'
+import couponsPro from "@/components/page_index_coupons/image_product.vue";
+import pagination from "@/components/page_index_coupons/pagination.vue";
+import { couponsDetails } from "@/mock/trials/index.js";
+import { getAllCoupons, getInfo } from "@/api/login";
+import { getToken } from "@/utils/auth";
+import { mapGetters } from "vuex";
 export default {
   name: "page_index",
   data() {
-    return {  
+    return {
       msg: "pageindex",
       showItem: 7,
       allpage: undefined,
-      arrcouponsDetails: [
-      ],
-      userPromotions: [
-
-      ],
+      arrcouponsDetails: [],
+      userPromotions: [],
       requestData: {
         page: 1,
-        page_size: 12,
-      }
-    }
+        page_size: 6 * 8
+      },
+    };
   },
   components: {
     couponsPro,
-    pagination,
+    pagination
   },
   mounted() {
-    getAllCoupons(this.requestData).then(res => {
-      this.arrcouponsDetails = res.data.data
-      this.allpage = res.data.last_page
-    }) 
-    getInfo({'api_token': getToken()}).then(res => {
-      var promotions = []
-      for (var i of res.data.promotions) {
-        promotions.push(i.coupon_id)
-      }
-      this.userPromotions = promotions
-    }) 
+    this.widthToNum()
+    window.onresize = () => {
+      this.widthToNum()
+    }
+    this.getAllCouponsInfo()
+    this.getUserInfo()
   },
-  computed: {
-
-  },
+  computed: {},
   methods: {
+
+    //翻页功能实现
     gotoPage(index) {
-      this.requestData.page = index
-      getAllCoupons(this.requestData).then(res => {
-        this.arrcouponsDetails = res.data.data
-        this.allpage = res.data.last_page
-      }).catch(error => {
-        console.log(error)
-      })
+      this.requestData.page = index;
+      getAllCoupons(this.requestData)
+        .then(res => {
+          this.arrcouponsDetails = res.data.data;
+          this.allpage = res.data.last_page;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
-    gotodetails (id, user_id) {
-      console.log(id, user_id)
-      this.$router.push({ path: '/coupons/' + id  + '/' + user_id})
+    gotodetails(id, user_id) {
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+    },
+
+    //获取用户信息 ，判断首页的coupon是否加入推广
+    getUserInfo() {
+      getInfo({ api_token: getToken() }).then(res => {
+        if (res.code === 500) {
+          return;
+        }
+        var newArr = [];
+        for (var i of res.data.promotions) {
+          newArr.push(i.coupon_id);
+        }
+        this.userPromotions = newArr;
+      });
+    },
+
+    //获取首页所有优惠券的信息
+    getAllCouponsInfo() {
+      getAllCoupons(this.requestData).then(res => {
+        this.arrcouponsDetails = res.data.data;
+        this.allpage = res.data.last_page;
+      });
+    },
+
+    //根据页面尺寸宽度判断首页展示的商品数量
+    widthToNum () {
+      const LINE_NUM = 8    //默认显示的行数
+      if (window.innerWidth <= 1270 && this.requestData.page_size != 4 * LINE_NUM) {
+        this.requestData.page_size = 4 * LINE_NUM
+        this.getAllCouponsInfo()
+      } else if (window.innerWidth > 1270 && window.innerWidth <= 1557 && this.requestData.page_size != 5 * LINE_NUM) {
+        this.requestData.page_size = 5 * LINE_NUM
+        this.getAllCouponsInfo()
+      } else if (window.innerWidth > 1557 && this.requestData.page_size != 6 * LINE_NUM) {
+        this.requestData.page_size = 6 * LINE_NUM
+        this.getAllCouponsInfo()
+      }
     }
   }
 };

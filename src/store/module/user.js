@@ -1,8 +1,7 @@
 import { login, logOut, getInfo, updateLogin } from '@/api/login.js'
-import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from '@/utils/auth'
+import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken, setPass, removePass } from '@/utils/auth'
 import store from '../../store'
 import router from '../../router'
-import { setPass, removePass } from '../../utils/auth';
 import { setStore, removeStore, getStore } from '../../utils/utils'
 
 const user = {
@@ -81,7 +80,6 @@ const user = {
             commit('SET_USERID',data.id)   
             commit('SET_AVATAR',data.base.avatar_img)   
           } else if (res.code === 500) {
-            removeEmail()
             removeToken()
             commit('SET_EMAIL', '')
             commit('SET_TOKEN', '')

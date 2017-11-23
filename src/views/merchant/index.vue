@@ -7,36 +7,38 @@
       <div class="merchant">
          <div class="user">
           <div class=" head">
-            <img src="http://www.ghostxy.top/dealsbank/img/user.png" alt="">
+            <img v-if="userInfo.avatar_img" :src="userInfo.avatar_img" alt="">
+            <img v-else src="http://www.ghostxy.top/dealsbank/img/user.png" alt="">
           </div>
           <div class=" details-user">
               <p class="first">
-                <span class="name">Nickname</span>
-                <span class="seller">seller</span>
+                <span class="name">{{userInfo.username}}</span>
+                <span class="seller reds-color" v-if="userInfo.type == 'celebrity'">Influencer</span>
+                <span class="seller merchant-color" v-if="userInfo.type == 'merchant'">Merchant</span>
               </p>
               <p class="join">
-                <span><i class="iconfont icon-date"></i> Joined Dec 2015</span>
-                <span><i class="iconfont icon-huiyuandengji0101"> </i> L4: APPrenlice</span>
-              </p>
-              <p class="coupons-posted">
-                 <span><i class="iconfont icon-youhuiquan1"></i> 35 Coupons Posted</span>
-                <span><i class="iconfont icon-time"> </i> Posted 09-19-2017 05:39 PM</span>
+                <span><i class="iconfont icon-date"></i> Joined {{userInfo.joined_date}}</span>
+                <span><i class="iconfont icon-huiyuandengji0101"> </i> Level {{userInfo.level}}</span>
+                 <span><i class="iconfont icon-youhuiquan1"></i> {{userInfo.coupon_posteds}}  Coupons Posted</span>
               </p>
               <p class="footer">
-                Professional to create exclusive coupons, directional 
-                marketing plan, cabbage cost-effective product explosion!
+                {{userInfo.introduce}}
               </p>
           </div>
         </div>
       </div>
-      <coupons-pro v-for="n in 60"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
-        <template slot="price">
-         <p class="price content">{{couponsDetails.price}}</p>
-         <p class="coupons content">
-          <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>
-          <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
-         </p>
-         </template>
+      <coupons-pro 
+            v-for="couponsDetails in arrcouponsDetails"  
+            :key="1" 
+            :couponsDetails="couponsDetails" 
+            @gotodetails="gotodetails">
+          <template slot="price">
+          <p class="price content">
+            <span class="price-left">${{couponsDetails.product_price}}</span>
+            <span class="price-right">${{couponsDetails.discount_price}}</span>
+          </p>
+          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
+          </template>
          <template slot="btn">
            View Coupons
          </template>
@@ -46,7 +48,7 @@
       v-if="allpage"
       :allpage="allpage"
       :show-item="showItem"
-      @handlecurrent="test">
+      @handlecurrent="gotoPage">
     </pagination>
   </div>
 </template>
@@ -54,7 +56,8 @@
 <script>
 import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import pagination from "@/components/page_index_coupons/pagination.vue"
-import { couponsDetails } from '@/mock/trials/index.js'
+import { postedUserInfo ,getAllCoupons } from '@/api/login'
+import { timestampFormat } from '@/utils/date'
 export default {
   name: "page_index",
   data() {
@@ -62,29 +65,24 @@ export default {
       msg: "pageindex",
       showItem: 7,
       allpage: undefined,
+      userInfo: {
+        avatar_img: '',
+        coupon_posteds: '',
+        introduce: '',
+        joined_date: '',
+        level: '',
+        type: '',
+        username: '',
+      },
       arrcouponsDetails: [
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon1",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        },
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        }
       ],
-      couponsDetails: {
-          id: 1,
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00",
+      requestCouponData: {
+        user_id: '',
+        page: 1,
+        page_size: 48
+      },
+      requestUserData: {
+        user_id: ''
       }
     };
   },
@@ -93,13 +91,85 @@ export default {
     pagination,
   },
   mounted() {
+    this.init()
+    
   },
   methods: {
-    test(index) {
-      console.log(`当前跳转到 ${index} 页`);
+       //翻页功能实现
+    gotoPage(index) {
+      this.requestData.page = index;
+      getAllCoupons(this.requestData)
+        .then(res => {
+          this.arrcouponsDetails = res.data.data;
+          this.allpage = res.data.last_page;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
+
     gotodetails (id) {
       this.$router.push({ path: '/coupons' })
+    },
+      //获取发布人的信息
+    getPostUserInfo () {
+      postedUserInfo (this.requestCouponData).then(res => {
+        console.log(res)
+        res.data.joined_date = timestampFormat(res.data.joined_date)
+        this.userInfo = res.data
+      }).catch(error => {
+        console.log(error + " postedUserInfo")
+      })
+    },
+
+    //获取用户发布的优惠券信息
+    getUserCouponInfo () {
+      console.log(this.requestCouponData)
+      getAllCoupons(this.requestCouponData).then(res => {
+        if (res.code === 200) {
+          this.arrcouponsDetails = res.data.data
+          this.allpage = res.data.last_page
+        }
+      }).catch(error => {
+        console.log(error + ' getAllCoupons ')
+      })
+    },
+
+    //初始化赋值
+    initData () {
+      this.requestCouponData.user_id = this.$route.params.userId
+      this.requestUserData.user_id = this.$route.params.userId
+    },
+
+    //页面初始化
+    init () {
+      this.initData()
+      this.getPostUserInfo()
+      this.getUserCouponInfo()
+      this.widthToNum()
+      window.onresize = () => {
+        this.widthToNum()
+      }
+    },
+
+    //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
+    gotodetails(id, user_id) {
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+    },
+
+     //根据页面尺寸宽度判断首页展示的商品数量
+    widthToNum () {
+      const LINE_NUM = 8    //默认显示的行数
+      if (window.innerWidth <= 1270 && this.requestCouponData.page_size != 4 * LINE_NUM) {
+        this.requestCouponData.page_size = 4 * LINE_NUM
+        this.getUserCouponInfo()
+      } else if (window.innerWidth > 1270 && window.innerWidth <= 1557 && this.requestCouponData.page_size != 5 * LINE_NUM) {
+        this.requestCouponData.page_size = 5 * LINE_NUM
+        this.getUserCouponInfo()
+      } else if (window.innerWidth > 1557 && this.requestCouponData.page_size != 6 * LINE_NUM) {
+        this.requestCouponData.page_size = 6 * LINE_NUM
+        this.getUserCouponInfo()
+      }
     }
   }
 };
@@ -130,6 +200,7 @@ export default {
     .head {
       float: left;
       img {
+        border-radius: 100%;
         width: 140px;
         height: 140px;
       }
@@ -138,7 +209,7 @@ export default {
       float: left;
       margin-left: 45px;
       .first {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
       p {
         position: relative;

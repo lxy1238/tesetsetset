@@ -239,7 +239,7 @@
 </template>
 
 <script>
-import { getEmail, getPass, getToken } from '@/utils/auth.js'
+import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
 import { sign, login } from '@/api/login.js'
 import { mapGetters } from 'vuex'
@@ -403,8 +403,8 @@ export default {
       this.$store.dispatch("setLevel", 1)
     },
     ShowLoginDialog() {
-      // this.loginform.email = getEmail()
-      // this.loginform.password = getPass()
+      this.loginform.email = getEmail()
+      this.loginform.password = getPass()
       this.signDialog = false
       this.resetPassword = false
       this.loginDialog = true
@@ -483,8 +483,12 @@ export default {
             this.$notify.error('Please log in after activation')
             return
           } else if (res.code == 200) {
+            if(this.loginform.remember == true) {
+              setPass(this.loginform.password)
+            }
             this.loginDialog = false
             this.$notify.success("login success")
+            this.$refs['loginform'].resetFields();
           }
           this.$store.dispatch('GetInfo').then(res => {
             console.log(res.data)

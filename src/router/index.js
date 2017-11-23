@@ -31,7 +31,7 @@ export const constantRouterMap = [
         component: _import('trials_details/index')
       },
       {
-        path: '/merchant',
+        path: '/merchant/:userId',
         component: _import('merchant/index')
       },
       {

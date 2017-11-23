@@ -282,9 +282,7 @@ export default {
       templateDialog: false,
       notGetTrialsDialog: false,
       getCodeSuccess: false, //是否领取优惠券成功
-      userPromotions: [
-
-      ],
+      userPromotions: [],
       requestData: {
         page: 1,
         page_size: 9
@@ -324,8 +322,8 @@ export default {
       .catch(error => {
         console.log(error + "getAllCoupons");
       });
-    this.getCouponsDetails()
-    this.couponsGetInfo()
+    this.getCouponsDetails();
+    this.couponsGetInfo();
     // this.getPostUserInfo()
     this.reqGetCodeData.pick_uid = this.user_id;
     this.reqGetCodeData.pick_username = this.username;
@@ -418,12 +416,12 @@ export default {
         this.addPromotionData.user_id = this.user_id;
         this.addPromotionData.coupon_id = this.$route.params.couponsId;
         promotionUserRemove(this.addPromotionData).then(res => {
-          console.log(res)
+          console.log(res);
           if (res.code === 200) {
-            this.couponsGetInfo()
-            this.added = true
+            this.couponsGetInfo();
+            this.added = true;
           }
-        })
+        });
       }
     },
 
@@ -433,10 +431,10 @@ export default {
         this.addPromotionData.user_id = this.user_id;
         this.addPromotionData.coupon_id = this.$route.params.couponsId;
         promotionAddCoupon(this.addPromotionData).then(res => {
-          console.log(res)
+          console.log(res);
           if (res.code === 200) {
-            this.couponsGetInfo()
-            this.added = false
+            this.couponsGetInfo();
+            this.added = false;
           }
         });
       }
@@ -468,14 +466,17 @@ export default {
 
     //获取用户信息
     couponsGetInfo() {
-      getInfo({'api_token': getToken()}).then(res => {
-      var promotions = []
-      for (var i of res.data.promotions) {
-        promotions.push(i.coupon_id)
-      }
-      this.userPromotions = promotions
-    }) 
-    } 
+      getInfo({ api_token: getToken() }).then(res => {
+        if (res.code === 500) {
+          return 
+        }
+        var promotions = [];
+        for (var i of res.data.promotions) {
+          promotions.push(i.coupon_id);
+        }
+        this.userPromotions = promotions;
+      });
+    }
   }
 };
 </script>
