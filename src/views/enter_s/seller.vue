@@ -1,6 +1,8 @@
 <template>
   <div class="enter-seller">
-    {{msg}}
+    <div class="enter_seller-content">
+      
+    </div>
   </div>
 </template>
 
@@ -9,12 +11,20 @@ export default {
   name: 'enter_seller',
   data () {
     return {
-      msg : 'enter-seller'
+     
     }
   }
 }
 </script>
 
-<style lang="less">
-
+<style lang="less" scoped>
+  .enter-seller {
+    .enter-seller-content {
+      width: 800px;
+      margin: 0 auto;
+      min-height: 1000px;
+      border: 1px solid red;
+    }
+  }
 </style>
+

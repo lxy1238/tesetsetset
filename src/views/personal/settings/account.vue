@@ -2,7 +2,7 @@
   <div class="settings-account">
     <div class="title">Settings</div>
     <div class="title-s">Product Information</div>
-    <div class="form-content">
+    <div class="form-content" v-if="userInfo">
       <el-form :model="accountForm" class="account-form" label-width="100px">
         <el-form-item label="Username: " prop="username" class="account-item" >
           <el-input disabled  v-model="userInfo.username"></el-input>
@@ -53,7 +53,7 @@
 <script>
 import { getStore } from '@/utils/utils'
 import { mapGetters } from 'vuex'
-import {userInfoSet, uploadImg} from '@/api/login'
+import {userInfoSet, uploadImg, getInfo} from '@/api/login'
 export default { 
   name: 'settings-account',
   data () {
@@ -80,14 +80,18 @@ export default {
     ])
   },
   mounted () {
-    this.userInfo = JSON.parse(getStore('userInfo')) 
-    this.accountForm.api_token = this.token
-    this.accountForm.user_id = this.user_id
-    this.accountForm.sex = this.userInfo.base.sex
-    this.accountForm.birthday = this.userInfo.base.birthday
-    this.accountForm.introduce = this.userInfo.base.introduce
-    this.accountForm.avatar_img = this.userInfo.base.avatar_img
-    this.imageUrl = this.accountForm.avatar_img
+    getInfo({'api_token': this.token}).then(res => {
+      this.userInfo = res.data
+      this.accountForm.api_token = this.token
+      this.accountForm.user_id = this.user_id
+      this.accountForm.sex = this.userInfo.base.sex
+      this.accountForm.birthday = this.userInfo.base.birthday
+      this.accountForm.introduce = this.userInfo.base.introduce
+      this.accountForm.avatar_img = this.userInfo.base.avatar_img
+      this.imageUrl = this.accountForm.avatar_img
+    }).catch(error => {
+      console.log(error)
+    })
   },
   methods: {
     handleAvatarSuccess(res, file) {

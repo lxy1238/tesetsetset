@@ -7,7 +7,7 @@
       <!-- <img v-if="loading" src="http://www.ghostxy.top/dealsbank/img/01.png"   alt="img"> -->
     </div>
      <div class="promo-copy" v-if="addpromo">
-        <div class="span-btn" @click="addPromo">
+        <div class="span-btn" @click="addPromo(couponsDetails.id)">
           <span>{{addPromoMsg}}</span>
         </div>
         <div class="line"></div>
@@ -25,13 +25,21 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { getToken } from '@/utils/auth'
+import { promotionAddCoupon, promotionUserRemove } from '@/api/login'
 export default {
   name: 'image_product',
   data () {
     return {
       loading: false,
       addPromoMsg: "Add Promo",
-      runningMsg: 'Running . . .'
+      runningMsg: 'Running . . .',
+      addPromoRequestData: {
+        'api_token': getToken(),
+        'user_id': '',
+        'coupon_id': '',
+      }
     }
   },
   props: {
@@ -41,33 +49,58 @@ export default {
     addpromo: {
       type: Boolean,
       default: true
+    },
+    promotions: {
+      type: Array
     }
   },
   methods: {
+    //跳转到详情也，携带coupon_id ,user_id
     goToCouponsPage (id, user_id) {
-      this.$store.dispatch('setProductId', id)
       this.$emit('gotodetails', id, user_id)
     },
     loadImg () {
       this.loading = true
     },
-    addPromo () {
+
+    //加入 移除  推广
+    addPromo (coupon_id) {
+      this.addPromoRequestData.coupon_id = coupon_id
       if (this.addPromoMsg == 'Add Promo') {
         this.addPromoMsg = this.runningMsg
-        setTimeout( () => {
-        this.addPromoMsg = 'Cancel Promo'
-        }, 500)
+        promotionAddCoupon(this.addPromoRequestData).then(res => {
+          this.addPromoMsg = 'Cancel Promo'
+        }).catch(error => {
+          console.log(error + 'promotionaddcoupon')
+        })
       } else {
         this.addPromoMsg = this.runningMsg
-        setTimeout( () => {
-        this.addPromoMsg = 'Add Promo'
-        }, 500)
+        promotionUserRemove(this.addPromoRequestData).then(res => {
+          this.addPromoMsg = 'Add Promo'
+        }).catch(error => {
+          console.log(error + 'promotionaddcoupon')
+        })
       }
      
     },
     copy () {
 
     }
+  },
+  computed: {
+    ...mapGetters([
+      'token',
+      'user_id'
+    ])
+  },
+  mounted () {
+    this.addPromoRequestData.user_id = this.user_id
+    setTimeout(() => {
+      if(this.promotions.indexOf(this.couponsDetails.id) >= 0) {
+        this.addPromoMsg = 'Cancel Promo'
+      }
+    }, 50)
+   
   }
 }
 </script>

@@ -125,7 +125,26 @@ export const isUserGetCoupon = data => fetch({
   data: qs.stringify(data)
 })
 
+//收藏优惠券
+export const promotionAddCoupon = data => fetch({
+  url: '/api/v1/coupon/promotions',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 
+//用户收藏的优惠券
+export const promotionUserCoupon = data => fetch({
+  url: '/api/v1/coupon/user-promotions',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//移除收藏的优惠券
+export const promotionUserRemove = data => fetch({
+  url: '/api/v1/coupon/promotion-del',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 
 /**
  * 

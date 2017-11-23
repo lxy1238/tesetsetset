@@ -45,16 +45,16 @@
             <td>
               <img class="product-img" :src="couponsDetails.product_img.split(',')[0]" alt="">
             </td>
-            <td>
+            <td class="product-details" @click="gotoDetails(item.id)">
               <div>amazon</div>
               <div class="table-product-title">{{couponsDetails.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item.id)">Electronics</a>
+              <a href="javascript:void(0);" >Electronics</a>
             </td>
             <td class="prcie">
               <div>${{couponsDetails.product_price}}</div>
             </td>
             <td class="discount">
-              <div>{{couponsDetails.discount_rate}}</div>
+              <div>{{couponsDetails.discount_rate}}%</div>
             </td>
             <td class="receiptor">
               <div>
@@ -62,7 +62,7 @@
               </div>
             </td>
             <td class="applied-date">
-              <div>领取时间</div>
+              <div>{{item.created_at}}</div>
             </td>
             <td class="coupon-code">
               <div>{{couponsDetails.coupon_code}}</div>
@@ -275,6 +275,10 @@ export default {
   .product-img {
     width: 5rem;
     height: 4rem;
+  }
+  .product-details {
+    text-align: left;
+    width: 200px;
   }
 }
 

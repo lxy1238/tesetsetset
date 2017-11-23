@@ -9,7 +9,7 @@
           Single</span><span class="select-span" :class="{active: active === 1}" @click="Selectbulk">
             BULK</span>
       </div>  
-      <el-form :model="commissionForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
+      <el-form :model="commissionForm" :rules="rules" ref="couponsForm" label-position="top" label-width="140px" class="coupons-form" >
         <el-form-item label="Amazon Locales: " prop="website" class="item-inline" >
           <el-select v-model="commissionForm.website">
             <el-option
@@ -217,7 +217,6 @@ export default {
       }
     }
     .results-num {
-      margin-left: 140px;
       color: #666;
       font-size: 16px;
       margin-bottom: 20px;
