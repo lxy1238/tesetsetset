@@ -3,7 +3,7 @@ import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from
 import store from '../../store'
 import router from '../../router'
 import { setPass, removePass } from '../../utils/auth';
-import { setStore, removeStore } from '../../utils/utils'
+import { setStore, removeStore, getStore } from '../../utils/utils'
 
 const user = {
   state: {
@@ -11,6 +11,7 @@ const user = {
     roles: [],
     user_id: '',
     email: getEmail(),
+    promotions: [],
     avatar: '',
     joinedDate: '',
     memberLever: '',
@@ -49,7 +50,7 @@ const user = {
     },
     SET_USERID: (state, user_id) => {
       state.user_id = user_id
-    }
+    },
 
   },
   actions: {
@@ -69,12 +70,11 @@ const user = {
     },
     GetInfo({ commit , state }) {
       return new Promise((resolve, reject) => {
-        getInfo({'api_token':getToken()}).then(res => {
+        getInfo({'api_token': getToken()}).then(res => {
           const data = res.data
-          console.log(res)
+          console.log(res.data)
           if (res.code === 200) {
             setEmail(data.email)
-            setStore('userInfo', JSON.stringify(res.data))
             commit('SET_ROLES', [data.type])
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   

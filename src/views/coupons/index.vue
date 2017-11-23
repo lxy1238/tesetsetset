@@ -43,8 +43,8 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="!added" @click="addPromotion"><span>Added</span> <i class=" el-icon-check"></i></button>
-                  <button v-else  @click="removePromotion"><span>Add Promo</span></button>
+                  <button v-if="userPromotions.indexOf(couponDetail.id) >= 0 " @click="removePromotion"><span>Added</span> <i class=" el-icon-check"></i></button>
+                  <button v-else  @click="addPromotion"><span>Add Promo</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
@@ -111,7 +111,12 @@
               <span class="re-head-l">recommend</span>
               <span class="re-head-r">more></span>
             </div>
-              <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="1" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+              <coupons-pro 
+              v-for="couponsDetails in arrcouponsDetails"  
+              :key="1" 
+              :couponsDetails="couponsDetails"
+              :promotions="userPromotions" 
+              @gotodetails="gotodetails">
                 <template slot="price">
                 <p class="price content">{{couponsDetails.price}}</p>
                 <p class="coupons content">
@@ -218,16 +223,25 @@
 
 <script>
 import detailsLeft from "@/components/coupons/details_left.vue";
-import couponsPro from "@/components/page_index_coupons/image_product.vue"
-import codeDialog from "@/components/coupons/code_dialog.vue"
-import explain from '@/components/trials/explain.vue'
-import Clip from "@/utils/clipboard.js"
+import couponsPro from "@/components/page_index_coupons/image_product.vue";
+import codeDialog from "@/components/coupons/code_dialog.vue";
+import explain from "@/components/trials/explain.vue";
+import Clip from "@/utils/clipboard.js";
 
-import { getStore, removeStore } from '@/utils/utils'
-import { timestampFormat } from '@/utils/date'
-import { getAllCoupons, couponDetails, postedUserInfo ,userGetCoupon, isUserGetCoupon} from '@/api/login'
-import { getToken } from '@/utils/auth'
-import { mapGetters } from 'vuex'
+import { getStore, removeStore } from "@/utils/utils";
+import { timestampFormat } from "@/utils/date";
+import {
+  getAllCoupons,
+  couponDetails,
+  postedUserInfo,
+  userGetCoupon,
+  isUserGetCoupon,
+  promotionAddCoupon,
+  promotionUserRemove,
+  getInfo
+} from "@/api/login";
+import { getToken } from "@/utils/auth";
+import { mapGetters } from "vuex";
 export default {
   name: "coupons",
   components: {
@@ -240,21 +254,14 @@ export default {
     return {
       isTop: true,
       userInfo: {
-        avatar_img: '',
-        username: '',
-        type: '',
-        level: '',
-        joined_date: '',
-        coupon_posteds: ''
+        avatar_img: "",
+        username: "",
+        type: "",
+        level: "",
+        joined_date: "",
+        coupon_posteds: ""
       },
-      imgList: [
-        "http://www.ghostxy.top/dealsbank/img/01.png",
-        "http://www.ghostxy.top/dealsbank/img/02.png",
-        "http://www.ghostxy.top/dealsbank/img/03.png",
-        "http://www.ghostxy.top/dealsbank/img/04.png",
-        "http://www.ghostxy.top/dealsbank/img/05.png",
-        "http://www.ghostxy.top/dealsbank/img/05.png",
-      ],
+      imgList: [],
       html: "hello",
       options: [
         "Choose areason",
@@ -268,65 +275,64 @@ export default {
       ],
       selected: 0,
       added: true,
-      imgUrl: '',
-      arrcouponsDetails: [
-      ],
-      couponDetail: {
-        
-      },
+      imgUrl: "",
+      arrcouponsDetails: [],
+      couponDetail: {},
       showGetCodeDialog: false,
       templateDialog: false,
       notGetTrialsDialog: false,
-      getCodeSuccess: false,      //是否领取优惠券成功
+      getCodeSuccess: false, //是否领取优惠券成功
+      userPromotions: [
 
+      ],
       requestData: {
         page: 1,
-        page_size: 9,
+        page_size: 9
       },
       requestCouponDetails: {
-        id: "",
+        id: ""
       },
-      reqGetCodeData : {
+      reqGetCodeData: {
         api_token: getToken(),
-        coupon_id: '',
-        pick_uid: '',
-        pick_username: '',
-        generalize_uid: '',
-        generalize_username: ''
+        coupon_id: "",
+        pick_uid: "",
+        pick_username: "",
+        generalize_uid: "",
+        generalize_username: ""
       },
       checkGetCodeData: {
         api_token: getToken(),
-        coupon_id: '',
-        pick_uid: '',
+        coupon_id: "",
+        pick_uid: ""
+      },
+      addPromotionData: {
+        api_token: getToken(),
+        coupon_id: "",
+        user_id: ""
       }
-
-
     };
   },
-  computed : {
-    ...mapGetters([
-      'username',
-      'user_id'
-    ])
+  computed: {
+    ...mapGetters(["username", "user_id"])
   },
   mounted() {
-    getAllCoupons(this.requestData).then(res => {
-      this.arrcouponsDetails = res.data.data
-      // this.allpage = res.data.last_page
-    }).catch(error => {
-      console.log(error + 'getAllCoupons')
-    })
+    getAllCoupons(this.requestData)
+      .then(res => {
+        this.arrcouponsDetails = res.data.data;
+        // this.allpage = res.data.last_page
+      })
+      .catch(error => {
+        console.log(error + "getAllCoupons");
+      });
     this.getCouponsDetails()
+    this.couponsGetInfo()
     // this.getPostUserInfo()
-    this.reqGetCodeData.pick_uid = this.user_id
-    this.reqGetCodeData.pick_username = this.username
-    this.reqGetCodeData.coupon_id =  this.$route.params.couponsId
-
-   
-    
+    this.reqGetCodeData.pick_uid = this.user_id;
+    this.reqGetCodeData.pick_username = this.username;
+    this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
   },
   //组件销毁前
-  beforeDestroy () {
+  beforeDestroy() {
     // removeStore('couponId')
   },
   methods: {
@@ -342,107 +348,134 @@ export default {
       this.imgUrl = data;
     },
 
-    //复制
+    //复制产品推广文案
     handleClip(e) {
       Clip(e);
     },
     //跳转到产品详情页面
-    gotodetails (id) {
-      this.requestCouponDetails.id = id
-      document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.getCouponsDetails(this.requestCouponDetails)
-      this.$router.push({ path: '/coupons' })
+    gotodetails(id) {
+      this.requestCouponDetails.id = id;
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.getCouponsDetails(this.requestCouponDetails);
+      this.$router.push({ path: "/coupons" });
     },
-    getCode () {
-      this.checkGetCodeData.pick_uid = this.user_id
-      this.checkGetCodeData.coupon_id =  this.$route.params.couponsId
+    getCode() {
+      this.checkGetCodeData.pick_uid = this.user_id;
+      this.checkGetCodeData.coupon_id = this.$route.params.couponsId;
       isUserGetCoupon(this.checkGetCodeData).then(res => {
-        console.log(res.data)
-        this.showGetCodeDialog = true
+        console.log(res.data);
+        this.showGetCodeDialog = true;
         if (!res.data) {
         } else {
-          this.getCodeSuccess = true
+          this.getCodeSuccess = true;
         }
-      })
+      });
     },
-    close () {
-      this.showGetCodeDialog = false
+    //关闭领取优惠券的弹窗
+    close() {
+      this.showGetCodeDialog = false;
     },
-    submit () {
-
+    submit() {},
+    gotoTrials() {
+      this.$router.push({ path: "/trials" });
     },
-    gotoTrials () {
-      this.$router.push({path: '/trials'})
-    },
-    saveTemplate () {
-
-    },
+    saveTemplate() {},
     //获取优惠券详情
-    getCouponsDetails () {
-      this.requestCouponDetails.id = this.$route.params.couponsId
-      couponDetails(this.requestCouponDetails).then(res => {
-        console.log(res)
-        this.userInfo = res.data.user_base
-        this.imgList = res.data.product_img.split(',')
-        this.imgUrl = this.imgList[0]
-        this.couponDetail = res.data
-        var valid_date = new Date()
-        valid_date.setTime(res.data.valid_date * 1000)
-        this.couponDetail.valid_date =  valid_date.toLocaleDateString()
-      }).catch(error => {
-        console.log(error + 'couponDetails')
-      })
+    getCouponsDetails() {
+      this.requestCouponDetails.id = this.$route.params.couponsId;
+      couponDetails(this.requestCouponDetails)
+        .then(res => {
+          this.userInfo = res.data.user_base;
+          this.imgList = res.data.product_img.split(",");
+          this.imgUrl = this.imgList[0];
+          this.couponDetail = res.data;
+          var valid_date = new Date();
+          valid_date.setTime(res.data.valid_date * 1000);
+          this.couponDetail.valid_date = valid_date.toLocaleDateString();
+        })
+        .catch(error => {
+          console.log(error + "couponDetails");
+        });
     },
 
-       //获取发布人的信息
-    getPostUserInfo () {
-      var request = { 'user_id': this.$route.params.postUserId }
-      postedUserInfo (request).then(res => {
-        this.reqGetCodeData.pick_username = res.data.username
-        this.reqGetCodeData.pick_uid =  this.$route.params.postUserId
-        this.reqGetCodeData.coupon_id =  this.$route.params.couponsId
-      }).catch(error => {
-        console.log(error + " postedUserInfo")
-      })
+    //获取发布人的信息
+    getPostUserInfo() {
+      var request = { user_id: this.$route.params.postUserId };
+      postedUserInfo(request)
+        .then(res => {
+          this.reqGetCodeData.pick_username = res.data.username;
+          this.reqGetCodeData.pick_uid = this.$route.params.postUserId;
+          this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+        })
+        .catch(error => {
+          console.log(error + " postedUserInfo");
+        });
     },
 
     //取消推广
-    removePromotion () {
+    removePromotion() {
       if (this.isLogin()) {
-        this.added = !this.added
+        this.addPromotionData.user_id = this.user_id;
+        this.addPromotionData.coupon_id = this.$route.params.couponsId;
+        promotionUserRemove(this.addPromotionData).then(res => {
+          console.log(res)
+          if (res.code === 200) {
+            this.couponsGetInfo()
+            this.added = true
+          }
+        })
       }
     },
 
     //加入推广
-    addPromotion () {
+    addPromotion() {
       if (this.isLogin()) {
-        this.added = !this.added
+        this.addPromotionData.user_id = this.user_id;
+        this.addPromotionData.coupon_id = this.$route.params.couponsId;
+        promotionAddCoupon(this.addPromotionData).then(res => {
+          console.log(res)
+          if (res.code === 200) {
+            this.couponsGetInfo()
+            this.added = false
+          }
+        });
       }
     },
 
     //领取优惠券
-    getCouponCode () {
+    getCouponCode() {
       if (this.isLogin()) {
         userGetCoupon(this.reqGetCodeData).then(res => {
-          this.getCodeSuccess = true
-        })
+          this.getCodeSuccess = true;
+        });
       }
     },
-    copyCode (e) {
-      Clip(e)
+    copyCode(e) {
+      Clip(e);
     },
 
     //判断是否登录，否则提醒请登录
-    isLogin () {
+    isLogin() {
       if (!getToken()) {
-        this.$alert('please log in first', 'reminder', {
-          confirmButtonText: 'confirm',
+        this.$alert("please log in first", "reminder", {
+          confirmButtonText: "confirm"
         });
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
-    }
+    },
+
+    //获取用户信息
+    couponsGetInfo() {
+      getInfo({'api_token': getToken()}).then(res => {
+      var promotions = []
+      for (var i of res.data.promotions) {
+        promotions.push(i.coupon_id)
+      }
+      this.userPromotions = promotions
+    }) 
+    } 
   }
 };
 </script>
@@ -716,7 +749,7 @@ export default {
           height: 5rem;
           .share {
             .share-a {
-              color: #CCCCCC;
+              color: #cccccc;
               &:hover {
                 text-decoration: none;
               }
@@ -789,255 +822,260 @@ export default {
       .coupons-product {
         width: 16.1rem;
         height: 370px;
-        margin: .5rem 1rem .5rem .35rem;
+        margin: 0.5rem 1rem 0.5rem 0.35rem;
       }
     }
   }
 }
-  .code-dialog {
-    .title {
-      margin-left: 8rem;
-      display: inline-block;
-      width: 24rem;
-      font-weight: bold;
-      font-size: 1rem;
-      img {
-        position: absolute;
-        left: -110px;
-        top: 0;
-      }
-    }
-    .dialog-body {
-      text-align: center;
-      .top {
-        padding-top: 2rem;
-        height: 12rem;
-        border: 1px solid #e1e1e1;
-        .head {
-          font-size: 1.2rem;
-          font-weight: bold;
-          margin-bottom: 1rem;
-          color: #1a1a1a;
-        }
-        .goto-amazon {
-          color: #808080;
-          margin-bottom: 1rem;
-          font-size: 0.66rem;
-        }
-        .discount {
-          button {
-            .btn-h(20rem,3rem);
-            color: white;
-            font-size: 1rem;
-            background: #85bb3b;
-            border-color: #85bb3b;
-            &:active {
-               background: darken(#85bb3b,10%) ;
-            border-color:  darken(#85bb3b,10%) ;
-            }
-          }
-        }
-        .coupon-code {
-          position: relative;
-          width: 20rem;
-          height: 3rem;
-          margin: 0 auto;
-          text-align: left;
-          padding-left: 4rem;
-          line-height: 3rem;
-          background: #e5f0e1;
-          button {
-            position: absolute;
-            top: .5rem;
-            right: 1rem;
-             .btn-h(5rem,2rem);
-            color: white;
-            font-size: 1rem;
-            background: #85bb3b;
-            border-color: #85bb3b;
-            &:active {
-               background: darken(#85bb3b,10%) ;
-            border-color:  darken(#85bb3b,10%) ;
-            }
-          }
-          .code {
-            color: #49663f;
-            font-size: 1rem;
-            font-weight: bold;
-          }
-        }
-      }
-      .bottom {
-        padding-top: 1rem;
-        height: 14rem;
-        background: #f9f9f9;
-        .head, .submit, .or, .join-f-g , .footer {
-          margin-bottom: 1rem;
-        }
-        .head {
-          color: #1a1a1a;
-          font-size: 0.89rem;
-          font-weight: bold;
-        }
-        .submit {
-          input {
-            width: 16.67rem;
-            height: 2rem;
-            outline: none;
-            padding-left: 5px;
-          }
-          button {
-            .btn-h(5.56rem, 2.2rem);
-            border-radius: 0;
-            color: white;
-            background:#7ebbe2;
-            border-color: #7ebbe2;
-            &:active {
-              background: darken(#7ebbe2, 10%);
-              border-color: darken(#7ebbe2, 10%);
-            }
-          }
-        }
-        .or {
-          position: relative;
-          height: 1rem;
-          span {
-            position: relative;
-            z-index: 22;
-            background: #f9f9f9;
-          }
-          .line {
-            position: absolute;
-            top: 7px;
-            z-index: 1;
-            left: 20%;
-            display: inline-block;
-            width: 60%;
-            height: 1px;
-            background: #ddd;
-          }
-        }
-         .join-f-g {
-           button {
-             .btn-h(11.11rem, 2rem);
-              color: white;
-              font-size: 0.78rem;
-           }
-            .facebook {
-              background: #3a5899;
-              border-color: #3a5899;
-              &:active {
-                background: darken(#3a5899, 10%) ;
-                border-color:  darken(#3a5899, 10%);
-              }
-            }
-            .google {
-              background: #dd4a38;
-              border-color: #dd4a38;
-              &:active {
-                background: darken(#dd4a38, 10%) ;
-                border-color:  darken(#dd4a38, 10%);
-              }
-            }
-          }
-      }
+.code-dialog {
+  .title {
+    margin-left: 8rem;
+    display: inline-block;
+    width: 24rem;
+    font-weight: bold;
+    font-size: 1rem;
+    img {
+      position: absolute;
+      left: -110px;
+      top: 0;
     }
   }
-  
-  .not-trials-dialog {
-    p, div {
-      text-align: center;
-    }
-    div {
-      button {
-        .btn-h(50%, 2rem);
-        background: #84BA39;
-        border-color: #84BA39;
-        color: white;
-        &:active {
-          background: darken(#84BA39, 10%);
-          border-color: darken(#84BA39, 10%);
-        }
+  .dialog-body {
+    text-align: center;
+    .top {
+      padding-top: 2rem;
+      height: 12rem;
+      border: 1px solid #e1e1e1;
+      .head {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #1a1a1a;
       }
-    }
-  }
-  .template-dialog {
-    .dialog-body {
-      height: 500px;
-      padding-left: 50px;
-      .box {
-        position: relative;
-        float: left;
-        width: 44%;
-        height: 83%;
-        margin: 1rem 20px;
-        border-radius: 5px;
-        box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
-        h3 {
-            border-bottom: 1px solid #e1e1e1;
-            padding-bottom: 20px;
-            padding-left: 20px;
-        }
-        .content {
-          padding-left: 20px;
-          padding-right: 10px;
-          .right {
-            float: right;
-          }
-          .text {
-            margin-bottom: 5px;
-          }
-          textarea {
-            width: 100%;
-            height: 300px;
-            border: none;
-            outline: none;
-            resize: none;
-            overflow: hidden;
-            overflow-y: auto;
-            font-size: 14px;
-            color: #565656;
-          }
-        }
-        .footer {
-          position: absolute;
-          bottom: -50px;
-          width: 100%;
-          height: 30px;
-          text-align: left;
-          &.right {
-            line-height: 2;
-            text-align: center;
-            span {
-              color: #808080;
-              cursor: pointer;
-              &:hover {
-                color: darken(#808080, 80%);
-              }
-            }
-            .reset {
-              margin-right: 100px;
-            }
-          }
-        }
-        .save {
-          position: absolute;
-          .btn-h(77px,77px);
-          background: #2089bb;
-          border-color: #2089bb;
+      .goto-amazon {
+        color: #808080;
+        margin-bottom: 1rem;
+        font-size: 0.66rem;
+      }
+      .discount {
+        button {
+          .btn-h(20rem,3rem);
           color: white;
-          bottom: -38.5px;
-          left: 50%;
-          margin-left: -38.5px;
-          border-radius: 100%;
+          font-size: 1rem;
+          background: #85bb3b;
+          border-color: #85bb3b;
           &:active {
-            background: darken(#2089bb, 10%);
-            border-color: darken(#2089bb, 10%);
+            background: darken(#85bb3b, 10%);
+            border-color: darken(#85bb3b, 10%);
+          }
+        }
+      }
+      .coupon-code {
+        position: relative;
+        width: 20rem;
+        height: 3rem;
+        margin: 0 auto;
+        text-align: left;
+        padding-left: 4rem;
+        line-height: 3rem;
+        background: #e5f0e1;
+        button {
+          position: absolute;
+          top: 0.5rem;
+          right: 1rem;
+          .btn-h(5rem,2rem);
+          color: white;
+          font-size: 1rem;
+          background: #85bb3b;
+          border-color: #85bb3b;
+          &:active {
+            background: darken(#85bb3b, 10%);
+            border-color: darken(#85bb3b, 10%);
+          }
+        }
+        .code {
+          color: #49663f;
+          font-size: 1rem;
+          font-weight: bold;
+        }
+      }
+    }
+    .bottom {
+      padding-top: 1rem;
+      height: 14rem;
+      background: #f9f9f9;
+      .head,
+      .submit,
+      .or,
+      .join-f-g,
+      .footer {
+        margin-bottom: 1rem;
+      }
+      .head {
+        color: #1a1a1a;
+        font-size: 0.89rem;
+        font-weight: bold;
+      }
+      .submit {
+        input {
+          width: 16.67rem;
+          height: 2rem;
+          outline: none;
+          padding-left: 5px;
+        }
+        button {
+          .btn-h(5.56rem, 2.2rem);
+          border-radius: 0;
+          color: white;
+          background: #7ebbe2;
+          border-color: #7ebbe2;
+          &:active {
+            background: darken(#7ebbe2, 10%);
+            border-color: darken(#7ebbe2, 10%);
+          }
+        }
+      }
+      .or {
+        position: relative;
+        height: 1rem;
+        span {
+          position: relative;
+          z-index: 22;
+          background: #f9f9f9;
+        }
+        .line {
+          position: absolute;
+          top: 7px;
+          z-index: 1;
+          left: 20%;
+          display: inline-block;
+          width: 60%;
+          height: 1px;
+          background: #ddd;
+        }
+      }
+      .join-f-g {
+        button {
+          .btn-h(11.11rem, 2rem);
+          color: white;
+          font-size: 0.78rem;
+        }
+        .facebook {
+          background: #3a5899;
+          border-color: #3a5899;
+          &:active {
+            background: darken(#3a5899, 10%);
+            border-color: darken(#3a5899, 10%);
+          }
+        }
+        .google {
+          background: #dd4a38;
+          border-color: #dd4a38;
+          &:active {
+            background: darken(#dd4a38, 10%);
+            border-color: darken(#dd4a38, 10%);
           }
         }
       }
     }
   }
+}
+
+.not-trials-dialog {
+  p,
+  div {
+    text-align: center;
+  }
+  div {
+    button {
+      .btn-h(50%, 2rem);
+      background: #84ba39;
+      border-color: #84ba39;
+      color: white;
+      &:active {
+        background: darken(#84ba39, 10%);
+        border-color: darken(#84ba39, 10%);
+      }
+    }
+  }
+}
+.template-dialog {
+  .dialog-body {
+    height: 500px;
+    padding-left: 50px;
+    .box {
+      position: relative;
+      float: left;
+      width: 44%;
+      height: 83%;
+      margin: 1rem 20px;
+      border-radius: 5px;
+      box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
+      h3 {
+        border-bottom: 1px solid #e1e1e1;
+        padding-bottom: 20px;
+        padding-left: 20px;
+      }
+      .content {
+        padding-left: 20px;
+        padding-right: 10px;
+        .right {
+          float: right;
+        }
+        .text {
+          margin-bottom: 5px;
+        }
+        textarea {
+          width: 100%;
+          height: 300px;
+          border: none;
+          outline: none;
+          resize: none;
+          overflow: hidden;
+          overflow-y: auto;
+          font-size: 14px;
+          color: #565656;
+        }
+      }
+      .footer {
+        position: absolute;
+        bottom: -50px;
+        width: 100%;
+        height: 30px;
+        text-align: left;
+        &.right {
+          line-height: 2;
+          text-align: center;
+          span {
+            color: #808080;
+            cursor: pointer;
+            &:hover {
+              color: darken(#808080, 80%);
+            }
+          }
+          .reset {
+            margin-right: 100px;
+          }
+        }
+      }
+      .save {
+        position: absolute;
+        .btn-h(77px,77px);
+        background: #2089bb;
+        border-color: #2089bb;
+        color: white;
+        bottom: -38.5px;
+        left: 50%;
+        margin-left: -38.5px;
+        border-radius: 100%;
+        &:active {
+          background: darken(#2089bb, 10%);
+          border-color: darken(#2089bb, 10%);
+        }
+      }
+    }
+  }
+}
 .explain {
   width: inherit;
 }

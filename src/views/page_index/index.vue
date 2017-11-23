@@ -3,7 +3,11 @@
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
-        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  :key="1" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
+                     :key="1" 
+                     :couponsDetails="couponsDetails"
+                     :promotions="userPromotions"
+                     @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
             <span class="price-left">${{couponsDetails.product_price}}</span>
@@ -29,8 +33,9 @@
 import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import pagination from "@/components/page_index_coupons/pagination.vue"
 import { couponsDetails } from '@/mock/trials/index.js'
-import { getAllCoupons } from '@/api/login'
-import { setStore } from '@/utils/utils'
+import { getAllCoupons, getInfo } from '@/api/login'
+import { getToken } from '@/utils/auth'
+import { mapGetters } from 'vuex'
 export default {
   name: "page_index",
   data() {
@@ -39,6 +44,9 @@ export default {
       showItem: 7,
       allpage: undefined,
       arrcouponsDetails: [
+      ],
+      userPromotions: [
+
       ],
       requestData: {
         page: 1,
@@ -54,7 +62,17 @@ export default {
     getAllCoupons(this.requestData).then(res => {
       this.arrcouponsDetails = res.data.data
       this.allpage = res.data.last_page
-    })   
+    }) 
+    getInfo({'api_token': getToken()}).then(res => {
+      var promotions = []
+      for (var i of res.data.promotions) {
+        promotions.push(i.coupon_id)
+      }
+      this.userPromotions = promotions
+    }) 
+  },
+  computed: {
+
   },
   methods: {
     gotoPage(index) {
@@ -87,5 +105,8 @@ export default {
   font-size: 34px;
   color: white;
   cursor: pointer;
+}
+.pages-content {
+  min-height: 1000px;
 }
 </style>

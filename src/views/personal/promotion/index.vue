@@ -2,28 +2,27 @@
   <div class="promotion clearfix">
     <div class="pro-header">
       <h3 class="title">promotion</h3>
-      <div class="remove-all" @click="removeAll">
+      <div class="remove-all" @click="removeAllPromotion">
         <i class="el-icon-delete"></i>
         <span> Remove All</span>
       </div>
     </div>
     <div class="promotion-content clearfix ">
-      <div class="pro-card" v-for="(n, index) in items">
+      <div class="pro-card" v-for="(item, index) in promotionDetails">
         <div class="expried">EXPRIED</div>
-        <img class="pro-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
-        <div class="plotform">amazon </div>
-        <div class="pro-title" title="this is title">STATE Geo Mesh CoidGeoMesh Cold
-          Shoulder Shift Dress </div>
+        <img class="pro-img" :src="item.product_img.split(',')[0]" alt="">
+        <div class="plotform">{{item.website}} </div>
+        <div class="pro-title" title="this is title">{{item.product_title}} </div>
         <div class="price-remove">
-          <span>$98.00</span>
-          <span class="remove">
+          <span>${{item.product_price}}</span>
+          <span class="remove" @click="removePromotion(item.id)">
             <i class="el-icon-delete"></i>
           </span>
         </div>
         <div class="pro-coupons">
            <div class="coupons content">
-              <span><i class="gray-s">Coupons</i> <strong>12%</strong></span>
-              <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
+              <span><i class="gray-s">Coupons</i> <strong>${{item.discount_price}}</strong></span>
+              <span class="coupon-right"><strong>{{item.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
           </div>
         </div>
       </div>
@@ -32,17 +31,89 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { promotionUserCoupon, promotionUserRemove } from '@/api/login'
 export default {
   name: 'promotion',
   data () {
     return {
-      items: [1,2,3,4,5,6,7,8,9,10]
+      promotionDetails: {
+
+      },
+      requestData: {
+        api_token: '',
+        user_id: ''
+      },
+      removeRequestData: {
+        api_token: '',
+        user_id: '',
+        coupon_id: '',
+      },
+      removeAllRequestData: {
+        api_token: '',
+        user_id: '',
+        coupon_id: '',
+      }
+
     }
   },
   methods: {
     removeAll () {
       alert("remove all?");
+    },
+
+    //获取用户加入推广（收藏）的优惠券信息
+    getPromotionDetails () {
+      this.requestData.api_token = this.token
+      this.requestData.user_id = this.user_id
+      promotionUserCoupon(this.requestData).then(res => {
+        this.promotionDetails = res.data.data
+      }).catch(error => {
+        concole.log(error)
+      })
+    },
+
+    //移除优惠券
+    removePromotion (id) {
+      this.removeRequestData.api_token = this.token
+      this.removeRequestData.user_id = this.user_id
+      this.removeRequestData.coupon_id = id
+      console.log(this.removeRequestData)
+      promotionUserRemove (this.removeRequestData).then(res => {
+        console.log(res)
+        this.getPromotionDetails()
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //移除所有的优惠券
+    removeAllPromotion () {
+      this.removeAllRequestData.api_token = this.token
+      this.removeAllRequestData.user_id = this.user_id
+      console.log(this.removeAllRequestData)
+      this.$alert('这是一段内容', '标题名称', {
+          confirmButtonText: '确定',
+          callback: () => {
+            promotionUserRemove (this.removeAllRequestData).then(res => {
+              this.getPromotionDetails()
+              console.log(res)
+            }).catch(error => {
+              console.log(error)
+            })
+          }
+        });
     }
+  },
+  computed: {
+    ...mapGetters([
+      'user_id',
+      'token'
+    ])
+  },
+  mounted () {
+
+    this.getPromotionDetails()
   }
 }
 </script>

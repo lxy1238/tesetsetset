@@ -18,7 +18,6 @@
             :key="item.value"
             :label="item.label"
             :value="item.value">
-
           </el-option>
         </el-select>
       </el-form-item>
@@ -29,7 +28,6 @@
             :key="item.value"
             :label="item.label"
             :value="item.value">
-
           </el-option>
         </el-select>
       </el-form-item>
@@ -40,7 +38,6 @@
             :key="item.value"
             :label="item.label"
             :value="item.value">
-
           </el-option>
         </el-select>
       </el-form-item>
@@ -212,7 +209,6 @@ export default {
   },
   mounted () {
     setTimeout(() => {
-      console.log($('#summernote').summernote)
       $('#summernote').summernote({
       height: 300,
       // tabsize: 2
