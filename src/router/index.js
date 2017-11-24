@@ -39,6 +39,7 @@ export const constantRouterMap = [
         component: _import('trials_details/apply_success')
       },
      
+     
     ]
   },
   {
@@ -60,6 +61,10 @@ export const constantRouterMap = [
       {
         path: '/commissions',
         component: _import('commissions/index')
+      },
+      {
+        path: '/activate/:email',
+        component: _import('another/activate/index')
       },
     ]
   },

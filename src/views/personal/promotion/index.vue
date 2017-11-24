@@ -5,14 +5,38 @@
       <div class="remove-all" @click="removeAllPromotion">
         <i class="el-icon-delete"></i>
         <span> Remove All</span>
-         <span class="remove" @click="removePromotion(item.id)">
-            <i class="el-icon-delete"></i>
-          </span>
+        
       </div>
     </div>
-    <div class="promotion-content clearfix ">
+    <div class="promotion-coupons">
+       <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
+                     :key="1" 
+                     :couponsDetails="couponsDetails"
+                     :addpromo="false"
+                     @gotodetails="gotodetails">
+          <template slot="price">
+          <p class="price content">
+            <span class="price-left">${{couponsDetails.product_price}}</span>
+            <span class="price-right">${{couponsDetails.discount_price}}</span>
+            <span class="remove" @click="removePromotion(couponsDetails.id)">
+              <i class="el-icon-delete"></i>
+            </span>
+          </p>
+          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
+          </template>
+          <template slot="btn">
+            View Coupons
+          </template>
+        </coupons-pro>
+      </div>
+      <pagination 
+        v-if="allpage && allpage != 1"
+        :allpage="allpage"
+        :show-item="showItem"
+        @handlecurrent="gotoPage">
+      </pagination>
+    <!-- <div class="promotion-content clearfix ">
       <div class="pro-card" v-for="(item, index) in promotionDetails">
-        <div class="expried">EXPRIED</div>
         <img class="pro-img" :src="item.product_img.split(',')[0]" alt="">
         <div class="plotform">{{item.website}} </div>
         <div class="pro-title" title="this is title">{{item.product_title}} </div>
@@ -29,18 +53,22 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 import { promotionUserCoupon, promotionUserRemove } from "@/api/login";
+import couponsPro from "@/components/page_index_coupons/image_product.vue";
+import pagination from "@/components/page_index_coupons/pagination.vue";
 export default {
   name: "promotion",
   data() {
     return {
-      promotionDetails: {},
+      arrcouponsDetails: [],
+      allpage: undefined,
+      showItem: 7,
       requestData: {
         api_token: "",
         user_id: ""
@@ -57,6 +85,10 @@ export default {
       }
     };
   },
+  components: {
+    couponsPro,
+    pagination
+  },
   methods: {
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails() {
@@ -65,7 +97,8 @@ export default {
       promotionUserCoupon(this.requestData)
         .then(res => {
           console.log(res);
-          this.promotionDetails = res.data.data;
+          this.arrcouponsDetails = res.data.data;
+          this.allpage = res.data.last_page;
         })
         .catch(error => {
           concole.log(error);
@@ -108,6 +141,11 @@ export default {
         .catch(() => {
           console.log("quxiao");
         });
+    },
+
+    //跳转到详情页面
+    gotodetails(id, user_id) {
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
     }
   },
   computed: {
@@ -160,17 +198,7 @@ export default {
       margin-bottom: 1rem;
       text-align: center;
       overflow: hidden;
-      .expried {
-        position: absolute;
-        font-size: 0.78rem;
-        width: 100%;
-        height: 2rem;
-        line-height: 2rem;
-        background: #c4c4c4;
-        color: white;
-        transform: rotate(-45deg) translateX(-22%) translateY(-230%);
-        text-align: center;
-      }
+
       .pro-img {
         display: inline-block;
         width: 10rem;
@@ -212,6 +240,18 @@ export default {
           float: right;
         }
       }
+    }
+  }
+}
+.promotion-coupons {
+  width: 104%;
+  .coupons-product {
+    width: 23%;
+    margin: 0 1.5% 20px 0;
+    .remove {
+      float: right;
+      margin-right: 10px;
+      cursor: pointer;
     }
   }
 }

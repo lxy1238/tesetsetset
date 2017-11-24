@@ -24,8 +24,8 @@
             <span><i class="iconfont icon-jifenqianbi"> </i> Points: {{userData.base.score}}</span>
           </div>
           <div class="footer">
-            <span v-if="userData.base.introduce">{{userData.base.introduce}} </span><br />
-             <span> Find this site interesting, <a href="javascript:void(0);">Invite Friends</a> to join.</span>
+            <div v-if="userData.base.introduce">{{userData.base.introduce}} </div>
+             <div> Find this site interesting, <a href="javascript:void(0);">Invite Friends</a> to join.</div>
           </div>
         </div>
       </div>

@@ -77,17 +77,22 @@ export default {
   watch: {
     userInfo () {
       console.log(this.imgList, this.activeNum)
+    },
+    postedUserId () {
+      this.getPostUserInfo()
     }
   },
   computed: {
     imgLen() {
       return this.imgList.length;
+    },
+    postedUserId () {
+      return this.$route.params.postedUserId
     }
   },
   methods: {
     emitdata (index) {
       this.$emit('send', this.imgList[index])
-      // this.$root.eventHub.$emit('sendImg', this.imgList[index])  非父子组件之前的数据传递方式
     },
     hover (i) {
       this.activeNum = i
@@ -116,7 +121,6 @@ export default {
     getPostUserInfo () {
       var request = { 'user_id': this.$route.params.postUserId }
       postedUserInfo (request).then(res => {
-        console.log(res)
         res.data.joined_date = timestampFormat(res.data.joined_date)
         this.userInfo = res.data
       }).catch(error => {

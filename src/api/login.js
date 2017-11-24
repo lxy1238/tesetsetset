@@ -11,6 +11,14 @@ export const sign = data => fetch({
   data: qs.stringify(data)
 })
 
+//激活
+export const userActivate = data => fetch({
+  url: '/api/v1/user/activate',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 //登录
 
 export const login = data => fetch({
@@ -28,7 +36,6 @@ export const getAllCoupons = data => fetch({
 })
 
 //获取用户基本信息
-
 export const getInfo = data => fetch({
   url: '/api/v1/user/info',
   method: 'POST',
@@ -149,7 +156,7 @@ export const promotionUserRemove = data => fetch({
 /**
  * 
  * @param 试用品
- * 
+ *  
  * 
  */
 
@@ -174,4 +181,11 @@ export const uploadImg = data => fetch({
   url: '/api/v1/common/upload-file',
   method: 'POST',
   data: data
+})
+
+
+//获取平台品类
+export const getPlatformCate = () => fetch({
+  url: '/api/v1/platform/platform-category',
+  method: 'POST',
 })

@@ -12,22 +12,22 @@
         <button class="get-pro-info"  type="button" @click="getProInfo">get</button>
       </el-form-item>
       <el-form-item label="Wedsite: " prop="website" class="item-inline" >
-        <el-select v-model="couponsForm.website">
+        <el-select v-model="couponsForm.website"  @change="websiteChange">
           <el-option
             v-for="item in optionsWebsite"
-            :key="item.value"
+            :key="item.id"
             :label="item.label"
-            :value="item.value">
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="Category: " prop="category_id" class="item-inline" >
-        <el-select v-model="couponsForm.category_id">
+        <el-select v-model="couponsForm.category_id" >
           <el-option
             v-for="item in optionsCategory"
-            :key="item.value"
+            :key="item.id"
             :label="item.label"
-            :value="item.value">
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -71,7 +71,9 @@
       <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date"></el-date-picker>
     </el-form-item>
      <el-form-item label="Discount rate: " class="item-inline" prop="discount_rate" >
-       <el-input v-model="couponsForm.discount_rate"></el-input>
+       <el-input v-model="couponsForm.discount_rate">
+          <template slot="append">%</template>
+       </el-input>
     </el-form-item>
     <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
        <el-input v-model="couponsForm.quantity_per_day"></el-input>
@@ -94,7 +96,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { addCoupon, uploadImg } from "@/api/login";
+import { addCoupon, uploadImg, getPlatformCate } from "@/api/login";
 import { getToken } from "@/utils/auth";
 import axios from "axios";
 import qs from "qs";
@@ -102,57 +104,16 @@ export default {
   name: "coupoons-add",
   data() {
     return {
-      optionsWebsite: [
-        {
-          value: "亚马逊",
-          label: "亚马逊"
-        },
-        {
-          value: "亚马逊1",
-          label: "亚马逊1"
-        },
-        {
-          value: "亚马逊2",
-          label: "亚马逊2"
-        },
-        {
-          value: "亚马逊3",
-          label: "亚马逊3"
-        },
-        {
-          value: "亚马逊4",
-          label: "亚马逊4"
-        }
-      ],
+      optionsWebsite: [],
       optionsCategory: [
-        {
-          value: 1,
-          label: "母婴"
-        },
-        {
-          value: 2,
-          label: "运动"
-        },
-        {
-          value: 3,
-          label: "男装"
-        },
-        {
-          value: 4,
-          label: "女装"
-        },
-        {
-          value: 5,
-          label: "零食"
-        }
       ],
       couponsForm: {
         product_url: "http://www.baidu.com", //产品链接， 是
         user_id: undefined, // 用户ID ， 是，
         user_name: "", // 发布用户名称， 是
-        category_id: 1, // 所属分类 , 是   int
+        category_id: "", // 所属分类 , 是   int
         country: "美国", // 国家  是
-        website: "亚马逊2", // 平台   是
+        website: "", // 平台   是
         product_title:
           "2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers", // 商品标题   是 ，
         product_img: [], // 产品图片， string, 用逗号拼接 , 否
@@ -178,8 +139,8 @@ export default {
       rules: {
         product_url: [{ required: true, trigger: "blur" }],
         product_price: [{ required: true, trigger: "blur" }],
-        website: [{ required: true, trigger: "blur" }],
-        product_img: [
+        website: [{type:'number', required: true, trigger: "blur" }],
+        product_img_s: [
           {
             type: "array",
             required: true,
@@ -204,9 +165,7 @@ export default {
     };
   },
   mounted() {
-    this.couponsForm.user_id = this.user_id;
-    this.couponsForm.user_name = this.username;
-    this.uploadData.api_token = this.token;
+    this.init();
   },
   computed: {
     ...mapGetters(["user_id", "username", "token"])
@@ -215,6 +174,64 @@ export default {
     getProInfo() {
       console.log("获取产品信息");
     },
+
+    //页面初始化
+    init() {
+      this.initData();
+      this.getPlatformCateInfo();
+    },
+
+    //数据初始化
+    initData() {
+      this.couponsForm.user_id = this.user_id;
+      this.couponsForm.user_name = this.username;
+      this.uploadData.api_token = this.token;
+    },
+
+    //获取平台品类信息
+    getPlatformCateInfo() {
+      getPlatformCate()
+        .then(res => {
+          console.log(res.data);
+          var arrKeysWeb = Object.keys(res.data.website);
+          for (var i of arrKeysWeb) {
+            var ObjWebsite = {
+              label: "",
+              id: ""
+            }
+            ObjWebsite.label = res.data.website[i]
+            ObjWebsite.id = parseInt(i)
+            this.optionsWebsite.push(ObjWebsite)
+          }
+          this.couponsForm.website = ""
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+     //平台发生改变
+    websiteChange (id) {
+      this.optionsCategory = []
+      getPlatformCate().then(res => {
+        var arrData = res.data.category[id]
+        for (var i in arrData) {
+          var ObjCate = {
+              label: "",
+              id: ""
+            }
+          ObjCate.label = arrData[i].website_category
+          ObjCate.id = arrData[i].id
+          this.optionsCategory.push(ObjCate)
+        }
+        this.couponsForm.category_id = this.optionsCategory[0].id
+      }).catch(error => {
+        console.log(error)
+      }) 
+      console.log(this.couponsForm)
+    },
+
+    //上传图片
     beforeAvatarUploadP(file) {
       var isJPG = file.type === "image/jpeg";
       var isGIF = file.type === "image/gif";
@@ -288,11 +305,11 @@ export default {
           this.couponsForm.quantity_per_day = parseInt(
             this.couponsForm.quantity_per_day
           );
-          var imgArr = []
+          var imgArr = [];
           for (var i of this.couponsForm.product_img_s) {
-            imgArr.push(i.url)
+            imgArr.push(i.url);
           }
-          this.couponsForm.product_img = imgArr
+          this.couponsForm.product_img = imgArr;
           this.issueCoupon(this.couponsForm);
           console.log(this.couponsForm);
         } else {
@@ -304,7 +321,9 @@ export default {
     //退出
     Cancel() {
       this.$router.go(-1);
-    }
+    },
+
+   
   }
 };
 </script>
@@ -320,7 +339,7 @@ export default {
     display: inline-block;
   }
   .item-inline1 {
-    width: 33%;
+    width: 40%;
     display: inline-block;
   }
   .textarea {
@@ -359,7 +378,7 @@ export default {
       }
     }
     .cancel {
-      .btn-h(120px, 45px, #79b6, #79b6, #fff);
+      .btn-h(120px, 45px, #79b6e0, #79b6e0, #fff);
       &:active {
         background: darken(#79b6e0, 10%);
         border-color: darken(#79b6e0, 10%);

@@ -25,7 +25,7 @@
                   @click.stop="showDropdownUser($event)">
                <div class="user-info-content">
                  <div class="absolute img">
-                   <img v-if="avatar_img" :src="avatar_img" />
+                   <img v-if="validateImgS(avatar_img)" :src="avatar_img" />
                    <img v-else src="../../assets/user.png" alt="user" />
                  </div>
                  <div class="absolute username">{{username}}</div>
@@ -181,7 +181,7 @@
                 <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="button" class="sign-up-btn" @click="signUp">Sign up</el-button>
+                <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading">Sign up</el-button>
               </el-form-item>
             </el-form>
             <div class="footer">
@@ -240,7 +240,7 @@
 
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
-import { validateEmail } from '@/utils/validate.js'
+import { validateEmail, validateImg } from '@/utils/validate.js'
 import { sign, login } from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore } from '@/utils/utils'
@@ -261,6 +261,7 @@ export default {
         email: '',
         username: '',
         password:'',
+        activate_url: '',
       },
       loginform: {
         email: '',
@@ -277,6 +278,7 @@ export default {
         ],
         username: [
           { required: true, message: 'Please enter your nickname', trigger: 'blur' },
+          { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' }
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
@@ -335,6 +337,7 @@ export default {
       selectedCountry: '中文(简体)',
       isShowAllLanguage: false,
       loginLoading: false,
+      signloading: false,
     }
   },
   props: {
@@ -350,10 +353,10 @@ export default {
       this.showDropdownL = false
     }, false)
     window.addEventListener('keyup', (e) => {
-      if (e.keyCode === 13 && this.signDialog === true) {
+      if (e.keyCode === 13 && this.signDialog === true && this.signloading === false) {
         this.signUp()
         return
-      } else if(e.keyCode === 13 && this.loginDialog === true) {
+      } else if(e.keyCode === 13 && this.loginDialog === true && this.loginLoading === false) {
         this.Login()
       } else if (e.keyCode === 13 && this.resetPassword === true) {
 
@@ -380,6 +383,9 @@ export default {
     ]),
     avatar_img () {
        return this.avatar
+    },
+    checkImg () {
+      return validateImg(this.avatar_img)
     }
   },
   methods: {
@@ -456,11 +462,20 @@ export default {
     },
     signUp () {
       this.signSubmit('signform', () => {
+        this.signloading = true
+        this.signform.activate_url = location.protocol + "//" + location.host + '/#/activate/' + this.signform.email
         sign(this.signform).then(res => {
           console.log(res)
-          this.signDialog = false
-          this.$message.success("Please login to the mailbox for activation validation")
-          this.$refs['signform'].resetFields();
+          if (res.code === 200) {
+            this.signDialog = false
+            this.signloading = false
+            this.$notify.success("Please login to the mailbox for activation validation")
+            this.$refs['signform'].resetFields()
+          } 
+          if (res.code === 401) {
+            this.signloading = false
+            this.$notify.error("The email has already been taken.")
+          }
         }).catch(error => {
           console.error("sign fail")
         })
@@ -502,6 +517,10 @@ export default {
     },
     logOut () {
       this.$store.dispatch('LogOut')
+    },
+
+    validateImgS (url) {
+      return validateImg(url)
     }
   }
 };

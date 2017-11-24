@@ -32,7 +32,6 @@
 <script>
 import couponsPro from "@/components/page_index_coupons/image_product.vue";
 import pagination from "@/components/page_index_coupons/pagination.vue";
-import { couponsDetails } from "@/mock/trials/index.js";
 import { getAllCoupons, getInfo } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
@@ -48,7 +47,7 @@ export default {
       requestData: {
         page: 1,
         page_size: 6 * 8
-      },
+      }
     };
   },
   components: {
@@ -57,26 +56,19 @@ export default {
   },
   mounted() {
     this.widthToNum()
-    window.onresize = () => {
-      this.widthToNum()
-    }
+    window.onresize = this.widthToNum
     this.getAllCouponsInfo()
     this.getUserInfo()
   },
+  beforeDestroy () {
+    window.onresize = null
+  },
   computed: {},
   methods: {
-
     //翻页功能实现
     gotoPage(index) {
       this.requestData.page = index;
-      getAllCoupons(this.requestData)
-        .then(res => {
-          this.arrcouponsDetails = res.data.data;
-          this.allpage = res.data.last_page;
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.getAllCouponsInfo()
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
@@ -86,7 +78,7 @@ export default {
 
     //获取用户信息 ，判断首页的coupon是否加入推广
     getUserInfo() {
-      getInfo({ api_token: getToken() , user_id: getUserId()}).then(res => {
+      getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
         if (res.code === 500) {
           return;
         }
@@ -100,22 +92,37 @@ export default {
 
     //获取首页所有优惠券的信息
     getAllCouponsInfo() {
-      getAllCoupons(this.requestData).then(res => {
-        this.arrcouponsDetails = res.data.data;
-        this.allpage = res.data.last_page;
-      });
+      getAllCoupons(this.requestData)
+        .then(res => {
+          this.arrcouponsDetails = res.data.data;
+          console.log(res);
+          this.allpage = res.data.last_page;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
 
     //根据页面尺寸宽度判断首页展示的商品数量
-    widthToNum () {
-      const LINE_NUM = 8    //默认显示的行数
-      if (window.innerWidth <= 1270 && this.requestData.page_size != 4 * LINE_NUM) {
+    widthToNum() {
+      const LINE_NUM = 8; //默认显示的行数
+      if (
+        window.innerWidth <= 1270 &&
+        this.requestData.page_size != 4 * LINE_NUM
+      ) {
         this.requestData.page_size = 4 * LINE_NUM
         this.getAllCouponsInfo()
-      } else if (window.innerWidth > 1270 && window.innerWidth <= 1557 && this.requestData.page_size != 5 * LINE_NUM) {
+      } else if (
+        window.innerWidth > 1270 &&
+        window.innerWidth <= 1557 &&
+        this.requestData.page_size != 5 * LINE_NUM
+      ) {
         this.requestData.page_size = 5 * LINE_NUM
         this.getAllCouponsInfo()
-      } else if (window.innerWidth > 1557 && this.requestData.page_size != 6 * LINE_NUM) {
+      } else if (
+        window.innerWidth > 1557 &&
+        this.requestData.page_size != 6 * LINE_NUM
+      ) {
         this.requestData.page_size = 6 * LINE_NUM
         this.getAllCouponsInfo()
       }

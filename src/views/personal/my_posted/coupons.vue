@@ -48,8 +48,8 @@
             </td>
             <td class="coupons-table-title">
               <div>amazon</div>
-              <div class="table-product-title">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item.id)">Electronics</a>
+              <div class="table-product-title" @click="gotoDetails(item.id, item.user_id)">{{item.product_title}}</div>
+              <a href="javascript:void(0);" @click="gotoDetails(item.id, item.user_id)">Electronics</a>
             </td>
 
             <td class="prcie">
@@ -127,155 +127,172 @@
 </template>
 
 <script>
-import pagination from '@/components/page_index_coupons/pagination.vue'
-import { mapGetters } from 'vuex'
-import { userPickCoupons } from '@/api/login'
-import { setStore, getStore, removeStore } from '@/utils/utils'
+import pagination from "@/components/page_index_coupons/pagination.vue";
+import { mapGetters } from "vuex";
+import { userPickCoupons } from "@/api/login";
+import { setStore, getStore, removeStore } from "@/utils/utils";
+import { parseTime } from "@/utils/date";
 export default {
-  name: 'center_coupons',
-  data () {
+  name: "center_coupons",
+  data() {
     return {
-      thLists: ["Image", "Title", "Price", "Discount", "Qty", "Valid Date", "Status", "Operation"],
-      trListsTest: [{
-        user_id: undefined,  // 用户ID ， 是，
-        user_name: '',       // 发布用户名称， 是
-        category_id: 1,     // 所属分类 , 是   int
-        country: '美国' ,    // 国家  是
-        website: '亚马逊2',         // 平台   是 
-       
-        product_reason: 'This is a product I like very much',  //产品描述  是
-        use_type: 'Unlimited',
-        coupon_code: 'QAKLWEFALWEKFJ',     //优惠券码
-        reward_type: '1.5',     //PerOrder:按每订单奖励,
-        product_price: '65',   //商品价格
-        shipping_fee: '1.11',   //运费   否
-        discount_rate: '12%',   //折扣率    否
-        valid_date: new Date(),      //到期时间  int
-       
-        quantity_per_day: 10, // 每天上限数量 int
-        influencer_reward:'1.5',// 推荐费用/每个
-        platform_fee: '2.2',    //支付平台费用/每个
-        influencer_reward_count: '66',    //推荐总费用
-        platform_reward: '55',   //  支付平台总费用， 否
-        total_fee: '123', //总费用
+      thLists: [
+        "Image",
+        "Title",
+        "Price",
+        "Discount",
+        "Qty",
+        "Valid Date",
+        "Status",
+        "Operation"
+      ],
+      trListsTest: [
+        {
+          user_id: undefined, // 用户ID ， 是，
+          user_name: "", // 发布用户名称， 是
+          category_id: 1, // 所属分类 , 是   int
+          country: "美国", // 国家  是
+          website: "亚马逊2", // 平台   是
 
+          product_reason: "This is a product I like very much", //产品描述  是
+          use_type: "Unlimited",
+          coupon_code: "QAKLWEFALWEKFJ", //优惠券码
+          reward_type: "1.5", //PerOrder:按每订单奖励,
+          product_price: "65", //商品价格
+          shipping_fee: "1.11", //运费   否
+          discount_rate: "12%", //折扣率    否
+          valid_date: new Date(), //到期时间  int
 
-        product_title: 'this is project',   // 商品标题   是 ，
-        product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',     // 产品图片， string, 用逗号拼接 , 否
-        coupon_id: 1,
-        total_quantity: 1000,  // 总数量   int
-        total_receiptor: 365,
-        status: 1,
-      }],
+          quantity_per_day: 10, // 每天上限数量 int
+          influencer_reward: "1.5", // 推荐费用/每个
+          platform_fee: "2.2", //支付平台费用/每个
+          influencer_reward_count: "66", //推荐总费用
+          platform_reward: "55", //  支付平台总费用， 否
+          total_fee: "123", //总费用
+
+          product_title: "this is project", // 商品标题   是 ，
+          product_img: "http://www.ghostxy.top/dealsbank/img/01.png", // 产品图片， string, 用逗号拼接 , 否
+          coupon_id: 1,
+          total_quantity: 1000, // 总数量   int
+          total_receiptor: 365,
+          status: 1
+        }
+      ],
       detailsDialog: false,
       trLists: [],
       allpage: undefined,
       showItem: 7,
       searchForm: {
         title: "",
-        category: '',
-        status: "",
+        category: "",
+        status: ""
       },
       requestdata: {
-        user_id: '',
-        api_token: '',
+        user_id: "",
+        api_token: "",
         page: 1,
         page_size: 6
       }
-     
-    }
+    };
   },
   components: {
     pagination
   },
-  mounted () {
-    this.requestdata.user_id = this.user_id
-    this.requestdata.api_token = this.token
-    console.log(this.requestdata)
-    userPickCoupons(this.requestdata).then(res => {
-      console.log(res)
-      if (res.data.total !== 0) {
-        this.trLists = res.data.data
-        this.allpage = res.data.last_page
-      }
-  
-    }).catch(error => {
-      console.log(error)
-    })
+  mounted() {
+    this.requestdata.user_id = this.user_id;
+    this.requestdata.api_token = this.token;
+    console.log(this.requestdata);
+    this.getUserPickCoupons()
   },
   computed: {
-    ...mapGetters([
-      'user_id',
-      'token'
-    ])
+    ...mapGetters(["user_id", "token"])
   },
   methods: {
     //分页跳转
-    gotoPage (i) {
-      this.requestdata.page = i
-      userPickCoupons(this.requestdata).then(res => {
-        console.log(res)
-        this.trLists = res.data.data
-        // this.allpage = res.data.last_page
-      })
+    gotoPage(i) {
+      this.requestdata.page = i;
+      this.getUserPickCoupons()
+    },
+
+    //获取首页列表数据
+    getUserPickCoupons() {
+      userPickCoupons(this.requestdata)
+        .then(res => {
+          console.log(res);
+          if (res.data.total !== 0) {
+            for (var i in res.data.data) {
+              res.data.data[i].valid_date = parseTime(
+                res.data.data[i].valid_date,
+                "{y}-{m}-{d}"
+              );
+            }
+            this.trLists = res.data.data;
+            this.allpage = res.data.last_page;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
 
     //跳转到添加优惠券页面
-    add () {
-      this.$router.push({path: '/posted/coupons/add'})
+    add() {
+      this.$router.push({ path: "/posted/coupons/add" })
     },
 
     //发布的优惠券查询
-    postedCouponsSearch () {
-      console.log(this.searchForm)
+    postedCouponsSearch() {
+      console.log(this.searchForm);
     },
 
     //跳转到优惠券详情页面
-    gotoDetails (id) {
-      
+    gotoDetails(id, user_id) {
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
     },
 
     //跳转到 领取优惠券的用户页面
-    gotoReceiptor (item) {
+    gotoReceiptor(item) {
       if (item.pick_numbers === 0) {
         return false
       }
-      this.$router.push({path: '/posted/coupons/receiptor'})
-      setStore('couponDetails', JSON.stringify(item))
+      this.$router.push({ path: "/posted/coupons/receiptor" });
+      setStore("couponDetails", JSON.stringify(item));
     },
 
     //编辑待审核状态下和审核未通过的优惠券
-    EditCoupon (item) {
+    EditCoupon(item) {
       console.log(item)
-      this.$router.push({path: '/posted/coupons/add'})
+      this.$router.push({ path: "/posted/coupons/add" })
     },
 
     //删除优惠券
-    DeleteCoupon (id) {
-      this.$confirm('Determine deleting coupons?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
-        type: 'warning'
-      }).then(() => {
-        this.$notify({
-          type: 'success',
-          message: 'delete success!'
+    DeleteCoupon(id) {
+      this.$confirm("Determine deleting coupons?", "reminder", {
+        confirmButtonText: "confirm",
+        cancelButtonText: "cancel",
+        type: "warning"
+      })
+        .then(() => {
+          this.$notify({
+            type: "success",
+            message: "delete success!"
+          })
+        })
+        .catch(() => {
+          console.log("cancel")
         });
-      }).catch(() => {
-        console.log("cancel")         
-      });
     },
 
     //显示详情弹窗
-    showDetails () {
+    showDetails() {
       this.detailsDialog = true
     }
   }
-}
+};
 </script>
 
 <style lang="less"  >
-@import url('../../../styles/mixin.less');
+@import url("../../../styles/mixin.less");
 .posted-coupons {
   .pro-header {
     position: relative;
@@ -323,9 +340,7 @@ export default {
         border-color: darken(#7ab7e0, 10%);
       }
     }
-
   }
- 
 }
 .coupons-pagination {
   .pagination {
@@ -345,7 +360,6 @@ export default {
   }
 }
 
-
 .coupons-table {
   font-size: 12px;
   .product-img {
@@ -361,6 +375,4 @@ export default {
 .details-dialog {
   text-align: center;
 }
-
-
 </style>

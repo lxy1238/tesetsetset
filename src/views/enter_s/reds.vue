@@ -21,7 +21,7 @@
             label-position="top"
             class="coupons-form" >
       <el-form-item label="Full name: " prop="full_name" >
-        <el-input class="url-input" v-model="redsFrom.full_name"></el-input>
+        <el-input class="url-input" v-model="redsFrom.full_name" ></el-input>
       </el-form-item>
       <el-form-item label="E-mail: " prop="email" class="item-inline"  >
         <el-input class="url-input" v-model="redsFrom.email"></el-input>
@@ -36,22 +36,22 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Province/State: "  prop="product_price"  class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="redsFrom.product_price"></el-input>
+      <el-form-item label="Province/State: "  prop="province_state"  class="item-inline"  >
+        <el-input class="url-input input-price-fee" v-model="redsFrom.province_state"></el-input>
       </el-form-item>
-      <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="redsFrom.shipping_fee"></el-input>
+      <el-form-item label="City/Town: " prop="city_town" class="item-inline"  >
+        <el-input class="url-input input-price-fee" v-model="redsFrom.city_town"></el-input>
       </el-form-item>
-      <el-form-item label="Title: " prop="product_title"  >
-        <el-input v-model="redsFrom.product_title"></el-input>
+      <el-form-item label="Street address: " prop="street_address"  >
+        <el-input v-model="redsFrom.street_address"></el-input>
       </el-form-item>
-      <el-form-item label="Reason: "  prop="product_reason" >
-        <el-input v-model="redsFrom.product_reason" type="textarea" class="textarea"></el-input>
+      <el-form-item label="Postcode/Zip Code: "  prop="postcode" >
+        <el-input v-model="redsFrom.postcode" type="textarea" class="textarea"></el-input>
       </el-form-item>
-       <el-form-item label="Specifications: " prop="specifications" >
-        <el-input v-model="redsFrom.specifications" type="textarea" class="textarea"></el-input>
+       <el-form-item label="Daytime Phone: " prop="daytime_phone" >
+        <el-input v-model="redsFrom.daytime_phone" type="textarea" class="textarea"></el-input>
       </el-form-item>
-      <el-form-item label="Product details: " required>
+      <el-form-item label="Income situation: " required>
         <div id="summernote"></div>
       </el-form-item>
       <div class="title-s">

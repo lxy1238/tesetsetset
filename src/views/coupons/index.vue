@@ -352,10 +352,10 @@ export default {
     },
     //跳转到产品详情页面
     gotodetails(id, user_id) {
-      this.requestCouponDetails.id = id;
-      document.body.scrollTop = document.documentElement.scrollTop = 0;
-      this.getCouponsDetails(this.requestCouponDetails);
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.requestCouponDetails.id = id
+      document.body.scrollTop = document.documentElement.scrollTop = 0
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+      this.getCouponsDetails(this.requestCouponDetails)
     },
     getCode() {
       this.checkGetCodeData.user_id = this.user_id;
@@ -562,7 +562,7 @@ export default {
           margin-right: 25rem;
         }
         .c-price {
-          margin-right: 2rem;
+          margin-right: 1rem;
         }
       }
       .data-info {
