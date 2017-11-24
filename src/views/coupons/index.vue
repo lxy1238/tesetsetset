@@ -314,21 +314,9 @@ export default {
     ...mapGetters(["username", "user_id"])
   },
   mounted() {
-    getAllCoupons(this.requestData)
-      .then(res => {
-        this.arrcouponsDetails = res.data.data;
-        // this.allpage = res.data.last_page
-      })
-      .catch(error => {
-        console.log(error + "getAllCoupons");
-      });
-    this.getCouponsDetails();
-    this.couponsGetInfo();
-    // this.getPostUserInfo()
-    this.reqGetCodeData.user_id = this.user_id;
-    this.reqGetCodeData.username = this.username;
-    this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+    this.init();
   },
+
   //组件销毁前
   beforeDestroy() {
     // removeStore('couponId')
@@ -339,6 +327,28 @@ export default {
       var b = a.replace(/\n/g, "<br>").replace(/a/g, this.html);
       document.getElementById("box").innerHTML = b;
       console.log(this.selected);
+    },
+
+    //初始化
+    init() {
+      this.initData();
+      this.getCouponsDetails();
+      this.couponsGetInfo();
+      getAllCoupons(this.requestData)
+        .then(res => {
+          this.arrcouponsDetails = res.data.data;
+          // this.allpage = res.data.last_page
+        })
+        .catch(error => {
+          console.log(error + "getAllCoupons");
+        });
+    },
+
+    //数据初始化
+    initData() {
+      this.reqGetCodeData.user_id = this.user_id;
+      this.reqGetCodeData.username = this.username;
+      this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
     },
 
     //获取左边的图片信息
@@ -352,16 +362,19 @@ export default {
     },
     //跳转到产品详情页面
     gotodetails(id, user_id) {
-      this.requestCouponDetails.id = id
-      document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
-      this.getCouponsDetails(this.requestCouponDetails)
+      this.requestCouponDetails.id = id;
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.getCouponsDetails(this.requestCouponDetails);
     },
     getCode() {
+      if(!this.isLogin()) {
+        return
+      }
       this.checkGetCodeData.user_id = this.user_id;
       this.checkGetCodeData.coupon_id = this.$route.params.couponsId;
       isUserGetCoupon(this.checkGetCodeData).then(res => {
-        console.log(res.data);
+        console.log(res.data)
         this.showGetCodeDialog = true;
         if (!res.data) {
         } else {
@@ -448,6 +461,8 @@ export default {
         });
       }
     },
+
+    //复制优惠券
     copyCode(e) {
       Clip(e);
     },
@@ -458,24 +473,23 @@ export default {
         this.$alert("please log in first", "reminder", {
           confirmButtonText: "confirm"
         });
-        return false;
+        return false
       } else {
-        return true;
+        return true
       }
     },
 
     //获取用户信息
     couponsGetInfo() {
-      getInfo({ api_token: getToken(), user_id: getUserId()}).then(res => {
-        if (res.code === 500) {
-          return 
-        }
-        var promotions = [];
-        for (var i of res.data.promotions) {
-          promotions.push(i.coupon_id);
-        }
-        this.userPromotions = promotions;
-      });
+      if (getToken()) {
+        getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
+          var promotions = []
+          for (var i of res.data.promotions) {
+            promotions.push(i.coupon_id)
+          }
+          this.userPromotions = promotions
+        });
+      }
     }
   }
 };

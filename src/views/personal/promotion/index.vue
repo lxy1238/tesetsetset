@@ -101,7 +101,7 @@ export default {
           this.allpage = res.data.last_page;
         })
         .catch(error => {
-          concole.log(error);
+          console.log(error);
         });
     },
 

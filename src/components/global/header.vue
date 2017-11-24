@@ -465,18 +465,14 @@ export default {
         this.signloading = true
         this.signform.activate_url = location.protocol + "//" + location.host + '/#/activate/' + this.signform.email
         sign(this.signform).then(res => {
-          console.log(res)
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
             this.$notify.success("Please login to the mailbox for activation validation")
             this.$refs['signform'].resetFields()
           } 
-          if (res.code === 401) {
-            this.signloading = false
-            this.$notify.error("The email has already been taken.")
-          }
         }).catch(error => {
+          this.signloading = false
           console.error("sign fail")
         })
       })
@@ -485,19 +481,7 @@ export default {
       this.signSubmit('loginform', () => {
         this.loginLoading = true
         this.$store.dispatch('Login', this.loginform).then(res => {
-          if (res.code === 402) {
-            this.$notify.error(res.message)
-            this.loginLoading = false
-            return false
-          } else if (res.code === 401) {
-            const errorMsg = JSON.parse(res.message).email[0]
-            this.$notify.error(errorMsg)
-            this.loginLoading = false
-            return false
-          }else if (res.code === 403) {
-            this.$notify.error('Please log in after activation')
-            return
-          } else if (res.code == 200) {
+          if (res.code == 200) {
             if(this.loginform.remember == true) {
               setPass(this.loginform.password)
             }
@@ -511,6 +495,7 @@ export default {
             window.location.reload()
           })
         }).catch(err => {
+          this.loginLoading = false
           console.log(err+ ' login2')
         })    
       })

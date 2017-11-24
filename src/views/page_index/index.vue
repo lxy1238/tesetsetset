@@ -60,52 +60,51 @@ export default {
     this.getAllCouponsInfo()
     this.getUserInfo()
   },
-  beforeDestroy () {
+  beforeDestroy() {
     window.onresize = null
   },
   computed: {},
   methods: {
     //翻页功能实现
     gotoPage(index) {
-      this.requestData.page = index;
+      this.requestData.page = index
       this.getAllCouponsInfo()
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
     },
 
     //获取用户信息 ，判断首页的coupon是否加入推广
     getUserInfo() {
-      getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
-        if (res.code === 500) {
-          return;
-        }
-        var newArr = [];
-        for (var i of res.data.promotions) {
-          newArr.push(i.coupon_id);
-        }
-        this.userPromotions = newArr;
-      });
+      if (getToken()) {
+        getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
+          var newArr = []
+          for (var i of res.data.promotions) {
+            newArr.push(i.coupon_id)
+          }
+          this.userPromotions = newArr
+        });
+      }
     },
 
     //获取首页所有优惠券的信息
     getAllCouponsInfo() {
       getAllCoupons(this.requestData)
         .then(res => {
-          this.arrcouponsDetails = res.data.data;
-          console.log(res);
-          this.allpage = res.data.last_page;
+          this.arrcouponsDetails = res.data.data
+          console.log(res)
+          this.allpage = res.data.last_page
         })
         .catch(error => {
-          console.log(error);
+          console.log(error)
         });
     },
 
     //根据页面尺寸宽度判断首页展示的商品数量
     widthToNum() {
-      const LINE_NUM = 8; //默认显示的行数
+      const LINE_NUM = 8 //默认显示的行数
       if (
         window.innerWidth <= 1270 &&
         this.requestData.page_size != 4 * LINE_NUM

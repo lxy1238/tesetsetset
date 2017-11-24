@@ -95,7 +95,6 @@ const user = {
     },
     LogOut ({ commit }) {
       removeToken()
-      removeStore('userInfo')
       commit('SET_TOKEN', '')
       router.push({path: '/'})
       window.location.reload()

@@ -60,36 +60,38 @@ export default {
   methods: {
     //跳转到详情也，携带coupon_id ,user_id
     goToCouponsPage(id, user_id) {
-      this.$emit("gotodetails", id, user_id);
+      this.$emit("gotodetails", id, user_id)
     },
     loadImg() {
-      this.loading = true;
+      this.loading = true
     },
 
     //加入 移除  推广
     addPromo(coupon_id) {
-      this.addPromoRequestData.coupon_id = coupon_id;
+      this.addPromoRequestData.coupon_id = coupon_id
       if (this.addPromoMsg == "Add Promo") {
-        this.addPromoMsg = this.runningMsg;
+        this.addPromoMsg = this.runningMsg
+        if (!getToken()) {
+          setTimeout( () => {
+            this.addPromoMsg = "Add Promo"
+          }, 100)
+          return
+        }
         promotionAddCoupon(this.addPromoRequestData)
           .then(res => {
-            if (res.code === 500) {
-              this.addPromoMsg = "Add Promo";
-              return;
-            }
-            this.addPromoMsg = "Cancel Promo";
+            this.addPromoMsg = "Cancel Promo"
           })
           .catch(error => {
-            console.log(error + "promotionaddcoupon");
+            console.log(error + "promotionaddcoupon")
           });
       } else {
-        this.addPromoMsg = this.runningMsg;
+        this.addPromoMsg = this.runningMsg
         promotionUserRemove(this.addPromoRequestData)
           .then(res => {
-            this.addPromoMsg = "Add Promo";
+            this.addPromoMsg = "Add Promo"
           })
           .catch(error => {
-            console.log(error + "promotionaddcoupon");
+            console.log(error + "promotionaddcoupon")
           });
       }
     },
