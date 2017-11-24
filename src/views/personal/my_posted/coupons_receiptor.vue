@@ -58,7 +58,7 @@
             </td>
             <td class="receiptor">
               <div>
-                {{item.pick_username}}
+                {{item.username}}
               </div>
             </td>
             <td class="applied-date">
@@ -71,7 +71,8 @@
         </tbody>
       </table>
     </div>
-    <pagination class="coupons-pagination" v-if="allpage"
+    <pagination class="coupons-pagination" 
+      v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
@@ -127,7 +128,7 @@ export default {
           product_img: "http://www.ghostxy.top/dealsbank/img/01.png", // 产品图片， string, 用逗号拼接 , 否
           coupon_id: 1,
           total_receiptor: 365,
-          pick_username: "Skyer", //领取人
+          username: "Skyer", //领取人
           coupon_code: "QAKLWEFALWEKFJ", //优惠券
           applied_date: new Date(), //领取时间
           status: 1
@@ -142,6 +143,7 @@ export default {
       },
       requestdata: {
         coupon_id: "",
+        user_id: '',
         api_token: "",
         page: 1,
         page_size: 5
@@ -159,19 +161,20 @@ export default {
     pagination
   },
   computed: {
-    ...mapGetters(["token"])
+    ...mapGetters(["token", "user_id"])
   },
   mounted() {
-    this.requestdata.api_token = this.token;
-    this.requestdata.coupon_id = JSON.parse(getStore("couponDetails")).id;
-    var couponsDetails = JSON.parse(getStore("couponDetails"));
+    this.requestdata.api_token = this.token
+    this.requestdata.user_id = this.user_id
+    this.requestdata.coupon_id = JSON.parse(getStore("couponDetails")).id
+    var couponsDetails = JSON.parse(getStore("couponDetails"))
     for (var i in this.couponsDetails) {
-      this.couponsDetails[i] = couponsDetails[i];
+      this.couponsDetails[i] = couponsDetails[i]
     }
     pickCoupons(this.requestdata)
       .then(res => {
-        this.trLists = res.data.data;
-        this.allpage = res.data.last_page;
+        this.trLists = res.data.data
+        this.allpage = res.data.last_page
       })
       .catch(error => {
         console.log(error);

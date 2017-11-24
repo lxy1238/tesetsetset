@@ -87,64 +87,66 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { getInfo } from '@/api/login.js'
-import { setStore } from '@/utils/utils'
+import { mapGetters } from "vuex";
+import { getInfo } from "@/api/login.js";
+import { setStore } from "@/utils/utils";
+import { getToken, getUserId } from "@/utils/auth";
 export default {
-  name: 'member_center',
-  data () {
+  name: "member_center",
+  data() {
     return {
       userData: {
-        account: {
-        },
-        base: {
-        },
-        joined_date: '',
+        account: {},
+        base: {},
+        joined_date: ""
+      },
+      getInfoRequest: {
+        api_token: getToken(),
+        user_id: getUserId()
       }
-    }
+    };
   },
-  mounted () {
-    getInfo({'api_token':this.token}).then(res => {
-      this.userData.account = res.data.account
-      this.userData.base = res.data.base
-      var joined_date = new Date()
-      joined_date.setTime(res.data.joined_date * 1000)
-      this.userData.joined_date =  joined_date.toDateString()
-    }).catch(error => {
-      console.log(error + " getInfo member")
-    })
+  mounted() {
+    console.log(this.getInfoRequest);
+    getInfo(this.getInfoRequest)
+      .then(res => {
+        this.userData.account = res.data.account;
+        this.userData.base = res.data.base;
+        var joined_date = new Date();
+        joined_date.setTime(res.data.joined_date * 1000);
+        this.userData.joined_date = joined_date.toDateString();
+      })
+      .catch(error => {
+        console.log(error + " getInfo member");
+      });
   },
   computed: {
-    ...mapGetters([
-      'username',
-      'token',
-      'roles'
-    ])
+    ...mapGetters(["username", "token", "roles", "user_id"])
   },
   methods: {
     //路由跳转
     gotoAnotherRouter(url) {
-      this.$router.push({path: url})
+      this.$router.push({ path: url });
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
-@import url('../../../styles/mixin.less');
+@import url("../../../styles/mixin.less");
 .member-center {
   .center-content {
     width: 90%;
   }
   .title {
     font-size: 1.5rem;
-    margin: .7rem 0;
+    margin: 0.7rem 0;
     font-weight: normal;
   }
   .title-sm {
     font-size: 1rem;
     line-height: 1.78rem;
-    padding: .6rem 0;
+    padding: 0.6rem 0;
     color: #333;
     border-bottom: 1px solid #e6e6e6;
   }
@@ -179,7 +181,6 @@ export default {
           // background: #ec5d1c;
           padding: 2px 5px;
           border-radius: 2px;
-          
         }
       }
       .icon-info {
@@ -216,7 +217,7 @@ export default {
       }
       .count {
         display: inline-block;
-        margin-bottom: .6rem;
+        margin-bottom: 0.6rem;
         cursor: pointer;
         color: #333;
         font-size: 1.22rem;
@@ -268,7 +269,6 @@ export default {
           font-size: 1rem;
           color: #1a1a1a;
         }
-
       }
     }
   }

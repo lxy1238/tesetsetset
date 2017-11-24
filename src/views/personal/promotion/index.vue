@@ -5,6 +5,9 @@
       <div class="remove-all" @click="removeAllPromotion">
         <i class="el-icon-delete"></i>
         <span> Remove All</span>
+         <span class="remove" @click="removePromotion(item.id)">
+            <i class="el-icon-delete"></i>
+          </span>
       </div>
     </div>
     <div class="promotion-content clearfix ">
@@ -55,13 +58,13 @@ export default {
     };
   },
   methods: {
-
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails() {
       this.requestData.api_token = this.token;
       this.requestData.user_id = this.user_id;
       promotionUserCoupon(this.requestData)
         .then(res => {
+          console.log(res);
           this.promotionDetails = res.data.data;
         })
         .catch(error => {
@@ -71,18 +74,18 @@ export default {
 
     //移除优惠券
     removePromotion(id) {
-      this.removeRequestData.api_token = this.token
-      this.removeRequestData.user_id = this.user_id
-      this.removeRequestData.coupon_id = id
-      console.log(this.removeRequestData)
+      this.removeRequestData.api_token = this.token;
+      this.removeRequestData.user_id = this.user_id;
+      this.removeRequestData.coupon_id = id;
+      console.log(this.removeRequestData);
       promotionUserRemove(this.removeRequestData)
         .then(res => {
-          console.log(res)
-          this.getPromotionDetails()
+          console.log(res);
+          this.getPromotionDetails();
         })
         .catch(error => {
-          console.log(error)
-        })
+          console.log(error);
+        });
     },
 
     //移除所有的优惠券
@@ -90,18 +93,21 @@ export default {
       this.removeAllRequestData.api_token = this.token;
       this.removeAllRequestData.user_id = this.user_id;
       console.log(this.removeAllRequestData);
-      this.$alert("Do you really want to delete all?", "remove all", {
-        confirmButtonText: "confirm",
-        callback: () => {
+      this.$confirm("Do you really want to delete all?", "remove all", {
+        confirmButtonText: "confirm"
+      })
+        .then(() => {
           promotionUserRemove(this.removeAllRequestData)
             .then(res => {
-              this.getPromotionDetails()
+              this.getPromotionDetails();
             })
             .catch(error => {
-              console.log(error)
+              console.log(error);
             });
-        }
-      });
+        })
+        .catch(() => {
+          console.log("quxiao");
+        });
     }
   },
   computed: {

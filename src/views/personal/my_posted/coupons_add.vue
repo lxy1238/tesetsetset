@@ -37,14 +37,14 @@
       <el-form-item label="Shipping fee: "  class="item-inline" prop="shipping_fee">
         <el-input class="input-price-fee" v-model="couponsForm.shipping_fee"></el-input>
       </el-form-item>
-      <el-form-item label="Image"  prop="product_img">
+      <el-form-item label="Image"  prop="product_img_s">
         <el-upload 
               class="upload-demo-img" 
               action="http://dealsbank.zhuo.com/api/v1/common/upload-file"
               :on-remove="handleRemoveP" 
               :on-success="uploadSuccess" 
               :before-upload="beforeAvatarUploadP" 
-              :file-list="couponsForm.product_img"
+              :file-list="couponsForm.product_img_s"
               ref="upload"
               list-type="picture">
             <el-button size="small" type="primary">Upload</el-button>
@@ -93,215 +93,224 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { addCoupon, uploadImg }  from '@/api/login'
-import { getToken } from '@/utils/auth'
-import axios from 'axios'
-import qs from 'qs'
+import { mapGetters } from "vuex";
+import { addCoupon, uploadImg } from "@/api/login";
+import { getToken } from "@/utils/auth";
+import axios from "axios";
+import qs from "qs";
 export default {
-  name: 'coupoons-add',
-  data () {
+  name: "coupoons-add",
+  data() {
     return {
-       optionsWebsite: [{
-          value: '亚马逊',
-          label: '亚马逊'
-        }, {
-          value: '亚马逊1',
-          label: '亚马逊1'
-        }, {
-          value: '亚马逊2',
-          label: '亚马逊2'
-        }, {
-          value: '亚马逊3',
-          label: '亚马逊3'
-        }, {
-          value: '亚马逊4',
-          label: '亚马逊4'
-      }],
-      optionsCategory: [{
+      optionsWebsite: [
+        {
+          value: "亚马逊",
+          label: "亚马逊"
+        },
+        {
+          value: "亚马逊1",
+          label: "亚马逊1"
+        },
+        {
+          value: "亚马逊2",
+          label: "亚马逊2"
+        },
+        {
+          value: "亚马逊3",
+          label: "亚马逊3"
+        },
+        {
+          value: "亚马逊4",
+          label: "亚马逊4"
+        }
+      ],
+      optionsCategory: [
+        {
           value: 1,
-          label: '母婴'
-        }, {
+          label: "母婴"
+        },
+        {
           value: 2,
-          label: '运动'
-        }, {
+          label: "运动"
+        },
+        {
           value: 3,
-          label: '男装'
-        }, {
+          label: "男装"
+        },
+        {
           value: 4,
-          label: '女装'
-        }, {
+          label: "女装"
+        },
+        {
           value: 5,
-          label: '零食'
-      }],
+          label: "零食"
+        }
+      ],
       couponsForm: {
-        product_url: 'http://www.baidu.com',     //产品链接， 是
-        user_id: undefined,  // 用户ID ， 是，
-        user_name: '',       // 发布用户名称， 是
-        category_id: 1,     // 所属分类 , 是   int
-        country: '美国' ,    // 国家  是
-        website: '亚马逊2',         // 平台   是 
-        product_title: '2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers',   // 商品标题   是 ，
-        product_img: [],     // 产品图片， string, 用逗号拼接 , 否
-        product_reason: 'This is a product I like very much',  //产品描述  是
-        use_type: 'Unlimited',
-        coupon_code: 'QAKLWEFALWEKFJ',     //优惠券
-        reward_type: '1.5',     //PerOrder:按每订单奖励,
-        product_price: '65',   //商品价格
-        shipping_fee: '1.11',   //运费   否
-        discount_rate: '12',   //折扣率    否
-        valid_date: new Date(),      //到期时间  int
-        total_quantity: 100,  // 总数量   int
+        product_url: "http://www.baidu.com", //产品链接， 是
+        user_id: undefined, // 用户ID ， 是，
+        user_name: "", // 发布用户名称， 是
+        category_id: 1, // 所属分类 , 是   int
+        country: "美国", // 国家  是
+        website: "亚马逊2", // 平台   是
+        product_title:
+          "2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers", // 商品标题   是 ，
+        product_img: [], // 产品图片， string, 用逗号拼接 , 否
+        product_img_s: [],
+        product_reason: "This is a product I like very much", //产品描述  是
+        use_type: "Unlimited",
+        coupon_code: "QAKLWEFALWEKFJ", //优惠券
+        reward_type: "1.5", //PerOrder:按每订单奖励,
+        product_price: "65", //商品价格
+        shipping_fee: "1.11", //运费   否
+        discount_rate: "12", //折扣率    否
+        valid_date: new Date(), //到期时间  int
+        total_quantity: 100, // 总数量   int
         quantity_per_day: "10", // 每天上限数量 int
-        influencer_reward:'1.5',// 推荐费用/每个
-        platform_fee: '2.2',    //支付平台费用/每个
-        influencer_reward_count: '66',    //推荐总费用
-        platform_reward: '55',   //  支付平台总费用， 否
-        total_fee: '123', //总费用
-        // shipping_fee: ' '  // 运费  
+        influencer_reward: "1.5", // 推荐费用/每个
+        platform_fee: "2.2", //支付平台费用/每个
+        influencer_reward_count: "66", //推荐总费用
+        platform_reward: "55", //  支付平台总费用， 否
+        total_fee: "123", //总费用
+        // shipping_fee: ' '  // 运费
         api_token: getToken()
       },
       rules: {
-        product_url: [
-          {required: true , trigger: 'blur' },
-        ],
-        product_price: [
-          { required: true,  trigger: 'blur' },
-        ],
-        website: [
-          { required: true, trigger: 'blur' },
-        ],
+        product_url: [{ required: true, trigger: "blur" }],
+        product_price: [{ required: true, trigger: "blur" }],
+        website: [{ required: true, trigger: "blur" }],
         product_img: [
-          {type: 'array', required: true, message: 'Please Upload image', trigger: 'change' }
+          {
+            type: "array",
+            required: true,
+            message: "Please Upload image",
+            trigger: "change"
+          }
         ],
         product_title: [
-          { required: true, message: 'title is required', trigger: 'blur'}
+          { required: true, message: "title is required", trigger: "blur" }
         ],
-        product_reason: [
-          { required: true, trigger: 'blur'}
-        ],
-        valid_date: [
-          {type: 'date', required: true, trigger: 'blur'}
-        ],
-        discount_rate: [
-          { required: true, trigger: 'blur'}
-        ],
-        quantity_per_day: [
-          { required: true, trigger: 'blur'}
-        ],
-        coupon_code: [
-          { required: true, trigger: 'blur'}
-        ],
+        product_reason: [{ required: true, trigger: "blur" }],
+        valid_date: [{ type: "date", required: true, trigger: "blur" }],
+        discount_rate: [{ required: true, trigger: "blur" }],
+        quantity_per_day: [{ required: true, trigger: "blur" }],
+        coupon_code: [{ required: true, trigger: "blur" }]
       },
-      fileList2: [
-    
-      ],
-      uploadData: { 
-        api_token: '',
-        file: ''
+      fileList2: [],
+      uploadData: {
+        api_token: "",
+        file: ""
       }
-    }
+    };
   },
-  mounted () {
-    this.couponsForm.user_id = this.user_id
-    this.couponsForm.user_name = this.username
-    this.uploadData.api_token = this.token
-  },  
+  mounted() {
+    this.couponsForm.user_id = this.user_id;
+    this.couponsForm.user_name = this.username;
+    this.uploadData.api_token = this.token;
+  },
   computed: {
-    ...mapGetters([
-      'user_id',
-      'username',
-      'token'
-    ])
+    ...mapGetters(["user_id", "username", "token"])
   },
   methods: {
-    getProInfo () {
-      console.log("获取产品信息")
+    getProInfo() {
+      console.log("获取产品信息");
     },
-    beforeAvatarUploadP (file) {
-      var isJPG = file.type === 'image/jpeg'
-      var isGIF = file.type === 'image/gif'
-      var isPNG = file.type === 'image/png'
+    beforeAvatarUploadP(file) {
+      var isJPG = file.type === "image/jpeg";
+      var isGIF = file.type === "image/gif";
+      var isPNG = file.type === "image/png";
 
-      var isLt500K = file.size / 1024 / 500 < 1
+      var isLt500K = file.size / 1024 / 500 < 1;
 
-      var limitF = true
+      var limitF = true;
       if (!(isJPG || isGIF || isPNG)) {
-          this.$message.error('上传图片只能是 JPG/GIF/PNG格式!')
+        this.$message.error("上传图片只能是 JPG/GIF/PNG格式!");
       }
       if (!isLt500K) {
-          this.$message.error('上传图片文件大小 不能超过 500kb!')
+        this.$message.error("上传图片文件大小 不能超过 500kb!");
       }
       if (this.couponsForm.length >= 6) {
-          this.$message.error('最多只能上传6张图片！')
-          limitF = false
+        this.$message.error("最多只能上传6张图片！");
+        limitF = false;
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
         var formData = new FormData();
-        formData.append('api_token', this.token)
-        formData.append('file', file)
-        uploadImg(formData).then(res => {
-          console.log(res)
-          this.couponsForm.product_img.push({url: "http://" + res.data})
-        }).catch(error => {
-          console.log(error)
-        })
+        formData.append("api_token", this.token);
+        formData.append("user_id", this.user_id);
+        formData.append("file", file);
+        uploadImg(formData)
+          .then(res => {
+            console.log(res);
+            this.couponsForm.product_img_s.push({ url: "http://" + res.data });
+          })
+          .catch(error => {
+            console.log(error);
+          });
       } else {
-        return false
+        return false;
       }
     },
-    uploadSuccess (res, file, fileList) {
+    uploadSuccess(res, file, fileList) {
+      console.log();
       if (fileList > 6) {
-        this.couponsForm = fileList.pop()
+        this.couponsForm = fileList.pop();
       } else {
-         this.couponsForm = fileList
+        this.couponsForm = fileList;
       }
-      console.log(this.couponsForm)
+      console.log(this.couponsForm);
     },
-    handleRemoveP (file, fileList) {
-      this.couponsForm = fileList
+    handleRemoveP(file, fileList) {
+      this.couponsForm = fileList;
     },
-    issueCoupon () {
-      addCoupon(this.couponsForm).then(res => {
-        console.log(res)
-        this.$notify.success("issue coupon success")
-        this.$router.push({path: '/posted/coupons'})
-      }).catch(error => {
-        console.log(error)
-      })
+    issueCoupon() {
+      addCoupon(this.couponsForm)
+        .then(res => {
+          console.log(res);
+          if (res.code === 200) {
+            this.$notify.success("issue coupon success");
+            this.$router.push({ path: "/posted/coupons" });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     Submit(callback) {
       //element-ui 的表单验证
       // this.$refs.upload.submit();
-      this.$refs['couponsForm'].validate((valid) => {
+      this.$refs["couponsForm"].validate(valid => {
         if (valid) {
-          if (typeof this.couponsForm.valid_date != 'number') {
-            this.couponsForm.valid_date = parseInt(this.couponsForm.valid_date.getTime()/1000) 
+          if (typeof this.couponsForm.valid_date != "number") {
+            this.couponsForm.valid_date = parseInt(
+              this.couponsForm.valid_date.getTime() / 1000
+            );
           }
-          this.couponsForm.quantity_per_day = parseInt(this.couponsForm.quantity_per_day)
+          this.couponsForm.quantity_per_day = parseInt(
+            this.couponsForm.quantity_per_day
+          );
           var imgArr = []
-          for (var i of this.couponsForm.product_img) {
+          for (var i of this.couponsForm.product_img_s) {
             imgArr.push(i.url)
           }
-          this.couponsForm.product_img = imgArr.join(",")
-          this.issueCoupon(this.couponsForm)
-          console.log(this.couponsForm)
+          this.couponsForm.product_img = imgArr
+          this.issueCoupon(this.couponsForm);
+          console.log(this.couponsForm);
         } else {
-          console.log('error submit!!');
-          return false
+          console.log("error submit!!");
+          return false;
         }
       });
     },
     //退出
-    Cancel () {
-      this.$router.go(-1)
+    Cancel() {
+      this.$router.go(-1);
     }
   }
-}
+};
 </script>
 
 <style lang="less" >
-@import url('../../../styles/mixin.less');
+@import url("../../../styles/mixin.less");
 .coupons-form {
   .input-price-fee {
     width: 198px;
@@ -350,8 +359,8 @@ export default {
       }
     }
     .cancel {
-      .btn-h(120px, 45px, #79b6e0, #79b6e0, #fff);
-       &:active {
+      .btn-h(120px, 45px, #79b6, #79b6, #fff);
+      &:active {
         background: darken(#79b6e0, 10%);
         border-color: darken(#79b6e0, 10%);
       }

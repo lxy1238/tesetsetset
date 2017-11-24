@@ -491,7 +491,7 @@ export default {
             this.$refs['loginform'].resetFields();
           }
           this.$store.dispatch('GetInfo').then(res => {
-            console.log(res.data)
+            console.log(res)
             this.loginLoading = false
             window.location.reload()
           })

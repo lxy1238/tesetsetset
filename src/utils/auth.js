@@ -3,6 +3,7 @@ import Cookie from 'js-cookie'
 const EMAIL = 'email'
 const PASSWORD = 'password'
 const TOKEN = 'token'
+const USER_ID = 'user_id'
 
 //查询领取人的信息时要用到的，防止页面强制刷新后数据丢失
 
@@ -46,4 +47,18 @@ export function setToken (token) {
 
 export function removeToken() {
   return Cookie.remove(TOKEN)
+}
+
+
+export function getUserId () {
+  return Cookie.get(USER_ID)
+}
+
+export function setUserId (email) {
+  // return Cookie.set(EMAIL, email)
+  return Cookie.set(USER_ID, email, { expires: expiresData })
+}
+
+export function removeUserId() {
+  return Cookie.remove(USER_ID)
 }

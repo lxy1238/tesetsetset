@@ -11,25 +11,27 @@
             <span class="right" @click="next"> <i class="iconfont icon-huidaodingbu-copy"></i> </span>
           </div>
         </div>
-        <div class="user" @click="gotouser"   >
-          <div class=" head inline-b">
-            <img  :src="userInfo.avatar_img" alt="">
+        <template v-if="userInfo.username">
+          <div class="user" @click="gotouser"    >
+            <div class=" head inline-b">
+              <img  :src="userInfo.avatar_img" alt="">
+            </div>
+            <div class=" details inline-b">
+                <p>
+                  <span class="name">{{userInfo.username}}</span>
+                  <span class="tag" v-if="userInfo.type == 'celebrity'">Influencer</span>
+                  <span class="tag" v-if="userInfo.type == 'merchant'">Merchant</span>
+                </p>
+                <p class="join">
+                  <span><i class="iconfont icon-date"></i> Joined {{userInfo.joined_date}}</span>
+                  <span><i class="iconfont icon-huiyuandengji0101"> </i> Level{{userInfo.level}}</span>
+                </p>
+                <p class="coupons-posted">
+                  <span ><i class="iconfont icon-youhuiquan1"></i> {{userInfo.coupon_posteds}} Coupons Posted</span>
+                </p>
+            </div>
           </div>
-          <div class=" details inline-b">
-              <p>
-                <span class="name">{{userInfo.username}}</span>
-                <span class="tag" v-if="userInfo.type == 'celebrity'">Influencer</span>
-                <span class="tag" v-if="userInfo.type == 'merchant'">Merchant</span>
-              </p>
-              <p class="join">
-                <span><i class="iconfont icon-date"></i> Joined {{userInfo.joined_date}}</span>
-                <span><i class="iconfont icon-huiyuandengji0101"> </i> Level{{userInfo.level}}</span>
-              </p>
-              <p class="coupons-posted">
-                 <span ><i class="iconfont icon-youhuiquan1"></i> {{userInfo.coupon_posteds}} Coupons Posted</span>
-              </p>
-          </div>
-        </div>
+        </template>
       </div>
   </div>
 </template>
@@ -44,12 +46,12 @@ export default {
     return {
       activeNum: 0,
       userInfo: {
-        avatar_img: '',
-        username: '',
-        type: '',
-        level: '',
-        joined_date: '',
-        coupon_posteds: ''
+        // avatar_img: '',
+        // username: '',
+        // type: '',
+        // level: '',
+        // joined_date: '',
+        // coupon_posteds: ''
       },
     };
   },

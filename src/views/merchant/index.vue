@@ -45,7 +45,7 @@
       </coupons-pro>
     </div>
     <pagination 
-      v-if="allpage"
+      v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">

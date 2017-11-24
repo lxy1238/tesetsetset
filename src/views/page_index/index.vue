@@ -21,7 +21,7 @@
         </coupons-pro>
     </div>
     <pagination 
-      v-if="allpage"
+      v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
@@ -34,7 +34,7 @@ import couponsPro from "@/components/page_index_coupons/image_product.vue";
 import pagination from "@/components/page_index_coupons/pagination.vue";
 import { couponsDetails } from "@/mock/trials/index.js";
 import { getAllCoupons, getInfo } from "@/api/login";
-import { getToken } from "@/utils/auth";
+import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
 export default {
   name: "page_index",
@@ -86,7 +86,7 @@ export default {
 
     //获取用户信息 ，判断首页的coupon是否加入推广
     getUserInfo() {
-      getInfo({ api_token: getToken() }).then(res => {
+      getInfo({ api_token: getToken() , user_id: getUserId()}).then(res => {
         if (res.code === 500) {
           return;
         }

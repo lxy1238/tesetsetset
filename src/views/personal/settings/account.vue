@@ -51,166 +51,164 @@
 </template>
 
 <script>
-import { getStore } from '@/utils/utils'
-import { mapGetters } from 'vuex'
-import {userInfoSet, uploadImg, getInfo} from '@/api/login'
-export default { 
-  name: 'settings-account',
-  data () {
+import { getStore } from "@/utils/utils";
+import { mapGetters } from "vuex";
+import { userInfoSet, uploadImg, getInfo } from "@/api/login";
+export default {
+  name: "settings-account",
+  data() {
     return {
       accountForm: {
-        api_token: '',
-        user_id: '',
-        birthday: '',
-        introduce: '',
-        sex: '男',
-        avatar_img: 'http://www.ghostxy.top/dealsbank/img/user.png',
-
+        api_token: "",
+        user_id: "",
+        birthday: "",
+        introduce: "",
+        sex: "男",
+        avatar_img: "http://www.ghostxy.top/dealsbank/img/user.png"
       },
-      imageUrl: 'http://www.ghostxy.top/dealsbank/img/user.png',
-      radio: '男',
-      userInfo: {
-      }
-    }
+      imageUrl: "http://www.ghostxy.top/dealsbank/img/user.png",
+      radio: "男",
+      userInfo: {}
+    };
   },
   computed: {
-    ...mapGetters([
-      'token',
-      'user_id'
-    ])
+    ...mapGetters(["token", "user_id"])
   },
-  mounted () {
-    getInfo({'api_token': this.token}).then(res => {
-      this.userInfo = res.data
-      this.accountForm.api_token = this.token
-      this.accountForm.user_id = this.user_id
-      this.accountForm.sex = this.userInfo.base.sex
-      this.accountForm.birthday = this.userInfo.base.birthday
-      this.accountForm.introduce = this.userInfo.base.introduce
-      this.accountForm.avatar_img = this.userInfo.base.avatar_img
-      this.imageUrl = this.accountForm.avatar_img
-    }).catch(error => {
-      console.log(error)
-    })
+  mounted() {
+    getInfo({ api_token: this.token, user_id: this.user_id })
+      .then(res => {
+        this.userInfo = res.data;
+        this.accountForm.api_token = this.token;
+        this.accountForm.user_id = this.user_id;
+        this.accountForm.sex = this.userInfo.base.sex;
+        this.accountForm.birthday = this.userInfo.base.birthday;
+        this.accountForm.introduce = this.userInfo.base.introduce;
+        this.accountForm.avatar_img = this.userInfo.base.avatar_img;
+        this.imageUrl = this.accountForm.avatar_img;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   },
   methods: {
     handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw)
-      },
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
     beforeAvatarUpload(file) {
-      var isJPG = file.type === 'image/jpeg'
-      var isGIF = file.type === 'image/gif'
-      var isPNG = file.type === 'image/png'
-      var isLt500K = file.size / 1024 / 500 < 1
+      var isJPG = file.type === "image/jpeg";
+      var isGIF = file.type === "image/gif";
+      var isPNG = file.type === "image/png";
+      var isLt500K = file.size / 1024 / 500 < 1;
 
       if (!(isJPG || isGIF || isPNG)) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
+        this.$message.error("上传头像图片只能是 JPG 格式!");
       }
       if (!isLt500K) {
-        this.$message.error('上传头像图片大小不能超过 500kb!')
+        this.$message.error("上传头像图片大小不能超过 500kb!");
       }
       if ((isJPG || isGIF || isPNG) && isLt500K) {
         var formData = new FormData();
-        formData.append('api_token', this.token)
-        formData.append('file', file)
-        uploadImg(formData).then(res => {
-          this.accountForm.avatar_img = "http://" + res.data
-          this.imageUrl = this.accountForm.avatar_img
-        }).catch(error => {
-          console.log(error)
-        })
+        formData.append("api_token", this.token);
+        formData.append("user_id", this.user_id);
+        formData.append("file", file);
+        uploadImg(formData)
+          .then(res => {
+            this.accountForm.avatar_img = "http://" + res.data;
+            this.imageUrl = this.accountForm.avatar_img;
+          })
+          .catch(error => {
+            console.log(error);
+          });
       } else {
-        return false
+        return false;
       }
     },
-    changeUserInfo () {
-     userInfoSet(this.accountForm).then(res => {
-       this.$notify.success('reset info success')
-       this.$store.dispatch('GetInfo')
-     }).catch(error => {
-       console.log(error)
-     })
+    changeUserInfo() {
+      userInfoSet(this.accountForm)
+        .then(res => {
+          this.$notify.success("reset info success");
+          this.$store.dispatch("GetInfo");
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
-}
+};
 </script>
 
 <style lang="less" >
+@import url("../../../styles/mixin.less");
 
-@import url('../../../styles/mixin.less');
+.facebook-text {
+  img {
+    float: left;
+    margin-right: 10px;
+  }
+  span {
+    font-size: 0.88rem;
+    color: #666;
+  }
+  height: 32px;
+  line-height: 32px;
+}
+.google-text {
+  img {
+    float: left;
+    margin-right: 10px;
+  }
+  span {
+    font-size: 0.88rem;
+    color: #666;
+  }
+  height: 32px;
+  line-height: 32px;
+  margin-bottom: 3rem;
+}
+.footer-account {
+  text-align: center;
+  button {
+    .btn-h(10rem,3rem, #83b938, #83b938, #fff);
+    &:active {
+      background: darken(#83b938, 10%);
+      border-color: darken(#83b938, 10%);
+    }
+  }
+}
 
-  .facebook-text {
-    img {
-      float: left;
-      margin-right: 10px;
-    }
-    span {
-      font-size: 0.88rem;
-      color: #666;
-    }
-    height: 32px;
-    line-height: 32px;
+.sex-img {
+  position: relative;
+  top: 3px;
+}
+.el-textarea {
+  textarea {
+    resize: none;
+    height: 200px;
   }
-  .google-text {
-    img {
-      float: left;
-      margin-right: 10px;
-      
-    }
-    span {
-      font-size: 0.88rem;
-      color: #666;
-    }
-    height: 32px;
-    line-height: 32px;
-    margin-bottom: 3rem;
-  }
-  .footer-account {
-    text-align: center;
-    button {
-      .btn-h(10rem,3rem, #83b938, #83b938, #fff);
-      &:active {
-        background: darken(#83b938, 10%);
-        border-color: darken(#83b938, 10%);
-      }
-    }
-  }
-
-
-  .sex-img {
-    position: relative;
-    top: 3px;
-  }
-  .el-textarea {
-    textarea {
-      resize: none;
-      height: 200px;
-    }
-  
-  }
+}
 
 .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    border-radius: 100%;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 90px;
-    height: 90px;
-    line-height: 90px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border-radius: 100%;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 90px;
+  height: 90px;
+  line-height: 90px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>

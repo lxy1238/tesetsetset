@@ -13,7 +13,7 @@
                         class="details-left-coupons"
                         ></details-left>      
         </div>
-        <div class="right inline">
+        <div class="right inline" >
           <div class="promotion">
             <img class="img"  src="../../assets/amazon.png" alt="">
             <div class="title">
@@ -25,7 +25,7 @@
               <span>{{couponDetail.product_reason}}
               </span>
             </div>
-            <div class="price-details">
+            <div class="price-details" v-if="couponDetail.discount_price">
               <span class="inline-b n-price">${{couponDetail.discount_price}}</span>
               <span class="inline-b o-price">${{couponDetail.product_price}}</span>
               <span class="inline-b c-price">Coupons ${{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
@@ -240,7 +240,7 @@ import {
   promotionUserRemove,
   getInfo
 } from "@/api/login";
-import { getToken } from "@/utils/auth";
+import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
 export default {
   name: "coupons",
@@ -293,15 +293,15 @@ export default {
       reqGetCodeData: {
         api_token: getToken(),
         coupon_id: "",
-        pick_uid: "",
-        pick_username: "",
+        user_id: "",
+        username: "",
         generalize_uid: "",
         generalize_username: ""
       },
       checkGetCodeData: {
         api_token: getToken(),
         coupon_id: "",
-        pick_uid: ""
+        user_id: ""
       },
       addPromotionData: {
         api_token: getToken(),
@@ -325,8 +325,8 @@ export default {
     this.getCouponsDetails();
     this.couponsGetInfo();
     // this.getPostUserInfo()
-    this.reqGetCodeData.pick_uid = this.user_id;
-    this.reqGetCodeData.pick_username = this.username;
+    this.reqGetCodeData.user_id = this.user_id;
+    this.reqGetCodeData.username = this.username;
     this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
   },
   //组件销毁前
@@ -351,14 +351,14 @@ export default {
       Clip(e);
     },
     //跳转到产品详情页面
-    gotodetails(id) {
+    gotodetails(id, user_id) {
       this.requestCouponDetails.id = id;
       document.body.scrollTop = document.documentElement.scrollTop = 0;
       this.getCouponsDetails(this.requestCouponDetails);
-      this.$router.push({ path: "/coupons" });
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
     },
     getCode() {
-      this.checkGetCodeData.pick_uid = this.user_id;
+      this.checkGetCodeData.user_id = this.user_id;
       this.checkGetCodeData.coupon_id = this.$route.params.couponsId;
       isUserGetCoupon(this.checkGetCodeData).then(res => {
         console.log(res.data);
@@ -401,8 +401,8 @@ export default {
       var request = { user_id: this.$route.params.postUserId };
       postedUserInfo(request)
         .then(res => {
-          this.reqGetCodeData.pick_username = res.data.username;
-          this.reqGetCodeData.pick_uid = this.$route.params.postUserId;
+          this.reqGetCodeData.username = res.data.username;
+          this.reqGetCodeData.user_id = this.$route.params.postUserId;
           this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
         })
         .catch(error => {
@@ -466,7 +466,7 @@ export default {
 
     //获取用户信息
     couponsGetInfo() {
-      getInfo({ api_token: getToken() }).then(res => {
+      getInfo({ api_token: getToken(), user_id: getUserId()}).then(res => {
         if (res.code === 500) {
           return 
         }

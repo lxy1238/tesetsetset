@@ -68,7 +68,7 @@ export const postedUserInfo = data => fetch({
 
 
 /*
- *优惠券信息 
+ * @param 优惠券信息 
  * 
  * 
  */

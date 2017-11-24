@@ -107,7 +107,8 @@
         </tbody>
       </table>
     </div>
-    <pagination class="coupons-pagination" v-if="allpage"
+    <pagination class="coupons-pagination" 
+      v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
