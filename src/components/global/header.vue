@@ -4,7 +4,7 @@
        <div class="header-top">
          <div class="header-top-content">
            <div class="content">
-             <a href="#/" > 
+             <a href="javascript:void(0);"  @click="coupons"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
@@ -25,7 +25,7 @@
                   @click.stop="showDropdownUser($event)">
                <div class="user-info-content">
                  <div class="absolute img">
-                   <img v-if="avatar_img" :src="avatar_img" />
+                   <img v-if="validateImgS(avatar_img)" :src="avatar_img" />
                    <img v-else src="../../assets/user.png" alt="user" />
                  </div>
                  <div class="absolute username">{{username}}</div>
@@ -99,7 +99,7 @@
        </div>
        <div  v-if="needClassify" class="header-bottom">
          <ul class="classify-items">
-           <li v-for="(item, index) in classifyList" :class="{ active: selectedC === index }" @click="selectClassify(item, index)">{{item}}</li>
+           <li v-for="(item, index) in classifyList" :class="{ active: selectedC === index }" @click="selectClassify(item, index)">{{item.name}}</li>
          </ul>
        </div>
      </div>
@@ -181,7 +181,7 @@
                 <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="button" class="sign-up-btn" @click="signUp">Sign up</el-button>
+                <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading">Sign up</el-button>
               </el-form-item>
             </el-form>
             <div class="footer">
@@ -239,9 +239,9 @@
 </template>
 
 <script>
-import { getEmail, getPass, getToken } from '@/utils/auth.js'
-import { validateEmail } from '@/utils/validate.js'
-import { sign, login } from '@/api/login.js'
+import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
+import { validateEmail, validateImg } from '@/utils/validate.js'
+import { sign, login,getHeadCateList } from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore } from '@/utils/utils'
 export default {
@@ -261,6 +261,7 @@ export default {
         email: '',
         username: '',
         password:'',
+        activate_url: '',
       },
       loginform: {
         email: '',
@@ -277,6 +278,7 @@ export default {
         ],
         username: [
           { required: true, message: 'Please enter your nickname', trigger: 'blur' },
+          { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' }
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
@@ -298,23 +300,27 @@ export default {
         ]
       },
       classifyList: [
-        "Top Coupons",
-        "Grocery",
-        "Appliances",
-        "Electronics",
-        "Software",
-        "Apparel",
-        "Home",
-        "Auto",
-        "Health & Beauty",
-        "Pet",
-        "Children",
-        "Entertainment",
-        "Sports & Outdoors",
-        "Travel",
-        "Books",
-        "Office",
-        "Sex Toys"
+        {
+          id: 0,
+          name: 'Top Coupons'
+        }
+        // "Top Coupons",
+        // "Grocery",
+        // "Appliances",
+        // "Electronics",
+        // "Software",
+        // "Apparel",
+        // "Home",
+        // "Auto",
+        // "Health & Beauty",
+        // "Pet",
+        // "Children",
+        // "Entertainment",
+        // "Sports & Outdoors",
+        // "Travel",
+        // "Books",
+        // "Office",
+        // "Sex Toys"
       ],
       allLanguage: [
         ['中文(简体)'],
@@ -335,6 +341,7 @@ export default {
       selectedCountry: '中文(简体)',
       isShowAllLanguage: false,
       loginLoading: false,
+      signloading: false,
     }
   },
   props: {
@@ -350,10 +357,10 @@ export default {
       this.showDropdownL = false
     }, false)
     window.addEventListener('keyup', (e) => {
-      if (e.keyCode === 13 && this.signDialog === true) {
+      if (e.keyCode === 13 && this.signDialog === true && this.signloading === false) {
         this.signUp()
         return
-      } else if(e.keyCode === 13 && this.loginDialog === true) {
+      } else if(e.keyCode === 13 && this.loginDialog === true && this.loginLoading === false) {
         this.Login()
       } else if (e.keyCode === 13 && this.resetPassword === true) {
 
@@ -365,8 +372,25 @@ export default {
     this.loginform.email = getEmail()
     this.loginform.password = getPass()
     // this.loginDialog = true
-    console.log(this.addRouters)
+
+    this.getHeadCateListInfo()
+    
+    this.$root.eventHub.$on('initClassify', () => {
+      this.selectedC = -1
+    })
+    this.$root.eventHub.$on('selectClassify1', data => {
+      for (var i of this.classifyList) {
+        if (i.id === data) {
+          this.selectedC = data
+          this.$router.push({path:'/' + i.name})
+        }
+      }
+    })
   },
+  beforeDestroy () {
+    this.$root.eventHub.$off('initClassify')
+    this.$root.eventHub.$off('selectClassify1')
+  },  
   computed: {
   isLogin () {
       return (Boolean(this.$store.getters.email) || Boolean(getEmail())) && getToken()
@@ -380,6 +404,9 @@ export default {
     ]),
     avatar_img () {
        return this.avatar
+    },
+    checkImg () {
+      return validateImg(this.avatar_img)
     }
   },
   methods: {
@@ -388,13 +415,16 @@ export default {
     },
     selectClassify(item, index) {
       //请求数据
+      console.log(item.id)
       this.selectedC = index
       //非父子组件之间的数据传
-      this.$root.eventHub.$emit("selectClassify", index)
+      this.$root.eventHub.$emit("selectClassify", item.id)
+      this.$router.push({path: '/'+ item.name})
     },
     coupons() {
-      this.$router.push({ path: "/" })
+      this.$router.push({ path: "/" + 'Top Coupons'})
       this.selectedC = 0
+      this.$root.eventHub.$emit("selectClassify", 0)
       this.$store.dispatch("setLevel", 0)
     },
     trials() {
@@ -403,8 +433,8 @@ export default {
       this.$store.dispatch("setLevel", 1)
     },
     ShowLoginDialog() {
-      // this.loginform.email = getEmail()
-      // this.loginform.password = getPass()
+      this.loginform.email = getEmail()
+      this.loginform.password = getPass()
       this.signDialog = false
       this.resetPassword = false
       this.loginDialog = true
@@ -456,12 +486,17 @@ export default {
     },
     signUp () {
       this.signSubmit('signform', () => {
+        this.signloading = true
+        this.signform.activate_url = location.protocol + "//" + location.host + '/#/activate/' + this.signform.email
         sign(this.signform).then(res => {
-          console.log(res)
-          this.signDialog = false
-          this.$message.success("Please login to the mailbox for activation validation")
-          this.$refs['signform'].resetFields();
+          if (res.code === 200) {
+            this.signDialog = false
+            this.signloading = false
+            this.$notify.success("Please login to the mailbox for activation validation")
+            this.$refs['signform'].resetFields()
+          } 
         }).catch(error => {
+          this.signloading = false
           console.error("sign fail")
         })
       })
@@ -470,34 +505,41 @@ export default {
       this.signSubmit('loginform', () => {
         this.loginLoading = true
         this.$store.dispatch('Login', this.loginform).then(res => {
-          if (res.code === 402) {
-            this.$notify.error(res.message)
-            this.loginLoading = false
-            return false
-          } else if (res.code === 401) {
-            const errorMsg = JSON.parse(res.message).email[0]
-            this.$notify.error(errorMsg)
-            this.loginLoading = false
-            return false
-          }else if (res.code === 403) {
-            this.$notify.error('Please log in after activation')
-            return
-          } else if (res.code == 200) {
+          if (res.code == 200) {
+            if(this.loginform.remember == true) {
+              setPass(this.loginform.password)
+            }
             this.loginDialog = false
             this.$notify.success("login success")
+            this.$refs['loginform'].resetFields();
           }
           this.$store.dispatch('GetInfo').then(res => {
-            console.log(res.data)
+            console.log(res)
             this.loginLoading = false
             window.location.reload()
           })
         }).catch(err => {
+          this.loginLoading = false
           console.log(err+ ' login2')
         })    
       })
     },
     logOut () {
       this.$store.dispatch('LogOut')
+    },
+
+    validateImgS (url) {
+      return validateImg(url)
+    },
+
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        console.log(res)
+        this.classifyList = this.classifyList.concat(res.data)
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 };
@@ -604,9 +646,14 @@ export default {
                   }
                 }
                 &.username {
+                  width: 5.5rem;
+                  text-align: center;
                   top: -6px;
-                  left: 3.5rem;
+                  left: 2.9rem;
                   font-size: 0.833rem;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
                 }
                 &.tag {
                   // display: inline-block;

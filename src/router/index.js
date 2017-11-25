@@ -14,12 +14,12 @@ export const constantRouterMap = [
     path: '/',
     component: home,
     children: [{
-        path: '/',
+        path: '/:menuId?',
         name: 'home',
         component: _import('page_index/index')
       },
       {
-        path: '/trials',
+        path: '/trials/index',
         component: _import('trials/index')
       },
       {
@@ -27,17 +27,18 @@ export const constantRouterMap = [
         component: _import('coupons/index')
       },
       {
-        path: '/trialsDetails',
+        path: '/trialsDetails/index',
         component: _import('trials_details/index')
       },
       {
-        path: '/merchant',
+        path: '/merchant/:userId',
         component: _import('merchant/index')
       },
       {
-        path: '/successTrials',
+        path: '/successTrials/index',
         component: _import('trials_details/apply_success')
       },
+     
      
     ]
   },
@@ -61,6 +62,10 @@ export const constantRouterMap = [
         path: '/commissions',
         component: _import('commissions/index')
       },
+      {
+        path: '/activate/:email',
+        component: _import('another/activate/index')
+      },
     ]
   },
   {
@@ -78,8 +83,8 @@ export const constantRouterMap = [
 
 export const asyncRouterMap = [
     {
-      path: '/personal',
-      redirect: '/personal/index',
+      path: '/personal/member',
+      redirect: '/personal/member/index',
       component: p_center,
       text: 'Profile Overview',
       hasChilds: false,
@@ -100,7 +105,7 @@ export const asyncRouterMap = [
       }]
     },
     {
-      path: '/posted',
+      path: '/posted/coupons',
       redirect: '/posted/coupons',
       component: p_center,
       hasChilds: true,
@@ -144,7 +149,7 @@ export const asyncRouterMap = [
       ]
     },
     {
-      path: '/wallet',
+      path: '/wallet/financial',
       redirect: '/wallet/financial',
       component: p_center,
       hasChilds: true,
@@ -192,7 +197,7 @@ export const asyncRouterMap = [
       }]
     },
     {
-      path: '/settings',
+      path: '/settings/account',
       redirect: '/settings/account',
       component: p_center,
       hasChilds: true,

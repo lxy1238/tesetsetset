@@ -1,9 +1,10 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import { Message, MessageBox } from 'element-ui'
 import store from '../store'
 import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css'// Progress 进度条样式
 import { getToken } from '@/utils/auth'
+
 
 // 创建axios实例
 
@@ -34,8 +35,30 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     //请求响应之前可以对数据进行操作
-    NProgress.done()
-    return response.data
+    if (response.data.code != 200) {
+      Message({
+        message: response.data.message,
+        type: 'error',
+        duration: 3 * 1000
+      })
+      if (response.data.code === 500) {
+        MessageBox.confirm('You have logged in elsewhere, please log in again', 'log out', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'cancel',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('LogOut').then(() => {
+            console.log('log out success！！')
+          })
+        })
+      }
+      NProgress.done()
+      return Promise.reject('error')
+    } else {
+      NProgress.done()
+      return response.data
+    }
+
   },
   error => {
     // 请求接口失败

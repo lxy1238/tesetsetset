@@ -24,7 +24,7 @@
       </div>
     </div>
     <pagination class="coupons-pagination" 
-      v-if="allpage"
+      v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
       @handlecurrent="gotoPage">
@@ -186,12 +186,17 @@ export default {
             .btn-h(8rem, 1.8rem, #84ba3a, #84ba3a, #fff);
             font-size: 0.68rem;
             position: relative;
-            top: -2px;
+              line-height: 1.8rem;
+            
+            top: 0px;
             &:active {
               background:darken(#84ba3a, 10%);
               border-color:darken(#84ba3a, 10%);
             }
             a {
+              display: inline-block;
+              width: 100%;
+              height: 100%;
               color: white;
             }
 

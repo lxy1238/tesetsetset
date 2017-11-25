@@ -1,8 +1,7 @@
 import { login, logOut, getInfo, updateLogin } from '@/api/login.js'
-import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken } from '@/utils/auth'
+import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken, setPass, removePass, setUserId, getUserId } from '@/utils/auth'
 import store from '../../store'
 import router from '../../router'
-import { setPass, removePass } from '../../utils/auth';
 import { setStore, removeStore, getStore } from '../../utils/utils'
 
 const user = {
@@ -55,13 +54,15 @@ const user = {
   },
   actions: {
     // 登录s
-    Login({ commit }, userInfo) {
+    Login({ commit , state}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
           console.log(res)
-          setToken(res.data)
-          commit('SET_TOKEN', res.data)
-          updateLogin({'api_token': res.data})
+          setToken(res.data.api_token)
+          setUserId(res.data.user_id)
+          commit('SET_TOKEN', res.data.api_token)
+          commit('SET_USERID',res.data.user_id)
+          updateLogin({'api_token': res.data.api_token, 'user_id': res.data.user_id})
           resolve(res)
         }).catch(err => {
           reject(err)
@@ -70,9 +71,9 @@ const user = {
     },
     GetInfo({ commit , state }) {
       return new Promise((resolve, reject) => {
-        getInfo({'api_token': getToken()}).then(res => {
+        getInfo({'api_token': getToken(), 'user_id': getUserId()}).then(res => {
           const data = res.data
-          console.log(res.data)
+          console.log(res)
           if (res.code === 200) {
             setEmail(data.email)
             commit('SET_ROLES', [data.type])
@@ -81,7 +82,6 @@ const user = {
             commit('SET_USERID',data.id)   
             commit('SET_AVATAR',data.base.avatar_img)   
           } else if (res.code === 500) {
-            removeEmail()
             removeToken()
             commit('SET_EMAIL', '')
             commit('SET_TOKEN', '')
@@ -95,7 +95,6 @@ const user = {
     },
     LogOut ({ commit }) {
       removeToken()
-      removeStore('userInfo')
       commit('SET_TOKEN', '')
       router.push({path: '/'})
       window.location.reload()
