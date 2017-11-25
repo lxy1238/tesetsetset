@@ -4,7 +4,7 @@
        <div class="header-top">
          <div class="header-top-content">
            <div class="content">
-             <a href="#/" > 
+             <a href="javascript:void(0);"  @click="coupons"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
@@ -372,14 +372,25 @@ export default {
     this.loginform.email = getEmail()
     this.loginform.password = getPass()
     // this.loginDialog = true
-    console.log(this.addRouters)
 
     this.getHeadCateListInfo()
     
     this.$root.eventHub.$on('initClassify', () => {
       this.selectedC = -1
     })
+    this.$root.eventHub.$on('selectClassify1', data => {
+      for (var i of this.classifyList) {
+        if (i.id === data) {
+          this.selectedC = data
+          this.$router.push({path:'/' + i.name})
+        }
+      }
+    })
   },
+  beforeDestroy () {
+    this.$root.eventHub.$off('initClassify')
+    this.$root.eventHub.$off('selectClassify1')
+  },  
   computed: {
   isLogin () {
       return (Boolean(this.$store.getters.email) || Boolean(getEmail())) && getToken()
@@ -408,10 +419,10 @@ export default {
       this.selectedC = index
       //非父子组件之间的数据传
       this.$root.eventHub.$emit("selectClassify", item.id)
-      this.$router.push({path: '/'})
+      this.$router.push({path: '/'+ item.name})
     },
     coupons() {
-      this.$router.push({ path: "/" })
+      this.$router.push({ path: "/" + 'Top Coupons'})
       this.selectedC = 0
       this.$root.eventHub.$emit("selectClassify", 0)
       this.$store.dispatch("setLevel", 0)
@@ -638,7 +649,7 @@ export default {
                   width: 5.5rem;
                   text-align: center;
                   top: -6px;
-                  left: 2.5rem;
+                  left: 2.9rem;
                   font-size: 0.833rem;
                   overflow: hidden;
                   text-overflow: ellipsis;

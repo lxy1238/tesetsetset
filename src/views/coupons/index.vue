@@ -109,7 +109,7 @@
           <div class="recommend">
             <div class="re-head">
               <span class="re-head-l">recommend</span>
-              <span class="re-head-r">more></span>
+              <span class="re-head-r" @click="gotoIndex" >more></span>
             </div>
               <coupons-pro 
               v-for="couponsDetails in arrcouponsDetails"  
@@ -284,6 +284,7 @@ export default {
       getCodeSuccess: false, //是否领取优惠券成功
       userPromotions: [],
       requestData: {
+        menu_id: '',
         page: 1,
         page_size: 9
       },
@@ -331,17 +332,9 @@ export default {
 
     //初始化
     init() {
-      this.initData();
-      this.getCouponsDetails();
-      this.couponsGetInfo();
-      getAllCoupons(this.requestData)
-        .then(res => {
-          this.arrcouponsDetails = res.data.data;
-          // this.allpage = res.data.last_page
-        })
-        .catch(error => {
-          console.log(error + "getAllCoupons");
-        });
+      this.initData()
+      this.getCouponsDetails()
+      this.couponsGetInfo()
     },
 
     //数据初始化
@@ -360,53 +353,70 @@ export default {
     handleClip(e) {
       Clip(e);
     },
+
     //跳转到产品详情页面
     gotodetails(id, user_id) {
-      this.requestCouponDetails.id = id;
-      document.body.scrollTop = document.documentElement.scrollTop = 0;
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
-      this.getCouponsDetails(this.requestCouponDetails);
+      this.requestCouponDetails.id = id
+      document.body.scrollTop = document.documentElement.scrollTop = 0
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+      this.getCouponsDetails(this.requestCouponDetails)
     },
     getCode() {
       if(!this.isLogin()) {
         return
       }
-      this.checkGetCodeData.user_id = this.user_id;
-      this.checkGetCodeData.coupon_id = this.$route.params.couponsId;
+      this.checkGetCodeData.user_id = this.user_id
+      this.checkGetCodeData.coupon_id = this.$route.params.couponsId
       isUserGetCoupon(this.checkGetCodeData).then(res => {
         console.log(res.data)
-        this.showGetCodeDialog = true;
+        this.showGetCodeDialog = true
         if (!res.data) {
         } else {
-          this.getCodeSuccess = true;
+          this.getCodeSuccess = true
         }
       });
     },
     //关闭领取优惠券的弹窗
     close() {
-      this.showGetCodeDialog = false;
+      this.showGetCodeDialog = false
     },
     submit() {},
     gotoTrials() {
-      this.$router.push({ path: "/trials" });
+      this.$router.push({ path: "/trials" })
     },
     saveTemplate() {},
+
     //获取优惠券详情
     getCouponsDetails() {
-      this.requestCouponDetails.id = this.$route.params.couponsId;
+      this.requestCouponDetails.id = this.$route.params.couponsId
       couponDetails(this.requestCouponDetails)
         .then(res => {
-          this.userInfo = res.data.user_base;
-          this.imgList = res.data.product_img.split(",");
-          this.imgUrl = this.imgList[0];
-          this.couponDetail = res.data;
-          var valid_date = new Date();
-          valid_date.setTime(res.data.valid_date * 1000);
-          this.couponDetail.valid_date = valid_date.toLocaleDateString();
+          console.log(res)
+          this.userInfo = res.data.user_base
+          this.imgList = res.data.product_img.split(",")
+          this.imgUrl = this.imgList[0]
+          this.couponDetail = res.data
+          var valid_date = new Date()
+          valid_date.setTime(res.data.valid_date * 1000)
+          this.couponDetail.valid_date = valid_date.toLocaleDateString()
+          this.requestData.menu_id = res.data.menu_id
+          this.getAllCouponsInfo()
         })
         .catch(error => {
           console.log(error + "couponDetails");
         });
+    },
+
+    //获取该品类下的优惠券
+    getAllCouponsInfo () {
+      getAllCoupons(this.requestData) 
+      .then(res => {
+        this.arrcouponsDetails = res.data.data;
+        // this.allpage = res.data.last_page
+      })
+      .catch(error => {
+        console.log(error + "getAllCoupons");
+      })
     },
 
     //获取发布人的信息
@@ -490,7 +500,13 @@ export default {
           this.userPromotions = promotions
         });
       }
+    },
+
+    //
+    gotoIndex () {
+      this.$root.eventHub.$emit("selectClassify1", this.requestData.menu_id)
     }
+
   }
 };
 </script>
@@ -830,8 +846,12 @@ export default {
           color: #1a1a1a;
         }
         .re-head-r {
+          cursor: pointer;
           float: right;
           color: #808080;
+          &:hover {
+            color: red;
+          }
         }
       }
       .coupons-product {

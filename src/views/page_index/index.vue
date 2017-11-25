@@ -32,7 +32,7 @@
 <script>
 import couponsPro from "@/components/page_index_coupons/image_product.vue";
 import pagination from "@/components/page_index_coupons/pagination.vue";
-import { getAllCoupons, getInfo } from "@/api/login";
+import { getAllCoupons, getInfo, getHeadCateList } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
 export default {
@@ -44,6 +44,10 @@ export default {
       allpage: undefined,
       arrcouponsDetails: [],
       userPromotions: [],
+      classifyList: [{
+        id: 0,
+        name: 'Top Coupons'
+      }],
       requestData: {
         page: 1,
         page_size: 6 * 8,
@@ -56,20 +60,27 @@ export default {
     pagination
   },
   mounted() {
-    this.widthToNum()
+    this.getHeadCateListInfo()
     window.onresize = this.widthToNum
-    this.getAllCouponsInfo()
-    this.getUserInfo()
-    this.$root.eventHub.$on("selectClassify", data => {
-      this.requestData.menu_id = data
-      this.getAllCouponsInfo()
-    })
   },
   beforeDestroy() {
     window.onresize = null
     this.$root.eventHub.$emit('initClassify')
   },
-  computed: {},
+  computed: {
+    menu_name () {
+      if (this.$route.params.menuId) {
+        return this.$route.params.menuId
+      } else {
+        return "Top Coupons"
+      }
+    }
+  },
+  watch: {
+    menu_name () {
+      this.getAllCouponsInfo()
+    }
+  },
   methods: {
     //翻页功能实现
     gotoPage(index) {
@@ -97,10 +108,16 @@ export default {
 
     //获取首页所有优惠券的信息
     getAllCouponsInfo() {
+      for (var i of this.classifyList) {
+        if (i.name === this.$route.params.menuId) {
+          this.selectedC = i.id
+          this.requestData.menu_id = i.id
+          this.$router.push({path:'/' + i.name})
+        }
+      }
       getAllCoupons(this.requestData)
         .then(res => {
           this.arrcouponsDetails = res.data.data
-          console.log(res)
           this.allpage = res.data.last_page
         })
         .catch(error => {
@@ -131,6 +148,16 @@ export default {
         this.requestData.page_size = 6 * LINE_NUM
         this.getAllCouponsInfo()
       }
+    },
+
+      //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.classifyList = this.classifyList.concat(res.data)
+        this.widthToNum()
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 };

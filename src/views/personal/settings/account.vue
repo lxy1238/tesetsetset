@@ -124,14 +124,16 @@ export default {
       }
     },
     changeUserInfo() {
+      console.log(this.accountForm)
       userInfoSet(this.accountForm)
         .then(res => {
-          this.$notify.success("reset info success");
-          this.$store.dispatch("GetInfo");
+          this.$notify.success("reset info success")
+          this.$store.dispatch("GetInfo")
+          document.body.scrollTop = document.documentElement.scrollTop = 0
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     }
   }
 };

@@ -42,7 +42,6 @@
               class="upload-demo-img" 
               action="http://dealsbank.zhuo.com/api/v1/common/upload-file"
               :on-remove="handleRemoveP" 
-              :on-success="uploadSuccess" 
               :before-upload="beforeAvatarUploadP" 
               :file-list="couponsForm.product_img_s"
               ref="upload"
@@ -267,17 +266,8 @@ export default {
         return false;
       }
     },
-    uploadSuccess(res, file, fileList) {
-      console.log();
-      if (fileList > 6) {
-        this.couponsForm = fileList.pop();
-      } else {
-        this.couponsForm = fileList;
-      }
-      console.log(this.couponsForm);
-    },
     handleRemoveP(file, fileList) {
-      this.couponsForm = fileList;
+      this.couponsForm.product_img_s = fileList
     },
     issueCoupon() {
       addCoupon(this.couponsForm)
