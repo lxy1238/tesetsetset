@@ -47,7 +47,7 @@ export const constantRouterMap = [
     component: another,
     children: [
       {
-        path: '/enter',
+        path: '/enter/index',
         component: _import('enter_s/index')
       },
       {
@@ -59,12 +59,16 @@ export const constantRouterMap = [
         component: _import('enter_s/reds')
       },
       {
-        path: '/commissions',
+        path: '/commissions/index',
         component: _import('commissions/index')
       },
       {
         path: '/activate/:email',
         component: _import('another/activate/index')
+      },
+      {
+        path: '/resetpass/:email/:token',
+        component: _import('another/resetpass/index')
       },
     ]
   },

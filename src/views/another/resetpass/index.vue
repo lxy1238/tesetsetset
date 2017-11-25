@@ -1,10 +1,7 @@
 <template>
   <div class="modify-password">
-    <div class="title-bottom">Modify Password</div>
+    <div class="title-bottom">Reset Password</div>
     <el-form :model="pidForm" :rules="rules" ref="pidForm" label-width="150px">
-      <el-form-item label="Original password: " prop="oldpassword" >  
-        <el-input type="password"  v-model="pidForm.oldpassword"></el-input>
-      </el-form-item>
       <el-form-item label="New password: " prop="password" >  
         <el-input type="password" v-model="pidForm.password"></el-input>
       </el-form-item>
@@ -19,8 +16,7 @@
 </template>
 
 <script>
-import { resetPassword } from '@/api/login'
-import { mapGetters } from 'vuex'
+import { checkRetrievePassword } from '@/api/login'
 export default {  
   name: 'affiliate_pid',
   data () {
@@ -49,17 +45,12 @@ export default {
     return {
       modifyShow: true,
       pidForm: {
-        oldpassword: '', 
+        email: '',
         password: '',
         password_confirmation: '',
         api_token: '',
-        user_id: ''
       },
       rules:{
-        oldpassword: [
-          { required: true, message: 'Please enter  password', trigger: 'blur' },
-          { min: 8, max: 20, message: 'Use at least 8 characters and No more than 20 characters, It is case sensitive.', trigger: 'blur' }
-        ],
         password: [
           {validator: validateNewPass, trigger: 'blur'}
         ],
@@ -70,10 +61,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'token',
-      'user_id'
-    ])
   },
   mounted () {
     this.modifyShow = true
@@ -87,16 +74,18 @@ export default {
     changePassword () {
        this.$refs['pidForm'].validate((valid) => {
           if (valid) {
-            this.pidForm.api_token = this.token
-            this.pidForm.user_id = this.user_id
-            resetPassword(this.pidForm).then(res => {
+            this.pidForm.api_token = this.$route.params.token
+            this.pidForm.email = this.$route.params.email
+            checkRetrievePassword(this.pidForm).then(res => {
               console.log(res)
               if (res.code === 402) {
                 this.$notify.error(res.message)
                 return false
               } else {
                 this.$notify.success("reset password success!!!")
-                this.$router.push({path: '/personal/index'})
+                setTimeout( () => {
+                  this.$router.push({path: '/'})
+                }, 1000)
               }
             })
           } else {
@@ -119,6 +108,9 @@ export default {
 <style lang="less" >
 @import url('../../../styles/mixin.less');
 .modify-password {
+ min-height: 1000px;
+ width: 800px;
+ margin: 150px auto;
   .el-input {
     width: 40%;
   }
@@ -140,3 +132,4 @@ export default {
   }
 }
 </style>
+

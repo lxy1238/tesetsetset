@@ -99,7 +99,7 @@
        </div>
        <div  v-if="needClassify" class="header-bottom">
          <ul class="classify-items">
-           <li v-for="(item, index) in classifyList" :class="{ active: selectedC === index }" @click="selectClassify(item, index)">{{item.name}}</li>
+           <li v-for="item in classifyList" :class="{ active: selectedC === item.id }" @click="selectClassify(item)">{{item.name}}</li>
          </ul>
        </div>
      </div>
@@ -215,7 +215,7 @@
                 <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
               </el-form-item>
               <el-form-item>
-                <button class="sign-up-btn">Request Password</button>
+                <el-button  type="button" class="sign-up-btn" @click="resetPasswordBtn" :loading="resetLoading">Request Password</el-button>
               </el-form-item>
             </el-form>
              <div class="or">
@@ -241,7 +241,7 @@
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail, validateImg } from '@/utils/validate.js'
-import { sign, login,getHeadCateList } from '@/api/login.js'
+import { sign, login,getHeadCateList, retrievePassword} from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore } from '@/utils/utils'
 export default {
@@ -269,8 +269,7 @@ export default {
         remember: false
       },
       resetform: {
-        username: '',
-        password:'',
+        email: '',
       },
       rulesSign: {
         email: [
@@ -342,6 +341,7 @@ export default {
       isShowAllLanguage: false,
       loginLoading: false,
       signloading: false,
+      resetLoading: false
     }
   },
   props: {
@@ -362,8 +362,8 @@ export default {
         return
       } else if(e.keyCode === 13 && this.loginDialog === true && this.loginLoading === false) {
         this.Login()
-      } else if (e.keyCode === 13 && this.resetPassword === true) {
-
+      } else if (e.keyCode === 13 && this.resetPassword === true && this.resetLoading === false) {
+        this.resetPasswordBtn()
       } else {
         return false
       }
@@ -411,12 +411,11 @@ export default {
   },
   methods: {
     gotoCommissions () {
-      this.$router.push({path: '/commissions'})
+      this.$router.push({path: '/commissions/index'})
     },
-    selectClassify(item, index) {
+    selectClassify(item) {
       //请求数据
-      console.log(item.id)
-      this.selectedC = index
+      this.selectedC = item.id
       //非父子组件之间的数据传
       this.$root.eventHub.$emit("selectClassify", item.id)
       this.$router.push({path: '/'+ item.name})
@@ -523,6 +522,22 @@ export default {
           console.log(err+ ' login2')
         })    
       })
+    },
+    resetPasswordBtn () {
+       this.signSubmit('resetform', () => {
+         this.resetLoading = true
+          this.resetform.url = location.protocol + "//" + location.host + '/#/resetpass/' + this.resetform.email + '/'
+          console.log(this.resetform)
+          retrievePassword(this.resetform).then(res => {
+            console.log(res)
+            if (res.code === 200) {
+              this.resetLoading = false
+              this.$notify.success('Please click the link to change the password')
+            }
+          }).catch(error => {
+            this.resetLoading = false
+          })
+       })
     },
     logOut () {
       this.$store.dispatch('LogOut')
