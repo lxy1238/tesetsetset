@@ -14,7 +14,8 @@
         <template v-if="userInfo.username">
           <div class="user" @click="gotouser"    >
             <div class=" head inline-b">
-              <img  :src="userInfo.avatar_img" alt="">
+              <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt="">
+              <img  v-else src="../../assets/user.png" alt="">
             </div>
             <div class=" details inline-b">
                 <p>
