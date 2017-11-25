@@ -46,7 +46,8 @@ export default {
       userPromotions: [],
       requestData: {
         page: 1,
-        page_size: 6 * 8
+        page_size: 6 * 8,
+        menu_id: '',
       }
     };
   },
@@ -59,9 +60,14 @@ export default {
     window.onresize = this.widthToNum
     this.getAllCouponsInfo()
     this.getUserInfo()
+    this.$root.eventHub.$on("selectClassify", data => {
+      this.requestData.menu_id = data
+      this.getAllCouponsInfo()
+    })
   },
   beforeDestroy() {
     window.onresize = null
+    this.$root.eventHub.$emit('initClassify')
   },
   computed: {},
   methods: {

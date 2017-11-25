@@ -189,3 +189,10 @@ export const getPlatformCate = () => fetch({
   url: '/api/v1/platform/platform-category',
   method: 'POST',
 })
+
+
+//获取首页头部的品类列表
+export const getHeadCateList = () => fetch({
+  url: '/api/v1/platform/menu',
+  method: 'POST',
+})

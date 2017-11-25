@@ -78,6 +78,7 @@ export default {
       ],
       requestCouponData: {
         user_id: '',
+        menu_id: '',
         page: 1,
         page_size: 48
       },
@@ -92,20 +93,15 @@ export default {
   },
   mounted() {
     this.init()
-    
+    // this.$root.eventHub.$on("selectClassify", data => {
+    //   this.requestCouponData.menu_id = data
+    //   this.getUserCouponInfo()
+    // })
   },
   methods: {
        //翻页功能实现
     gotoPage(index) {
-      this.requestData.page = index;
-      getAllCoupons(this.requestData)
-        .then(res => {
-          this.arrcouponsDetails = res.data.data;
-          this.allpage = res.data.last_page;
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.getUserCouponInfo()
     },
 
     gotodetails (id) {
@@ -124,7 +120,6 @@ export default {
 
     //获取用户发布的优惠券信息
     getUserCouponInfo () {
-      console.log(this.requestCouponData)
       getAllCoupons(this.requestCouponData).then(res => {
         if (res.code === 200) {
           this.arrcouponsDetails = res.data.data

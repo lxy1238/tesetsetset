@@ -106,7 +106,7 @@ export default {
       if (this.promotions.indexOf(this.couponsDetails.id) >= 0) {
         this.addPromoMsg = "Cancel Promo";
       }
-    }, 10);
+    }, 150);
   }
 };
 </script>

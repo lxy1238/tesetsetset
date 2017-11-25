@@ -91,9 +91,12 @@ export default {
     }
   },
   methods: {
+    //页面图片效果
     emitdata (index) {
       this.$emit('send', this.imgList[index])
     },
+
+    //图片效果
     hover (i) {
       this.activeNum = i
       this.emitdata(i)
@@ -114,6 +117,8 @@ export default {
       }
       this.emitdata(this.activeNum)
     },
+
+    //跳转到商家或者红人发布优惠券的页面
     gotouser () {
       this.$router.push({path: '/merchant/' + this.$route.params.postUserId})
     },

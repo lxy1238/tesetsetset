@@ -99,7 +99,7 @@
        </div>
        <div  v-if="needClassify" class="header-bottom">
          <ul class="classify-items">
-           <li v-for="(item, index) in classifyList" :class="{ active: selectedC === index }" @click="selectClassify(item, index)">{{item}}</li>
+           <li v-for="(item, index) in classifyList" :class="{ active: selectedC === index }" @click="selectClassify(item, index)">{{item.name}}</li>
          </ul>
        </div>
      </div>
@@ -241,7 +241,7 @@
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail, validateImg } from '@/utils/validate.js'
-import { sign, login } from '@/api/login.js'
+import { sign, login,getHeadCateList } from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore } from '@/utils/utils'
 export default {
@@ -300,23 +300,27 @@ export default {
         ]
       },
       classifyList: [
-        "Top Coupons",
-        "Grocery",
-        "Appliances",
-        "Electronics",
-        "Software",
-        "Apparel",
-        "Home",
-        "Auto",
-        "Health & Beauty",
-        "Pet",
-        "Children",
-        "Entertainment",
-        "Sports & Outdoors",
-        "Travel",
-        "Books",
-        "Office",
-        "Sex Toys"
+        {
+          id: 0,
+          name: 'Top Coupons'
+        }
+        // "Top Coupons",
+        // "Grocery",
+        // "Appliances",
+        // "Electronics",
+        // "Software",
+        // "Apparel",
+        // "Home",
+        // "Auto",
+        // "Health & Beauty",
+        // "Pet",
+        // "Children",
+        // "Entertainment",
+        // "Sports & Outdoors",
+        // "Travel",
+        // "Books",
+        // "Office",
+        // "Sex Toys"
       ],
       allLanguage: [
         ['中文(简体)'],
@@ -369,6 +373,12 @@ export default {
     this.loginform.password = getPass()
     // this.loginDialog = true
     console.log(this.addRouters)
+
+    this.getHeadCateListInfo()
+    
+    this.$root.eventHub.$on('initClassify', () => {
+      this.selectedC = -1
+    })
   },
   computed: {
   isLogin () {
@@ -394,13 +404,16 @@ export default {
     },
     selectClassify(item, index) {
       //请求数据
+      console.log(item.id)
       this.selectedC = index
       //非父子组件之间的数据传
-      this.$root.eventHub.$emit("selectClassify", index)
+      this.$root.eventHub.$emit("selectClassify", item.id)
+      this.$router.push({path: '/'})
     },
     coupons() {
       this.$router.push({ path: "/" })
       this.selectedC = 0
+      this.$root.eventHub.$emit("selectClassify", 0)
       this.$store.dispatch("setLevel", 0)
     },
     trials() {
@@ -506,6 +519,16 @@ export default {
 
     validateImgS (url) {
       return validateImg(url)
+    },
+
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        console.log(res)
+        this.classifyList = this.classifyList.concat(res.data)
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 };
@@ -612,9 +635,14 @@ export default {
                   }
                 }
                 &.username {
+                  width: 5.5rem;
+                  text-align: center;
                   top: -6px;
-                  left: 3.5rem;
+                  left: 2.5rem;
                   font-size: 0.833rem;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
                 }
                 &.tag {
                   // display: inline-block;
