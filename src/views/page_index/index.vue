@@ -79,6 +79,7 @@ export default {
   watch: {
     menu_name () {
       this.getAllCouponsInfo()
+      this.getUserInfo()
     }
   },
   methods: {
@@ -155,6 +156,7 @@ export default {
       getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
+        this.getAllCouponsInfo()
       }).catch(error => {
         console.log(error)
       })
