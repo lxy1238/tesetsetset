@@ -153,7 +153,7 @@ export default {
       padding-top: 2rem;
       height: 15rem;
       img {
-        min-width: 16rem;
+        max-width: 28rem;
         max-height: 14rem;
       }
     }

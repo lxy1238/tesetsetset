@@ -37,7 +37,7 @@
               <span class="inline-b right"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
             </div>
             <div class="select">
-              <select name="" id="" v-model="selected">
+              <select name="" id="" v-model="selected" @change="selectProblem">
                 <option v-for="(item, index) in options" :value="index" >{{item}}</option>
               </select>
             </div>
@@ -49,7 +49,7 @@
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
                 </div>
-                <div class="inline-b question">
+                <div class="inline-b question" v-if="selected !== 0">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
                     <input type="text">
@@ -61,11 +61,11 @@
           <div class="commission">
              <div class="commission-title">
               <span>
-                Extra commissions
+                Affiliate reward
               </span>
             </div>
             <div class="describe">
-              <span>After joining the promotion, each issue a coupon, you can recei
+              <span>Get 8% commission, about $ 6.36 affiliate reward
               </span>
             </div>
           </div>
@@ -264,7 +264,7 @@ export default {
       imgList: [],
       html: "hello",
       options: [
-        "Choose areason",
+        "Choose reason",
         "Dead deadl",
         "Duplicate",
         "Bad link",
@@ -502,10 +502,15 @@ export default {
       }
     },
 
-    //
+    //选择不同品类优惠券过滤
     gotoIndex () {
       this.$root.eventHub.$emit("selectClassify1", this.requestData.menu_id)
-    }
+    },
+
+    //选择问题, 提交问题反馈
+    selectProblem (index) {
+      console.log(index,this.selected)
+    } 
 
   }
 };

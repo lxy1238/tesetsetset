@@ -78,6 +78,7 @@ export default {
   },
   watch: {
     menu_name () {
+      this.requestData.page = 1
       this.getAllCouponsInfo()
       this.getUserInfo()
     }
@@ -87,6 +88,7 @@ export default {
     gotoPage(index) {
       this.requestData.page = index
       this.getAllCouponsInfo()
+
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
@@ -157,6 +159,7 @@ export default {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
         this.getAllCouponsInfo()
+        this.getUserInfo()
       }).catch(error => {
         console.log(error)
       })

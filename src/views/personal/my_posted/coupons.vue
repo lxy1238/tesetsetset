@@ -44,7 +44,7 @@
           <tr v-for="item in trLists" >
             <td>
               <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
-              <img v-else class="product-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+              <img v-else class="product-img" src="../../../assets/01.png" alt="">
             </td>
             <td class="coupons-table-title">
               <div>amazon</div>

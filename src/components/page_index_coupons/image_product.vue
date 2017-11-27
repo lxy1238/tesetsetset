@@ -3,7 +3,7 @@
     <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
-      <img v-if="!loading" src="http://www.ghostxy.top/dealsbank/img/01.png"   alt="img">
+      <img v-if="!loading" src="../../assets/01.png"   alt="img">
     </div>
      <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo(couponsDetails.id)">

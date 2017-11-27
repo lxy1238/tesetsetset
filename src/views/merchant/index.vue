@@ -8,7 +8,7 @@
          <div class="user">
           <div class=" head">
             <img v-if="userInfo.avatar_img" :src="userInfo.avatar_img" alt="">
-            <img v-else src="http://www.ghostxy.top/dealsbank/img/user.png" alt="">
+            <img v-else src="../../assets/user.png" alt="">
           </div>
           <div class=" details-user">
               <p class="first">
