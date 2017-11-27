@@ -101,12 +101,12 @@ export default {
     ...mapGetters(["token", "user_id"])
   },
   mounted() {
-    this.addPromoRequestData.user_id = this.user_id;
+    this.addPromoRequestData.user_id = this.user_id
     setTimeout(() => {
-      if (this.promotions.indexOf(this.couponsDetails.id) >= 0) {
-        this.addPromoMsg = "Cancel Promo";
+      if (this.promotions.includes(this.couponsDetails.id)) {
+        this.addPromoMsg = "Cancel Promo"
       }
-    }, 150);
+    }, 150)
   }
 };
 </script>

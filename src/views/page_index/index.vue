@@ -80,7 +80,6 @@ export default {
     menu_name () {
       this.requestData.page = 1
       this.getAllCouponsInfo()
-      this.getUserInfo()
     }
   },
   methods: {
@@ -88,7 +87,6 @@ export default {
     gotoPage(index) {
       this.requestData.page = index
       this.getAllCouponsInfo()
-
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
@@ -111,6 +109,7 @@ export default {
 
     //获取首页所有优惠券的信息
     getAllCouponsInfo() {
+      this.arrcouponsDetails = []
       for (var i of this.classifyList) {
         if (i.name === this.$route.params.menuId) {
           this.selectedC = i.id
@@ -122,6 +121,7 @@ export default {
         .then(res => {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
+          this.getUserInfo()
         })
         .catch(error => {
           console.log(error)
@@ -159,7 +159,6 @@ export default {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
         this.getAllCouponsInfo()
-        this.getUserInfo()
       }).catch(error => {
         console.log(error)
       })
