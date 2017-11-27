@@ -38,7 +38,7 @@
             </div>
             <div class="select">
               <select name="" id="" v-model="selected" @change="selectProblem">
-                <option v-for="(item, index) in options" :value="index" >{{item}}</option>
+                <option v-for="(item, index) in options" :value="item" :label="item" >{{item}}</option>
               </select>
             </div>
             <div class="btn-promotion">
@@ -49,11 +49,12 @@
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
                 </div>
-                <div class="inline-b question" v-if="selected !== 0">
+                <div class="inline-b question" v-if="selected !== 'Choose reason'">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
-                    <input type="text">
-                    <button><span>Submit</span></button>
+                    <input type="text" v-model="addProblemData.content">
+                    <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
+                    <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                   </div>
                 </div>
             </div>
@@ -238,7 +239,8 @@ import {
   isUserGetCoupon,
   promotionAddCoupon,
   promotionUserRemove,
-  getInfo
+  getInfo,
+  addProblem
 } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
@@ -265,7 +267,7 @@ export default {
       html: "hello",
       options: [
         "Choose reason",
-        "Dead deadl",
+        "Dead deal",
         "Duplicate",
         "Bad link",
         "Spam",
@@ -273,7 +275,7 @@ export default {
         "No value",
         "Alive again"
       ],
-      selected: 0,
+      selected: "Choose reason",
       added: true,
       imgUrl: "",
       arrcouponsDetails: [],
@@ -308,6 +310,15 @@ export default {
         api_token: getToken(),
         coupon_id: "",
         user_id: ""
+      },
+      addProblemData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        product_id: '',
+        menu: '',
+        title: '',
+        content: ''
+
       }
     };
   },
@@ -509,8 +520,36 @@ export default {
 
     //选择问题, 提交问题反馈
     selectProblem (index) {
-      console.log(index,this.selected)
-    } 
+      this.addProblemData.title = this.selected
+      // addProblem().then(res => {
+      //   console.log(res)
+      // }).catch(error => {
+      //   console.log(error)
+      // })
+      // console.log(index,this.selected)
+    },
+    
+    //提交问题
+    addProblemSubmit () {
+      if (this.$route.params.couponsId) {
+        this.addProblemData.menu = 'coupons'
+        this.addProblemData.product_id = this.$route.params.couponsId
+      }
+      if (!this.addProblemData.content) {
+        return
+      }
+      if (this.addProblemData.content.length > 30) {
+        this.$notify.error('You can only type 30i characters')
+        return
+      }
+      addProblem(this.addProblemData).then(res => {
+        if (res.code === 200) {
+          console.log(res)
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    }
 
   }
 };
@@ -684,6 +723,7 @@ export default {
             color: #808080;
           }
           .submit {
+            position: relative;
             input {
               height: 1.8rem;
             }
@@ -703,6 +743,12 @@ export default {
                 background: lighten(#7db135, 10%);
                 border-color: lighten(#7db135, 10%);
               }
+            }
+            .error {
+              position: absolute;
+              left: 0;
+              text-align: left;
+              color: red;
             }
           }
         }

@@ -198,7 +198,7 @@ export default {
   components: {
     pagination
   },
-  mounted() {
+  mounted () {
     this.requestdata.user_id = this.user_id;
     this.requestdata.api_token = this.token;
     console.log(this.requestdata);

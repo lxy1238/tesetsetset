@@ -169,6 +169,14 @@ export const promotionUserRemove = data => fetch({
   data: qs.stringify(data)
 })
 
+//优惠券问题反馈
+export const addProblem = data => fetch({
+  url: '/api/v1/user/add-problem',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 /**
  * 
  * @param 试用品

@@ -11,18 +11,18 @@
     <div class="promotion-coupons">
        <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
                      :key="1" 
-                     :couponsDetails="couponsDetails"
+                     :couponsDetails="couponsDetails.coupons"
                      :addpromo="false"
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-left">${{couponsDetails.product_price}}</span>
-            <span class="price-right">${{couponsDetails.discount_price}}</span>
-            <span class="remove" @click="removePromotion(couponsDetails.id)">
+            <span class="price-left">${{couponsDetails.coupons.product_price}}</span>
+            <span class="price-right">${{couponsDetails.coupons.discount_price}}</span>
+            <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
               <i class="el-icon-delete"></i>
             </span>
           </p>
-          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
+          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.coupons.discount_rate}}%</span></p>
           </template>
           <template slot="btn">
             View Coupons
@@ -31,6 +31,7 @@
       </div>
       <pagination 
         v-if="allpage && allpage != 1"
+        class="coupons-pagination"
         :allpage="allpage"
         :show-item="showItem"
         @handlecurrent="gotoPage">
@@ -71,7 +72,9 @@ export default {
       showItem: 7,
       requestData: {
         api_token: "",
-        user_id: ""
+        user_id: "",
+        page: 1,
+        page_size: 8,
       },
       removeRequestData: {
         api_token: "",
@@ -92,72 +95,75 @@ export default {
   methods: {
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails() {
-      this.requestData.api_token = this.token;
-      this.requestData.user_id = this.user_id;
+      this.requestData.api_token = this.token
+      this.requestData.user_id = this.user_id
       promotionUserCoupon(this.requestData)
         .then(res => {
-          console.log(res);
-          this.arrcouponsDetails = res.data.data;
-          this.allpage = res.data.last_page;
+          this.arrcouponsDetails = res.data.data
+          this.allpage = res.data.last_page
         })
         .catch(error => {
-          console.log(error);
+          console.log(error)
         });
     },
 
     //移除优惠券
     removePromotion(id) {
-      this.removeRequestData.api_token = this.token;
-      this.removeRequestData.user_id = this.user_id;
-      this.removeRequestData.coupon_id = id;
-      console.log(this.removeRequestData);
+      this.removeRequestData.api_token = this.token
+      this.removeRequestData.user_id = this.user_id
+      this.removeRequestData.coupon_id = id
       promotionUserRemove(this.removeRequestData)
         .then(res => {
-          console.log(res);
-          this.getPromotionDetails();
+          this.getPromotionDetails()
         })
         .catch(error => {
-          console.log(error);
+          console.log(error)
         });
     },
 
     //移除所有的优惠券
     removeAllPromotion() {
-      this.removeAllRequestData.api_token = this.token;
-      this.removeAllRequestData.user_id = this.user_id;
-      console.log(this.removeAllRequestData);
+      this.removeAllRequestData.api_token = this.token
+      this.removeAllRequestData.user_id = this.user_id
       this.$confirm("Do you really want to delete all?", "remove all", {
         confirmButtonText: "confirm"
       })
         .then(() => {
           promotionUserRemove(this.removeAllRequestData)
             .then(res => {
-              this.getPromotionDetails();
+              this.getPromotionDetails()
             })
             .catch(error => {
-              console.log(error);
+              console.log(error)
             });
         })
         .catch(() => {
-          console.log("quxiao");
+          console.log("quxiao")
         });
     },
 
     //跳转到详情页面
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+    },
+
+    //翻页功能
+    gotoPage (index) {
+      this.requestData.page = index
+      this.getPromotionDetails()
     }
+
   },
   computed: {
     ...mapGetters(["user_id", "token"])
   },
   mounted() {
-    this.getPromotionDetails();
+    this.getPromotionDetails()
   }
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 .promotion {
   .pro-header {
     position: relative;
@@ -252,6 +258,23 @@ export default {
       float: right;
       margin-right: 10px;
       cursor: pointer;
+    }
+  }
+}
+.coupons-pagination {
+  .pagination {
+    width: 100%;
+    text-align: right;
+    padding-right: 15rem;
+    li {
+      &.active {
+        .items {
+          border: none;
+        }
+      }
+      .items {
+        background: #fff;
+      }
     }
   }
 }

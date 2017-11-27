@@ -43,7 +43,7 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/enter',
+    path: '/enter/index',
     component: another,
     children: [
       {
@@ -73,13 +73,13 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/combine',
+    path: '/combine/index',
     component: _import('combine/index'),
     hidden: true
   },
 
   {
-    path: '/404',
+    path: '/404/index',
     name: '404page',
     component: _import('404')
   },

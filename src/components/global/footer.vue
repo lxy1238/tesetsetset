@@ -21,7 +21,7 @@
           <dl>
             <dt>Join Us</dt>
             <dd>
-              <router-link to="/enter">Seller</router-link>
+              <router-link to="/enter/index">Seller</router-link>
             </dd>
             <!-- <dd><a href="#">Sensation</a></dd>
             <dd><a href="#">Member</a></dd> -->
