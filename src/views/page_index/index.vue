@@ -105,7 +105,7 @@ export default {
             newArr.push(i.coupon_id)
           }
           this.userPromotions = newArr
-        });
+        })
       }
     },
 
