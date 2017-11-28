@@ -554,12 +554,12 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$notify.error('You can only type 30i characters')
+        this.$notify.error('You can only type 30 characters')
         return
       }
       addProblem(this.addProblemData).then(res => {
         if (res.code === 200) {
-          console.log(res)
+          this.$message.success('Submitted successfully!')
         }
       }).catch(error => {
         console.log(error)
