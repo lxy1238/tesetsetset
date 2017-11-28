@@ -19,7 +19,7 @@
         </div>
         <div class="card-bottom">
           <span class="code">{{item.coupons.coupon_code}}</span>
-          <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">go to amazon </a> </button>
+          <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go To Amazon </a> </button>
         </div>
       </div>
     </div>
@@ -72,7 +72,6 @@ export default {
       this.requestData.api_token = this.token
       this.requestData.user_id = this.user_id
       userCoupons(this.requestData).then(res => {
-        console.log(res.data)
         if (res.data.total !== 0) {
           this.couponLists = res.data.data
           this.allpage = res.data.last_page

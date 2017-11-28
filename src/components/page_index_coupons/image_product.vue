@@ -10,7 +10,17 @@
           <span>{{addPromoMsg}}</span>
         </div>
         <div class="line"></div>
-        <div class="span-btn" @click="copy">Copy</div>
+        <el-tooltip placement="right">
+          <div slot="content" class="copy-content" id="productDetails">
+            <img class="copy-img" :src="couponsDetails.product_img.split(',')[0]" />
+            <div class="content-line">{{couponsDetails.product_title}}</div>
+            <div class="content-line">coupons ${{couponsDetails.discount_price}}</div>
+            <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
+            <div class="content-line">{{couponsDetails.product_reason}}</div>
+           
+          </div>
+          <div class="span-btn" data-clipboard-target="#productDetails" @click="copy($event)">Copy</div>
+        </el-tooltip>
       </div>
       <div v-else class="promo-copy-hidden"></div>
       <p class="platfrom content" >{{couponsDetails.website}}</p>
@@ -28,6 +38,7 @@
 import { mapGetters } from "vuex";
 import { getToken } from "@/utils/auth";
 import { promotionAddCoupon, promotionUserRemove } from "@/api/login";
+import Clip from "@/utils/clipboard.js";
 export default {
   name: "image_product",
   data() {
@@ -95,7 +106,9 @@ export default {
           });
       }
     },
-    copy() {}
+    copy(e) {
+      Clip(e)
+    }
   },
   computed: {
     ...mapGetters(["token", "user_id"])
@@ -252,6 +265,19 @@ export default {
   }
   &.last {
     margin-right: 0;
+  }
+}
+
+.copy-content {
+  width: 300px;
+  font-size: 14px;
+  .copy-img {
+    display: block;
+    width: 100px;
+    height: 100px;
+  }
+  .content-line {
+    margin-bottom: 5px;
   }
 }
 </style>

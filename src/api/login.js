@@ -209,14 +209,28 @@ export const uploadImg = data => fetch({
 
 
 //获取平台品类
-export const getPlatformCate = () => fetch({
+export const getPlatformCate = data => fetch({
   url: '/api/v1/platform/platform-category',
   method: 'POST',
+  data: qs.stringify(data)
 })
 
 
 //获取首页头部的品类列表
 export const getHeadCateList = () => fetch({
   url: '/api/v1/platform/menu',
+  method: 'POST',
+})
+
+
+/**
+ * 
+ * @param 平台管理
+ *  
+ * 
+ */
+//获取首页头部的品类列表
+export const getUserCountry = () => fetch({
+  url: '/api/v1/platform/country',
   method: 'POST',
 })

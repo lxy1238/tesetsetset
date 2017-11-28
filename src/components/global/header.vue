@@ -11,9 +11,9 @@
              <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
               <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
               <div class=" inline-b search">
-                <input class="inline-b " type="text" placeholder="Search" />  
-                <i class="iconfont icon-icon_huaban"></i>                
-                <i class="iconfont icon-search"></i>                
+                <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
+                <!-- <i class="iconfont icon-icon_huaban"></i>                 -->
+                <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
               </div>
             <template v-if="!isLogin">
               <button class="inline-b btn-h login" @click="ShowLoginDialog">Login</button>
@@ -25,7 +25,7 @@
                   @click.stop="showDropdownUser($event)">
                <div class="user-info-content">
                  <div class="absolute img">
-                   <img v-if="validateImgS(avatar_img)" :src="avatar_img" />
+                   <img v-if="avatar_img" :src="avatar_img" />
                    <img v-else src="../../assets/user.png" alt="user" />
                  </div>
                  <div class="absolute username">{{username}}</div>
@@ -53,15 +53,16 @@
                </div>
              </div>
             </template><div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
-               <span>Country 
+               <span>
+                 <i>{{selectedCountryShop}}</i> 
+                 <template>
                  <i v-if="!showDropdownC" class="iconfont icon-xiangxia"></i>
                  <i v-else class="iconfont icon-icon-"></i>
+                 </template>
                 </span>
                 <div v-if="showDropdownC" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <li> <router-link to="/personal">coup0ons</router-link></li>
-                   <li> <router-link to="/combine">combine</router-link></li>
-                   <li> <router-link to="/successTrials">successTrials</router-link></li>
+                   <li v-for="item in countryLists" @click="filterCountry(item.id, item.name)">{{item.name}} </li>
                  </ul>
                </div>
             </div><div class="inline-b login-y language" :class="{active: showDropdownL}"   @click.stop="showDropdownLanguage($event)">
@@ -241,9 +242,9 @@
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail, validateImg } from '@/utils/validate.js'
-import { sign, login,getHeadCateList, retrievePassword} from '@/api/login.js'
+import { sign, login,getHeadCateList, retrievePassword, getUserCountry} from '@/api/login.js'
 import { mapGetters } from 'vuex'
-import { getStore } from '@/utils/utils'
+import { getStore, setStore } from '@/utils/utils'
 export default {
   name: "header",
   data() {
@@ -298,28 +299,45 @@ export default {
            {  validator:validateEmailRule , trigger: 'blur' },
         ]
       },
+
+      //头部分类列表
       classifyList: [
         {
           id: 0,
           name: 'Top Coupons'
         }
-        // "Top Coupons",
-        // "Grocery",
-        // "Appliances",
-        // "Electronics",
-        // "Software",
-        // "Apparel",
-        // "Home",
-        // "Auto",
-        // "Health & Beauty",
-        // "Pet",
-        // "Children",
-        // "Entertainment",
-        // "Sports & Outdoors",
-        // "Travel",
-        // "Books",
-        // "Office",
-        // "Sex Toys"
+      ],
+
+      //国家列表
+      countryLists: [
+        {
+          id: 1,
+          name: 'USA',
+        },
+          {
+          id: 2,
+          name: "Britain",
+        },
+          {
+          id: 3,
+          name: 'Germany',
+        },
+          {
+          id: 4,
+          name: 'Japan',
+        },
+          {
+          id: 5,
+          name: 'France',
+        },
+          {
+          id: 6,
+          name: 'Italy',
+        },
+          {
+          id: 7,
+          name: 'Spain',
+        },
       ],
       allLanguage: [
         ['中文(简体)'],
@@ -341,7 +359,9 @@ export default {
       isShowAllLanguage: false,
       loginLoading: false,
       signloading: false,
-      resetLoading: false
+      resetLoading: false,
+      keyword: '',     //搜索用的关键字
+      country_id: parseInt(getStore('country_id'))
     }
   },
   props: {
@@ -351,49 +371,19 @@ export default {
     }
   },
   mounted () {
-    document.body.addEventListener('click', (e) => {
-      this.showDropdownU = false
-      this.showDropdownC = false
-      this.showDropdownL = false
-    }, false)
-    window.addEventListener('keyup', (e) => {
-      if (e.keyCode === 13 && this.signDialog === true && this.signloading === false) {
-        this.signUp()
-        return
-      } else if(e.keyCode === 13 && this.loginDialog === true && this.loginLoading === false) {
-        this.Login()
-      } else if (e.keyCode === 13 && this.resetPassword === true && this.resetLoading === false) {
-        this.resetPasswordBtn()
-      } else {
-        return false
-      }
-    })
-   
-    this.loginform.email = getEmail()
-    this.loginform.password = getPass()
-    // this.loginDialog = true
-
-    this.getHeadCateListInfo()
-    
-    this.$root.eventHub.$on('initClassify', () => {
-      this.selectedC = -1
-    })
-    this.$root.eventHub.$on('selectClassify1', data => {
-      for (var i of this.classifyList) {
-        if (i.id === data) {
-          this.selectedC = data
-          this.$router.push({path:'/' + i.name})
-        }
-      }
-    })
+    if(this.$route.query.search) {
+      this.keyword = this.$route.query.search
+    }
+    this.init()
   },
+  //组件销毁时，关闭来自其他组件的事件接收
   beforeDestroy () {
     this.$root.eventHub.$off('initClassify')
     this.$root.eventHub.$off('selectClassify1')
   },  
   computed: {
-  isLogin () {
-      return (Boolean(this.$store.getters.email) || Boolean(getEmail())) && getToken()
+    isLogin () {
+      return getToken()
     },
     ...mapGetters([
       'username',
@@ -403,27 +393,116 @@ export default {
       'avatar'
     ]),
     avatar_img () {
-       return this.avatar
+      return this.avatar
     },
-    checkImg () {
-      return validateImg(this.avatar_img)
+    selectedCountryShop : {
+      get () {
+        for (var i of this.countryLists) {
+          if (i.id === this.country_id) {
+            return i.name
+          }
+        }
+      },
+      set (value) {
+        this.country_id = value
+      }
+      
     }
   },
   methods: {
+    //初始化 
+    init () {
+      this.docuemntAddEvent()
+      this.enterSubmitForm()
+      this.getHeadCateListInfo()
+      this.getOtherEvent()
+    },
+    //数据初始化
+    initData () {
+      for (var i of this.classifyList) {
+        if (i.name === this.$route.params.menuId) {
+          this.selectedC = i.id
+        }
+      }
+    },
+    //点击空白或者其他地方的时候下拉菜单消失
+    docuemntAddEvent () {
+      document.body.addEventListener('click', (e) => {
+        this.showDropdownU = false
+        this.showDropdownC = false
+        this.showDropdownL = false
+      }, false)
+    },
+
+    //点击enter 按钮的时候 提交表单
+    enterSubmitForm () {
+      window.addEventListener('keyup', (e) => {
+        if (e.keyCode === 13 && this.signDialog === true && this.signloading === false) {
+          this.signUp()
+          return
+        } else if(e.keyCode === 13 && this.loginDialog === true && this.loginLoading === false) {
+          this.Login()
+        } else if (e.keyCode === 13 && this.resetPassword === true && this.resetLoading === false) {
+          this.resetPasswordBtn()
+        } else {
+          return false
+        }
+      })
+    },
+
+    //头部查询输入框点击确认按钮事件触发
+    headerSearch (e, keyword) {
+      if (e.keyCode === 13) {
+        this.filterKeyword(keyword)
+      }
+    },
+
+    //接受其他组件传递的事件
+    getOtherEvent() {
+      this.$root.eventHub.$on('initClassify', () => {
+      this.selectedC = -1
+      })
+      this.$root.eventHub.$on('selectClassify1', data => {
+        for (var i of this.classifyList) {
+          if (i.id === data) {
+            this.selectedC = data
+            this.$router.push({path:'/' + i.name})
+          }
+        }
+      })
+    },
+
+    //通过国家过滤首页的优惠券信息
+    filterCountry (id, name) {
+      setStore('country_id',id)
+      this.selectedCountryShop  = id
+      this.keyword = ""
+      this.$root.eventHub.$emit('changeCountryId', id)
+      this.$root.eventHub.$emit('filterkeyword', "")
+      this.selectClassify(this.classifyList[0])
+    },
+
+    //通过关键字查询过滤首页商品
+    filterKeyword (keyword) {
+      // this.$root.eventHub.$emit('filterkeyword', keyword)
+      this.selectedC = -1
+      this.$router.push({ path: '/', query: { search: keyword }})
+    },
+
+    //跳转至佣金计算页面
     gotoCommissions () {
       this.$router.push({path: '/commissions/index'})
     },
+
+    //选择不同的分类时，跳转到相应的路由
     selectClassify(item) {
-      //请求数据
       this.selectedC = item.id
-      //非父子组件之间的数据传
-      this.$root.eventHub.$emit("selectClassify", item.id)
+      this.keyword = ""
       this.$router.push({path: '/'+ item.name})
     },
     coupons() {
-      this.$router.push({ path: "/" + 'Top Coupons'})
+      this.$router.push({ path: "/"})
       this.selectedC = 0
-      this.$root.eventHub.$emit("selectClassify", 0)
       this.$store.dispatch("setLevel", 0)
     },
     trials() {
@@ -434,13 +513,11 @@ export default {
     ShowLoginDialog() {
       this.loginform.email = getEmail()
       this.loginform.password = getPass()
-      this.signDialog = false
       this.resetPassword = false
       this.loginDialog = true
      
     },
     ShowSignDialog() {
-      this.resetPassword = false
       this.loginDialog = false
       this.signDialog = true
     },
@@ -455,10 +532,14 @@ export default {
           }
         });
     },
+
+    //弹出忘记密码窗口
     forgetPass () {
       this.loginDialog = false
       this.resetPassword = true
     },
+
+    //下拉菜单的功能实现
     showDropdownUser (e) {
       setTimeout( () => {
         this.showDropdownU = !this.showDropdownU
@@ -550,8 +631,8 @@ export default {
     //获取头部品类列表
     getHeadCateListInfo () {
       getHeadCateList().then(res => {
-        console.log(res)
         this.classifyList = this.classifyList.concat(res.data)
+        this.initData()
       }).catch(error => {
         console.log(error)
       })

@@ -2,7 +2,7 @@
   <div class="page-index">
     <div class="pages-content">
       <div class="head-crumbs">
-        <span class=" gray-s">Coupons > Home</span> 
+        <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
       <div class="details-content clearfix">
         <div class="left inline">
@@ -34,9 +34,9 @@
             <div class="data-info">
               <span class="inline-b expried">Expried:{{couponDetail.valid_date}}</span>
               <span class="inline-b">Free shopping</span>
-              <span class="inline-b right"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
+              <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
             </div>
-            <div class="select">
+            <div class="select" v-if="isFlagCoupon">
               <select name="" id="" v-model="selected" @change="selectProblem">
                 <option v-for="(item, index) in options" :value="item" :label="item" >{{item}}</option>
               </select>
@@ -66,7 +66,7 @@
               </span>
             </div>
             <div class="describe">
-              <span>Get 8% commission, about $ 6.36 affiliate reward
+              <span>Get {{couponDetail.commission_ratio}}% commission, about $ {{couponDetail.commission_amount}} affiliate reward
               </span>
             </div>
           </div>
@@ -96,9 +96,9 @@
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" href="#"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-tuite_twitter"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent('https://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
                <div class="promo-footer center">
@@ -240,7 +240,8 @@ import {
   promotionAddCoupon,
   promotionUserRemove,
   getInfo,
-  addProblem
+  addProblem,
+  getHeadCateList 
 } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
@@ -319,11 +320,28 @@ export default {
         title: '',
         content: ''
 
-      }
+      },
+      //品类列表
+      classifyList: [
+        {
+          id: 0,
+          name: 'Top Coupons'
+        }
+      ],
+
+      //是否显示问题反馈
+      isFlagCoupon: false
     };
   },
   computed: {
-    ...mapGetters(["username", "user_id"])
+    ...mapGetters(["username", "user_id"]),
+    menu_name () {
+      for (var i of this.classifyList) {
+        if (i.id === this.requestData.menu_id) {
+          return i.name
+        }
+      }
+    }
   },
   mounted() {
     this.init();
@@ -344,6 +362,7 @@ export default {
     //初始化
     init() {
       this.initData()
+      this.getHeadCateListInfo()
       this.getCouponsDetails()
       this.couponsGetInfo()
     },
@@ -372,6 +391,8 @@ export default {
       this.$router.push({ path: "/coupons/" + id + "/" + user_id })
       this.getCouponsDetails(this.requestCouponDetails)
     },
+
+    //领取优惠券
     getCode() {
       if(!this.isLogin()) {
         return
@@ -521,12 +542,6 @@ export default {
     //选择问题, 提交问题反馈
     selectProblem (index) {
       this.addProblemData.title = this.selected
-      // addProblem().then(res => {
-      //   console.log(res)
-      // }).catch(error => {
-      //   console.log(error)
-      // })
-      // console.log(index,this.selected)
     },
     
     //提交问题
@@ -549,7 +564,20 @@ export default {
       }).catch(error => {
         console.log(error)
       })
-    }
+    },
+
+         //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.classifyList = this.classifyList.concat(res.data)
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    //显示问题反馈选项
+    flagCoupon () {
+      this.isFlagCoupon = !this.isFlagCoupon
+    } 
 
   }
 };
@@ -842,6 +870,16 @@ export default {
             }
             .iconfont {
               font-size: 2rem;
+              &.icon-facebook1 {
+                &:hover {
+                  color: #39579C;
+                }
+              }
+               &.icon-tuite_twitter {
+                &:hover {
+                  color: #26ABE1;
+                }
+              }
               &:hover {
                 color: red; //TODO 这里后续不要，可以删除
               }

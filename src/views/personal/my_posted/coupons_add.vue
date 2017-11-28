@@ -12,7 +12,7 @@
         <button class="get-pro-info"  type="button" @click="getProInfo">get</button>
       </el-form-item>
       <el-form-item label="Wedsite: " prop="website" class="item-inline" >
-        <el-select v-model="couponsForm.website"  @change="websiteChange">
+        <el-select v-model="couponsForm.website" @change="websiteChange" >
           <el-option
             v-for="item in optionsWebsite"
             :key="item.id"
@@ -22,12 +22,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Category: " prop="category_id" class="item-inline" >
-        <el-select v-model="couponsForm.category_id" >
+        <el-select v-model="couponsForm.category_id"  @change="categoryChange">
           <el-option
-            v-for="item in optionsCategory"
-            :key="item.id"
+            v-for="(item, index) in optionsCategory"
+            :key="index"
             :label="item.label"
-            :value="item.id">
+            :value="index">
           </el-option>
         </el-select>
       </el-form-item>
@@ -82,7 +82,8 @@
        <el-radio class="radio" v-model="couponsForm.use_type" label="Alone">Alone</el-radio>
     </el-form-item>
     <el-form-item label="Coupon code: " class="item-inline" prop="coupon_code">
-       <el-input v-model="couponsForm.coupon_code"></el-input>
+       <el-input v-model="couponsForm.coupon_code" v-if="couponsForm.use_type === 'Unlimited'"></el-input>
+       <el-input type="textarea" v-model="couponsForm.coupon_code" v-else ></el-input> 
     </el-form-item>
     <el-form-item class="footer-btn" >
       <button type="button" class="save" @click="Submit">Save</button>
@@ -111,7 +112,7 @@ export default {
         user_id: undefined, // 用户ID ， 是，
         user_name: "", // 发布用户名称， 是
         category_id: "", // 所属分类 , 是   int
-        country: "美国", // 国家  是
+        country_id: 1, // 国家  是
         website: "", // 平台   是
         product_title:
           "2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers", // 商品标题   是 ，
@@ -133,12 +134,18 @@ export default {
         platform_reward: "55", //  支付平台总费用， 否
         total_fee: "123", //总费用
         // shipping_fee: ' '  // 运费
+        categoryData: '',
+        websiteData: '',
         api_token: getToken()
+      },
+      couponsFormSubmit: {
+
       },
       rules: {
         product_url: [{ required: true, trigger: "blur" }],
         product_price: [{ required: true, trigger: "blur" }],
-        website: [{type:'number', required: true, trigger: "blur" }],
+        website: [{type:'number', required: true, message: 'website is required', trigger: "blur" }],
+        category_id: [{type:'number', required: true, message: 'category is required' ,trigger: "blur" }],
         product_img_s: [
           {
             type: "array",
@@ -160,6 +167,9 @@ export default {
       uploadData: {
         api_token: "",
         file: ""
+      },
+      requestData: {
+        country_id: 1
       }
     };
   },
@@ -189,16 +199,16 @@ export default {
 
     //获取平台品类信息
     getPlatformCateInfo() {
-      getPlatformCate()
+      getPlatformCate(this.requestData)
         .then(res => {
-          console.log(res.data);
-          var arrKeysWeb = Object.keys(res.data.website);
+          if(res.data.length <= 0) {return}
+          var arrKeysWeb = Object.keys(res.data)
           for (var i of arrKeysWeb) {
             var ObjWebsite = {
               label: "",
               id: ""
             }
-            ObjWebsite.label = res.data.website[i]
+            ObjWebsite.label = res.data[i].website
             ObjWebsite.id = parseInt(i)
             this.optionsWebsite.push(ObjWebsite)
           }
@@ -212,21 +222,36 @@ export default {
      //平台发生改变
     websiteChange (id) {
       this.optionsCategory = []
-      getPlatformCate().then(res => {
-        var arrData = res.data.category[id]
-        for (var i in arrData) {
-          var ObjCate = {
-              label: "",
-              id: ""
+      getPlatformCate(this.requestData).then(res => {
+        if(res.data.length <= 0) {return}
+        this.couponsForm.websiteData = res.data[id]
+         var arrKeysWeb1 = Object.keys(res.data[id].category)
+            for (var j of arrKeysWeb1) {
+              var ObjCate = {
+                label: "",
+                category_id: "",
+                commission_ratio: '',
+                menu_id: '',
+                platform_id: '',
+              }
+              ObjCate.label = res.data[id].category[j].website_category
+              ObjCate.category_id = res.data[id].category[j].category_id
+              ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
+              ObjCate.menu_id = res.data[id].category[j].menu_id
+              ObjCate.platform_id = res.data[id].category[j].platform_id
+              this.optionsCategory.push(ObjCate)
+              this.couponsForm.category_id = ""
             }
-          ObjCate.label = arrData[i].website_category
-          ObjCate.id = arrData[i].id
-          this.optionsCategory.push(ObjCate)
-        }
-        this.couponsForm.category_id = this.optionsCategory[0].id
       }).catch(error => {
-        console.log(error)
+        console.log(error + 'getPlatformCate')
       }) 
+      console.log(this.couponsForm)
+    },
+
+    //品类发生改变
+    categoryChange (id) {
+      this.couponsForm.categoryData = this.optionsCategory[id]
+      console.log(id, this.optionsCategory)
       console.log(this.couponsForm)
     },
 
@@ -269,13 +294,13 @@ export default {
     handleRemoveP(file, fileList) {
       this.couponsForm.product_img_s = fileList
     },
-    issueCoupon() {
-      addCoupon(this.couponsForm)
+    issueCoupon(data) {
+      addCoupon(data)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code === 200) {
-            this.$notify.success("issue coupon success");
-            this.$router.push({ path: "/posted/coupons" });
+            this.$notify.success("issue coupon success")
+            this.$router.push({ path: "/posted/coupons" })
           }
         })
         .catch(error => {
@@ -283,25 +308,35 @@ export default {
         });
     },
     Submit(callback) {
+      
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs["couponsForm"].validate(valid => {
         if (valid) {
-          if (typeof this.couponsForm.valid_date != "number") {
-            this.couponsForm.valid_date = parseInt(
-              this.couponsForm.valid_date.getTime() / 1000
-            );
+          for (var i in this.couponsForm) {
+            this.couponsFormSubmit[i] = this.couponsForm[i]
           }
-          this.couponsForm.quantity_per_day = parseInt(
+          if (typeof this.couponsForm.valid_date != "number") {
+              this.couponsFormSubmit.valid_date = parseInt(
+              this.couponsForm.valid_date.getTime() / 1000
+            )
+          }
+          this.couponsFormSubmit.quantity_per_day = parseInt(
             this.couponsForm.quantity_per_day
-          );
+          )
+          this.couponsFormSubmit.website = this.couponsForm.websiteData.website
+          this.couponsFormSubmit.category_id = parseInt(this.couponsForm.categoryData.category_id)
+          this.couponsFormSubmit.menu_id = this.couponsForm.categoryData.menu_id
+          this.couponsFormSubmit.country_id = this.couponsForm.websiteData.country_id
+          this.couponsFormSubmit.commission_ratio = this.couponsForm.categoryData.commission_ratio
+          this.couponsFormSubmit.platform_id = this.couponsFormSubmit.categoryData.platform_id
           var imgArr = [];
           for (var i of this.couponsForm.product_img_s) {
             imgArr.push(i.url);
-          }
-          this.couponsForm.product_img = imgArr;
-          this.issueCoupon(this.couponsForm);
-          console.log(this.couponsForm);
+          };
+          this.couponsFormSubmit.product_img = imgArr
+          console.log(this.couponsFormSubmit)
+          this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log("error submit!!");
           return false;
@@ -312,7 +347,6 @@ export default {
     Cancel() {
       this.$router.go(-1);
     },
-
    
   }
 };

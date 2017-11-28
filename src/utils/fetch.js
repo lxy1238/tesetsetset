@@ -36,6 +36,7 @@ service.interceptors.response.use(
   response => {
     //请求响应之前可以对数据进行操作
     if (response.data.code != 200) {
+      console.log(response.data)
       Message({
         message: response.data.message,
         type: 'error',
