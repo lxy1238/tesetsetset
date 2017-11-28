@@ -11,15 +11,13 @@ import { removeStore } from '@/utils/utils'
 export default {
   name: 'app',
   mounted () {
-    window.onbeforeunload = function() { 
-      removeStore('userInfo')
-    } 
     if (getToken()) {
       updateLogin({'api_token': getToken(),'user_id': getUserId()}).then(res => {
       }).catch(error => {
         console.log('登录记录更新失败')
       })
     }
+    window.localStorage.setItem('country_id', 1)
   },
   beforeDestroy () {
     // removeStore('userInfo')

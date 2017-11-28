@@ -214,7 +214,7 @@ export const asyncRouterMap = [
           component: _import('personal/settings/account'),
         },
         {
-          path: '/settingsshop',
+          path: '/settings/shop',
           text: 'Shop Settings',
           component: _import('personal/settings/shop'),
           meta: {role: ['merchant']}

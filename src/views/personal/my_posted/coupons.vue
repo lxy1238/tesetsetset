@@ -7,11 +7,11 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="searchForm.title" />
+      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.title" />
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.category">
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.category_id">
         <option value="1">母婴</option>
         <option value="2">其他</option>
         <option value="3">很多</option>
@@ -20,7 +20,7 @@
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.status">
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.status">
         <option value="1">Pending</option>
         <option value="2">Stop</option>
         <option value="3">Close</option>
@@ -131,6 +131,7 @@ import pagination from "@/components/page_index_coupons/pagination.vue";
 import { mapGetters } from "vuex";
 import { userPickCoupons } from "@/api/login";
 import { setStore, getStore, removeStore } from "@/utils/utils";
+import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from "@/utils/date";
 export default {
   name: "center_coupons",
@@ -188,10 +189,13 @@ export default {
         status: ""
       },
       requestdata: {
-        user_id: "",
-        api_token: "",
+        user_id: getUserId(),
+        api_token: getToken(),
         page: 1,
-        page_size: 6
+        page_size: 6,
+        title: '',
+        category_id: '',
+        status: '',
       }
     };
   },
@@ -199,9 +203,6 @@ export default {
     pagination
   },
   mounted () {
-    this.requestdata.user_id = this.user_id;
-    this.requestdata.api_token = this.token;
-    console.log(this.requestdata);
     this.getUserPickCoupons()
   },
   computed: {
@@ -210,7 +211,7 @@ export default {
   methods: {
     //分页跳转
     gotoPage(i) {
-      this.requestdata.page = i;
+      this.requestdata.page = i
       this.getUserPickCoupons()
     },
 
@@ -242,7 +243,8 @@ export default {
 
     //发布的优惠券查询
     postedCouponsSearch() {
-      console.log(this.searchForm);
+      console.log(this.requestdata)
+      this.getUserPickCoupons()
     },
 
     //跳转到优惠券详情页面
@@ -259,10 +261,11 @@ export default {
       setStore("couponDetails", JSON.stringify(item));
     },
 
-    //编辑待审核状态下和审核未通过的优惠券
-    EditCoupon(item) {
-      console.log(item)
-      this.$router.push({ path: "/posted/coupons/add" })
+    //编辑待审核状态下和审核未通过的优惠券   
+    EditCoupon(id) {
+      console.log(id)
+      //携带id 查询需要修改的数据，然后进行修改
+      this.$router.push({ path: "/posted/coupons/add", query: { editor: id } })
     },
 
     //删除优惠券

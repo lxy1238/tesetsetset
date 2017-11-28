@@ -98,6 +98,7 @@
 import { mapGetters } from "vuex";
 import { addCoupon, uploadImg, getPlatformCate } from "@/api/login";
 import { getToken } from "@/utils/auth";
+import { getStore } from "@/utils/utils";
 import axios from "axios";
 import qs from "qs";
 export default {
@@ -112,7 +113,7 @@ export default {
         user_id: undefined, // 用户ID ， 是，
         user_name: "", // 发布用户名称， 是
         category_id: "", // 所属分类 , 是   int
-        country_id: 1, // 国家  是
+        country_id: parseInt(getStore('country_id')) || 1, // 国家  是
         website: "", // 平台   是
         product_title:
           "2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers", // 商品标题   是 ，
@@ -174,7 +175,7 @@ export default {
     };
   },
   mounted() {
-    this.init();
+    this.init()
   },
   computed: {
     ...mapGetters(["user_id", "username", "token"])

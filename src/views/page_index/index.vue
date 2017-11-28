@@ -13,7 +13,7 @@
             <span class="price-left">${{couponsDetails.product_price}}</span>
             <span class="price-right">${{couponsDetails.discount_price}}</span>
           </p>
-          <el-tooltip  :visible-arrow="false" placement="bottom" effect="light">
+          <el-tooltip  :visible-arrow="false" placement="top" effect="light">
              <div slot="content">Expected Commissions $ {{couponsDetails.commission_amount}}</div>
             <p class="coupons content" ><span>Commissions</span> <span class="com-right">{{couponsDetails.commission_ratio}}%</span></p>
           </el-tooltip>
@@ -66,6 +66,7 @@ export default {
     pagination
   },
   mounted() {
+    this.requestData.keyword = this.$route.query.search
     this.init()
   },
   beforeDestroy() {

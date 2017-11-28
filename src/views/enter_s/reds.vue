@@ -129,8 +129,6 @@ export default {
         category: 'Team',
         detailed_introduction: '',
         expertises: [],
-
-
      
       },
       rules: {
@@ -248,7 +246,6 @@ export default {
   methods: {
     selectedExpertise (item) {
       item.isSelected = !item.isSelected
-      console.log(this.expertiseList, item)
     },
     addMoreChannel () {
       this.channelsLists.push(this.channelsListData)
@@ -336,7 +333,7 @@ export default {
             }
             .channel {
               float: left;
-              width: 64%;
+              width: 60%;
               .el-input {
                 width: 60%;
               }
@@ -355,7 +352,8 @@ export default {
             }
             .el-input {
               float: right;
-              width: 91%;
+              width: 88%;
+              margin-right: 8px;
             }
           }
         }

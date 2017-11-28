@@ -12,7 +12,6 @@
               <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
-                <!-- <i class="iconfont icon-icon_huaban"></i>                 -->
                 <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
               </div>
             <template v-if="!isLogin">
@@ -361,7 +360,7 @@ export default {
       signloading: false,
       resetLoading: false,
       keyword: '',     //搜索用的关键字
-      country_id: parseInt(getStore('country_id'))
+      country_id: parseInt(getStore('country_id')) || 1
     }
   },
   props: {
@@ -501,6 +500,7 @@ export default {
       this.$router.push({path: '/'+ item.name})
     },
     coupons() {
+      this.keyword = ""
       this.$router.push({ path: "/"})
       this.selectedC = 0
       this.$store.dispatch("setLevel", 0)
@@ -620,12 +620,10 @@ export default {
           })
        })
     },
+
+    //登出
     logOut () {
       this.$store.dispatch('LogOut')
-    },
-
-    validateImgS (url) {
-      return validateImg(url)
     },
 
     //获取头部品类列表
