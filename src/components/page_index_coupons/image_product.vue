@@ -11,7 +11,7 @@
         </div>
         <div class="line"></div>
         <el-tooltip placement="right">
-          <div slot="content" class="copy-content" id="productDetails">
+          <div slot="content" class="copy-content" :id="productDetails">
             <img class="copy-img" :src="couponsDetails.product_img.split(',')[0]" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
             <div class="content-line">coupons ${{couponsDetails.discount_price}}</div>
@@ -19,7 +19,7 @@
             <div class="content-line">{{couponsDetails.product_reason}}</div>
            
           </div>
-          <div class="span-btn" data-clipboard-target="#productDetails" @click="copy($event)">Copy</div>
+          <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
         </el-tooltip>
       </div>
       <div v-else class="promo-copy-hidden"></div>
@@ -111,7 +111,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["token", "user_id"])
+    ...mapGetters(["token", "user_id"]),
+     productDetails() {
+      return 'productDetails' + this.couponsDetails.id
+    },
+    productDetails1 () {
+      return "#" + this.productDetails 
+    }
   },
   mounted() {
     this.addPromoRequestData.user_id = this.user_id
