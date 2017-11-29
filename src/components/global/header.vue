@@ -477,13 +477,12 @@ export default {
       this.selectedCountryShop  = id
       this.keyword = ""
       this.$root.eventHub.$emit('changeCountryId', id)
-      this.$root.eventHub.$emit('filterkeyword', "")
+      // this.$root.eventHub.$emit('filterkeyword', "")
       this.selectClassify(this.classifyList[0])
     },
 
     //通过关键字查询过滤首页商品
     filterKeyword (keyword) {
-      // this.$root.eventHub.$emit('filterkeyword', keyword)
       this.selectedC = -1
       this.$router.push({ path: '/', query: { search: keyword }})
     },

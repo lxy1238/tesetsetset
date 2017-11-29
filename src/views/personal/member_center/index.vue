@@ -91,6 +91,7 @@ import { mapGetters } from "vuex";
 import { getInfo } from "@/api/login.js";
 import { setStore } from "@/utils/utils";
 import { getToken, getUserId } from "@/utils/auth";
+import { timestampFormat } from '@/utils/date'
 export default {
   name: "member_center",
   data() {
@@ -107,14 +108,11 @@ export default {
     };
   },
   mounted() {
-    console.log(this.getInfoRequest);
     getInfo(this.getInfoRequest)
       .then(res => {
         this.userData.account = res.data.account;
         this.userData.base = res.data.base;
-        var joined_date = new Date();
-        joined_date.setTime(res.data.joined_date * 1000);
-        this.userData.joined_date = joined_date.toDateString();
+        this.userData.joined_date = timestampFormat(res.data.joined_date)
       })
       .catch(error => {
         console.log(error + " getInfo member");
@@ -128,6 +126,8 @@ export default {
     gotoAnotherRouter(url) {
       this.$router.push({ path: url });
     },
+
+    //跳转到邀请好友页面
     gotoInvite () {
       this.$router.push({path:'/enter/invite' })
     }

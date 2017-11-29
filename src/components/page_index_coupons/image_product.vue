@@ -1,7 +1,7 @@
 <template>
   <div  class="coupons-product" >
     <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
-    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
+    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
       <img v-if="!loading" src="../../assets/01.png"   alt="img">
     </div>
@@ -27,7 +27,7 @@
       <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <slot name="price"></slot>
       <div class="content viewcoupons">
-        <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
+        <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id)">
           <slot name="btn"></slot>
         </button>
       </div>
@@ -68,11 +68,24 @@ export default {
       }
     }
   },
+  mounted() {
+    this.init()
+  },
   methods: {
-    //跳转到详情也，携带coupon_id ,user_id
-    goToCouponsPage(id, user_id) {
-      this.$emit("gotodetails", id, user_id)
+    init () {
+      this.addPromoRequestData.user_id = this.user_id
+      //判断是否加入推广
+      setTimeout(() => {
+        if (this.promotions.includes(this.couponsDetails.id)) {
+          this.addPromoMsg = "Cancel Promo"
+        }
+      }, 150)
     },
+    //跳转到详情也，携带coupon_id ,user_id
+    goToCouponsPage(id) {
+      this.$emit("gotodetails", id)
+    },
+
     loadImg() {
       this.loading = true
     },
@@ -112,21 +125,14 @@ export default {
   },
   computed: {
     ...mapGetters(["token", "user_id"]),
-     productDetails() {
+    productDetails() {
       return 'productDetails' + this.couponsDetails.id
     },
     productDetails1 () {
       return "#" + this.productDetails 
     }
   },
-  mounted() {
-    this.addPromoRequestData.user_id = this.user_id
-    setTimeout(() => {
-      if (this.promotions.includes(this.couponsDetails.id)) {
-        this.addPromoMsg = "Cancel Promo"
-      }
-    }, 150)
-  }
+ 
 };
 </script>
 

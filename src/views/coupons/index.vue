@@ -230,6 +230,7 @@ import explain from "@/components/trials/explain.vue";
 import Clip from "@/utils/clipboard.js";
 
 import { getStore, removeStore } from "@/utils/utils";
+import { parseTime } from '@/utils/date'
 import { timestampFormat } from "@/utils/date";
 import {
   getAllCoupons,
@@ -344,7 +345,7 @@ export default {
     }
   },
   mounted() {
-    this.init();
+    this.init()
   },
 
   //组件销毁前
@@ -352,7 +353,7 @@ export default {
     // removeStore('couponId')
   },
   methods: {
-    test() {
+    test () {
       var a = document.getElementById("test").value;
       var b = a.replace(/\n/g, "<br>").replace(/a/g, this.html);
       document.getElementById("box").innerHTML = b;
@@ -360,7 +361,7 @@ export default {
     },
 
     //初始化
-    init() {
+    init () {
       this.initData()
       this.getHeadCateListInfo()
       this.getCouponsDetails()
@@ -372,6 +373,9 @@ export default {
       this.reqGetCodeData.user_id = this.user_id;
       this.reqGetCodeData.username = this.username;
       this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+
+      this.addPromotionData.user_id = this.user_id;
+      this.addPromotionData.coupon_id = this.$route.params.couponsId;
     },
 
     //获取左边的图片信息
@@ -388,7 +392,7 @@ export default {
     gotodetails(id, user_id) {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+      this.$router.push({ path: "/coupons/" + id })
       this.getCouponsDetails(this.requestCouponDetails)
     },
 
@@ -400,7 +404,6 @@ export default {
       this.checkGetCodeData.user_id = this.user_id
       this.checkGetCodeData.coupon_id = this.$route.params.couponsId
       isUserGetCoupon(this.checkGetCodeData).then(res => {
-        console.log(res.data)
         this.showGetCodeDialog = true
         if (!res.data) {
         } else {
@@ -412,7 +415,7 @@ export default {
     close() {
       this.showGetCodeDialog = false
     },
-    submit() {},
+
     gotoTrials() {
       this.$router.push({ path: "/trials" })
     },
@@ -424,15 +427,13 @@ export default {
       couponDetails(this.requestCouponDetails)
         .then(res => {
           console.log(res)
-          this.userInfo = res.data.user_base
           this.imgList = res.data.product_img.split(",")
           this.imgUrl = this.imgList[0]
           this.couponDetail = res.data
-          var valid_date = new Date()
-          valid_date.setTime(res.data.valid_date * 1000)
-          this.couponDetail.valid_date = valid_date.toLocaleDateString()
+          this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
           this.requestData.menu_id = res.data.menu_id
           this.getAllCouponsInfo()
+          this.getPostUserInfo(res.data.user_id)
         })
         .catch(error => {
           console.log(error + "couponDetails");
@@ -443,8 +444,7 @@ export default {
     getAllCouponsInfo () {
       getAllCoupons(this.requestData) 
       .then(res => {
-        this.arrcouponsDetails = res.data.data;
-        // this.allpage = res.data.last_page
+        this.arrcouponsDetails = res.data.data
       })
       .catch(error => {
         console.log(error + "getAllCoupons");
@@ -452,13 +452,13 @@ export default {
     },
 
     //获取发布人的信息
-    getPostUserInfo() {
-      var request = { user_id: this.$route.params.postUserId };
+    getPostUserInfo(user_id) {
+      var request = { user_id: user_id };
       postedUserInfo(request)
         .then(res => {
-          this.reqGetCodeData.username = res.data.username;
-          this.reqGetCodeData.user_id = this.$route.params.postUserId;
-          this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+          res.data.joined_date = timestampFormat(res.data.joined_date)
+          this.userInfo = res.data
+          this.userInfo.user_id = this.couponDetail.user_id
         })
         .catch(error => {
           console.log(error + " postedUserInfo");
@@ -468,10 +468,7 @@ export default {
     //取消推广
     removePromotion() {
       if (this.isLogin()) {
-        this.addPromotionData.user_id = this.user_id;
-        this.addPromotionData.coupon_id = this.$route.params.couponsId;
         promotionUserRemove(this.addPromotionData).then(res => {
-          console.log(res);
           if (res.code === 200) {
             this.couponsGetInfo();
             this.added = true;
@@ -483,10 +480,7 @@ export default {
     //加入推广
     addPromotion() {
       if (this.isLogin()) {
-        this.addPromotionData.user_id = this.user_id;
-        this.addPromotionData.coupon_id = this.$route.params.couponsId;
         promotionAddCoupon(this.addPromotionData).then(res => {
-          console.log(res);
           if (res.code === 200) {
             this.couponsGetInfo();
             this.added = false;
@@ -675,6 +669,7 @@ export default {
         margin-top: 0.5rem;
         .right {
           float: right;
+          cursor: pointer;
         }
         .expried {
           margin-right: 2rem;

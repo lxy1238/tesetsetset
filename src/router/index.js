@@ -24,7 +24,7 @@ export const constantRouterMap = [
         component: _import('trials/index')
       },
       {
-        path: '/coupons/:couponsId/:postUserId',
+        path: '/coupons/:couponsId',
         component: _import('coupons/index')
       },
       {
@@ -151,6 +151,8 @@ export const aboutRouterMap = [
   },
 ]
 
+
+//登录后加载异步路由
 export const asyncRouterMap = [
     {
       path: '/personal/member',

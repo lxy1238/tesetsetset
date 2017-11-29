@@ -128,7 +128,7 @@ export default {
   name: 'trials_add',
   data () {
     return {
-      country_id: parseInt(getStore('country_id')),
+      country_id: parseInt(getStore('country_id')) || 1,
       optionsWebsite: [
       ],
       optionsStore: [

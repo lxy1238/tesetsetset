@@ -66,16 +66,15 @@ export default {
     pagination
   },
   mounted() {
-    this.requestData.keyword = this.$route.query.search
     this.init()
   },
   beforeDestroy() {
     window.onresize = null
-    this.$root.eventHub.$emit('initClassify')
+    this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
     this.$root.eventHub.$off('changeCountryId')
-    this.$root.eventHub.$off('filterkeyword')
   },
   computed: {
+    //导航条变化的时候触发查询需要展示商品的信息
     menu_name () {
       if (this.$route.params.menuId) {
         return this.$route.params.menuId
@@ -83,6 +82,7 @@ export default {
         return "Top Coupons"
       }
     },
+    //查询字段变化的时候触发
     search () {
       if (this.$route.query.search) {
         return this.$route.query.search
@@ -93,30 +93,28 @@ export default {
   },
   watch: {
     menu_name () {
-      this.requestData.keyword = this.search
-      this.getAllCouponsInfo()
+      this.gotoPage(1)
     },
     search () {
-      this.requestData.keyword = this.search
-      this.requestData.page = 1
-      console.log(1)
-      this.getAllCouponsInfo()
+      this.gotoPage(1)
     }
   },
   methods: {
     //初始化
     init () {
+      this.requestData.keyword = this.$route.query.search
       this.getHeadCateListInfo()
       window.onresize = this.widthToNum
       this.getheadData()
     },
     //翻页功能实现
     gotoPage(index) {
+      this.requestData.keyword = this.search
       this.requestData.page = index
       this.getAllCouponsInfo()
     },
 
-    //接收 头部查询数据 或者是选择国家时传递的数据
+    //接收 选择国家时传递的数据
     getheadData () {
       this.$root.eventHub.$on('changeCountryId', data => {
         this.requestData.country_id = data
@@ -124,20 +122,11 @@ export default {
         this.requestData.keyword = ''
         this.getAllCouponsInfo()
       })
-      // this.$root.eventHub.$on('filterkeyword', data => {
-      //   if(this.$route.query.search) {
-      //     this.requestData.keyword = this.$route.query.search
-      //   } else {
-      //     this.requestData.keyword = data
-      //   }
-      //   this.requestData.page = 1
-      //   this.getAllCouponsInfo()
-      // })
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+      this.$router.push({ path: "/coupons/" + id })
     },
 
     //获取用户信息 ，判断首页的coupon是否加入推广

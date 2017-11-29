@@ -113,12 +113,10 @@
       :show-item="showItem"
       @handlecurrent="gotoPage">
     </pagination>
-
-
+    
     <!-- 查看详情弹窗 -->
     <el-dialog  :visible.sync="detailsDialog" title="Decline details" class="details-dialog" size="tiny">
         <p class="dialog-title">Decline details</p>
-
         <div class="details-reason">
           Insufficient balance
         </div>
@@ -219,16 +217,16 @@ export default {
     getUserPickCoupons() {
       userPickCoupons(this.requestdata)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.data.total !== 0) {
             for (var i in res.data.data) {
               res.data.data[i].valid_date = parseTime(
                 res.data.data[i].valid_date,
                 "{y}-{m}-{d}"
-              );
+              )
             }
-            this.trLists = res.data.data;
-            this.allpage = res.data.last_page;
+            this.trLists = res.data.data
+            this.allpage = res.data.last_page
           }
         })
         .catch(error => {
@@ -249,7 +247,7 @@ export default {
 
     //跳转到优惠券详情页面
     gotoDetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.$router.push({ path: "/coupons/" + id  });
     },
 
     //跳转到 领取优惠券的用户页面
@@ -301,18 +299,6 @@ export default {
     position: relative;
     border-bottom: 1px solid #e6e6e6;
     margin-bottom: 1rem;
-  }
-  .title {
-    font-size: 1.5rem;
-    margin: 1rem 0;
-    font-weight: normal;
-  }
-  .title-s {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    line-height: 2rem;
-    color: #1a1a1a;
-    border-bottom: 1px solid #e6e6e6;
   }
   .search-form {
     position: relative;

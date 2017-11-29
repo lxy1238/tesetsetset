@@ -46,14 +46,15 @@ export default {
   data() {
     return {
       activeNum: 0,
-      userInfo: {
-        // avatar_img: '',
-        // username: '',
-        // type: '',
-        // level: '',
-        // joined_date: '',
-        // coupon_posteds: ''
-      },
+      // userInfo: {
+      //   // avatar_img: '',
+      //   // username: '',
+      //   // type: '',
+      //   // level: '',
+      //   // joined_date: '',
+      //   // coupon_posteds: ''
+      //   // user_id: ''
+      // },
     };
   },
   props: {
@@ -67,28 +68,20 @@ export default {
         ]
       }
     },
-  },
-  created () {
-    this.activeNum = 0
+    userInfo: {
+      type: Object,
+      default: function () {
+        return {
+        }
+      }
+    }
   },
   mounted() {
-    this.getPostUserInfo()
     this.activeNum = 0
-  },
-  watch: {
-    userInfo () {
-      console.log(this.imgList, this.activeNum)
-    },
-    postedUserId () {
-      this.getPostUserInfo()
-    }
   },
   computed: {
     imgLen() {
       return this.imgList.length;
-    },
-    postedUserId () {
-      return this.$route.params.postedUserId
     }
   },
   methods: {
@@ -121,18 +114,8 @@ export default {
 
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
-      this.$router.push({path: '/merchant/' + this.$route.params.postUserId})
+      this.$router.push({path: '/merchant/' + this.userInfo.user_id})
     },
-      //获取发布人的信息
-    getPostUserInfo () {
-      var request = { 'user_id': this.$route.params.postUserId }
-      postedUserInfo (request).then(res => {
-        res.data.joined_date = timestampFormat(res.data.joined_date)
-        this.userInfo = res.data
-      }).catch(error => {
-        console.log(error + " postedUserInfo")
-      })
-    }
   }
 };
 </script>

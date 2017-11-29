@@ -40,7 +40,7 @@
       <el-form-item label="Image"  prop="product_img_s">
         <el-upload 
               class="upload-demo-img" 
-              action="http://dealsbank.zhuo.com/api/v1/common/upload-file"
+              action="upload"
               :on-remove="handleRemoveP" 
               :before-upload="beforeAvatarUploadP" 
               :file-list="couponsForm.product_img_s"
@@ -101,6 +101,28 @@ export default {
   name: "coupoons-add",
   data() {
     return {
+      rules: {
+        product_url: [{ required: true, trigger: "blur" }],
+        product_price: [{ required: true, trigger: "blur" }],
+        website: [{type:'number', required: true, message: 'website is required', trigger: "blur" }],
+        category_id: [{type:'number', required: true, message: 'category is required' ,trigger: "blur" }],
+        product_img_s: [
+          {
+            type: "array",
+            required: true,
+            message: "Please Upload image",
+            trigger: "change"
+          }
+        ],
+        product_title: [
+          { required: true, message: "title is required", trigger: "blur" }
+        ],
+        product_reason: [{ required: true, trigger: "blur" }],
+        valid_date: [{ type: "date", required: true, trigger: "blur" }],
+        discount_rate: [{ required: true,message: 'discount rate is required', trigger: "blur" }],
+        quantity_per_day: [{message: 'quantity per day is required', required: true, trigger: "blur" }],
+        coupon_code: [{ required: true, trigger: "blur" }]
+      },
       optionsWebsite: [],
       optionsCategory: [
       ],
@@ -138,35 +160,12 @@ export default {
       couponsFormSubmit: {
 
       },
-      rules: {
-        product_url: [{ required: true, trigger: "blur" }],
-        product_price: [{ required: true, trigger: "blur" }],
-        website: [{type:'number', required: true, message: 'website is required', trigger: "blur" }],
-        category_id: [{type:'number', required: true, message: 'category is required' ,trigger: "blur" }],
-        product_img_s: [
-          {
-            type: "array",
-            required: true,
-            message: "Please Upload image",
-            trigger: "change"
-          }
-        ],
-        product_title: [
-          { required: true, message: "title is required", trigger: "blur" }
-        ],
-        product_reason: [{ required: true, trigger: "blur" }],
-        valid_date: [{ type: "date", required: true, trigger: "blur" }],
-        discount_rate: [{ required: true,message: 'discount rate is required', trigger: "blur" }],
-        quantity_per_day: [{message: 'quantity per day is required', required: true, trigger: "blur" }],
-        coupon_code: [{ required: true, trigger: "blur" }]
-      },
-      fileList2: [],
       uploadData: {
         api_token: "",
         file: ""
       },
       requestData: {
-        country_id: 1
+        country_id: parseInt(getStore('country_id')) || 1
       }
     };
   },
@@ -177,6 +176,7 @@ export default {
     ...mapGetters(["user_id", "username", "token"])
   },
   methods: {
+    //通过输入链接获取所有产品信息
     getProInfo() {
       console.log("获取产品信息");
     },
@@ -248,8 +248,6 @@ export default {
     //品类发生改变
     categoryChange (id) {
       this.couponsForm.categoryData = this.optionsCategory[id]
-      console.log(id, this.optionsCategory)
-      console.log(this.couponsForm)
     },
 
     //上传图片
@@ -278,7 +276,6 @@ export default {
         formData.append("file", file);
         uploadImg(formData)
           .then(res => {
-            console.log(res);
             this.couponsForm.product_img_s.push({ url: "http://" + res.data });
           })
           .catch(error => {
@@ -294,7 +291,6 @@ export default {
     issueCoupon(data) {
       addCoupon(data)
         .then(res => {
-          console.log(res)
           if (res.code === 200) {
             this.$notify.success("issue coupon success")
             this.$router.push({ path: "/posted/coupons" })

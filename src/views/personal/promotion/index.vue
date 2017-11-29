@@ -36,25 +36,6 @@
         :show-item="showItem"
         @handlecurrent="gotoPage">
       </pagination>
-    <!-- <div class="promotion-content clearfix ">
-      <div class="pro-card" v-for="(item, index) in promotionDetails">
-        <img class="pro-img" :src="item.product_img.split(',')[0]" alt="">
-        <div class="plotform">{{item.website}} </div>
-        <div class="pro-title" title="this is title">{{item.product_title}} </div>
-        <div class="price-remove">
-          <span>${{item.product_price}}</span>
-          <span class="remove" @click="removePromotion(item.id)">
-            <i class="el-icon-delete"></i>
-          </span>
-        </div>
-        <div class="pro-coupons">
-           <div class="coupons content">
-              <span><i class="gray-s">Coupons</i> <strong>${{item.discount_price}}</strong></span>
-              <span class="coupon-right"><strong>{{item.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -84,7 +65,6 @@ export default {
       removeAllRequestData: {
         api_token: "",
         user_id: "",
-        coupon_id: ""
       }
     };
   },
@@ -92,11 +72,26 @@ export default {
     couponsPro,
     pagination
   },
+  mounted() {
+    this.init()
+  },
   methods: {
-    //获取用户加入推广（收藏）的优惠券信息
-    getPromotionDetails() {
+    init () {
+      this.initData()
+      this.getPromotionDetails()
+    },
+    initData () {
       this.requestData.api_token = this.token
       this.requestData.user_id = this.user_id
+
+      this.removeRequestData.api_token = this.token
+      this.removeRequestData.user_id = this.user_id
+
+      this.removeAllRequestData.api_token = this.token
+      this.removeAllRequestData.user_id = this.user_id
+    },
+    //获取用户加入推广（收藏）的优惠券信息
+    getPromotionDetails() {
       promotionUserCoupon(this.requestData)
         .then(res => {
           this.arrcouponsDetails = res.data.data
@@ -109,8 +104,6 @@ export default {
 
     //移除优惠券
     removePromotion(id) {
-      this.removeRequestData.api_token = this.token
-      this.removeRequestData.user_id = this.user_id
       this.removeRequestData.coupon_id = id
       promotionUserRemove(this.removeRequestData)
         .then(res => {
@@ -123,8 +116,6 @@ export default {
 
     //移除所有的优惠券
     removeAllPromotion() {
-      this.removeAllRequestData.api_token = this.token
-      this.removeAllRequestData.user_id = this.user_id
       this.$confirm("Do you really want to delete all?", "remove all", {
         confirmButtonText: "confirm"
       })
@@ -144,7 +135,7 @@ export default {
 
     //跳转到详情页面
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+      this.$router.push({ path: "/coupons/" + id  })
     },
 
     //翻页功能
@@ -152,14 +143,11 @@ export default {
       this.requestData.page = index
       this.getPromotionDetails()
     }
-
   },
   computed: {
     ...mapGetters(["user_id", "token"])
   },
-  mounted() {
-    this.getPromotionDetails()
-  }
+
 };
 </script>
 
@@ -183,69 +171,6 @@ export default {
     cursor: pointer;
     &:hover {
       color: darken(#808080, 20%);
-    }
-  }
-  .promotion-content {
-    width: 101%;
-    // border: 1px solid red;
-    .pro-card {
-      // float: left;
-      position: relative;
-      display: inline-block;
-      width: 24%;
-      height: 21.6rem;
-      border: 1px solid #d2d2d2;
-      box-shadow: 1px 3px 3px rgba(210, 210, 210, 1);
-      border-radius: 4px;
-      margin-right: 1%;
-      padding-top: 2rem;
-      padding-left: 0.5rem;
-      padding-right: 1rem;
-      margin-bottom: 1rem;
-      text-align: center;
-      overflow: hidden;
-
-      .pro-img {
-        display: inline-block;
-        width: 10rem;
-        height: 10rem;
-        margin-bottom: 2rem;
-      }
-      .plotform {
-        font-style: italic;
-        font-size: 12px;
-        color: #898989;
-        text-align: left;
-        margin-bottom: 0.3rem;
-      }
-      .pro-title {
-        font-size: 0.78rem;
-        text-align: left;
-        color: #1a1a1a;
-        margin-bottom: 1.3rem;
-        height: 2rem;
-        overflow: hidden;
-      }
-      .price-remove {
-        text-align: left;
-        font-size: 1rem;
-        margin-bottom: 3px;
-        .remove {
-          float: right;
-          cursor: pointer;
-          color: #808080;
-          &:hover {
-            color: #874532;
-          }
-        }
-      }
-      .pro-coupons {
-        text-align: left;
-        font-size: 0.67rem;
-        .coupon-right {
-          float: right;
-        }
-      }
     }
   }
 }

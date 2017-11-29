@@ -17,7 +17,6 @@ export default {
         console.log('登录记录更新失败')
       })
     }
-    window.localStorage.setItem('country_id', 1)
   },
   beforeDestroy () {
     // removeStore('userInfo')
