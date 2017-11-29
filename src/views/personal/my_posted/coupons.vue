@@ -7,11 +7,11 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="searchForm.title" />
+      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.title" />
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.category">
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.category_id">
         <option value="1">母婴</option>
         <option value="2">其他</option>
         <option value="3">很多</option>
@@ -20,7 +20,7 @@
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.status">
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.status">
         <option value="1">Pending</option>
         <option value="2">Stop</option>
         <option value="3">Close</option>
@@ -44,7 +44,7 @@
           <tr v-for="item in trLists" >
             <td>
               <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
-              <img v-else class="product-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+              <img v-else class="product-img" src="../../../assets/01.png" alt="">
             </td>
             <td class="coupons-table-title">
               <div>amazon</div>
@@ -113,12 +113,10 @@
       :show-item="showItem"
       @handlecurrent="gotoPage">
     </pagination>
-
-
+    
     <!-- 查看详情弹窗 -->
     <el-dialog  :visible.sync="detailsDialog" title="Decline details" class="details-dialog" size="tiny">
         <p class="dialog-title">Decline details</p>
-
         <div class="details-reason">
           Insufficient balance
         </div>
@@ -131,7 +129,9 @@ import pagination from "@/components/page_index_coupons/pagination.vue";
 import { mapGetters } from "vuex";
 import { userPickCoupons } from "@/api/login";
 import { setStore, getStore, removeStore } from "@/utils/utils";
+import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from "@/utils/date";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "center_coupons",
   data() {
@@ -188,20 +188,20 @@ export default {
         status: ""
       },
       requestdata: {
-        user_id: "",
-        api_token: "",
+        user_id: getUserId(),
+        api_token: getToken(),
         page: 1,
-        page_size: 6
+        page_size: 6,
+        title: '',
+        category_id: '',
+        status: '',
       }
     };
   },
   components: {
     pagination
   },
-  mounted() {
-    this.requestdata.user_id = this.user_id;
-    this.requestdata.api_token = this.token;
-    console.log(this.requestdata);
+  mounted () {
     this.getUserPickCoupons()
   },
   computed: {
@@ -210,7 +210,7 @@ export default {
   methods: {
     //分页跳转
     gotoPage(i) {
-      this.requestdata.page = i;
+      this.requestdata.page = i
       this.getUserPickCoupons()
     },
 
@@ -218,16 +218,16 @@ export default {
     getUserPickCoupons() {
       userPickCoupons(this.requestdata)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.data.total !== 0) {
             for (var i in res.data.data) {
               res.data.data[i].valid_date = parseTime(
                 res.data.data[i].valid_date,
                 "{y}-{m}-{d}"
-              );
+              )
             }
-            this.trLists = res.data.data;
-            this.allpage = res.data.last_page;
+            this.trLists = res.data.data
+            this.allpage = res.data.last_page
           }
         })
         .catch(error => {
@@ -242,12 +242,13 @@ export default {
 
     //发布的优惠券查询
     postedCouponsSearch() {
-      console.log(this.searchForm);
+      console.log(this.requestdata)
+      this.getUserPickCoupons()
     },
 
     //跳转到优惠券详情页面
     gotoDetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
     },
 
     //跳转到 领取优惠券的用户页面
@@ -259,10 +260,11 @@ export default {
       setStore("couponDetails", JSON.stringify(item));
     },
 
-    //编辑待审核状态下和审核未通过的优惠券
-    EditCoupon(item) {
-      console.log(item)
-      this.$router.push({ path: "/posted/coupons/add" })
+    //编辑待审核状态下和审核未通过的优惠券   
+    EditCoupon(id) {
+      console.log(id)
+      //携带id 查询需要修改的数据，然后进行修改
+      this.$router.push({ path: "/posted/coupons/add", query: { editor: id } })
     },
 
     //删除优惠券
@@ -299,18 +301,6 @@ export default {
     border-bottom: 1px solid #e6e6e6;
     margin-bottom: 1rem;
   }
-  .title {
-    font-size: 1.5rem;
-    margin: 1rem 0;
-    font-weight: normal;
-  }
-  .title-s {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    line-height: 2rem;
-    color: #1a1a1a;
-    border-bottom: 1px solid #e6e6e6;
-  }
   .search-form {
     position: relative;
     width: 100%;
@@ -318,7 +308,7 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      margin-right: 4%;
+      margin-right: 3%;
       min-width: 10%;
     }
     .search {

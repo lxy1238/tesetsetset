@@ -13,7 +13,10 @@
             <span class="price-left">${{couponsDetails.product_price}}</span>
             <span class="price-right">${{couponsDetails.discount_price}}</span>
           </p>
-          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
+          <el-tooltip  :visible-arrow="false" placement="top" effect="light">
+             <div slot="content">Expected Commissions $ {{couponsDetails.commission_amount}}</div>
+            <p class="coupons content" ><span>Commissions</span> <span class="com-right">{{couponsDetails.commission_ratio}}%</span></p>
+          </el-tooltip>
           </template>
           <template slot="btn">
             View Coupons
@@ -34,7 +37,9 @@ import couponsPro from "@/components/page_index_coupons/image_product.vue";
 import pagination from "@/components/page_index_coupons/pagination.vue";
 import { getAllCoupons, getInfo, getHeadCateList } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
+import { getStore } from "@/utils/utils";
 import { mapGetters } from "vuex";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "page_index",
   data() {
@@ -50,8 +55,10 @@ export default {
       }],
       requestData: {
         page: 1,
-        page_size: 6 * 8,
-        menu_id: '',
+        page_size: '',
+        menu_id: 0,
+        country_id: parseInt(getStore('country_id')) || 1,
+        keyword: '',
       }
     };
   },
@@ -60,38 +67,67 @@ export default {
     pagination
   },
   mounted() {
-    this.getHeadCateListInfo()
-    window.onresize = this.widthToNum
+    this.init()
   },
   beforeDestroy() {
     window.onresize = null
-    this.$root.eventHub.$emit('initClassify')
+    this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
+    this.$root.eventHub.$off('changeCountryId')
   },
   computed: {
+    //导航条变化的时候触发查询需要展示商品的信息
     menu_name () {
       if (this.$route.params.menuId) {
         return this.$route.params.menuId
       } else {
         return "Top Coupons"
       }
+    },
+    //查询字段变化的时候触发
+    search () {
+      if (this.$route.query.search) {
+        return this.$route.query.search
+      } else {
+        return ""
+      }
     }
   },
   watch: {
     menu_name () {
-      this.getAllCouponsInfo()
-      this.getUserInfo()
+      this.gotoPage(1)
+    },
+    search () {
+      this.gotoPage(1)
     }
   },
   methods: {
+    //初始化
+    init () {
+      this.requestData.keyword = this.$route.query.search
+      this.getHeadCateListInfo()
+      window.onresize = this.widthToNum
+      this.getheadData()
+    },
     //翻页功能实现
     gotoPage(index) {
+      this.requestData.keyword = this.search
       this.requestData.page = index
       this.getAllCouponsInfo()
     },
 
+    //接收 选择国家时传递的数据
+    getheadData () {
+      this.$root.eventHub.$on('changeCountryId', data => {
+        this.requestData.country_id = data
+        this.requestData.page = 1
+        this.requestData.keyword = ''
+        this.getAllCouponsInfo()
+      })
+    },
+
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
-    gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+    gotodetails(id) {
+      this.$router.push({ path: "/coupons/" + base64Encode(id) })
     },
 
     //获取用户信息 ，判断首页的coupon是否加入推广
@@ -103,23 +139,30 @@ export default {
             newArr.push(i.coupon_id)
           }
           this.userPromotions = newArr
-        });
+        })
       }
     },
 
     //获取首页所有优惠券的信息
     getAllCouponsInfo() {
-      for (var i of this.classifyList) {
-        if (i.name === this.$route.params.menuId) {
-          this.selectedC = i.id
-          this.requestData.menu_id = i.id
-          this.$router.push({path:'/' + i.name})
+      this.arrcouponsDetails = []
+      if (this.$route.params.menuId) {
+        for (var i of this.classifyList) {
+          if (i.name === this.$route.params.menuId) {
+            this.selectedC = i.id
+            this.requestData.menu_id = i.id
+            this.$router.push({path:'/' + i.name})
+          }
         }
+      } else {
+        this.requestData.menu_id = 0
       }
       getAllCoupons(this.requestData)
         .then(res => {
+          console.log(res.data.data)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
+          this.getUserInfo()
         })
         .catch(error => {
           console.log(error)
@@ -156,7 +199,7 @@ export default {
       getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
-        this.getAllCouponsInfo()
+        // this.getAllCouponsInfo()
       }).catch(error => {
         console.log(error)
       })

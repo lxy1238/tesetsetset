@@ -8,7 +8,7 @@
          <div class="user">
           <div class=" head">
             <img v-if="userInfo.avatar_img" :src="userInfo.avatar_img" alt="">
-            <img v-else src="http://www.ghostxy.top/dealsbank/img/user.png" alt="">
+            <img v-else src="../../assets/user.png" alt="">
           </div>
           <div class=" details-user">
               <p class="first">
@@ -58,6 +58,7 @@ import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import pagination from "@/components/page_index_coupons/pagination.vue"
 import { postedUserInfo ,getAllCoupons } from '@/api/login'
 import { timestampFormat } from '@/utils/date'
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "page_index",
   data() {
@@ -93,20 +94,31 @@ export default {
   },
   mounted() {
     this.init()
-    // this.$root.eventHub.$on("selectClassify", data => {
-    //   this.requestCouponData.menu_id = data
-    //   this.getUserCouponInfo()
-    // })
+  },
+  beforeDestroy () {
+    window.onresize = null
   },
   methods: {
+    //页面初始化
+    init () {
+      this.initData()
+      this.getPostUserInfo()
+      this.getUserCouponInfo()
+      this.widthToNum()
+      window.onresize = () => {
+        this.widthToNum()
+      }
+    },
+       //初始化赋值
+    initData () {
+      this.requestCouponData.user_id = base64Decode(this.$route.params.userId)
+      this.requestUserData.user_id = base64Decode(this.$route.params.userId)
+    },
        //翻页功能实现
     gotoPage(index) {
       this.getUserCouponInfo()
     },
 
-    gotodetails (id) {
-      this.$router.push({ path: '/coupons' })
-    },
       //获取发布人的信息
     getPostUserInfo () {
       postedUserInfo (this.requestCouponData).then(res => {
@@ -130,26 +142,9 @@ export default {
       })
     },
 
-    //初始化赋值
-    initData () {
-      this.requestCouponData.user_id = this.$route.params.userId
-      this.requestUserData.user_id = this.$route.params.userId
-    },
-
-    //页面初始化
-    init () {
-      this.initData()
-      this.getPostUserInfo()
-      this.getUserCouponInfo()
-      this.widthToNum()
-      window.onresize = () => {
-        this.widthToNum()
-      }
-    },
-
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id });
+      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
     },
 
      //根据页面尺寸宽度判断首页展示的商品数量

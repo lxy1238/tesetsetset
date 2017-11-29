@@ -1,5 +1,5 @@
 <template>
-  <div class="personal">
+  <div class="about">
     <header-self :need-classify="false"></header-self>
     <subnav :routers="routers"></subnav>
     <broad-side></broad-side>
@@ -12,8 +12,9 @@ import headerSelf from '../../components/global/header'
 import footerSelf from '../../components/global/footer'
 import broadSide from '../../components/global/broadside'
 import subnav from '../../components/personal/subnav'
+import { aboutRouterMap } from '../../router/index'
 export default {
-  name: 'personal',
+  name: 'about',
   components: {
     headerSelf,
     footerSelf,
@@ -27,7 +28,7 @@ export default {
     }
   },
   mounted () {
-    this.routers = this.$store.getters.addRouters
+    this.routers = aboutRouterMap
   }
 
 }
@@ -37,3 +38,4 @@ export default {
 <style lang="less" scoped>
 
 </style>
+

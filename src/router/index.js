@@ -5,6 +5,7 @@ const _import = require('./_import_' + process.env.NODE_ENV)
 //主体通用部分
 const home = _import('home/index')
 const p_center = _import('personal/index')
+const about_center = _import('about/index')
 const another = _import('another/index')
 
 Vue.use(Router)
@@ -23,7 +24,7 @@ export const constantRouterMap = [
         component: _import('trials/index')
       },
       {
-        path: '/coupons/:couponsId/:postUserId',
+        path: '/coupons/:couponsId',
         component: _import('coupons/index')
       },
       {
@@ -42,12 +43,13 @@ export const constantRouterMap = [
      
     ]
   },
+  //申请入驻、 佣金计算、 激活、 忘记密码
   {
-    path: '/enter',
+    path: '/enter/index',
     component: another,
     children: [
       {
-        path: '/enter',
+        path: '/enter/index',
         component: _import('enter_s/index')
       },
       {
@@ -59,28 +61,98 @@ export const constantRouterMap = [
         component: _import('enter_s/reds')
       },
       {
-        path: '/commissions',
+        path: '/enter/invite',
+        component: _import('enter_s/invite')
+      },
+      {
+        path: '/commissions/index',
         component: _import('commissions/index')
       },
       {
         path: '/activate/:email',
         component: _import('another/activate/index')
       },
+      {
+        path: '/resetpass/:email/:token',
+        component: _import('another/resetpass/index')
+      },
     ]
   },
   {
-    path: '/combine',
+    path: '/combine/index',
     component: _import('combine/index'),
     hidden: true
   },
 
   {
-    path: '/404',
+    path: '/404/index',
     name: '404page',
     component: _import('404')
   },
 ]
 
+//帮助中心路由配置
+export const aboutRouterMap = [
+  {
+    path: '/about/center',
+    redirect: '/about/center/index',
+    component: about_center,
+    text: 'About Us',
+    hasChilds: false,
+    children: [{
+      path: 'index',
+      component: _import('about/about_us')
+    }]
+  },
+  {
+    path: '/about/faqs',
+    redirect: '/about/faqs',
+    component: about_center,
+    hasChilds: true,
+    isToggle: true,
+    text: 'FAQs / Common Issues',
+    children: [
+      {
+        path: '/about/login_sign',
+        text: '用户登录与注册',
+        component: _import('about/fqa/login_sign'),
+      },
+      {
+        path: '/about/pick_coupons',
+        text: '折扣券领取流程',
+        component: _import('about/fqa/pick_coupons'),
+      },
+      {
+        path: '/about/coupon_promo',
+        text: '折扣券营销推广',
+        component: _import('about/fqa/coupon_promo')
+      },
+      {
+        path: '/about/trials_apply',
+        text: '试用品申请规则',
+        component: _import('about/fqa/trials_apply')
+      },
+      {
+        path: '/about/release',
+        text: '如何发布折扣券和试用品',
+        component: _import('about/fqa/release')
+      },
+      {
+        path: '/about/member_level',
+        text: '会员等级与积分',
+        component: _import('about/fqa/member_level')
+      },
+      {
+        path: '/about/pid',
+        text: 'PID获取方式',
+        component: _import('about/fqa/pid')
+      },
+    ]
+  },
+]
+
+
+//登录后加载异步路由
 export const asyncRouterMap = [
     {
       path: '/personal/member',
@@ -210,7 +282,7 @@ export const asyncRouterMap = [
           component: _import('personal/settings/account'),
         },
         {
-          path: '/settingsshop',
+          path: '/settings/shop',
           text: 'Shop Settings',
           component: _import('personal/settings/shop'),
           meta: {role: ['merchant']}
@@ -236,5 +308,5 @@ export default new Router({
   scrollBehavior: () => ({
     y: 0
   }),
-  routes: constantRouterMap
+  routes: constantRouterMap.concat(aboutRouterMap)
 })

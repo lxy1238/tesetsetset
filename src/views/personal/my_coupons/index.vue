@@ -7,19 +7,19 @@
       <div class="pro-card" v-for="item in couponLists">
         <div class="expried">EXPRIED</div>
         <div class="card-top">
-          <img class="card-top-img" :src="item.product_img.split(',')[0]" alt="">
+          <img class="card-top-img" :src="item.coupons.product_img.split(',')[0]" alt="">
           <div class="pro-title">
-              {{item.product_title}} 
+              {{item.coupons.product_title}} 
           </div>
           <div class="pro-info">
-            <span class="old-price">${{item.product_price}}</span>
-            <span class="coupons-price"><i>coupons</i><b>${{item.product_price * item.discount_rate / 100}}</b></span>
-            <span class="proportion"><b>{{item.discount_rate}}%</b><i>off</i></span>
+            <span class="old-price">${{item.coupons.product_price}}</span>
+            <span class="coupons-price"><i>coupons</i><b>${{item.coupons.product_price * item.coupons.discount_rate / 100}}</b></span>
+            <span class="proportion"><b>{{item.coupons.discount_rate}}%</b><i>off</i></span>
           </div>
         </div>
         <div class="card-bottom">
-          <span class="code">{{item.coupon_code}}</span>
-          <button class="go-to-amazon"> <a :href="item.product_url" target="_blank">go to amazon </a> </button>
+          <span class="code">{{item.coupons.coupon_code}}</span>
+          <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go To Amazon </a> </button>
         </div>
       </div>
     </div>
@@ -72,7 +72,6 @@ export default {
       this.requestData.api_token = this.token
       this.requestData.user_id = this.user_id
       userCoupons(this.requestData).then(res => {
-        console.log(res.data)
         if (res.data.total !== 0) {
           this.couponLists = res.data.data
           this.allpage = res.data.last_page

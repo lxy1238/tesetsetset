@@ -2,7 +2,7 @@
   <div class="page-index">
     <div class="pages-content">
       <div class="head-crumbs">
-        <span class=" gray-s">Coupons > Home</span> 
+        <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
       <div class="details-content clearfix">
         <div class="left inline">
@@ -34,11 +34,11 @@
             <div class="data-info">
               <span class="inline-b expried">Expried:{{couponDetail.valid_date}}</span>
               <span class="inline-b">Free shopping</span>
-              <span class="inline-b right"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
+              <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
             </div>
-            <div class="select">
-              <select name="" id="" v-model="selected">
-                <option v-for="(item, index) in options" :value="index" >{{item}}</option>
+            <div class="select" v-if="isFlagCoupon">
+              <select name="" id="" v-model="selected" @change="selectProblem">
+                <option v-for="(item, index) in options" :value="item" :label="item" >{{item}}</option>
               </select>
             </div>
             <div class="btn-promotion">
@@ -49,11 +49,12 @@
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
                 </div>
-                <div class="inline-b question">
+                <div class="inline-b question" v-if="selected !== 'Choose reason'">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
-                    <input type="text">
-                    <button><span>Submit</span></button>
+                    <input type="text" v-model="addProblemData.content">
+                    <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
+                    <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                   </div>
                 </div>
             </div>
@@ -61,11 +62,11 @@
           <div class="commission">
              <div class="commission-title">
               <span>
-                Extra commissions
+                Affiliate reward
               </span>
             </div>
             <div class="describe">
-              <span>After joining the promotion, each issue a coupon, you can recei
+              <span>Get {{couponDetail.commission_ratio}}% commission, about $ {{couponDetail.commission_amount}} affiliate reward
               </span>
             </div>
           </div>
@@ -95,16 +96,15 @@
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" href="#"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-tuite_twitter"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent('https://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
                <div class="promo-footer center">
                  <a href="#" class="use-it">How to Use? Click here >></a>
                </div>
             </div>
-            
           </div>
           <div class="recommend">
             <div class="re-head">
@@ -112,16 +112,16 @@
               <span class="re-head-r" @click="gotoIndex" >more></span>
             </div>
               <coupons-pro 
-              v-for="couponsDetails in arrcouponsDetails"  
-              :key="1" 
-              :couponsDetails="couponsDetails"
-              :promotions="userPromotions" 
-              @gotodetails="gotodetails">
+                v-for="couponsDetails in arrcouponsDetails"  
+                :key="1" 
+                :couponsDetails="couponsDetails"
+                :promotions="userPromotions" 
+                @gotodetails="gotodetails">
                 <template slot="price">
-                <p class="price content">{{couponsDetails.price}}</p>
+                <p class="price content">${{couponsDetails.product_price}}</p>
                 <p class="coupons content">
-                  <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>
-                  <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
+                  <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.discount_price}}</strong></span>
+                  <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
                 </p>
                 </template>
                 <template slot="btn">
@@ -208,16 +208,6 @@
           </div>
         </div>
       </el-dialog>
-
-      <!-- not get trials -->
-      <el-dialog  :visible.sync="notGetTrialsDialog" class="not-trials-dialog" size="tiny">
-          <p>You did not get trials</p>
-
-          <div class="try-again">
-            <button @click="gotoTrials">Try out other gifs</button>
-          </div>
-
-      </el-dialog>
   </div>
 </template>
 
@@ -229,6 +219,7 @@ import explain from "@/components/trials/explain.vue";
 import Clip from "@/utils/clipboard.js";
 
 import { getStore, removeStore } from "@/utils/utils";
+import { parseTime } from '@/utils/date'
 import { timestampFormat } from "@/utils/date";
 import {
   getAllCoupons,
@@ -238,10 +229,13 @@ import {
   isUserGetCoupon,
   promotionAddCoupon,
   promotionUserRemove,
-  getInfo
+  getInfo,
+  addProblem,
+  getHeadCateList 
 } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "coupons",
   components: {
@@ -264,8 +258,8 @@ export default {
       imgList: [],
       html: "hello",
       options: [
-        "Choose areason",
-        "Dead deadl",
+        "Choose reason",
+        "Dead deal",
         "Duplicate",
         "Bad link",
         "Spam",
@@ -273,14 +267,13 @@ export default {
         "No value",
         "Alive again"
       ],
-      selected: 0,
+      selected: "Choose reason",
       added: true,
       imgUrl: "",
       arrcouponsDetails: [],
       couponDetail: {},
       showGetCodeDialog: false,
       templateDialog: false,
-      notGetTrialsDialog: false,
       getCodeSuccess: false, //是否领取优惠券成功
       userPromotions: [],
       requestData: {
@@ -308,14 +301,40 @@ export default {
         api_token: getToken(),
         coupon_id: "",
         user_id: ""
-      }
+      },
+      addProblemData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        product_id: '',
+        menu: '',
+        title: '',
+        content: ''
+
+      },
+      //品类列表
+      classifyList: [
+        {
+          id: 0,
+          name: 'Top Coupons'
+        }
+      ],
+
+      //是否显示问题反馈
+      isFlagCoupon: false
     };
   },
   computed: {
-    ...mapGetters(["username", "user_id"])
+    ...mapGetters(["username", "user_id"]),
+    menu_name () {
+      for (var i of this.classifyList) {
+        if (i.id === this.requestData.menu_id) {
+          return i.name
+        }
+      }
+    }
   },
   mounted() {
-    this.init();
+    this.init()
   },
 
   //组件销毁前
@@ -323,7 +342,7 @@ export default {
     // removeStore('couponId')
   },
   methods: {
-    test() {
+    test () {
       var a = document.getElementById("test").value;
       var b = a.replace(/\n/g, "<br>").replace(/a/g, this.html);
       document.getElementById("box").innerHTML = b;
@@ -331,8 +350,9 @@ export default {
     },
 
     //初始化
-    init() {
+    init () {
       this.initData()
+      this.getHeadCateListInfo()
       this.getCouponsDetails()
       this.couponsGetInfo()
     },
@@ -341,7 +361,10 @@ export default {
     initData() {
       this.reqGetCodeData.user_id = this.user_id;
       this.reqGetCodeData.username = this.username;
-      this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId);
+
+      this.addPromotionData.user_id = this.user_id;
+      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId);
     },
 
     //获取左边的图片信息
@@ -358,17 +381,18 @@ export default {
     gotodetails(id, user_id) {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: "/coupons/" + id + "/" + user_id })
+      this.$router.push({ path: "/coupons/" + base64Encode(id) })
       this.getCouponsDetails(this.requestCouponDetails)
     },
+
+    //领取优惠券
     getCode() {
       if(!this.isLogin()) {
         return
       }
       this.checkGetCodeData.user_id = this.user_id
-      this.checkGetCodeData.coupon_id = this.$route.params.couponsId
+      this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       isUserGetCoupon(this.checkGetCodeData).then(res => {
-        console.log(res.data)
         this.showGetCodeDialog = true
         if (!res.data) {
         } else {
@@ -380,7 +404,7 @@ export default {
     close() {
       this.showGetCodeDialog = false
     },
-    submit() {},
+
     gotoTrials() {
       this.$router.push({ path: "/trials" })
     },
@@ -388,19 +412,17 @@ export default {
 
     //获取优惠券详情
     getCouponsDetails() {
-      this.requestCouponDetails.id = this.$route.params.couponsId
+      this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       couponDetails(this.requestCouponDetails)
         .then(res => {
           console.log(res)
-          this.userInfo = res.data.user_base
           this.imgList = res.data.product_img.split(",")
           this.imgUrl = this.imgList[0]
           this.couponDetail = res.data
-          var valid_date = new Date()
-          valid_date.setTime(res.data.valid_date * 1000)
-          this.couponDetail.valid_date = valid_date.toLocaleDateString()
+          this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
           this.requestData.menu_id = res.data.menu_id
           this.getAllCouponsInfo()
+          this.getPostUserInfo(res.data.user_id)
         })
         .catch(error => {
           console.log(error + "couponDetails");
@@ -411,8 +433,7 @@ export default {
     getAllCouponsInfo () {
       getAllCoupons(this.requestData) 
       .then(res => {
-        this.arrcouponsDetails = res.data.data;
-        // this.allpage = res.data.last_page
+        this.arrcouponsDetails = res.data.data
       })
       .catch(error => {
         console.log(error + "getAllCoupons");
@@ -420,13 +441,13 @@ export default {
     },
 
     //获取发布人的信息
-    getPostUserInfo() {
-      var request = { user_id: this.$route.params.postUserId };
+    getPostUserInfo(user_id) {
+      var request = { user_id: user_id };
       postedUserInfo(request)
         .then(res => {
-          this.reqGetCodeData.username = res.data.username;
-          this.reqGetCodeData.user_id = this.$route.params.postUserId;
-          this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+          res.data.joined_date = timestampFormat(res.data.joined_date)
+          this.userInfo = res.data
+          this.userInfo.user_id = this.couponDetail.user_id
         })
         .catch(error => {
           console.log(error + " postedUserInfo");
@@ -436,10 +457,7 @@ export default {
     //取消推广
     removePromotion() {
       if (this.isLogin()) {
-        this.addPromotionData.user_id = this.user_id;
-        this.addPromotionData.coupon_id = this.$route.params.couponsId;
         promotionUserRemove(this.addPromotionData).then(res => {
-          console.log(res);
           if (res.code === 200) {
             this.couponsGetInfo();
             this.added = true;
@@ -451,10 +469,7 @@ export default {
     //加入推广
     addPromotion() {
       if (this.isLogin()) {
-        this.addPromotionData.user_id = this.user_id;
-        this.addPromotionData.coupon_id = this.$route.params.couponsId;
         promotionAddCoupon(this.addPromotionData).then(res => {
-          console.log(res);
           if (res.code === 200) {
             this.couponsGetInfo();
             this.added = false;
@@ -480,9 +495,10 @@ export default {
     //判断是否登录，否则提醒请登录
     isLogin() {
       if (!getToken()) {
-        this.$alert("please log in first", "reminder", {
-          confirmButtonText: "confirm"
-        });
+        this.$root.eventHub.$emit('isLoginInfo')
+        // this.$alert("please log in first", "reminder", {
+        //   confirmButtonText: "confirm"
+        // });
         return false
       } else {
         return true
@@ -502,10 +518,50 @@ export default {
       }
     },
 
-    //
+    //选择不同品类优惠券过滤
     gotoIndex () {
       this.$root.eventHub.$emit("selectClassify1", this.requestData.menu_id)
-    }
+    },
+
+    //选择问题, 提交问题反馈
+    selectProblem (index) {
+      this.addProblemData.title = this.selected
+    },
+    
+    //提交问题
+    addProblemSubmit () {
+      if (base64Decode(this.$route.params.couponsId)) {
+        this.addProblemData.menu = 'coupons'
+        this.addProblemData.product_id = base64Decode(this.$route.params.couponsId);
+      }
+      if (!this.addProblemData.content) {
+        return
+      }
+      if (this.addProblemData.content.length > 30) {
+        this.$notify.error('You can only type 30 characters')
+        return
+      }
+      addProblem(this.addProblemData).then(res => {
+        if (res.code === 200) {
+          this.$message.success('Submitted successfully!')
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+         //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.classifyList = this.classifyList.concat(res.data)
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    //显示问题反馈选项
+    flagCoupon () {
+      this.isFlagCoupon = !this.isFlagCoupon
+    } 
 
   }
 };
@@ -603,6 +659,7 @@ export default {
         margin-top: 0.5rem;
         .right {
           float: right;
+          cursor: pointer;
         }
         .expried {
           margin-right: 2rem;
@@ -679,6 +736,7 @@ export default {
             color: #808080;
           }
           .submit {
+            position: relative;
             input {
               height: 1.8rem;
             }
@@ -698,6 +756,12 @@ export default {
                 background: lighten(#7db135, 10%);
                 border-color: lighten(#7db135, 10%);
               }
+            }
+            .error {
+              position: absolute;
+              left: 0;
+              text-align: left;
+              color: red;
             }
           }
         }
@@ -791,6 +855,16 @@ export default {
             }
             .iconfont {
               font-size: 2rem;
+              &.icon-facebook1 {
+                &:hover {
+                  color: #39579C;
+                }
+              }
+               &.icon-tuite_twitter {
+                &:hover {
+                  color: #26ABE1;
+                }
+              }
               &:hover {
                 color: red; //TODO 这里后续不要，可以删除
               }
@@ -1016,24 +1090,6 @@ export default {
   }
 }
 
-.not-trials-dialog {
-  p,
-  div {
-    text-align: center;
-  }
-  div {
-    button {
-      .btn-h(50%, 2rem);
-      background: #84ba39;
-      border-color: #84ba39;
-      color: white;
-      &:active {
-        background: darken(#84ba39, 10%);
-        border-color: darken(#84ba39, 10%);
-      }
-    }
-  }
-}
 .template-dialog {
   .dialog-body {
     height: 500px;
@@ -1095,10 +1151,7 @@ export default {
       }
       .save {
         position: absolute;
-        .btn-h(77px,77px);
-        background: #2089bb;
-        border-color: #2089bb;
-        color: white;
+        .btn-h(77px,77px,#2089bb, #2089bb, white);
         bottom: -38.5px;
         left: 50%;
         margin-left: -38.5px;

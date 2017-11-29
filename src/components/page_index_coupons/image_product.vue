@@ -1,23 +1,33 @@
 <template>
   <div  class="coupons-product" >
     <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
-    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
+    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
-      <img v-if="!loading" src="http://www.ghostxy.top/dealsbank/img/01.png"   alt="img">
+      <img v-if="!loading" src="../../assets/01.png"   alt="img">
     </div>
      <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo(couponsDetails.id)">
           <span>{{addPromoMsg}}</span>
         </div>
         <div class="line"></div>
-        <div class="span-btn" @click="copy">Copy</div>
+        <el-tooltip placement="right">
+          <div slot="content" class="copy-content" :id="productDetails">
+            <img class="copy-img" :src="couponsDetails.product_img.split(',')[0]" />
+            <div class="content-line">{{couponsDetails.product_title}}</div>
+            <div class="content-line">coupons ${{couponsDetails.discount_price}}</div>
+            <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
+            <div class="content-line">{{couponsDetails.product_reason}}</div>
+           
+          </div>
+          <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
+        </el-tooltip>
       </div>
-      <div v-else class="promo-copy-hidden"></div>
+      <!-- <div v-else class="promo-copy-hidden"></div> -->
       <p class="platfrom content" >{{couponsDetails.website}}</p>
       <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <slot name="price"></slot>
       <div class="content viewcoupons">
-        <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id, couponsDetails.user_id)">
+        <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id)">
           <slot name="btn"></slot>
         </button>
       </div>
@@ -28,6 +38,7 @@
 import { mapGetters } from "vuex";
 import { getToken } from "@/utils/auth";
 import { promotionAddCoupon, promotionUserRemove } from "@/api/login";
+import Clip from "@/utils/clipboard.js";
 export default {
   name: "image_product",
   data() {
@@ -57,11 +68,24 @@ export default {
       }
     }
   },
+  mounted() {
+    this.init()
+  },
   methods: {
-    //跳转到详情也，携带coupon_id ,user_id
-    goToCouponsPage(id, user_id) {
-      this.$emit("gotodetails", id, user_id)
+    init () {
+      this.addPromoRequestData.user_id = this.user_id
+      //判断是否加入推广
+      setTimeout(() => {
+        if (this.promotions.includes(this.couponsDetails.id)) {
+          this.addPromoMsg = "Cancel Promo"
+        }
+      }, 150)
     },
+    //跳转到详情也，携带coupon_id ,user_id
+    goToCouponsPage(id) {
+      this.$emit("gotodetails", id)
+    },
+
     loadImg() {
       this.loading = true
     },
@@ -95,19 +119,20 @@ export default {
           });
       }
     },
-    copy() {}
+    copy(e) {
+      Clip(e)
+    }
   },
   computed: {
-    ...mapGetters(["token", "user_id"])
+    ...mapGetters(["token", "user_id"]),
+    productDetails() {
+      return 'productDetails' + this.couponsDetails.id
+    },
+    productDetails1 () {
+      return "#" + this.productDetails 
+    }
   },
-  mounted() {
-    this.addPromoRequestData.user_id = this.user_id;
-    setTimeout(() => {
-      if (this.promotions.indexOf(this.couponsDetails.id) >= 0) {
-        this.addPromoMsg = "Cancel Promo";
-      }
-    }, 150);
-  }
+ 
 };
 </script>
 
@@ -118,7 +143,7 @@ export default {
   display: inline-block;
   overflow: hidden;
   width: 240px;
-  height: 380px;
+  height: 370px;
   background: white;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
@@ -126,7 +151,7 @@ export default {
   z-index: 1;
   &:hover {
     .promo-copy {
-      visibility: visible;
+      height: 36px;
     }
   }
   .expried {
@@ -166,22 +191,24 @@ export default {
     img {
       display: inline-block;
       margin-top: 15px;
-      width: 80%;
-      height: 150px;
+      width: 180px;
+      height: 180px;
     }
   }
   .promo-copy-hidden {
     height: 2rem;
   }
   .promo-copy {
-    .p(r);
+    .p(a);
+    top: 160px;
     font-size: 12px;
     width: 100%;
-    height: 2rem;
-    line-height: 2rem;
+    height: 0;
+    overflow: hidden;
+    line-height: 36px;
     margin-top: 0.5rem;
     background: #bfbfbf;
-    visibility: hidden;
+    transition: all 0.2s ease 0.2s;
     .span-btn {
       float: left;
       font-size: 13px;
@@ -197,9 +224,9 @@ export default {
     .line {
       .p(a);
       width: 1px;
-      height: 1rem;
+      height: 30px;
       background: white;
-      top: 0.5rem;
+      top: 3px;
       left: 50%;
     }
   }
@@ -252,6 +279,19 @@ export default {
   }
   &.last {
     margin-right: 0;
+  }
+}
+
+.copy-content {
+  width: 300px;
+  font-size: 14px;
+  .copy-img {
+    display: block;
+    width: 100px;
+    height: 100px;
+  }
+  .content-line {
+    margin-bottom: 5px;
   }
 }
 </style>

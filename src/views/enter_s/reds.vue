@@ -14,20 +14,20 @@
       </div>
 
       <el-form 
-            :model="redsFrom" 
+            :model="redsForm" 
             :rules="rules" 
-            ref="redsFrom" 
+            ref="redsForm" 
             label-width="140px" 
             label-position="top"
-            class="coupons-form" >
+            class="reds-form" >
       <el-form-item label="Full name: " prop="full_name" >
-        <el-input class="url-input" v-model="redsFrom.full_name" ></el-input>
+        <el-input class="url-input" v-model="redsForm.full_name" ></el-input>
       </el-form-item>
       <el-form-item label="E-mail: " prop="email" class="item-inline"  >
-        <el-input class="url-input" v-model="redsFrom.email"></el-input>
+        <el-input class="url-input" v-model="redsForm.email"></el-input>
       </el-form-item>
       <el-form-item label="Country: " prop="country" class="item-inline"  >
-        <el-select v-model="redsFrom.country">
+        <el-select v-model="redsForm.country">
            <el-option 
             v-for="item in optionsCountry"
             :key="item.value"
@@ -37,45 +37,69 @@
         </el-select>
       </el-form-item>
       <el-form-item label="Province/State: "  prop="province_state"  class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="redsFrom.province_state"></el-input>
+        <el-input class="url-input input-price-fee" v-model="redsForm.province_state"></el-input>
       </el-form-item>
       <el-form-item label="City/Town: " prop="city_town" class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="redsFrom.city_town"></el-input>
+        <el-input class="url-input input-price-fee" v-model="redsForm.city_town"></el-input>
       </el-form-item>
       <el-form-item label="Street address: " prop="street_address"  >
-        <el-input v-model="redsFrom.street_address"></el-input>
+        <el-input v-model="redsForm.street_address"></el-input>
       </el-form-item>
       <el-form-item label="Postcode/Zip Code: "  prop="postcode" >
-        <el-input v-model="redsFrom.postcode" type="textarea" class="textarea"></el-input>
+        <el-input v-model="redsForm.postcode"  class="textarea"></el-input>
       </el-form-item>
        <el-form-item label="Daytime Phone: " prop="daytime_phone" >
-        <el-input v-model="redsFrom.daytime_phone" type="textarea" class="textarea"></el-input>
+        <el-input v-model="redsForm.daytime_phone"  class="textarea" placeholder="+86"></el-input>
       </el-form-item>
-      <el-form-item label="Income situation: " required>
-        <div id="summernote"></div>
+       <el-form-item label="Income situation: " prop="income_situation" >
+        <el-input v-model="redsForm.income_situation" class="textarea" placeholder="$"></el-input>
       </el-form-item>
       <div class="title-s">
-        Coupon Information
+        Media information
       </div>
-      <el-form-item label="Active date: " class="item-inline" prop="active_date"  >
-          <el-date-picker
-            v-model="redsFrom.active_date"
-            type="daterange"
-            placeholder="选择日期范围">
-          </el-date-picker>
+      <el-form-item label="Areas of expertise" class="item-inline"   >
+         <ul class="experitse-items clearfix">
+           <li v-for="item in expertiseList" 
+               :class="{active: item.isSelected}"
+               @click="selectedExpertise(item)">{{item.text}}
+           </li>
+         </ul>
       </el-form-item>
-      <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-        <el-input v-model="redsFrom.quantity_per_day"></el-input>
+      <el-form-item label="Category: "  class="item-inline1" >
+        <el-radio class="radio" v-model="redsForm.category" label="Team">Team</el-radio>
+        <el-radio class="radio" v-model="redsForm.category" label="Personal">Personal</el-radio>
       </el-form-item>
-      <el-form-item label="Type: " class="item-inline1" >
-        <el-radio class="radio" v-model="radio" label="1">Unllimited</el-radio>
-        <el-radio class="radio" v-model="radio" label="2">Alone</el-radio>
+      <el-form-item label="Detailed introduction: " class="item-inline"  prop="detailed_introduction">
+        <el-input v-model="redsForm.detailed_introduction" type="textarea" :rows="6"></el-input>
       </el-form-item>
-      <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
-        <el-input v-model="redsFrom.total_quantity"></el-input>
+      <el-form-item label="Resources and channels:"  class="resources-channels" >
+        <div class="resources-channels-item"  v-for="item in channelsLists">
+          <div class="top">
+            <div class="channels" v-if="item.imgUrl">
+              <img :src="item.imgUrl" alt=""> 
+              <span class="channel-name"> {{item.name}}</span>
+            </div>
+            <div class="channel" v-else >
+              <label for="">Channel name</label>
+              <el-input type="text"  size="mini" v-model="item.name"></el-input>
+            </div>
+            <div class="fans-number">
+              <label for="">Number of fans</label>
+              <el-input type="text"  size="mini" v-model="item.fansNum"></el-input>
+            </div>
+          </div>
+          <div class="bottom">
+             <label for="">Proof link</label>
+            <el-input type="text"  size="mini" v-model="item.proofLink"></el-input>
+          </div>
+        </div>
+        <div class="channels-add-more" @click="addMoreChannel">
+          Add more channels <i class=" el-icon-plus"></i>
+        </div>
       </el-form-item>
-    
-    
+      <el-form-item class="submit-btn">
+        <button type="button" >Submit</button>
+      </el-form-item>
     </el-form>
     </div>
   </div>
@@ -92,7 +116,7 @@ export default {
           'label': 'USA'
         }
       ],
-      redsFrom: {
+      redsForm: {
         full_name: '',
         email: '',
         country: '',
@@ -102,93 +126,139 @@ export default {
         postcode: '',
         daytime_phone: '',
         income_situation: '',
-        category: '',
+        category: 'Team',
         detailed_introduction: '',
-
-
-        url: 'http://www.baidu.com',
-        website: 'amazon',
-        price: '123.11',           //decimal  价格
-        country: '',         //string 国家
-        category_id: "",     // 所属分类 , 是   int
-        store_id: '',        // int
-        shipping_fee: '1.2',                       //运费
-        img: '',                        //产品图片
-        title: 'this is trials title', 
-        reason: 'this is reason',
-        specifications: 'spaecaefaef',
-        detais: '<h1>jerry</h1>',
-        active_date: '',
-        active_date_start: new Date(),
-        active_date_end: new Date(),
-        quantity_per_day: '10',                //每天上限数量 int
-        total_quantity: 1000 ,                 //发行总量
-        total_fee: '1234.54',                  //总费用
-        is_full_return: "yes",
-
-        api_token: '',
-        user_id: undefined,  // 用户ID ， 是，
-        user_name: '',       // 发布用户名称， 是
-        country: '美国' ,    // 国家  是
+        expertises: [],
+     
       },
       rules: {
         full_name: [
-          {required: true ,message: 'product url is required', trigger: 'blur'}
+          {required: true ,message: 'Full Name  is required', trigger: 'blur'}
         ],
         email: [
-          {required: true ,message: 'product url is required', trigger: 'blur'}
+          {required: true ,message: 'Email  is required', trigger: 'blur'}
         ],
         country: [
-          {required: true ,message: 'shipping fee is required', trigger: 'blur'}
+          {required: true ,message: 'Country  is required', trigger: 'blur'}
         ],
-        product_img: [
-          {required: true ,message: 'product img is required', trigger: 'blur'}
+        province_state: [
+          {required: true ,message: 'Province/State  is required', trigger: 'blur'}
         ],
-         product_title: [
-          {required: true ,message: 'product title is required', trigger: 'blur'}
+        city_town: [
+          {required: true ,message: 'City/Town  is required', trigger: 'blur'}
         ],
-         product_reason: [
-          {required: true ,message: 'reason is required', trigger: 'blur'}
+        street_address: [
+          {required: true ,message: 'Street address is required', trigger: 'blur'}
         ],
-        specifications: [
-          {required: true ,message: 'Specifications is required', trigger: 'blur'}
+        postcode: [
+          {required: true ,message: 'Postcode/Zip Code is required', trigger: 'blur'}
         ],
-        active_date: [
-          {type: 'date',required: true ,message: 'active date is required', trigger: 'blur'}
+        daytime_phone: [
+          {required: true ,message: 'Daytime phone date is required', trigger: 'blur'}
         ],
-        quantity_per_day: [
-          {required: true ,message: 'quantity per day is required', trigger: 'blur'}
+        income_situation: [
+          {required: true ,message: 'Income situation per day is required', trigger: 'blur'}
         ],
-        total_quantity: [
-          {required: true ,message: 'total quantity per day is required', trigger: 'blur'}
-        ]
       },
-      radio: "1",
+      expertiseList : [
+        {
+          text: "Makeup / Personal Care",
+          isSelected: true
+        },
+         {
+          text: "Housewear & Furnishings",
+          isSelected: false
+        },
+         {
+          text: "Outdoor sport",
+          isSelected: false
+        },
+         {
+          text: "DVD / Music / Game",
+          isSelected: false
+        },
+         {
+          text: "Car Accessories / Tools",
+          isSelected: false
+        },
+         {
+          text: "Electronic product",
+          isSelected: false
+        },
+         {
+          text: "Books",
+          isSelected: false
+        },
+         {
+          text: "Footwear / Apparel",
+          isSelected: false
+        },
+         {
+          text: "Toy",
+          isSelected: false
+        },
+      ],
+      channelsLists: [
+        {
+          imgUrl: require('../../assets/reds-facebook.png'),
+          name: 'Facebook',
+          fansNum: '',
+          proofLink: '',
+        },
+        {
+          imgUrl: require('../../assets/reds-tiwwer.png'),
+          name: 'Twitter',
+          fansNum: '',
+          proofLink: '',
+        },
+        {
+          imgUrl: require('../../assets/reds-youtube.png'),
+          name: 'Youtube',
+          fansNum: '',
+          proofLink: '',
+        },
+        {
+          imgUrl: require('../../assets/reds-pinterest.png'),
+          name: 'Pinterest',
+          fansNum: '',
+          proofLink: '',
+        },
+        {
+          imgUrl: require('../../assets/reds-instagram.png'),
+          name: 'Instagram',
+          fansNum: '',
+          proofLink: '',
+        },
+        {
+          imgUrl: require('../../assets/reds-vk.png'),
+          name: 'VK',
+          fansNum: '',
+          proofLink: '',
+        },
+      ],
+      channelsListData: {
+        name: '',
+        fansNum: '',
+        proofLink: '',
+      }
     }
   },
   methods: {
-    trialsSave () {
-      //获取内容
-      var markupStr = $('#summernote').summernote('code')
-      //插入内容
-       $('#summernote').summernote('code', '<div>aefawe</div>')
-      console.log(markupStr === '<br>')
-      // $('#summernote').summernote('insertText', '<div>aefawe</div>');
+    selectedExpertise (item) {
+      item.isSelected = !item.isSelected
+    },
+    addMoreChannel () {
+      this.channelsLists.push(this.channelsListData)
     }
   },
   mounted () {
-    setTimeout(() => {
-      $('#summernote').summernote({
-      height: 300,
-      // tabsize: 2
-      })
-      $('#summernote').summernote('code', '<div>初始化设置的内容</div>')
-    },10)
+  
   }
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+@import url('../../styles/mixin.less');
   .enter-reds {
     .enter-reds-content {
       width: 800px;
@@ -215,6 +285,96 @@ export default {
         .title-s {
           font-size: 16px;
           color: #333;
+        }
+      }
+    }
+    .reds-form {
+      .experitse-items {
+        width: 102%;
+        li {
+          width: 31.29%;
+          float: left;
+          margin-right: 2.04%;
+          margin-bottom: 30px;
+          line-height: 30px;
+          height: 30px;
+          border: 1px solid #a0a0a0;
+          text-align: center;
+          color: #666;
+          font-size: 16px;
+          cursor: pointer;
+          &.active {
+            color: white;
+            background: #31383e;
+          }
+        }
+      }
+      .resources-channels {
+        .resources-channels-item {
+          width: 100%;
+          height: 90px;
+          background: #f2f2f2;
+          color: #666;
+          font-size: 16px;
+          padding: 6px 10px 0 10px;
+          margin-bottom: 18px;
+          .top {
+            height: 35px;
+            margin-bottom: 8px;
+            .channels {
+              float: left;
+
+              img {
+                float: left;
+                width: 32px;
+                height: 32px;
+                margin-right: 10px;
+              }
+            }
+            .channel {
+              float: left;
+              width: 60%;
+              .el-input {
+                width: 60%;
+              }
+            }
+            .fans-number {
+               display: inline-block;
+               float: right;
+               .el-input {
+                 width: 57%;
+               }
+            }
+          }
+          .bottom {
+            label {
+              float: left;
+            }
+            .el-input {
+              float: right;
+              width: 88%;
+              margin-right: 8px;
+            }
+          }
+        }
+        .channels-add-more {
+          height: 54px;
+          line-height: 54px;
+          text-align: center;
+          background: #f2f2f2;
+          font-size: 24px;
+          color: #333;
+          cursor: pointer;
+        }
+      }
+      .submit-btn {
+        text-align: center;
+        button {
+          .btn-h(150px, 42px, #84bb39, #84bb39, #fff);
+          &:active {
+            background: darken(#84bb39, 10%);
+            border-color: darken(#84bb39, 10%);
+          }
         }
       }
     }

@@ -64,9 +64,9 @@ export default {
         birthday: "",
         introduce: "",
         sex: "男",
-        avatar_img: "http://www.ghostxy.top/dealsbank/img/user.png"
+        avatar_img: require('../../../assets/user.png')
       },
-      imageUrl: "http://www.ghostxy.top/dealsbank/img/user.png",
+      imageUrl: require('../../../assets/user.png'),
       radio: "男",
       userInfo: {}
     };

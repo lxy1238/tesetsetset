@@ -96,6 +96,7 @@ const user = {
     LogOut ({ commit }) {
       removeToken()
       commit('SET_TOKEN', '')
+      commit('SET_USERID', '') 
       router.push({path: '/'})
       window.location.reload()
     }

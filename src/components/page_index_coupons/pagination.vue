@@ -61,6 +61,7 @@ export default {
   },
   methods: {
     goto(index) {
+      document.body.scrollTop = document.documentElement.scrollTop = 0
       if (index === 1) {
         document.getElementsByClassName("btn-s")[0].disabled = true
         document.getElementsByClassName("btn-s")[1].disabled = false

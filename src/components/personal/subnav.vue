@@ -39,13 +39,17 @@ export default {
   data () {
     return {
       isToggle: 1,
-      routers: []
+    }
+  },
+  props: {
+    routers: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
   mounted () {
-    console.log(asyncRouterMap)
-    this.routers = this.$store.getters.addRouters
-    // console.log(this.$store.getters)
   },
   computed : {
     ...mapGetters([
@@ -80,7 +84,7 @@ export default {
 .subnav-center {
   .subnav-l {
     float: left;
-    width: 18.9%;
+    width: 21.9%;
     height: 800px;
     margin-right: 4.1%;
     
@@ -139,7 +143,7 @@ export default {
   }
   .subnav-r {
     float: left;
-    width: 76%;
+    width: 74%;
     // border: 1px solid #0072bc;
     // height: 1000px;
   }

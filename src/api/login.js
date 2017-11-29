@@ -57,6 +57,22 @@ export const resetPassword = data => fetch({
   data: qs.stringify(data)
 })
 
+//重置密码提交  忘记密码使用 
+export const retrievePassword = data => fetch({
+  url: '/api/v1/user/retrieve-password',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+//重置密码   忘记密码使用
+export const checkRetrievePassword = data => fetch({
+  url: '/api/v1/user/check-retrieve-password',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 //用户基本信息设置
 export const userInfoSet = data => fetch({
   url: '/api/v1/user/base-setting',
@@ -153,6 +169,14 @@ export const promotionUserRemove = data => fetch({
   data: qs.stringify(data)
 })
 
+//优惠券问题反馈
+export const addProblem = data => fetch({
+  url: '/api/v1/user/add-problem',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 /**
  * 
  * @param 试用品
@@ -185,14 +209,28 @@ export const uploadImg = data => fetch({
 
 
 //获取平台品类
-export const getPlatformCate = () => fetch({
+export const getPlatformCate = data => fetch({
   url: '/api/v1/platform/platform-category',
   method: 'POST',
+  data: qs.stringify(data)
 })
 
 
 //获取首页头部的品类列表
 export const getHeadCateList = () => fetch({
   url: '/api/v1/platform/menu',
+  method: 'POST',
+})
+
+
+/**
+ * 
+ * @param 平台管理
+ *  
+ * 
+ */
+//获取首页头部的品类列表
+export const getUserCountry = () => fetch({
+  url: '/api/v1/platform/country',
   method: 'POST',
 })
