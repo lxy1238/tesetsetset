@@ -15,7 +15,7 @@
           </dl>
           <dl>
             <dt>About</dt>
-            <dd> <a href="#">About</a> </dd>
+            <dd> <router-link to="/about/center/index">About</router-link> </dd>
             <dd> <a href="#">FAQ</a> </dd>
           </dl>
           <dl>

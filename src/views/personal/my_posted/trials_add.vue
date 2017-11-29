@@ -42,10 +42,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="trialsForm.product_price"></el-input>
+        <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')"></el-input>
       </el-form-item>
       <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"></el-input>
+        <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')"></el-input>
       </el-form-item>
       <el-form-item label="Image" prop="product_img_s" >
         <el-upload 
@@ -84,11 +84,11 @@
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-        <el-input v-model="trialsForm.quantity_per_day"></el-input>
+        <el-input v-model="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
       </el-form-item>
     
       <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
-        <el-input v-model="trialsForm.total_quantity"></el-input>
+        <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
       <el-form-item label="Is Full Return: " class="item-inline1" >
         <el-radio class="radio" v-model="trialsForm.is_full_return" label="yes">yes</el-radio>
@@ -112,7 +112,6 @@
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
-
   </div>
 </template>
 
@@ -189,10 +188,10 @@ export default {
           {type:'number',required: true, message: 'category is required', trigger: 'change'}
         ],
         product_price: [
-          {required: true ,message: 'product price is required', trigger: 'blur'}
+          {required: true ,message: 'product price is required, Must be Numbers', trigger: 'blur'}
         ],
         shipping_fee: [
-          {required: true ,message: 'shipping fee is required', trigger: 'blur'}
+          {required: true ,message: 'shipping fee is required , Must be Numbers', trigger: 'blur'}
         ],
         product_img_s: [
           {
@@ -215,10 +214,10 @@ export default {
           {type: 'array',required: true ,message: 'active date is required', trigger: 'change'}
         ],
         quantity_per_day: [
-          {required: true ,message: 'quantity per day is required', trigger: 'blur'}
+          {required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
         ],
         total_quantity: [
-          {required: true ,message: 'total quantity per day is required', trigger: 'blur'}
+          {required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
         ]
       },
       fileList2: [
@@ -461,6 +460,11 @@ export default {
       //插入内容
       //  $('#summernote').summernote('code', '<div>aefawe</div>')
       console.log(this.trialsFormSubmit)
+    },
+    filterMoney (value) {
+      if (isNaN(Number(this.trialsForm[value]))) {
+        this.trialsForm[value] = ''
+      }
     }
   }
 }

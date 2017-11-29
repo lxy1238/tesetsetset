@@ -32,10 +32,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="List price: " prop="product_price" class="item-inline" >
-        <el-input class="input-price-fee" v-model="couponsForm.product_price"></el-input>
+        <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" ></el-input>
       </el-form-item>
       <el-form-item label="Shipping fee: "  class="item-inline" prop="shipping_fee">
-        <el-input class="input-price-fee" v-model="couponsForm.shipping_fee"></el-input>
+        <el-input class="input-price-fee" @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee" ></el-input>
       </el-form-item>
       <el-form-item label="Image"  prop="product_img_s">
         <el-upload 
@@ -50,11 +50,6 @@
             <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.</div>
         </el-upload>
 
-        <!-- <form  enctype="multipart/form-data" action="http://dealsbank.zhuo.com/api/v1/common/upload-file" method="post" >
-           <input :value="token"  name="api_token" />
-           <input type="file" name="file"  multiple  id="file"/>
-          <button type="submit">test</button>
-        </form> -->
        
       </el-form-item>
       <el-form-item label="Title: " prop="product_title" >
@@ -69,13 +64,14 @@
     <el-form-item label="Valid date: " class="item-inline"  prop="valid_date" >
       <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date"></el-date-picker>
     </el-form-item>
-     <el-form-item label="Discount rate: " class="item-inline" prop="discount_rate" >
-       <el-input v-model="couponsForm.discount_rate">
+     <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
+        <el-input class="input-price-fee" @blur="filterMoney('discount_rate')" v-model="couponsForm.discount_rate" >
           <template slot="append">%</template>
-       </el-input>
+        </el-input>
     </el-form-item>
     <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-       <el-input v-model="couponsForm.quantity_per_day"></el-input>
+       <el-input class="input-price-fee" @blur="filterMoney('quantity_per_day')" v-model="couponsForm.quantity_per_day" >
+        </el-input>
     </el-form-item>
     <el-form-item label="Type: " class="item-inline1" >
        <el-radio class="radio" v-model="couponsForm.use_type" label="Unlimited">Unllimited</el-radio>
@@ -160,8 +156,8 @@ export default {
         ],
         product_reason: [{ required: true, trigger: "blur" }],
         valid_date: [{ type: "date", required: true, trigger: "blur" }],
-        discount_rate: [{ required: true, trigger: "blur" }],
-        quantity_per_day: [{ required: true, trigger: "blur" }],
+        discount_rate: [{ required: true,message: 'discount rate is required', trigger: "blur" }],
+        quantity_per_day: [{message: 'quantity per day is required', required: true, trigger: "blur" }],
         coupon_code: [{ required: true, trigger: "blur" }]
       },
       fileList2: [],
@@ -348,6 +344,13 @@ export default {
     Cancel() {
       this.$router.go(-1);
     },
+
+    //fiterMoney
+    filterMoney (value) {
+      if (isNaN(Number(this.couponsForm[value]))) {
+        this.couponsForm[value] = ''
+      }
+    }
    
   }
 };

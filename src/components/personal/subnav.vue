@@ -39,13 +39,17 @@ export default {
   data () {
     return {
       isToggle: 1,
-      routers: []
+    }
+  },
+  props: {
+    routers: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
   mounted () {
-    console.log(asyncRouterMap)
-    this.routers = this.$store.getters.addRouters
-    // console.log(this.$store.getters)
   },
   computed : {
     ...mapGetters([

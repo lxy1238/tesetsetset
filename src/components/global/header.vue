@@ -740,10 +740,10 @@ export default {
                   }
                 }
                 &.username {
-                  width: 5.5rem;
+                  width: 5.0rem;
                   text-align: center;
                   top: -6px;
-                  left: 2.9rem;
+                  left: 2.8rem;
                   font-size: 0.833rem;
                   overflow: hidden;
                   text-overflow: ellipsis;
