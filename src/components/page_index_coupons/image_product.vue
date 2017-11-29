@@ -22,7 +22,7 @@
           <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
         </el-tooltip>
       </div>
-      <div v-else class="promo-copy-hidden"></div>
+      <!-- <div v-else class="promo-copy-hidden"></div> -->
       <p class="platfrom content" >{{couponsDetails.website}}</p>
       <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <slot name="price"></slot>
@@ -143,7 +143,7 @@ export default {
   display: inline-block;
   overflow: hidden;
   width: 240px;
-  height: 380px;
+  height: 370px;
   background: white;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
@@ -151,7 +151,7 @@ export default {
   z-index: 1;
   &:hover {
     .promo-copy {
-      visibility: visible;
+      height: 36px;
     }
   }
   .expried {
@@ -191,22 +191,24 @@ export default {
     img {
       display: inline-block;
       margin-top: 15px;
-      width: 80%;
-      height: 150px;
+      width: 180px;
+      height: 180px;
     }
   }
   .promo-copy-hidden {
     height: 2rem;
   }
   .promo-copy {
-    .p(r);
+    .p(a);
+    top: 160px;
     font-size: 12px;
     width: 100%;
-    height: 2rem;
-    line-height: 2rem;
+    height: 0;
+    overflow: hidden;
+    line-height: 36px;
     margin-top: 0.5rem;
     background: #bfbfbf;
-    visibility: hidden;
+    transition: all 0.2s ease 0.2s;
     .span-btn {
       float: left;
       font-size: 13px;
@@ -222,9 +224,9 @@ export default {
     .line {
       .p(a);
       width: 1px;
-      height: 1rem;
+      height: 30px;
       background: white;
-      top: 0.5rem;
+      top: 3px;
       left: 50%;
     }
   }

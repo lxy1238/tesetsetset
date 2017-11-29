@@ -39,6 +39,7 @@ import { getAllCoupons, getInfo, getHeadCateList } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { getStore } from "@/utils/utils";
 import { mapGetters } from "vuex";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "page_index",
   data() {
@@ -125,8 +126,8 @@ export default {
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
-    gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id })
+    gotodetails(id) {
+      this.$router.push({ path: "/coupons/" + base64Encode(id) })
     },
 
     //获取用户信息 ，判断首页的coupon是否加入推广

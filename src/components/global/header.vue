@@ -244,6 +244,7 @@ import { validateEmail, validateImg } from '@/utils/validate.js'
 import { sign, login,getHeadCateList, retrievePassword, getUserCountry} from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "header",
   data() {
@@ -379,6 +380,7 @@ export default {
   beforeDestroy () {
     this.$root.eventHub.$off('initClassify')
     this.$root.eventHub.$off('selectClassify1')
+    this.$root.eventHub.$off('isLoginInfo')
   },  
   computed: {
     isLogin () {
@@ -469,6 +471,9 @@ export default {
           }
         }
       })
+      this.$root.eventHub.$on('isLoginInfo', () => {
+        this.ShowLoginDialog()
+      })
     },
 
     //通过国家过滤首页的优惠券信息
@@ -511,7 +516,7 @@ export default {
     },
     ShowLoginDialog() {
       this.loginform.email = getEmail()
-      this.loginform.password = getPass()
+      this.loginform.password = base64Decode(getPass())
       this.resetPassword = false
       this.loginDialog = true
      
@@ -586,7 +591,7 @@ export default {
         this.$store.dispatch('Login', this.loginform).then(res => {
           if (res.code == 200) {
             if(this.loginform.remember == true) {
-              setPass(this.loginform.password)
+              setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
             this.$notify.success("login success")

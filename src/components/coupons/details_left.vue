@@ -41,6 +41,7 @@
 import { getStore } from '@/utils/utils'
 import { postedUserInfo } from '@/api/login'
 import { timestampFormat } from '@/utils/date'
+import { base64Encode } from '@/utils/randomString'
 export default {
   name: "detailsLeft",
   data() {
@@ -114,7 +115,7 @@ export default {
 
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
-      this.$router.push({path: '/merchant/' + this.userInfo.user_id})
+      this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
   }
 };

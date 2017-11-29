@@ -131,6 +131,7 @@ import { userPickCoupons } from "@/api/login";
 import { setStore, getStore, removeStore } from "@/utils/utils";
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from "@/utils/date";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "center_coupons",
   data() {
@@ -247,7 +248,7 @@ export default {
 
     //跳转到优惠券详情页面
     gotoDetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id  });
+      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
     },
 
     //跳转到 领取优惠券的用户页面
@@ -307,7 +308,7 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      margin-right: 4%;
+      margin-right: 3%;
       min-width: 10%;
     }
     .search {

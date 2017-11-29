@@ -105,7 +105,6 @@
                  <a href="#" class="use-it">How to Use? Click here >></a>
                </div>
             </div>
-            
           </div>
           <div class="recommend">
             <div class="re-head">
@@ -113,16 +112,16 @@
               <span class="re-head-r" @click="gotoIndex" >more></span>
             </div>
               <coupons-pro 
-              v-for="couponsDetails in arrcouponsDetails"  
-              :key="1" 
-              :couponsDetails="couponsDetails"
-              :promotions="userPromotions" 
-              @gotodetails="gotodetails">
+                v-for="couponsDetails in arrcouponsDetails"  
+                :key="1" 
+                :couponsDetails="couponsDetails"
+                :promotions="userPromotions" 
+                @gotodetails="gotodetails">
                 <template slot="price">
-                <p class="price content">{{couponsDetails.price}}</p>
+                <p class="price content">${{couponsDetails.product_price}}</p>
                 <p class="coupons content">
-                  <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.coupons}}</strong></span>
-                  <span class="coupon-right"><strong>35%</strong> <i class="gray-s">off</i> </span>
+                  <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.discount_price}}</strong></span>
+                  <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
                 </p>
                 </template>
                 <template slot="btn">
@@ -209,16 +208,6 @@
           </div>
         </div>
       </el-dialog>
-
-      <!-- not get trials -->
-      <el-dialog  :visible.sync="notGetTrialsDialog" class="not-trials-dialog" size="tiny">
-          <p>You did not get trials</p>
-
-          <div class="try-again">
-            <button @click="gotoTrials">Try out other gifs</button>
-          </div>
-
-      </el-dialog>
   </div>
 </template>
 
@@ -246,6 +235,7 @@ import {
 } from "@/api/login";
 import { getToken, getUserId } from "@/utils/auth";
 import { mapGetters } from "vuex";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "coupons",
   components: {
@@ -284,7 +274,6 @@ export default {
       couponDetail: {},
       showGetCodeDialog: false,
       templateDialog: false,
-      notGetTrialsDialog: false,
       getCodeSuccess: false, //是否领取优惠券成功
       userPromotions: [],
       requestData: {
@@ -372,10 +361,10 @@ export default {
     initData() {
       this.reqGetCodeData.user_id = this.user_id;
       this.reqGetCodeData.username = this.username;
-      this.reqGetCodeData.coupon_id = this.$route.params.couponsId;
+      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId);
 
       this.addPromotionData.user_id = this.user_id;
-      this.addPromotionData.coupon_id = this.$route.params.couponsId;
+      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId);
     },
 
     //获取左边的图片信息
@@ -392,7 +381,7 @@ export default {
     gotodetails(id, user_id) {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: "/coupons/" + id })
+      this.$router.push({ path: "/coupons/" + base64Encode(id) })
       this.getCouponsDetails(this.requestCouponDetails)
     },
 
@@ -402,7 +391,7 @@ export default {
         return
       }
       this.checkGetCodeData.user_id = this.user_id
-      this.checkGetCodeData.coupon_id = this.$route.params.couponsId
+      this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
         if (!res.data) {
@@ -423,7 +412,7 @@ export default {
 
     //获取优惠券详情
     getCouponsDetails() {
-      this.requestCouponDetails.id = this.$route.params.couponsId
+      this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       couponDetails(this.requestCouponDetails)
         .then(res => {
           console.log(res)
@@ -506,9 +495,10 @@ export default {
     //判断是否登录，否则提醒请登录
     isLogin() {
       if (!getToken()) {
-        this.$alert("please log in first", "reminder", {
-          confirmButtonText: "confirm"
-        });
+        this.$root.eventHub.$emit('isLoginInfo')
+        // this.$alert("please log in first", "reminder", {
+        //   confirmButtonText: "confirm"
+        // });
         return false
       } else {
         return true
@@ -540,9 +530,9 @@ export default {
     
     //提交问题
     addProblemSubmit () {
-      if (this.$route.params.couponsId) {
+      if (base64Decode(this.$route.params.couponsId)) {
         this.addProblemData.menu = 'coupons'
-        this.addProblemData.product_id = this.$route.params.couponsId
+        this.addProblemData.product_id = base64Decode(this.$route.params.couponsId);
       }
       if (!this.addProblemData.content) {
         return
@@ -1100,24 +1090,6 @@ export default {
   }
 }
 
-.not-trials-dialog {
-  p,
-  div {
-    text-align: center;
-  }
-  div {
-    button {
-      .btn-h(50%, 2rem);
-      background: #84ba39;
-      border-color: #84ba39;
-      color: white;
-      &:active {
-        background: darken(#84ba39, 10%);
-        border-color: darken(#84ba39, 10%);
-      }
-    }
-  }
-}
 .template-dialog {
   .dialog-body {
     height: 500px;
@@ -1179,10 +1151,7 @@ export default {
       }
       .save {
         position: absolute;
-        .btn-h(77px,77px);
-        background: #2089bb;
-        border-color: #2089bb;
-        color: white;
+        .btn-h(77px,77px,#2089bb, #2089bb, white);
         bottom: -38.5px;
         left: 50%;
         margin-left: -38.5px;

@@ -58,6 +58,7 @@ import couponsPro from "@/components/page_index_coupons/image_product.vue"
 import pagination from "@/components/page_index_coupons/pagination.vue"
 import { postedUserInfo ,getAllCoupons } from '@/api/login'
 import { timestampFormat } from '@/utils/date'
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "page_index",
   data() {
@@ -110,8 +111,8 @@ export default {
     },
        //初始化赋值
     initData () {
-      this.requestCouponData.user_id = this.$route.params.userId
-      this.requestUserData.user_id = this.$route.params.userId
+      this.requestCouponData.user_id = base64Decode(this.$route.params.userId)
+      this.requestUserData.user_id = base64Decode(this.$route.params.userId)
     },
        //翻页功能实现
     gotoPage(index) {
@@ -143,7 +144,7 @@ export default {
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id  });
+      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
     },
 
      //根据页面尺寸宽度判断首页展示的商品数量

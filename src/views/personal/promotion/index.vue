@@ -44,6 +44,7 @@ import { mapGetters } from "vuex";
 import { promotionUserCoupon, promotionUserRemove } from "@/api/login";
 import couponsPro from "@/components/page_index_coupons/image_product.vue";
 import pagination from "@/components/page_index_coupons/pagination.vue";
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: "promotion",
   data() {
@@ -135,7 +136,7 @@ export default {
 
     //跳转到详情页面
     gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + id  })
+      this.$router.push({ path: "/coupons/" + base64Encode(id) })
     },
 
     //翻页功能

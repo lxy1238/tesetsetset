@@ -19,6 +19,7 @@
     "clipboard": "^1.7.1",
     "codemirror": "^5.31.0",
     "fs": "0.0.1-security",
+    "js-base64": "^2.3.2",
     "js-cookie": "^2.1.4",
     "less": "^3.0.0-alpha.3",
     "less-loader": "^4.0.5",

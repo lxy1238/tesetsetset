@@ -58,7 +58,7 @@ export default {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 90px;
+      width: 100px;
       color: #666;
       font-size: 16px;
     }
