@@ -26,9 +26,9 @@
               </span>
             </div>
             <div class="price-details" v-if="couponDetail.discount_price">
-              <span class="inline-b n-price">${{couponDetail.discount_price}}</span>
-              <span class="inline-b o-price">${{couponDetail.product_price}}</span>
-              <span class="inline-b c-price">Coupons ${{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
+              <span class="inline-b n-price">{{currency}}{{couponDetail.discount_price}}</span>
+              <span class="inline-b o-price">{{currency}}{{couponDetail.product_price}}</span>
+              <span class="inline-b c-price">Coupons {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
               <span class="inline-b ratio">{{couponDetail.discount_rate}}%off</span>
             </div>
             <div class="data-info">
@@ -118,7 +118,7 @@
                 :promotions="userPromotions" 
                 @gotodetails="gotodetails">
                 <template slot="price">
-                <p class="price content">${{couponsDetails.product_price}}</p>
+                <p class="price content">{{currency}}{{couponsDetails.product_price}}</p>
                 <p class="coupons content">
                   <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.discount_price}}</strong></span>
                   <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
@@ -232,6 +232,7 @@ import {
   getHeadCateList 
 } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
 import { mapGetters } from 'vuex'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
@@ -328,6 +329,9 @@ export default {
           return i.name
         }
       }
+    },
+    currency () {
+      return getStore('currency') || '$'
     }
   },
   mounted () {

@@ -90,6 +90,7 @@
 import { mapGetters } from 'vuex'
 import { getInfo } from '@/api/login.js'
 import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
 import { timestampFormat } from '@/utils/date'
 export default {
   name: 'member_center',
@@ -118,7 +119,10 @@ export default {
       })
   },
   computed: {
-    ...mapGetters(['username', 'token', 'roles', 'user_id'])
+    ...mapGetters(['username', 'token', 'roles', 'user_id']),
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
   methods: {
     //路由跳转

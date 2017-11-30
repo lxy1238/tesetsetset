@@ -288,8 +288,6 @@ export default {
       this.getPlatformCateInfo()
     },
     initData () {
-      this.trialsForm.api_token = this.token
-      this.trialsForm.user_id = this.user_id
       this.trialsForm.user_name = this.username
     },
 
@@ -332,23 +330,23 @@ export default {
       getPlatformCate(this.requestData).then(res => {
         if(res.data.length <= 0) {return}
         this.trialsForm.websiteData = res.data[id]
-        var arrKeysWeb1 = Object.keys(res.data[id].category)
-        for (var j of arrKeysWeb1) {
-          var ObjCate = {
-            label: '',
-            category_id: '',
-            commission_ratio: '',
-            menu_id: '',
-            platform_id: '',
-          }
-          ObjCate.label = res.data[id].category[j].website_category
-          ObjCate.category_id = res.data[id].category[j].category_id
-          ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
-          ObjCate.menu_id = res.data[id].category[j].menu_id
-          ObjCate.platform_id = res.data[id].category[j].platform_id
-          this.optionsCategory.push(ObjCate)
-          this.trialsForm.category_id = ''
-        }
+        // var arrKeysWeb1 = Object.keys(res.data[id].category)
+        // for (var j of arrKeysWeb1) {
+        //   var ObjCate = {
+        //     label: '',
+        //     category_id: '',
+        //     commission_ratio: '',
+        //     menu_id: '',
+        //     platform_id: '',
+        //   }
+        //   ObjCate.label = res.data[id].category[j].website_category
+        //   ObjCate.category_id = res.data[id].category[j].category_id
+        //   ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
+        //   ObjCate.menu_id = res.data[id].category[j].menu_id
+        //   ObjCate.platform_id = res.data[id].category[j].platform_id
+        //   this.optionsCategory.push(ObjCate)
+        //   this.trialsForm.category_id = ''
+        // }
       }).catch(error => {
         console.log(error + 'getPlatformCate')
       }) 
@@ -460,10 +458,21 @@ export default {
       //  $('#summernote').summernote('code', '<div>aefawe</div>')
       console.log(this.trialsFormSubmit)
     },
+
+    //限制输入
     filterMoney (value) {
       if (isNaN(Number(this.trialsForm[value]))) {
         this.trialsForm[value] = ''
       }
+    },
+
+    // 获取所有品类的信息
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.optionsCategory = res.data
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 }
@@ -481,7 +490,7 @@ export default {
     display: inline-block;
   }
   .item-inline1 {
-    width: 40%;
+    width: 43%;
     display: inline-block;
   }
   .textarea {

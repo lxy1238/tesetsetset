@@ -229,7 +229,7 @@ export const getHeadCateList = () => fetch({
  *  
  * 
  */
-//获取首页头部的品类列表
+//获取首页国家列表
 export const getUserCountry = () => fetch({
   url: '/api/v1/platform/country',
   method: 'POST',

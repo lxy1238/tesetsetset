@@ -8,7 +8,12 @@ export  function timestampFormat (timestamp) {
   return dateString.slice(4, 7) +' '+ dateString.slice(-4)
 }
 
-
+//获取的时间转化时间戳
+export function toTimestamp (time) {
+  if(time) {
+    return parseInt(time.getTime() / 1000)
+  }
+}
 
 export function parseTime (time, cFormat) {
   if (arguments.length === 0) {

@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="card-bottom">
-          <span class="code">{{item.coupons.coupon_code}}</span>
+          <span class="code" :title="item.coupons.coupon_code">{{item.coupons.coupon_code}}</span>
           <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go To Amazon </a> </button>
         </div>
       </div>
@@ -171,12 +171,19 @@ export default {
           position: relative;
           height: 2.7rem;
           line-height: 2.7rem;
+          overflow: hidden;
           width: 100%;
           background: #f2f2f2;
           .code {
+            float: left;
             font-size: 12px;
             // line-height: 1.5rem;
             color: #1a1a1a;
+            margin-left: 5px;
+            width: 7rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             display: inline-block;
             margin-right: 5px;
             font-weight: bold;

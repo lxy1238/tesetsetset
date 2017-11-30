@@ -21,13 +21,13 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Category: " prop="category_id" class="item-inline" >
-        <el-select v-model="couponsForm.category_id"  @change="categoryChange">
+      <el-form-item label="Category: " prop="menu_id" class="item-inline" >
+        <el-select v-model="couponsForm.menu_id"  @change="categoryChange">
           <el-option
             v-for="(item, index) in optionsCategory"
-            :key="index"
-            :label="item.label"
-            :value="index">
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -56,7 +56,7 @@
         <el-input v-model="couponsForm.product_title"></el-input>
       </el-form-item>
       <el-form-item label="Reason: " prop="product_reason" >
-        <el-input v-model="couponsForm.product_reason" type="textarea" class="textarea"></el-input>
+        <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea"></el-input>
       </el-form-item>
     <div class="title-s">
        Coupon Information
@@ -65,12 +65,12 @@
       <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date"></el-date-picker>
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
-        <el-input class="input-price-fee" @blur="filterMoney('discount_rate')" v-model="couponsForm.discount_rate" >
+        <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
           <template slot="append">%</template>
         </el-input>
     </el-form-item>
     <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-       <el-input class="input-price-fee" @blur="filterMoney('quantity_per_day')" v-model="couponsForm.quantity_per_day" >
+       <el-input class="input-price-fee" @blur="filterMoney('quantity_per_day')" v-model.number="couponsForm.quantity_per_day" >
         </el-input>
     </el-form-item>
     <el-form-item label="Type: " class="item-inline1" >
@@ -92,9 +92,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { addCoupon, uploadImg, getPlatformCate } from '@/api/login'
-import { getToken } from '@/utils/auth'
+import { addCoupon, uploadImg, getPlatformCate, getHeadCateList } from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
+import { toTimestamp } from '@/utils/date'
 // import axios from 'axios'
 // import qs from 'qs'
 export default {
@@ -124,38 +125,34 @@ export default {
         coupon_code: [{ required: true, trigger: 'blur' }]
       },
       optionsWebsite: [],
-      optionsCategory: [
-      ],
+      optionsCategory: [],
       couponsForm: {
         product_url: 'http://www.baidu.com', //产品链接， 是
-        user_id: undefined, // 用户ID ， 是，
         user_name: '', // 发布用户名称， 是
-        category_id: '', // 所属分类 , 是   int
+        menu_id: '', // 所属分类 , 是   int
         country_id: parseInt(getStore('country_id')) || 1, // 国家  是
         website: '', // 平台   是
         product_title:
           '2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers', // 商品标题   是 ，
-        product_img: [], // 产品图片， string, 用逗号拼接 , 否
         product_img_s: [],
         product_reason: 'This is a product I like very much', //产品描述  是
         use_type: 'Unlimited',
         coupon_code: 'QAKLWEFALWEKFJ', //优惠券
-        reward_type: '1.5', //PerOrder:按每订单奖励,
+        reward_type: '1.5', //PerOrder: 按每订单奖励,
         product_price: '65', //商品价格
         shipping_fee: '1.11', //运费   否
         discount_rate: '12', //折扣率    否
         valid_date: new Date(), //到期时间  int
-        // total_quantity: 100, // 总数量   int
         quantity_per_day: '10', // 每天上限数量 int
         influencer_reward: '1.5', // 推荐费用/每个
         platform_fee: '2.2', //支付平台费用/每个
         influencer_reward_count: '66', //推荐总费用
         platform_reward: '55', //  支付平台总费用， 否
-        total_fee: '123', //总费用
-        // shipping_fee: ' '  // 运费
-        categoryData: '',
+        // total_fee: '123', //总费用
+        // categoryData: '',
         websiteData: '',
-        api_token: getToken()
+        api_token: getToken(),
+        user_id: getUserId(), // 用户ID ， 是，
       },
       couponsFormSubmit: {
 
@@ -185,13 +182,12 @@ export default {
     init () {
       this.initData()
       this.getPlatformCateInfo()
+      this.getHeadCateListInfo()
     },
 
     //数据初始化
     initData () {
-      this.couponsForm.user_id = this.user_id
       this.couponsForm.user_name = this.username
-      this.uploadData.api_token = this.token
     },
 
     //获取平台品类信息
@@ -218,27 +214,26 @@ export default {
 
     //平台发生改变
     websiteChange (id) {
-      this.optionsCategory = []
       getPlatformCate(this.requestData).then(res => {
         if(res.data.length <= 0) {return}
         this.couponsForm.websiteData = res.data[id]
-        var arrKeysWeb1 = Object.keys(res.data[id].category)
-        for (var j of arrKeysWeb1) {
-          var ObjCate = {
-            label: '',
-            category_id: '',
-            commission_ratio: '',
-            menu_id: '',
-            platform_id: '',
-          }
-          ObjCate.label = res.data[id].category[j].website_category
-          ObjCate.category_id = res.data[id].category[j].category_id
-          ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
-          ObjCate.menu_id = res.data[id].category[j].menu_id
-          ObjCate.platform_id = res.data[id].category[j].platform_id
-          this.optionsCategory.push(ObjCate)
-          this.couponsForm.category_id = ''
-        }
+        // var arrKeysWeb1 = Object.keys(res.data[id].category)
+        // for (var j of arrKeysWeb1) {
+        //   var ObjCate = {
+        //     label: '',
+        //     category_id: '',
+        //     commission_ratio: '',
+        //     menu_id: '',
+        //     platform_id: '',
+        //   }
+        //   ObjCate.label = res.data[id].category[j].website_category
+        //   ObjCate.category_id = res.data[id].category[j].category_id
+        //   ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
+        //   ObjCate.menu_id = res.data[id].category[j].menu_id
+        //   ObjCate.platform_id = res.data[id].category[j].platform_id
+        //   this.optionsCategory.push(ObjCate)
+        //   this.couponsForm.category_id = ''
+        // }
       }).catch(error => {
         console.log(error + 'getPlatformCate')
       }) 
@@ -246,8 +241,8 @@ export default {
     },
 
     //品类发生改变
-    categoryChange (id) {
-      this.couponsForm.categoryData = this.optionsCategory[id]
+    categoryChange () {
+      // this.couponsForm.categoryData = this.optionsCategory[id]
     },
 
     //上传图片
@@ -309,27 +304,21 @@ export default {
           for (var i in this.couponsForm) {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }
-          if (typeof this.couponsForm.valid_date != 'number') {
-            this.couponsFormSubmit.valid_date = parseInt(
-              this.couponsForm.valid_date.getTime() / 1000
-            )
-          }
-          this.couponsFormSubmit.quantity_per_day = parseInt(
-            this.couponsForm.quantity_per_day
-          )
+          this.couponsFormSubmit.valid_date = toTimestamp(this.couponsForm.valid_date)
           this.couponsFormSubmit.website = this.couponsForm.websiteData.website
-          this.couponsFormSubmit.category_id = parseInt(this.couponsForm.categoryData.category_id)
-          this.couponsFormSubmit.menu_id = this.couponsForm.categoryData.menu_id
+          // this.couponsFormSubmit.category_id = parseInt(this.couponsForm.categoryData.category_id)
+          // this.couponsFormSubmit.menu_id = this.couponsForm.categoryData.menu_id
           this.couponsFormSubmit.country_id = this.couponsForm.websiteData.country_id
-          this.couponsFormSubmit.commission_ratio = this.couponsForm.categoryData.commission_ratio
-          this.couponsFormSubmit.platform_id = this.couponsFormSubmit.categoryData.platform_id
-          var imgArr = []
-          for (let i of this.couponsForm.product_img_s) {
-            imgArr.push(i.url)
-          }
-          this.couponsFormSubmit.product_img = imgArr
+          this.couponsFormSubmit.platform_id = this.couponsForm.websiteData.id
+          // this.couponsFormSubmit.commission_ratio = this.couponsForm.categoryData.commission_ratio
+          // this.couponsFormSubmit.platform_id = this.couponsFormSubmit.categoryData.platform_id
+          // var imgArr = []
+          // for (let i of this.couponsForm.product_img_s) {
+          //   imgArr.push(i.url)
+          // }
+          this.couponsFormSubmit.product_img = this.couponsForm.product_img_s.map((e) => e.url)
           console.log(this.couponsFormSubmit)
-          this.issueCoupon(this.couponsFormSubmit)
+          // this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')
           return false
@@ -346,13 +335,30 @@ export default {
       if (isNaN(Number(this.couponsForm[value]))) {
         this.couponsForm[value] = ''
       }
+    },
+
+    //过滤只能输入0-99的数字
+    filterDiscount (value) {
+      let reg = /^\d{1,2}$/
+      if (!reg.test(this.couponsForm[value])) {
+        this.couponsForm[value] = ''
+      }
+    },
+
+    // 获取所有品类的信息
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.optionsCategory = res.data
+      }).catch(error => {
+        console.log(error)
+      })
     }
    
   }
 }
 </script>
 
-<style lang="less" >
+<style lang="less"  >
 @import url("../../../styles/mixin.less");
 .coupons-form {
   .input-price-fee {

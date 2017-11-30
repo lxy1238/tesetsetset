@@ -16,8 +16,8 @@
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-left">${{couponsDetails.coupons.product_price}}</span>
-            <span class="price-right">${{couponsDetails.coupons.discount_price}}</span>
+            <span class="price-left">{{currency}}{{couponsDetails.coupons.product_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.coupons.discount_price}}</span>
             <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
               <i class="el-icon-delete"></i>
             </span>
@@ -45,6 +45,7 @@ import { promotionUserCoupon, promotionUserRemove } from '@/api/login'
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { base64Encode } from '@/utils/randomString'
+import { getStore } from '@/utils/utils'
 export default {
   name: 'promotion',
   data () {
@@ -117,6 +118,9 @@ export default {
 
     //移除所有的优惠券
     removeAllPromotion () {
+      if (this.arrcouponsDetails.length === 0) {
+        return
+      }
       this.$confirm('Do you really want to delete all?', 'remove all', {
         confirmButtonText: 'confirm'
       })
@@ -146,7 +150,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user_id', 'token'])
+    ...mapGetters(['user_id', 'token']),
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
 
 }

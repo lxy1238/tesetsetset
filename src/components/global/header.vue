@@ -61,7 +61,7 @@
                 </span>
                 <div v-if="showDropdownC" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <li v-for="item in countryLists" @click="filterCountry(item.id)">{{item.name}} </li>
+                   <li v-for="item in countryLists" @click="filterCountry(item)">{{item.name}} </li>
                  </ul>
                </div>
             </div><div class="inline-b login-y language" :class="{active: showDropdownL}"   @click.stop="showDropdownLanguage($event)">
@@ -241,7 +241,7 @@
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
-import { sign,getHeadCateList, retrievePassword } from '@/api/login.js'
+import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
@@ -310,34 +310,6 @@ export default {
 
       //国家列表
       countryLists: [
-        {
-          id: 1,
-          name: 'USA',
-        },
-        {
-          id: 2,
-          name: 'Britain',
-        },
-        {
-          id: 3,
-          name: 'Germany',
-        },
-        {
-          id: 4,
-          name: 'Japan',
-        },
-        {
-          id: 5,
-          name: 'France',
-        },
-        {
-          id: 6,
-          name: 'Italy',
-        },
-        {
-          id: 7,
-          name: 'Spain',
-        },
       ],
       allLanguage: [
         ['中文(简体)'],
@@ -407,8 +379,7 @@ export default {
       set (value) {
         this.country_id = value
       }
-      
-    }
+    },
   },
   methods: {
     //初始化 
@@ -417,6 +388,7 @@ export default {
       this.enterSubmitForm()
       this.getHeadCateListInfo()
       this.getOtherEvent()
+      this.getUserCountryInfo()
     },
     //数据初始化
     initData () {
@@ -477,12 +449,12 @@ export default {
     },
 
     //通过国家过滤首页的优惠券信息
-    filterCountry (id) {
-      setStore('country_id',id)
-      this.selectedCountryShop  = id
+    filterCountry (item) {
+      setStore('country_id',item.id)
+      setStore('currency',item.currency)
+      this.selectedCountryShop  = item.id
       this.keyword = ''
-      this.$root.eventHub.$emit('changeCountryId', id)
-      // this.$root.eventHub.$emit('filterkeyword', "")
+      this.$root.eventHub.$emit('changeCountryId', item.id)
       this.selectClassify(this.classifyList[0])
     },
 
@@ -635,6 +607,15 @@ export default {
       getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.initData()
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    //获取国家列表，携带货币符号，
+    getUserCountryInfo () {
+      getUserCountry().then(res => {
+        console.log(res)
+        this.countryLists = res.data
       }).catch(error => {
         console.log(error)
       })

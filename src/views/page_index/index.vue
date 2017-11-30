@@ -10,11 +10,11 @@
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-left">${{couponsDetails.product_price}}</span>
-            <span class="price-right">${{couponsDetails.discount_price}}</span>
+            <span class="price-left">{{currency}}{{couponsDetails.product_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.discount_price}}</span>
           </p>
           <el-tooltip  :visible-arrow="false" placement="top" effect="light">
-             <div slot="content">Expected Commissions $ {{couponsDetails.commission_amount}}</div>
+             <div slot="content">Expected Commissions {{currency}} {{couponsDetails.commission_amount}}</div>
             <p class="coupons content" ><span>Commissions</span> <span class="com-right">{{couponsDetails.commission_ratio}}%</span></p>
           </el-tooltip>
           </template>
@@ -43,7 +43,6 @@ export default {
   name: 'page_index',
   data () {
     return {
-      msg: 'pageindex',
       showItem: 7,
       allpage: undefined,
       arrcouponsDetails: [],
@@ -89,6 +88,9 @@ export default {
       } else {
         return ''
       }
+    },
+    currency () {
+      return getStore('currency') || '$'
     }
   },
   watch: {
