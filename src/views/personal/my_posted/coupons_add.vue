@@ -318,7 +318,7 @@ export default {
           // }
           this.couponsFormSubmit.product_img = this.couponsForm.product_img_s.map((e) => e.url)
           console.log(this.couponsFormSubmit)
-          // this.issueCoupon(this.couponsFormSubmit)
+          this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')
           return false

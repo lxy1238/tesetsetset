@@ -85,7 +85,7 @@
             </div>
             <div class="fans-number">
               <label for="">Number of fans</label>
-              <el-input type="text"  size="mini" v-model="item.fansNum"></el-input>
+              <el-input type="text"  size="mini" v-model="item.fansNum" placeholder="please enter a number" @blur="filterNum(item)"></el-input>
             </div>
           </div>
           <div class="bottom">
@@ -98,7 +98,7 @@
         </div>
       </el-form-item>
       <el-form-item class="submit-btn">
-        <button type="button" >Submit</button>
+        <button type="button" @click="submit">Submit</button>
       </el-form-item>
     </el-form>
     </div>
@@ -117,19 +117,19 @@ export default {
         }
       ],
       redsForm: {
-        full_name: '',
-        email: '',
-        country: '',
-        province_state: '',
-        city_town: '',
-        street_address: '',
-        postcode: '',
-        daytime_phone: '',
-        income_situation: '',
+        full_name: 'ghost',
+        email: '123@qq.com',
+        country: 'USA',
+        province_state: 'amazon',
+        city_town: 'awef',
+        street_address: 'awef',
+        postcode: 'awef',
+        daytime_phone: 'awef',
+        income_situation: 'awef',
         category: 'Team',
-        detailed_introduction: '',
+        detailed_introduction: 'aewf',
         expertises: [],
-     
+        channels: []
       },
       rules: {
         full_name: [
@@ -248,7 +248,51 @@ export default {
       item.isSelected = !item.isSelected
     },
     addMoreChannel () {
-      this.channelsLists.push(this.channelsListData)
+      this.channelsLists.push({
+        name: '',
+        fansNum: '',
+        proofLink: '',
+      })
+    },
+    getSelectedExpertiseArr () {
+      this.redsForm.expertises = []
+      this.expertiseList.forEach((e) => {
+        if (e.isSelected === true) {
+          this.redsForm.expertises.push(e.text)
+        } 
+      })
+    },
+    getChannelArr () {
+      this.redsForm.channels = [],
+      this.channelsLists.forEach((e) => {
+        if (e.imgUrl) {
+          if (e.fansNum && e.proofLink) {
+            this.redsForm.channels.push(e)
+          }
+        } else if (e.name && e.fansNum && e.proofLink) {
+          this.redsForm.channels.push(e)
+        }
+      })
+      if (this.redsForm.channels.length === 0){
+        this.$notify.error('至少填写一个推广通道')
+      }
+    },
+    submit () {
+      this.$refs['redsForm'].validate((valid) => {
+        if(valid) {
+          this.getSelectedExpertiseArr()
+          this.getChannelArr()
+          console.log(this.redsForm, this.channelsLists)
+        } else {
+          console.log('submit error')
+        }
+      })
+    },
+    filterNum (item) {
+      let reg = /^[0-9]+$/
+      if (!reg.test(item.fansNum)) {
+        item.fansNum = ''
+      }
     }
   },
   mounted () {

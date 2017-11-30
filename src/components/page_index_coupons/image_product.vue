@@ -5,6 +5,7 @@
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
       <img v-if="!loading" src="../../assets/01.png"   alt="img">
     </div>
+    <div class="promo-copy-parent">
      <div class="promo-copy" v-if="addpromo">
         <div class="span-btn" @click="addPromo(couponsDetails.id)">
           <span>{{addPromoMsg}}</span>
@@ -17,11 +18,11 @@
             <div class="content-line">coupons ${{couponsDetails.discount_price}}</div>
             <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
-           
           </div>
           <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
         </el-tooltip>
       </div>
+     </div> 
       <!-- <div v-else class="promo-copy-hidden"></div> -->
       <p class="platfrom content" >{{couponsDetails.website}}</p>
       <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
@@ -151,7 +152,7 @@ export default {
   z-index: 1;
   &:hover {
     .promo-copy {
-      height: 36px;
+      transform: translateY(-4px);
     }
   }
   .expried {
@@ -195,17 +196,22 @@ export default {
       height: 180px;
     }
   }
-  .promo-copy-hidden {
-    height: 2rem;
+  
+  .promo-copy-parent {
+    .p(a);
+    overflow: hidden;
+    width: 100%;
+    top: 160px;
+    height: 36px;
   }
   .promo-copy {
     .p(a);
-    top: 160px;
     font-size: 12px;
     width: 100%;
-    height: 0;
+    height: 36px;
     overflow: hidden;
     line-height: 36px;
+    transform: translateY(36px);
     margin-top: 0.5rem;
     background: #bfbfbf;
     transition: all 0.2s ease 0.2s;
