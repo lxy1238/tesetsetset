@@ -125,53 +125,53 @@
 </template>
 
 <script>
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import { mapGetters } from "vuex";
-import { userPickCoupons } from "@/api/login";
-import { setStore, getStore, removeStore } from "@/utils/utils";
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import { mapGetters } from 'vuex'
+import { userPickCoupons } from '@/api/login'
+import { setStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
-import { parseTime } from "@/utils/date";
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import { parseTime } from '@/utils/date'
+import { base64Encode } from '@/utils/randomString'
 export default {
-  name: "center_coupons",
-  data() {
+  name: 'center_coupons',
+  data () {
     return {
       thLists: [
-        "Image",
-        "Title",
-        "Price",
-        "Discount",
-        "Qty",
-        "Valid Date",
-        "Status",
-        "Operation"
+        'Image',
+        'Title',
+        'Price',
+        'Discount',
+        'Qty',
+        'Valid Date',
+        'Status',
+        'Operation'
       ],
       trListsTest: [
         {
           user_id: undefined, // 用户ID ， 是，
-          user_name: "", // 发布用户名称， 是
+          user_name: '', // 发布用户名称， 是
           category_id: 1, // 所属分类 , 是   int
-          country: "美国", // 国家  是
-          website: "亚马逊2", // 平台   是
+          country: '美国', // 国家  是
+          website: '亚马逊2', // 平台   是
 
-          product_reason: "This is a product I like very much", //产品描述  是
-          use_type: "Unlimited",
-          coupon_code: "QAKLWEFALWEKFJ", //优惠券码
-          reward_type: "1.5", //PerOrder:按每订单奖励,
-          product_price: "65", //商品价格
-          shipping_fee: "1.11", //运费   否
-          discount_rate: "12%", //折扣率    否
+          product_reason: 'This is a product I like very much', //产品描述  是
+          use_type: 'Unlimited',
+          coupon_code: 'QAKLWEFALWEKFJ', //优惠券码
+          reward_type: '1.5', //PerOrder:按每订单奖励,
+          product_price: '65', //商品价格
+          shipping_fee: '1.11', //运费   否
+          discount_rate: '12%', //折扣率    否
           valid_date: new Date(), //到期时间  int
 
           quantity_per_day: 10, // 每天上限数量 int
-          influencer_reward: "1.5", // 推荐费用/每个
-          platform_fee: "2.2", //支付平台费用/每个
-          influencer_reward_count: "66", //推荐总费用
-          platform_reward: "55", //  支付平台总费用， 否
-          total_fee: "123", //总费用
+          influencer_reward: '1.5', // 推荐费用/每个
+          platform_fee: '2.2', //支付平台费用/每个
+          influencer_reward_count: '66', //推荐总费用
+          platform_reward: '55', //  支付平台总费用， 否
+          total_fee: '123', //总费用
 
-          product_title: "this is project", // 商品标题   是 ，
-          product_img: "http://www.ghostxy.top/dealsbank/img/01.png", // 产品图片， string, 用逗号拼接 , 否
+          product_title: 'this is project', // 商品标题   是 ，
+          product_img: 'http://www.ghostxy.top/dealsbank/img/01.png', // 产品图片， string, 用逗号拼接 , 否
           coupon_id: 1,
           total_quantity: 1000, // 总数量   int
           total_receiptor: 365,
@@ -183,9 +183,9 @@ export default {
       allpage: undefined,
       showItem: 7,
       searchForm: {
-        title: "",
-        category: "",
-        status: ""
+        title: '',
+        category: '',
+        status: ''
       },
       requestdata: {
         user_id: getUserId(),
@@ -196,7 +196,7 @@ export default {
         category_id: '',
         status: '',
       }
-    };
+    }
   },
   components: {
     pagination
@@ -205,17 +205,17 @@ export default {
     this.getUserPickCoupons()
   },
   computed: {
-    ...mapGetters(["user_id", "token"])
+    ...mapGetters(['user_id', 'token'])
   },
   methods: {
     //分页跳转
-    gotoPage(i) {
+    gotoPage (i) {
       this.requestdata.page = i
       this.getUserPickCoupons()
     },
 
     //获取首页列表数据
-    getUserPickCoupons() {
+    getUserPickCoupons () {
       userPickCoupons(this.requestdata)
         .then(res => {
           console.log(res)
@@ -223,7 +223,7 @@ export default {
             for (var i in res.data.data) {
               res.data.data[i].valid_date = parseTime(
                 res.data.data[i].valid_date,
-                "{y}-{m}-{d}"
+                '{y}-{m}-{d}'
               )
             }
             this.trLists = res.data.data
@@ -231,66 +231,66 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
 
     //跳转到添加优惠券页面
-    add() {
-      this.$router.push({ path: "/posted/coupons/add" })
+    add () {
+      this.$router.push({ path: '/posted/coupons/add' })
     },
 
     //发布的优惠券查询
-    postedCouponsSearch() {
+    postedCouponsSearch () {
       console.log(this.requestdata)
       this.getUserPickCoupons()
     },
 
     //跳转到优惠券详情页面
-    gotoDetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
+    gotoDetails (id) {
+      this.$router.push({ path: '/coupons/' + base64Encode(id)  })
     },
 
     //跳转到 领取优惠券的用户页面
-    gotoReceiptor(item) {
+    gotoReceiptor (item) {
       if (item.pick_numbers === 0) {
         return false
       }
-      this.$router.push({ path: "/posted/coupons/receiptor" });
-      setStore("couponDetails", JSON.stringify(item));
+      this.$router.push({ path: '/posted/coupons/receiptor' })
+      setStore('couponDetails', JSON.stringify(item))
     },
 
     //编辑待审核状态下和审核未通过的优惠券   
-    EditCoupon(id) {
+    EditCoupon (id) {
       console.log(id)
       //携带id 查询需要修改的数据，然后进行修改
-      this.$router.push({ path: "/posted/coupons/add", query: { editor: id } })
+      this.$router.push({ path: '/posted/coupons/add', query: { editor: id } })
     },
 
     //删除优惠券
-    DeleteCoupon(id) {
-      this.$confirm("Determine deleting coupons?", "reminder", {
-        confirmButtonText: "confirm",
-        cancelButtonText: "cancel",
-        type: "warning"
+    DeleteCoupon () {
+      this.$confirm('Determine deleting coupons?', 'reminder', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        type: 'warning'
       })
         .then(() => {
           this.$notify({
-            type: "success",
-            message: "delete success!"
+            type: 'success',
+            message: 'delete success!'
           })
         })
         .catch(() => {
-          console.log("cancel")
-        });
+          console.log('cancel')
+        })
     },
 
     //显示详情弹窗
-    showDetails() {
+    showDetails () {
       this.detailsDialog = true
     }
   }
-};
+}
 </script>
 
 <style lang="less"  >

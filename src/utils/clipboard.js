@@ -3,7 +3,7 @@
 import Clipboard from 'clipboard'
 import Vue from 'vue'
 
-function clipboardSuccess() {
+function clipboardSuccess () {
   Vue.prototype.$message({
     message: 'Copy success',
     type: 'success',
@@ -11,14 +11,14 @@ function clipboardSuccess() {
   })
 }
 
-function clipboardError() {
+function clipboardError () {
   Vue.prototype.$message({
     message: 'Copy failed',
     type: 'error'
   })
 }
 
-export default function handleClipboard(event) {
+export default function handleClipboard (event) {
   const clipboard = new Clipboard(event.target)
   clipboard.on('success', (e) => {
     clipboardSuccess()

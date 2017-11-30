@@ -51,84 +51,83 @@
 </template>
 
 <script>
-import { getStore } from "@/utils/utils";
-import { mapGetters } from "vuex";
-import { userInfoSet, uploadImg, getInfo } from "@/api/login";
+import { mapGetters } from 'vuex'
+import { userInfoSet, uploadImg, getInfo } from '@/api/login'
 export default {
-  name: "settings-account",
-  data() {
+  name: 'settings-account',
+  data () {
     return {
       accountForm: {
-        api_token: "",
-        user_id: "",
-        birthday: "",
-        introduce: "",
-        sex: "男",
+        api_token: '',
+        user_id: '',
+        birthday: '',
+        introduce: '',
+        sex: '男',
         avatar_img: require('../../../assets/user.png')
       },
       imageUrl: require('../../../assets/user.png'),
-      radio: "男",
+      radio: '男',
       userInfo: {}
-    };
+    }
   },
   computed: {
-    ...mapGetters(["token", "user_id"])
+    ...mapGetters(['token', 'user_id'])
   },
-  mounted() {
+  mounted () {
     getInfo({ api_token: this.token, user_id: this.user_id })
       .then(res => {
-        this.userInfo = res.data;
-        this.accountForm.api_token = this.token;
-        this.accountForm.user_id = this.user_id;
-        this.accountForm.sex = this.userInfo.base.sex;
-        this.accountForm.birthday = this.userInfo.base.birthday;
-        this.accountForm.introduce = this.userInfo.base.introduce;
-        this.accountForm.avatar_img = this.userInfo.base.avatar_img;
-        this.imageUrl = this.accountForm.avatar_img;
+        this.userInfo = res.data
+        this.accountForm.api_token = this.token
+        this.accountForm.user_id = this.user_id
+        this.accountForm.sex = this.userInfo.base.sex
+        this.accountForm.birthday = this.userInfo.base.birthday
+        this.accountForm.introduce = this.userInfo.base.introduce
+        this.accountForm.avatar_img = this.userInfo.base.avatar_img
+        this.imageUrl = this.accountForm.avatar_img
       })
       .catch(error => {
-        console.log(error);
-      });
+        console.log(error)
+      })
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    handleAvatarSuccess (res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
     },
-    beforeAvatarUpload(file) {
-      var isJPG = file.type === "image/jpeg";
-      var isGIF = file.type === "image/gif";
-      var isPNG = file.type === "image/png";
-      var isLt500K = file.size / 1024 / 500 < 1;
+    beforeAvatarUpload (file) {
+      var isJPG = file.type === 'image/jpeg'
+      var isGIF = file.type === 'image/gif'
+      var isPNG = file.type === 'image/png'
+      var isLt500K = file.size / 1024 / 500 < 1
 
       if (!(isJPG || isGIF || isPNG)) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
+        this.$message.error('上传头像图片只能是 JPG 格式!')
       }
       if (!isLt500K) {
-        this.$message.error("上传头像图片大小不能超过 500kb!");
+        this.$message.error('上传头像图片大小不能超过 500kb!')
       }
       if ((isJPG || isGIF || isPNG) && isLt500K) {
-        var formData = new FormData();
-        formData.append("api_token", this.token);
-        formData.append("user_id", this.user_id);
-        formData.append("file", file);
+        var formData = new FormData()
+        formData.append('api_token', this.token)
+        formData.append('user_id', this.user_id)
+        formData.append('file', file)
         uploadImg(formData)
           .then(res => {
-            this.accountForm.avatar_img = "http://" + res.data;
-            this.imageUrl = this.accountForm.avatar_img;
+            this.accountForm.avatar_img = 'http://' + res.data
+            this.imageUrl = this.accountForm.avatar_img
           })
           .catch(error => {
-            console.log(error);
-          });
+            console.log(error)
+          })
       } else {
-        return false;
+        return false
       }
     },
-    changeUserInfo() {
+    changeUserInfo () {
       console.log(this.accountForm)
       userInfoSet(this.accountForm)
-        .then(res => {
-          this.$notify.success("reset info success")
-          this.$store.dispatch("GetInfo")
+        .then(() => {
+          this.$notify.success('reset info success')
+          this.$store.dispatch('GetInfo')
           document.body.scrollTop = document.documentElement.scrollTop = 0
         })
         .catch(error => {
@@ -136,7 +135,7 @@ export default {
         })
     }
   }
-};
+}
 </script>
 
 <style lang="less" >

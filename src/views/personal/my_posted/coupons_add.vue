@@ -91,67 +91,67 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { addCoupon, uploadImg, getPlatformCate } from "@/api/login";
-import { getToken } from "@/utils/auth";
-import { getStore } from "@/utils/utils";
-import axios from "axios";
-import qs from "qs";
+import { mapGetters } from 'vuex'
+import { addCoupon, uploadImg, getPlatformCate } from '@/api/login'
+import { getToken } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+// import axios from 'axios'
+// import qs from 'qs'
 export default {
-  name: "coupoons-add",
-  data() {
+  name: 'coupoons-add',
+  data () {
     return {
       rules: {
-        product_url: [{ required: true, trigger: "blur" }],
-        product_price: [{ required: true, trigger: "blur" }],
-        website: [{type:'number', required: true, message: 'website is required', trigger: "blur" }],
-        category_id: [{type:'number', required: true, message: 'category is required' ,trigger: "blur" }],
+        product_url: [{ required: true, trigger: 'blur' }],
+        product_price: [{ required: true, trigger: 'blur' }],
+        website: [{type:'number', required: true, message: 'website is required', trigger: 'blur' }],
+        category_id: [{type:'number', required: true, message: 'category is required' ,trigger: 'blur' }],
         product_img_s: [
           {
-            type: "array",
+            type: 'array',
             required: true,
-            message: "Please Upload image",
-            trigger: "change"
+            message: 'Please Upload image',
+            trigger: 'change'
           }
         ],
         product_title: [
-          { required: true, message: "title is required", trigger: "blur" }
+          { required: true, message: 'title is required', trigger: 'blur' }
         ],
-        product_reason: [{ required: true, trigger: "blur" }],
-        valid_date: [{ type: "date", required: true, trigger: "blur" }],
-        discount_rate: [{ required: true,message: 'discount rate is required', trigger: "blur" }],
-        quantity_per_day: [{message: 'quantity per day is required', required: true, trigger: "blur" }],
-        coupon_code: [{ required: true, trigger: "blur" }]
+        product_reason: [{ required: true, trigger: 'blur' }],
+        valid_date: [{ type: 'date', required: true, trigger: 'blur' }],
+        discount_rate: [{ required: true,message: 'discount rate is required', trigger: 'blur' }],
+        quantity_per_day: [{message: 'quantity per day is required', required: true, trigger: 'blur' }],
+        coupon_code: [{ required: true, trigger: 'blur' }]
       },
       optionsWebsite: [],
       optionsCategory: [
       ],
       couponsForm: {
-        product_url: "http://www.baidu.com", //产品链接， 是
+        product_url: 'http://www.baidu.com', //产品链接， 是
         user_id: undefined, // 用户ID ， 是，
-        user_name: "", // 发布用户名称， 是
-        category_id: "", // 所属分类 , 是   int
+        user_name: '', // 发布用户名称， 是
+        category_id: '', // 所属分类 , 是   int
         country_id: parseInt(getStore('country_id')) || 1, // 国家  是
-        website: "", // 平台   是
+        website: '', // 平台   是
         product_title:
-          "2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers", // 商品标题   是 ，
+          '2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers', // 商品标题   是 ，
         product_img: [], // 产品图片， string, 用逗号拼接 , 否
         product_img_s: [],
-        product_reason: "This is a product I like very much", //产品描述  是
-        use_type: "Unlimited",
-        coupon_code: "QAKLWEFALWEKFJ", //优惠券
-        reward_type: "1.5", //PerOrder:按每订单奖励,
-        product_price: "65", //商品价格
-        shipping_fee: "1.11", //运费   否
-        discount_rate: "12", //折扣率    否
+        product_reason: 'This is a product I like very much', //产品描述  是
+        use_type: 'Unlimited',
+        coupon_code: 'QAKLWEFALWEKFJ', //优惠券
+        reward_type: '1.5', //PerOrder:按每订单奖励,
+        product_price: '65', //商品价格
+        shipping_fee: '1.11', //运费   否
+        discount_rate: '12', //折扣率    否
         valid_date: new Date(), //到期时间  int
         total_quantity: 100, // 总数量   int
-        quantity_per_day: "10", // 每天上限数量 int
-        influencer_reward: "1.5", // 推荐费用/每个
-        platform_fee: "2.2", //支付平台费用/每个
-        influencer_reward_count: "66", //推荐总费用
-        platform_reward: "55", //  支付平台总费用， 否
-        total_fee: "123", //总费用
+        quantity_per_day: '10', // 每天上限数量 int
+        influencer_reward: '1.5', // 推荐费用/每个
+        platform_fee: '2.2', //支付平台费用/每个
+        influencer_reward_count: '66', //推荐总费用
+        platform_reward: '55', //  支付平台总费用， 否
+        total_fee: '123', //总费用
         // shipping_fee: ' '  // 运费
         categoryData: '',
         websiteData: '',
@@ -161,84 +161,84 @@ export default {
 
       },
       uploadData: {
-        api_token: "",
-        file: ""
+        api_token: '',
+        file: ''
       },
       requestData: {
         country_id: parseInt(getStore('country_id')) || 1
       }
-    };
+    }
   },
-  mounted() {
+  mounted () {
     this.init()
   },
   computed: {
-    ...mapGetters(["user_id", "username", "token"])
+    ...mapGetters(['user_id', 'username', 'token'])
   },
   methods: {
     //通过输入链接获取所有产品信息
-    getProInfo() {
-      console.log("获取产品信息");
+    getProInfo () {
+      console.log('获取产品信息')
     },
 
     //页面初始化
-    init() {
-      this.initData();
-      this.getPlatformCateInfo();
+    init () {
+      this.initData()
+      this.getPlatformCateInfo()
     },
 
     //数据初始化
-    initData() {
-      this.couponsForm.user_id = this.user_id;
-      this.couponsForm.user_name = this.username;
-      this.uploadData.api_token = this.token;
+    initData () {
+      this.couponsForm.user_id = this.user_id
+      this.couponsForm.user_name = this.username
+      this.uploadData.api_token = this.token
     },
 
     //获取平台品类信息
-    getPlatformCateInfo() {
+    getPlatformCateInfo () {
       getPlatformCate(this.requestData)
         .then(res => {
           if(res.data.length <= 0) {return}
           var arrKeysWeb = Object.keys(res.data)
           for (var i of arrKeysWeb) {
             var ObjWebsite = {
-              label: "",
-              id: ""
+              label: '',
+              id: ''
             }
             ObjWebsite.label = res.data[i].website
             ObjWebsite.id = parseInt(i)
             this.optionsWebsite.push(ObjWebsite)
           }
-          this.couponsForm.website = ""
+          this.couponsForm.website = ''
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
 
-     //平台发生改变
+    //平台发生改变
     websiteChange (id) {
       this.optionsCategory = []
       getPlatformCate(this.requestData).then(res => {
         if(res.data.length <= 0) {return}
         this.couponsForm.websiteData = res.data[id]
-         var arrKeysWeb1 = Object.keys(res.data[id].category)
-            for (var j of arrKeysWeb1) {
-              var ObjCate = {
-                label: "",
-                category_id: "",
-                commission_ratio: '',
-                menu_id: '',
-                platform_id: '',
-              }
-              ObjCate.label = res.data[id].category[j].website_category
-              ObjCate.category_id = res.data[id].category[j].category_id
-              ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
-              ObjCate.menu_id = res.data[id].category[j].menu_id
-              ObjCate.platform_id = res.data[id].category[j].platform_id
-              this.optionsCategory.push(ObjCate)
-              this.couponsForm.category_id = ""
-            }
+        var arrKeysWeb1 = Object.keys(res.data[id].category)
+        for (var j of arrKeysWeb1) {
+          var ObjCate = {
+            label: '',
+            category_id: '',
+            commission_ratio: '',
+            menu_id: '',
+            platform_id: '',
+          }
+          ObjCate.label = res.data[id].category[j].website_category
+          ObjCate.category_id = res.data[id].category[j].category_id
+          ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
+          ObjCate.menu_id = res.data[id].category[j].menu_id
+          ObjCate.platform_id = res.data[id].category[j].platform_id
+          this.optionsCategory.push(ObjCate)
+          this.couponsForm.category_id = ''
+        }
       }).catch(error => {
         console.log(error + 'getPlatformCate')
       }) 
@@ -251,66 +251,66 @@ export default {
     },
 
     //上传图片
-    beforeAvatarUploadP(file) {
-      var isJPG = file.type === "image/jpeg";
-      var isGIF = file.type === "image/gif";
-      var isPNG = file.type === "image/png";
+    beforeAvatarUploadP (file) {
+      var isJPG = file.type === 'image/jpeg'
+      var isGIF = file.type === 'image/gif'
+      var isPNG = file.type === 'image/png'
 
-      var isLt500K = file.size / 1024 / 500 < 1;
+      var isLt500K = file.size / 1024 / 500 < 1
 
-      var limitF = true;
+      var limitF = true
       if (!(isJPG || isGIF || isPNG)) {
-        this.$message.error("上传图片只能是 JPG/GIF/PNG格式!");
+        this.$message.error('上传图片只能是 JPG/GIF/PNG格式!')
       }
       if (!isLt500K) {
-        this.$message.error("上传图片文件大小 不能超过 500kb!");
+        this.$message.error('上传图片文件大小 不能超过 500kb!')
       }
       if (this.couponsForm.length >= 6) {
-        this.$message.error("最多只能上传6张图片！");
-        limitF = false;
+        this.$message.error('最多只能上传6张图片！')
+        limitF = false
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
-        var formData = new FormData();
-        formData.append("api_token", this.token);
-        formData.append("user_id", this.user_id);
-        formData.append("file", file);
+        var formData = new FormData()
+        formData.append('api_token', this.token)
+        formData.append('user_id', this.user_id)
+        formData.append('file', file)
         uploadImg(formData)
           .then(res => {
-            this.couponsForm.product_img_s.push({ url: "http://" + res.data });
+            this.couponsForm.product_img_s.push({ url: 'http://' + res.data })
           })
           .catch(error => {
-            console.log(error);
-          });
+            console.log(error)
+          })
       } else {
-        return false;
+        return false
       }
     },
-    handleRemoveP(file, fileList) {
+    handleRemoveP (file, fileList) {
       this.couponsForm.product_img_s = fileList
     },
-    issueCoupon(data) {
+    issueCoupon (data) {
       addCoupon(data)
         .then(res => {
           if (res.code === 200) {
-            this.$notify.success("issue coupon success")
-            this.$router.push({ path: "/posted/coupons" })
+            this.$notify.success('issue coupon success')
+            this.$router.push({ path: '/posted/coupons' })
           }
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
-    Submit(callback) {
+    Submit () {
       
       //element-ui 的表单验证
       // this.$refs.upload.submit();
-      this.$refs["couponsForm"].validate(valid => {
+      this.$refs['couponsForm'].validate(valid => {
         if (valid) {
           for (var i in this.couponsForm) {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }
-          if (typeof this.couponsForm.valid_date != "number") {
-              this.couponsFormSubmit.valid_date = parseInt(
+          if (typeof this.couponsForm.valid_date != 'number') {
+            this.couponsFormSubmit.valid_date = parseInt(
               this.couponsForm.valid_date.getTime() / 1000
             )
           }
@@ -323,22 +323,22 @@ export default {
           this.couponsFormSubmit.country_id = this.couponsForm.websiteData.country_id
           this.couponsFormSubmit.commission_ratio = this.couponsForm.categoryData.commission_ratio
           this.couponsFormSubmit.platform_id = this.couponsFormSubmit.categoryData.platform_id
-          var imgArr = [];
-          for (var i of this.couponsForm.product_img_s) {
-            imgArr.push(i.url);
-          };
+          var imgArr = []
+          for (let i of this.couponsForm.product_img_s) {
+            imgArr.push(i.url)
+          }
           this.couponsFormSubmit.product_img = imgArr
           console.log(this.couponsFormSubmit)
           this.issueCoupon(this.couponsFormSubmit)
         } else {
-          console.log("error submit!!");
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     //退出
-    Cancel() {
-      this.$router.go(-1);
+    Cancel () {
+      this.$router.go(-1)
     },
 
     //fiterMoney
@@ -349,7 +349,7 @@ export default {
     }
    
   }
-};
+}
 </script>
 
 <style lang="less" >

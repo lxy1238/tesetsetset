@@ -35,23 +35,23 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { getToken } from "@/utils/auth";
-import { promotionAddCoupon, promotionUserRemove } from "@/api/login";
-import Clip from "@/utils/clipboard.js";
+import { mapGetters } from 'vuex'
+import { getToken } from '@/utils/auth'
+import { promotionAddCoupon, promotionUserRemove } from '@/api/login'
+import Clip from '@/utils/clipboard.js'
 export default {
-  name: "image_product",
-  data() {
+  name: 'image_product',
+  data () {
     return {
       loading: false,
-      addPromoMsg: "Add Promo",
-      runningMsg: "Running . . .",
+      addPromoMsg: 'Add Promo',
+      runningMsg: 'Running . . .',
       addPromoRequestData: {
         api_token: getToken(),
-        user_id: "",
-        coupon_id: ""
+        user_id: '',
+        coupon_id: ''
       }
-    };
+    }
   },
   props: {
     couponsDetails: {
@@ -63,12 +63,12 @@ export default {
     },
     promotions: {
       type: Array,
-      default: function() {
-        return [];
+      default: function () {
+        return []
       }
     }
   },
-  mounted() {
+  mounted () {
     this.init()
   },
   methods: {
@@ -77,63 +77,63 @@ export default {
       //判断是否加入推广
       setTimeout(() => {
         if (this.promotions.includes(this.couponsDetails.id)) {
-          this.addPromoMsg = "Cancel Promo"
+          this.addPromoMsg = 'Cancel Promo'
         }
       }, 150)
     },
     //跳转到详情也，携带coupon_id ,user_id
-    goToCouponsPage(id) {
-      this.$emit("gotodetails", id)
+    goToCouponsPage (id) {
+      this.$emit('gotodetails', id)
     },
 
-    loadImg() {
+    loadImg () {
       this.loading = true
     },
 
     //加入 移除  推广
-    addPromo(coupon_id) {
+    addPromo (coupon_id) {
       this.addPromoRequestData.coupon_id = coupon_id
-      if (this.addPromoMsg == "Add Promo") {
+      if (this.addPromoMsg == 'Add Promo') {
         this.addPromoMsg = this.runningMsg
         if (!getToken()) {
           setTimeout( () => {
-            this.addPromoMsg = "Add Promo"
+            this.addPromoMsg = 'Add Promo'
           }, 100)
           return
         }
         promotionAddCoupon(this.addPromoRequestData)
-          .then(res => {
-            this.addPromoMsg = "Cancel Promo"
+          .then(() => {
+            this.addPromoMsg = 'Cancel Promo'
           })
           .catch(error => {
-            console.log(error + "promotionaddcoupon")
-          });
+            console.log(error + 'promotionaddcoupon')
+          })
       } else {
         this.addPromoMsg = this.runningMsg
         promotionUserRemove(this.addPromoRequestData)
-          .then(res => {
-            this.addPromoMsg = "Add Promo"
+          .then(() => {
+            this.addPromoMsg = 'Add Promo'
           })
           .catch(error => {
-            console.log(error + "promotionaddcoupon")
-          });
+            console.log(error + 'promotionaddcoupon')
+          })
       }
     },
-    copy(e) {
+    copy (e) {
       Clip(e)
     }
   },
   computed: {
-    ...mapGetters(["token", "user_id"]),
-    productDetails() {
+    ...mapGetters(['token', 'user_id']),
+    productDetails () {
       return 'productDetails' + this.couponsDetails.id
     },
     productDetails1 () {
-      return "#" + this.productDetails 
+      return '#' + this.productDetails 
     }
   },
  
-};
+}
 </script>
 
 <style lang="less" >

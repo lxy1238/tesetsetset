@@ -18,7 +18,7 @@ export function setEmail (email) {
   return Cookie.set(EMAIL, email, { expires: expiresData })
 }
 
-export function removeEmail() {
+export function removeEmail () {
   return Cookie.remove(EMAIL)
 }
 
@@ -32,7 +32,7 @@ export function setPass (pass) {
   return Cookie.set(PASSWORD, pass, { expires: expiresData })
 }
 
-export function removePass() {
+export function removePass () {
   return Cookie.remove(PASSWORD)
 }
 
@@ -45,7 +45,7 @@ export function setToken (token) {
   return Cookie.set(TOKEN, token, { expires: expiresData })
 }
 
-export function removeToken() {
+export function removeToken () {
   return Cookie.remove(TOKEN)
 }
 
@@ -59,6 +59,6 @@ export function setUserId (email) {
   return Cookie.set(USER_ID, email, { expires: expiresData })
 }
 
-export function removeUserId() {
+export function removeUserId () {
   return Cookie.remove(USER_ID)
 }

@@ -20,89 +20,89 @@
 </template>
 
 <script>
-import { Icon } from "element-ui";
-import Vue from "vue";
-Vue.use(Icon);
+import { Icon } from 'element-ui'
+import Vue from 'vue'
+Vue.use(Icon)
 export default {
-  name: "pagination",
-  data() {
+  name: 'pagination',
+  data () {
     return {
       gotoPageValue: 1,
       current: 1,
-    };
+    }
   },
   props: {
     showItem: Number,
     allpage: Number
   },
   computed: {
-    pages() {
-      var pag = [];
+    pages () {
+      var pag = []
       if (this.current < this.showItem) {
         //如果当前的激活的项 小于要显示的条数
         //总页数和要显示的条数那个大就显示多少条
-        var i = Math.min(this.showItem, this.allpage);
+        let i = Math.min(this.showItem, this.allpage)
         while (i) {
-          pag.unshift(i--);
+          pag.unshift(i--)
         }
       } else {
         //当前页数大于显示页数了
         var middle = this.current - Math.floor(this.showItem / 2), //从哪里开始
-          i = this.showItem;
+          i = this.showItem
         if (middle > this.allpage - this.showItem) {
-          middle = this.allpage - this.showItem + 1;
+          middle = this.allpage - this.showItem + 1
         }
         while (i--) {
-          pag.push(middle++);
+          pag.push(middle++)
         }
       }
-      return pag;
+      return pag
     }
   },
   methods: {
-    goto(index) {
+    goto (index) {
       document.body.scrollTop = document.documentElement.scrollTop = 0
       if (index === 1) {
-        document.getElementsByClassName("btn-s")[0].disabled = true
-        document.getElementsByClassName("btn-s")[1].disabled = false
+        document.getElementsByClassName('btn-s')[0].disabled = true
+        document.getElementsByClassName('btn-s')[1].disabled = false
       } else if (index === this.allpage) {
-        document.getElementsByClassName("btn-s")[1].disabled = true
-        document.getElementsByClassName("btn-s")[0].disabled = false
+        document.getElementsByClassName('btn-s')[1].disabled = true
+        document.getElementsByClassName('btn-s')[0].disabled = false
       } else {
-        document.getElementsByClassName("btn-s")[1].disabled = false
-        document.getElementsByClassName("btn-s")[0].disabled = false
+        document.getElementsByClassName('btn-s')[1].disabled = false
+        document.getElementsByClassName('btn-s')[0].disabled = false
       }
       if (index == this.current) return
       this.current = index
       this.$emit('handlecurrent', index)
     },
-    limit(e) {
+    limit (e) {
       if (e.keyCode === 13 && (!isNaN(Number(this.gotoPageValue)))) {
         this.gotoPage(this.gotoPageValue)
       } else {
         this.gotoPageValue = this.gotoPageValue.replace(/\D/g, '')
       }
     },
-    gotoPage(data) {
+    gotoPage (data) {
       if (data >= this.allpage) {
-        data = this.allpage;
+        data = this.allpage
         this.goto(data)
       } else if (data <= 1) {
-        data = 1;
+        data = 1
         this.goto(data)
       } else {
         this.goto(data)
       }
     }
   },
-  mounted() {
-    document.getElementsByClassName("btn-s")[0].disabled = true
+  mounted () {
+    document.getElementsByClassName('btn-s')[0].disabled = true
     if (this.allpage === 1) {
-      document.getElementsByClassName("btn-s")[1].disabled = true
-      document.getElementsByClassName("btn-s")[0].disabled = true
+      document.getElementsByClassName('btn-s')[1].disabled = true
+      document.getElementsByClassName('btn-s')[0].disabled = true
     }
   }
-};
+}
 </script>
 
 <style lang="less">

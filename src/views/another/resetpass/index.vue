@@ -22,22 +22,22 @@ export default {
   data () {
     const validateConfirmPass =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("Please enter the pass"))
+        return callback(new Error('Please enter the pass'))
       } else if(value.length < 8 || value.length > 20  ){
-        callback(new Error ("Use at least 8 characters and No more than 20 characters, It is case sensitive."))
+        callback(new Error ('Use at least 8 characters and No more than 20 characters, It is case sensitive.'))
       } else if (this.pidForm.password !== this.pidForm.password_confirmation) {
-        callback(new Error("Entered passwords differ"))
+        callback(new Error('Entered passwords differ'))
       } else {
         callback()
       }
     }
     const validateNewPass =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("Please enter the pass"))
+        return callback(new Error('Please enter the pass'))
       } else if(value.length < 8 || value.length > 20  ){
-        callback(new Error ("Use at least 8 characters and No more than 20 characters, It is case sensitive."))
+        callback(new Error ('Use at least 8 characters and No more than 20 characters, It is case sensitive.'))
       } else if (this.pidForm.password === this.pidForm.oldpassword) {
-        callback(new Error("The new password can't be the same as the old one"))
+        callback(new Error('The new password can\'t be the same as the old one'))
       } else {
         callback()
       }
@@ -72,27 +72,27 @@ export default {
   },  
   methods: {
     changePassword () {
-       this.$refs['pidForm'].validate((valid) => {
-          if (valid) {
-            this.pidForm.api_token = this.$route.params.token
-            this.pidForm.email = this.$route.params.email
-            checkRetrievePassword(this.pidForm).then(res => {
-              console.log(res)
-              if (res.code === 402) {
-                this.$notify.error(res.message)
-                return false
-              } else {
-                this.$notify.success("reset password success!!!")
-                setTimeout( () => {
-                  this.$router.push({path: '/'})
-                }, 1000)
-              }
-            })
-          } else {
-            console.log('error submit!!');
-            return false
-          }
-        });
+      this.$refs['pidForm'].validate((valid) => {
+        if (valid) {
+          this.pidForm.api_token = this.$route.params.token
+          this.pidForm.email = this.$route.params.email
+          checkRetrievePassword(this.pidForm).then(res => {
+            console.log(res)
+            if (res.code === 402) {
+              this.$notify.error(res.message)
+              return false
+            } else {
+              this.$notify.success('reset password success!!!')
+              setTimeout( () => {
+                this.$router.push({path: '/'})
+              }, 1000)
+            }
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     keyupSubmit (e) {
       if (e.keyCode === 13 && this.modifyShow === true) {

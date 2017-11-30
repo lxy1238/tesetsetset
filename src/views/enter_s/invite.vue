@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import Clip from "@/utils/clipboard.js";
+import Clip from '@/utils/clipboard.js';
 export default {
   name: 'enter_s',
   data () {

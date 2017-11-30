@@ -15,30 +15,30 @@ export const constantRouterMap = [
     path: '/',
     component: home,
     children: [{
-        path: '/:menuId?',
-        name: 'home',
-        component: _import('page_index/index')
-      },
-      {
-        path: '/trials/index',
-        component: _import('trials/index')
-      },
-      {
-        path: '/coupons/:couponsId',
-        component: _import('coupons/index')
-      },
-      {
-        path: '/trialsDetails/index',
-        component: _import('trials_details/index')
-      },
-      {
-        path: '/merchant/:userId',
-        component: _import('merchant/index')
-      },
-      {
-        path: '/successTrials/index',
-        component: _import('trials_details/apply_success')
-      },
+      path: '/:menuId?',
+      name: 'home',
+      component: _import('page_index/index')
+    },
+    {
+      path: '/trials/index',
+      component: _import('trials/index')
+    },
+    {
+      path: '/coupons/:couponsId',
+      component: _import('coupons/index')
+    },
+    {
+      path: '/trialsDetails/index',
+      component: _import('trials_details/index')
+    },
+    {
+      path: '/merchant/:userId',
+      component: _import('merchant/index')
+    },
+    {
+      path: '/successTrials/index',
+      component: _import('trials_details/apply_success')
+    },
      
      
     ]
@@ -154,152 +154,152 @@ export const aboutRouterMap = [
 
 //登录后加载异步路由
 export const asyncRouterMap = [
-    {
-      path: '/personal/member',
-      redirect: '/personal/member/index',
-      component: p_center,
-      text: 'Profile Overview',
-      hasChilds: false,
-      children: [{
-        path: 'index',
-        component: _import('personal/member_center/index')
-      }]
-    },
-    {
-      path: '/personal/promotion',
-      redirect: '/personal/promotion/index',
-      component: p_center,
-      text: 'My Promotion',
-      hasChilds: false,
-      children: [{
-        path: 'index',
-        component: _import('personal/promotion/index')
-      }]
-    },
-    {
-      path: '/posted/coupons',
-      redirect: '/posted/coupons',
-      component: p_center,
-      hasChilds: true,
-      isToggle: false,
-      text: 'My Posted',
-      meta: {role: ['merchant', 'celebrity']},
-      children: [
-        {
-          path: '/posted/coupons',
-          text: 'Coupons',
-          component: _import('personal/my_posted/coupons'),
-        },
-        {
-          path: '/posted/coupons/add',
-          hidden: true,
-          component: _import('personal/my_posted/coupons_add'),
-        },
-        {
-          path: '/posted/coupons/receiptor',
-          hidden: true,
-          component: _import('personal/my_posted/coupons_receiptor'),
-        },
-        {
-          path: '/posted/trials',
-          text: 'Trials',
-          component: _import('personal/my_posted/trials'),
-          meta: {role: ['merchant']}
-        },
-        {
-          path: '/posted/trials/add',
-          hidden: true,
-          component: _import('personal/my_posted/trials_add'),
-          meta: {role: ['merchant']}
-        },
-        {
-          path: '/posted/trials/receiptor',
-          hidden: true,
-          component: _import('personal/my_posted/trials_receiptor'),
-          meta: {role: ['merchant']}
-        }
-      ]
-    },
-    {
-      path: '/wallet/financial',
-      redirect: '/wallet/financial',
-      component: p_center,
-      hasChilds: true,
-      isToggle: false,
-      text: 'My Wallet',
-      children: [
-        {
-          path: '/wallet/financial',
-          text: 'Financial Record',
-          component: _import('personal/wallet/financial'),
-        },
-        {
-          path: '/wallet/withdraw',
-          text: 'Withdraw',
-          component: _import('personal/wallet/withdraw')
-        },
-        {
-          path: '/wallet/recharge',
-          text: 'Recharge',
-          component: _import('personal/wallet/recharge'),
-          meta: {role: ['merchant']}
-        }
-      ]
-    },
-    {
-      path: '/personal/my_coupons',
-      redirect: '/personal/my_coupons/index',
-      component: p_center,
-      text: 'My Coupons',
-      hasChilds: false,
-      children: [{
-        path: 'index',
-        component: _import('personal/my_coupons/index')
-      }]
-    },
-    {
-      path: '/personal/my_trials',
-      redirect: '/personal/my_trials/index',
-      component: p_center,
-      text: 'My Trials',
-      hasChilds: false,
-      children: [{
-        path: 'index',
-        component: _import('personal/my_trials/index')
-      }]
-    },
-    {
-      path: '/settings/account',
-      redirect: '/settings/account',
-      component: p_center,
-      hasChilds: true,
-      isToggle: false,
-      text: 'Settings',
-      children: [
-        {
-          path: '/settings/account',
-          text: 'Acount Basics',
-          component: _import('personal/settings/account'),
-        },
-        {
-          path: '/settings/shop',
-          text: 'Shop Settings',
-          component: _import('personal/settings/shop'),
-          meta: {role: ['merchant']}
-        },
-        {
-          path: '/settings/apiManagement',
-          text: 'API Management',
-          component: _import('personal/settings/apiManagement')
-        },
-        {
-          path: '/settings/modify',
-          text: 'Modify Password',
-          component: _import('personal/settings/modify')
-        }
-      ]
-    },
-  ]
+  {
+    path: '/personal/member',
+    redirect: '/personal/member/index',
+    component: p_center,
+    text: 'Profile Overview',
+    hasChilds: false,
+    children: [{
+      path: 'index',
+      component: _import('personal/member_center/index')
+    }]
+  },
+  {
+    path: '/personal/promotion',
+    redirect: '/personal/promotion/index',
+    component: p_center,
+    text: 'My Promotion',
+    hasChilds: false,
+    children: [{
+      path: 'index',
+      component: _import('personal/promotion/index')
+    }]
+  },
+  {
+    path: '/posted/coupons',
+    redirect: '/posted/coupons',
+    component: p_center,
+    hasChilds: true,
+    isToggle: false,
+    text: 'My Posted',
+    meta: {role: ['merchant', 'celebrity']},
+    children: [
+      {
+        path: '/posted/coupons',
+        text: 'Coupons',
+        component: _import('personal/my_posted/coupons'),
+      },
+      {
+        path: '/posted/coupons/add',
+        hidden: true,
+        component: _import('personal/my_posted/coupons_add'),
+      },
+      {
+        path: '/posted/coupons/receiptor',
+        hidden: true,
+        component: _import('personal/my_posted/coupons_receiptor'),
+      },
+      {
+        path: '/posted/trials',
+        text: 'Trials',
+        component: _import('personal/my_posted/trials'),
+        meta: {role: ['merchant']}
+      },
+      {
+        path: '/posted/trials/add',
+        hidden: true,
+        component: _import('personal/my_posted/trials_add'),
+        meta: {role: ['merchant']}
+      },
+      {
+        path: '/posted/trials/receiptor',
+        hidden: true,
+        component: _import('personal/my_posted/trials_receiptor'),
+        meta: {role: ['merchant']}
+      }
+    ]
+  },
+  {
+    path: '/wallet/financial',
+    redirect: '/wallet/financial',
+    component: p_center,
+    hasChilds: true,
+    isToggle: false,
+    text: 'My Wallet',
+    children: [
+      {
+        path: '/wallet/financial',
+        text: 'Financial Record',
+        component: _import('personal/wallet/financial'),
+      },
+      {
+        path: '/wallet/withdraw',
+        text: 'Withdraw',
+        component: _import('personal/wallet/withdraw')
+      },
+      {
+        path: '/wallet/recharge',
+        text: 'Recharge',
+        component: _import('personal/wallet/recharge'),
+        meta: {role: ['merchant']}
+      }
+    ]
+  },
+  {
+    path: '/personal/my_coupons',
+    redirect: '/personal/my_coupons/index',
+    component: p_center,
+    text: 'My Coupons',
+    hasChilds: false,
+    children: [{
+      path: 'index',
+      component: _import('personal/my_coupons/index')
+    }]
+  },
+  {
+    path: '/personal/my_trials',
+    redirect: '/personal/my_trials/index',
+    component: p_center,
+    text: 'My Trials',
+    hasChilds: false,
+    children: [{
+      path: 'index',
+      component: _import('personal/my_trials/index')
+    }]
+  },
+  {
+    path: '/settings/account',
+    redirect: '/settings/account',
+    component: p_center,
+    hasChilds: true,
+    isToggle: false,
+    text: 'Settings',
+    children: [
+      {
+        path: '/settings/account',
+        text: 'Acount Basics',
+        component: _import('personal/settings/account'),
+      },
+      {
+        path: '/settings/shop',
+        text: 'Shop Settings',
+        component: _import('personal/settings/shop'),
+        meta: {role: ['merchant']}
+      },
+      {
+        path: '/settings/apiManagement',
+        text: 'API Management',
+        component: _import('personal/settings/apiManagement')
+      },
+      {
+        path: '/settings/modify',
+        text: 'Modify Password',
+        component: _import('personal/settings/modify')
+      }
+    ]
+  },
+]
 
 
 

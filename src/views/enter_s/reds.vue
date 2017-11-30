@@ -162,39 +162,39 @@ export default {
       },
       expertiseList : [
         {
-          text: "Makeup / Personal Care",
+          text: 'Makeup / Personal Care',
           isSelected: true
         },
-         {
-          text: "Housewear & Furnishings",
+        {
+          text: 'Housewear & Furnishings',
           isSelected: false
         },
-         {
-          text: "Outdoor sport",
+        {
+          text: 'Outdoor sport',
           isSelected: false
         },
-         {
-          text: "DVD / Music / Game",
+        {
+          text: 'DVD / Music / Game',
           isSelected: false
         },
-         {
-          text: "Car Accessories / Tools",
+        {
+          text: 'Car Accessories / Tools',
           isSelected: false
         },
-         {
-          text: "Electronic product",
+        {
+          text: 'Electronic product',
           isSelected: false
         },
-         {
-          text: "Books",
+        {
+          text: 'Books',
           isSelected: false
         },
-         {
-          text: "Footwear / Apparel",
+        {
+          text: 'Footwear / Apparel',
           isSelected: false
         },
-         {
-          text: "Toy",
+        {
+          text: 'Toy',
           isSelected: false
         },
       ],

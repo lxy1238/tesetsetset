@@ -1,8 +1,6 @@
-import { login, logOut, getInfo, updateLogin } from '@/api/login.js'
-import { getEmail, setEmail, removeEmail, getToken, setToken, removeToken, setPass, removePass, setUserId, getUserId } from '@/utils/auth'
-import store from '../../store'
+import { login, getInfo, updateLogin } from '@/api/login'
+import { getEmail, setEmail, getToken, setToken, removeToken, setUserId, getUserId } from '@/utils/auth'
 import router from '../../router'
-import { setStore, removeStore, getStore } from '../../utils/utils'
 
 const user = {
   state: {
@@ -17,7 +15,6 @@ const user = {
     couponsPosted: '',
     lastPostedDate: '',
     token: getToken(),
-
   },
   mutations: {
     SET_USERNAME: (state, username) => {
@@ -50,11 +47,9 @@ const user = {
     SET_USERID: (state, user_id) => {
       state.user_id = user_id
     },
-
   },
   actions: {
-    // 登录s
-    Login({ commit , state}, userInfo) {
+    Login ({ commit , state}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
           console.log(res)
@@ -69,11 +64,10 @@ const user = {
         })
       })
     },
-    GetInfo({ commit , state }) {
+    GetInfo ({ commit , state }) {
       return new Promise((resolve, reject) => {
         getInfo({'api_token': getToken(), 'user_id': getUserId()}).then(res => {
           const data = res.data
-          console.log(res)
           if (res.code === 200) {
             setEmail(data.email)
             commit('SET_ROLES', [data.type])
@@ -100,8 +94,6 @@ const user = {
       router.push({path: '/'})
       window.location.reload()
     }
-
   }
 }
-
 export default user

@@ -93,50 +93,50 @@
 </template>
 
 <script>
-import detailsLeft from "@/components/coupons/details_left.vue";
+import detailsLeft from '@/components/coupons/details_left.vue'
 import explain from '@/components/trials/explain.vue'
 export default {
-  name: "coupons",
+  name: 'coupons',
   components: {
     detailsLeft,
     explain
   },
-  data() {
+  data () {
     return {
       isTop: false,
       selected: 0,
       added: true,
-      imgtest:require("../../assets/process01.png"),
+      imgtest:require('../../assets/process01.png'),
       processData: [
         {
-          "title":'Register users, apply for products',
-          "content": "Register as a user of our website, select your favorite product, click the Apply option to submit the application.",
-          "imgL": require("../../assets/process01.png"),
-          "imgR": require("../../assets/VCG41157399986.jpg")
+          'title':'Register users, apply for products',
+          'content': 'Register as a user of our website, select your favorite product, click the Apply option to submit the application.',
+          'imgL': require('../../assets/process01.png'),
+          'imgR': require('../../assets/VCG41157399986.jpg')
         },
         {
-          "title":'Submit the application and know the  results timely',
-          "content": 'Aftersubmitting the application, the system will promptly inform you of the results of the application, also the system will randomly selectusers, but a usercan only apply for the same product once, if unsuccessful, maybe you can try again for another product.',
-          "imgL": require("../../assets/process02.png"),
-          "imgR": require("../../assets/VCG41AA023536.jpg")
+          'title':'Submit the application and know the  results timely',
+          'content': 'Aftersubmitting the application, the system will promptly inform you of the results of the application, also the system will randomly selectusers, but a usercan only apply for the same product once, if unsuccessful, maybe you can try again for another product.',
+          'imgL': require('../../assets/process02.png'),
+          'imgR': require('../../assets/VCG41AA023536.jpg')
         },
         {
-          "title":'Buy immediately, upload order number',
-          "content": 'If you have a chance to get a trial, please place an order and complete the paymentwithin 4 hours, then return to our website, to find the taskin your member center, and upload the order number, the system will verify the authenticity of your order. If you do not upload the order number within 4 hours, your trial task will be canceled and you will not be able to proceed to the next step, also will not be refunded.',
-          "imgL": require("../../assets/process03.png"),
-          "imgR": require("../../assets/process_r_03.png")
+          'title':'Buy immediately, upload order number',
+          'content': 'If you have a chance to get a trial, please place an order and complete the paymentwithin 4 hours, then return to our website, to find the taskin your member center, and upload the order number, the system will verify the authenticity of your order. If you do not upload the order number within 4 hours, your trial task will be canceled and you will not be able to proceed to the next step, also will not be refunded.',
+          'imgL': require('../../assets/process03.png'),
+          'imgR': require('../../assets/process_r_03.png')
         },
         {
-          "title":'Confirmreceipt, submit review',
-          "content": 'After receiving the goods, please carefully use your product, andupload your honest review within 7-15 days after receipt. The system will not allow you to submit an review until submission of the evaluation time. An objective and impartial review will help other customers to fully understand the product and contribute to improvingproducts for seller.',
-          "imgL": require("../../assets/process04.png"),
-          "imgR": require("../../assets/VCG4194739362.jpg")
+          'title':'Confirmreceipt, submit review',
+          'content': 'After receiving the goods, please carefully use your product, andupload your honest review within 7-15 days after receipt. The system will not allow you to submit an review until submission of the evaluation time. An objective and impartial review will help other customers to fully understand the product and contribute to improvingproducts for seller.',
+          'imgL': require('../../assets/process04.png'),
+          'imgR': require('../../assets/VCG4194739362.jpg')
         },
         {
-          "title":'Confirm the review, system refund',
-          "content": 'Our professional review team will assess the authenticity of your evaluation, our review is objective and fair, afterreviewing, the system will refundwithin 3-5 business days.',
-          "imgL": require("../../assets/process05.png"),
-          "imgR": require("../../assets/VCG41477120854.jpg")
+          'title':'Confirm the review, system refund',
+          'content': 'Our professional review team will assess the authenticity of your evaluation, our review is objective and fair, afterreviewing, the system will refundwithin 3-5 business days.',
+          'imgL': require('../../assets/process05.png'),
+          'imgR': require('../../assets/VCG41477120854.jpg')
         },
 
       ],
@@ -145,14 +145,14 @@ export default {
         'Description', 'Novice Process'
       ]
 
-    };
+    }
   },
-  mounted() {
+  mounted () {
 
   },
   methods: {
-    getImgUrl(data) {
-      this.imgUrl = data;
+    getImgUrl (data) {
+      this.imgUrl = data
     },
     submit () {
 
@@ -164,7 +164,7 @@ export default {
       this.selected = index
     } 
   }
-};
+}
 </script>
 
 <style lang="less" scoped >

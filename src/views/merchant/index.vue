@@ -54,16 +54,16 @@
 </template>
 
 <script>
-import couponsPro from "@/components/page_index_coupons/image_product.vue"
-import pagination from "@/components/page_index_coupons/pagination.vue"
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import pagination from '@/components/page_index_coupons/pagination.vue'
 import { postedUserInfo ,getAllCoupons } from '@/api/login'
 import { timestampFormat } from '@/utils/date'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
-  name: "page_index",
-  data() {
+  name: 'page_index',
+  data () {
     return {
-      msg: "pageindex",
+      msg: 'pageindex',
       showItem: 7,
       allpage: undefined,
       userInfo: {
@@ -86,13 +86,13 @@ export default {
       requestUserData: {
         user_id: ''
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination,
   },
-  mounted() {
+  mounted () {
     this.init()
   },
   beforeDestroy () {
@@ -109,24 +109,25 @@ export default {
         this.widthToNum()
       }
     },
-       //初始化赋值
+    //初始化赋值
     initData () {
       this.requestCouponData.user_id = base64Decode(this.$route.params.userId)
       this.requestUserData.user_id = base64Decode(this.$route.params.userId)
     },
-       //翻页功能实现
-    gotoPage(index) {
+    //翻页功能实现
+    gotoPage (index) {
+      this.requestCouponData.page = index
       this.getUserCouponInfo()
     },
 
-      //获取发布人的信息
+    //获取发布人的信息
     getPostUserInfo () {
       postedUserInfo (this.requestCouponData).then(res => {
         console.log(res)
         res.data.joined_date = timestampFormat(res.data.joined_date)
         this.userInfo = res.data
       }).catch(error => {
-        console.log(error + " postedUserInfo")
+        console.log(error + ' postedUserInfo')
       })
     },
 
@@ -143,11 +144,11 @@ export default {
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
-    gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
+    gotodetails (id) {
+      this.$router.push({ path: '/coupons/' + base64Encode(id)  })
     },
 
-     //根据页面尺寸宽度判断首页展示的商品数量
+    //根据页面尺寸宽度判断首页展示的商品数量
     widthToNum () {
       const LINE_NUM = 8    //默认显示的行数
       if (window.innerWidth <= 1270 && this.requestCouponData.page_size != 4 * LINE_NUM) {
@@ -162,7 +163,7 @@ export default {
       }
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

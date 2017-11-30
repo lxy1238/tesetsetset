@@ -212,15 +212,13 @@
 </template>
 
 <script>
-import detailsLeft from "@/components/coupons/details_left.vue";
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import codeDialog from "@/components/coupons/code_dialog.vue";
-import explain from "@/components/trials/explain.vue";
-import Clip from "@/utils/clipboard.js";
+import detailsLeft from '@/components/coupons/details_left.vue'
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import explain from '@/components/trials/explain.vue'
+import Clip from '@/utils/clipboard.js'
 
-import { getStore, removeStore } from "@/utils/utils";
 import { parseTime } from '@/utils/date'
-import { timestampFormat } from "@/utils/date";
+import { timestampFormat } from '@/utils/date'
 import {
   getAllCoupons,
   couponDetails,
@@ -232,44 +230,43 @@ import {
   getInfo,
   addProblem,
   getHeadCateList 
-} from "@/api/login";
-import { getToken, getUserId } from "@/utils/auth";
-import { mapGetters } from "vuex";
+} from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
+import { mapGetters } from 'vuex'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
-  name: "coupons",
+  name: 'coupons',
   components: {
     detailsLeft,
     couponsPro,
-    codeDialog,
     explain
   },
-  data() {
+  data () {
     return {
       isTop: true,
       userInfo: {
-        avatar_img: "",
-        username: "",
-        type: "",
-        level: "",
-        joined_date: "",
-        coupon_posteds: ""
+        avatar_img: '',
+        username: '',
+        type: '',
+        level: '',
+        joined_date: '',
+        coupon_posteds: ''
       },
       imgList: [],
-      html: "hello",
+      html: 'hello',
       options: [
-        "Choose reason",
-        "Dead deal",
-        "Duplicate",
-        "Bad link",
-        "Spam",
-        "Inaccurate",
-        "No value",
-        "Alive again"
+        'Choose reason',
+        'Dead deal',
+        'Duplicate',
+        'Bad link',
+        'Spam',
+        'Inaccurate',
+        'No value',
+        'Alive again'
       ],
-      selected: "Choose reason",
+      selected: 'Choose reason',
       added: true,
-      imgUrl: "",
+      imgUrl: '',
       arrcouponsDetails: [],
       couponDetail: {},
       showGetCodeDialog: false,
@@ -282,25 +279,25 @@ export default {
         page_size: 9
       },
       requestCouponDetails: {
-        id: ""
+        id: ''
       },
       reqGetCodeData: {
         api_token: getToken(),
-        coupon_id: "",
-        user_id: "",
-        username: "",
-        generalize_uid: "",
-        generalize_username: ""
+        coupon_id: '',
+        user_id: '',
+        username: '',
+        generalize_uid: '',
+        generalize_username: ''
       },
       checkGetCodeData: {
         api_token: getToken(),
-        coupon_id: "",
-        user_id: ""
+        coupon_id: '',
+        user_id: ''
       },
       addPromotionData: {
         api_token: getToken(),
-        coupon_id: "",
-        user_id: ""
+        coupon_id: '',
+        user_id: getUserId()
       },
       addProblemData: {
         api_token: getToken(),
@@ -321,10 +318,10 @@ export default {
 
       //是否显示问题反馈
       isFlagCoupon: false
-    };
+    }
   },
   computed: {
-    ...mapGetters(["username", "user_id"]),
+    ...mapGetters(['username', 'user_id']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
@@ -333,20 +330,20 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.init()
   },
 
   //组件销毁前
-  beforeDestroy() {
+  beforeDestroy () {
     // removeStore('couponId')
   },
   methods: {
     test () {
-      var a = document.getElementById("test").value;
-      var b = a.replace(/\n/g, "<br>").replace(/a/g, this.html);
-      document.getElementById("box").innerHTML = b;
-      console.log(this.selected);
+      var a = document.getElementById('test').value
+      var b = a.replace(/\n/g, '<br>').replace(/a/g, this.html)
+      document.getElementById('box').innerHTML = b
+      console.log(this.selected)
     },
 
     //初始化
@@ -358,35 +355,34 @@ export default {
     },
 
     //数据初始化
-    initData() {
-      this.reqGetCodeData.user_id = this.user_id;
-      this.reqGetCodeData.username = this.username;
-      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId);
+    initData () {
+      this.reqGetCodeData.user_id = this.user_id
+      this.reqGetCodeData.username = this.username
+      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
 
-      this.addPromotionData.user_id = this.user_id;
-      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId);
+      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
     },
 
     //获取左边的图片信息
-    getImgUrl(data) {
-      this.imgUrl = data;
+    getImgUrl (data) {
+      this.imgUrl = data
     },
 
     //复制产品推广文案
-    handleClip(e) {
-      Clip(e);
+    handleClip (e) {
+      Clip(e)
     },
 
     //跳转到产品详情页面
-    gotodetails(id, user_id) {
+    gotodetails (id) {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: "/coupons/" + base64Encode(id) })
+      this.$router.push({ path: '/coupons/' + base64Encode(id) })
       this.getCouponsDetails(this.requestCouponDetails)
     },
 
     //领取优惠券
-    getCode() {
+    getCode () {
       if(!this.isLogin()) {
         return
       }
@@ -395,28 +391,29 @@ export default {
       isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
         if (!res.data) {
+          console.log('no res data')
         } else {
           this.getCodeSuccess = true
         }
-      });
+      })
     },
     //关闭领取优惠券的弹窗
-    close() {
+    close () {
       this.showGetCodeDialog = false
     },
 
-    gotoTrials() {
-      this.$router.push({ path: "/trials" })
+    gotoTrials () {
+      this.$router.push({ path: '/trials' })
     },
-    saveTemplate() {},
+    saveTemplate () {},
 
     //获取优惠券详情
-    getCouponsDetails() {
+    getCouponsDetails () {
       this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       couponDetails(this.requestCouponDetails)
         .then(res => {
           console.log(res)
-          this.imgList = res.data.product_img.split(",")
+          this.imgList = res.data.product_img.split(',')
           this.imgUrl = this.imgList[0]
           this.couponDetail = res.data
           this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
@@ -425,24 +422,24 @@ export default {
           this.getPostUserInfo(res.data.user_id)
         })
         .catch(error => {
-          console.log(error + "couponDetails");
-        });
+          console.log(error + 'couponDetails')
+        })
     },
 
     //获取该品类下的优惠券
     getAllCouponsInfo () {
       getAllCoupons(this.requestData) 
-      .then(res => {
-        this.arrcouponsDetails = res.data.data
-      })
-      .catch(error => {
-        console.log(error + "getAllCoupons");
-      })
+        .then(res => {
+          this.arrcouponsDetails = res.data.data
+        })
+        .catch(error => {
+          console.log(error + 'getAllCoupons')
+        })
     },
 
     //获取发布人的信息
-    getPostUserInfo(user_id) {
-      var request = { user_id: user_id };
+    getPostUserInfo (user_id) {
+      var request = { user_id: user_id }
       postedUserInfo(request)
         .then(res => {
           res.data.joined_date = timestampFormat(res.data.joined_date)
@@ -450,50 +447,50 @@ export default {
           this.userInfo.user_id = this.couponDetail.user_id
         })
         .catch(error => {
-          console.log(error + " postedUserInfo");
-        });
+          console.log(error + ' postedUserInfo')
+        })
     },
 
     //取消推广
-    removePromotion() {
+    removePromotion () {
       if (this.isLogin()) {
         promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.couponsGetInfo();
-            this.added = true;
+            this.couponsGetInfo()
+            this.added = true
           }
-        });
+        })
       }
     },
 
     //加入推广
-    addPromotion() {
+    addPromotion () {
       if (this.isLogin()) {
         promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.couponsGetInfo();
-            this.added = false;
+            this.couponsGetInfo()
+            this.added = false
           }
-        });
+        })
       }
     },
 
     //领取优惠券
-    getCouponCode() {
+    getCouponCode () {
       if (this.isLogin()) {
-        userGetCoupon(this.reqGetCodeData).then(res => {
-          this.getCodeSuccess = true;
-        });
+        userGetCoupon(this.reqGetCodeData).then(() => {
+          this.getCodeSuccess = true
+        })
       }
     },
 
     //复制优惠券
-    copyCode(e) {
-      Clip(e);
+    copyCode (e) {
+      Clip(e)
     },
 
     //判断是否登录，否则提醒请登录
-    isLogin() {
+    isLogin () {
       if (!getToken()) {
         this.$root.eventHub.$emit('isLoginInfo')
         // this.$alert("please log in first", "reminder", {
@@ -506,7 +503,7 @@ export default {
     },
 
     //获取用户信息
-    couponsGetInfo() {
+    couponsGetInfo () {
       if (getToken()) {
         getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
           var promotions = []
@@ -514,17 +511,17 @@ export default {
             promotions.push(i.coupon_id)
           }
           this.userPromotions = promotions
-        });
+        })
       }
     },
 
     //选择不同品类优惠券过滤
     gotoIndex () {
-      this.$root.eventHub.$emit("selectClassify1", this.requestData.menu_id)
+      this.$root.eventHub.$emit('selectClassify1', this.requestData.menu_id)
     },
 
     //选择问题, 提交问题反馈
-    selectProblem (index) {
+    selectProblem () {
       this.addProblemData.title = this.selected
     },
     
@@ -532,7 +529,7 @@ export default {
     addProblemSubmit () {
       if (base64Decode(this.$route.params.couponsId)) {
         this.addProblemData.menu = 'coupons'
-        this.addProblemData.product_id = base64Decode(this.$route.params.couponsId);
+        this.addProblemData.product_id = base64Decode(this.$route.params.couponsId)
       }
       if (!this.addProblemData.content) {
         return
@@ -550,7 +547,7 @@ export default {
       })
     },
 
-         //获取头部品类列表
+    //获取头部品类列表
     getHeadCateListInfo () {
       getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
@@ -564,7 +561,7 @@ export default {
     } 
 
   }
-};
+}
 </script>
 
 <style lang="less" scoped >

@@ -33,18 +33,17 @@
 </template>
 
 <script>
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import { getAllCoupons, getInfo, getHeadCateList } from "@/api/login";
-import { getToken, getUserId } from "@/utils/auth";
-import { getStore } from "@/utils/utils";
-import { mapGetters } from "vuex";
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import { getAllCoupons, getInfo, getHeadCateList } from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString'
 export default {
-  name: "page_index",
-  data() {
+  name: 'page_index',
+  data () {
     return {
-      msg: "pageindex",
+      msg: 'pageindex',
       showItem: 7,
       allpage: undefined,
       arrcouponsDetails: [],
@@ -60,16 +59,16 @@ export default {
         country_id: parseInt(getStore('country_id')) || 1,
         keyword: '',
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination
   },
-  mounted() {
+  mounted () {
     this.init()
   },
-  beforeDestroy() {
+  beforeDestroy () {
     window.onresize = null
     this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
     this.$root.eventHub.$off('changeCountryId')
@@ -80,7 +79,7 @@ export default {
       if (this.$route.params.menuId) {
         return this.$route.params.menuId
       } else {
-        return "Top Coupons"
+        return 'Top Coupons'
       }
     },
     //查询字段变化的时候触发
@@ -88,7 +87,7 @@ export default {
       if (this.$route.query.search) {
         return this.$route.query.search
       } else {
-        return ""
+        return ''
       }
     }
   },
@@ -109,7 +108,7 @@ export default {
       this.getheadData()
     },
     //翻页功能实现
-    gotoPage(index) {
+    gotoPage (index) {
       this.requestData.keyword = this.search
       this.requestData.page = index
       this.getAllCouponsInfo()
@@ -126,12 +125,12 @@ export default {
     },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
-    gotodetails(id) {
-      this.$router.push({ path: "/coupons/" + base64Encode(id) })
+    gotodetails (id) {
+      this.$router.push({ path: '/coupons/' + base64Encode(id) })
     },
 
     //获取用户信息 ，判断首页的coupon是否加入推广
-    getUserInfo() {
+    getUserInfo () {
       if (getToken()) {
         getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
           var newArr = []
@@ -144,7 +143,7 @@ export default {
     },
 
     //获取首页所有优惠券的信息
-    getAllCouponsInfo() {
+    getAllCouponsInfo () {
       this.arrcouponsDetails = []
       if (this.$route.params.menuId) {
         for (var i of this.classifyList) {
@@ -166,11 +165,11 @@ export default {
         })
         .catch(error => {
           console.log(error)
-        });
+        })
     },
 
     //根据页面尺寸宽度判断首页展示的商品数量
-    widthToNum() {
+    widthToNum () {
       const LINE_NUM = 8 //默认显示的行数
       if (
         window.innerWidth <= 1270 &&
@@ -194,7 +193,7 @@ export default {
       }
     },
 
-      //获取头部品类列表
+    //获取头部品类列表
     getHeadCateListInfo () {
       getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
@@ -205,7 +204,7 @@ export default {
       })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

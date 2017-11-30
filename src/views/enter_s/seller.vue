@@ -149,7 +149,7 @@ export default {
         store_name: [
           {required: true ,message: 'Store name required', trigger: 'blur'}
         ],
-         store_url: [
+        store_url: [
           {required: true ,message: 'Store URL is required', trigger: 'blur'}
         ],
         owned_platform: [

@@ -145,14 +145,13 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { getTestData } from '@/api/login.js'
 export default {
   name: 'posted_trials',
   data () {
     return {
       thLists: ['Image', 'Title', 'Store' , 'List Price', 'Quantity', 'Applied', 
-                'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
-                'Cost', 'Valid date', 'Status', 'Operation'
+        'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
+        'Cost', 'Valid date', 'Status', 'Operation'
       ],
       trLists: [{
         product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',
@@ -175,9 +174,9 @@ export default {
       allpage: undefined,
       showItem: 7,
       searchForm: {
-        title: "",
+        title: '',
         category: '',
-        status: "",
+        status: '',
       }
      
    

@@ -23,64 +23,64 @@
 </template>
 
 <script>
-import Clip from "@/utils/clipboard.js";
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import explain from "@/components/trials/explain.vue"
+import Clip from '@/utils/clipboard.js'
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import explain from '@/components/trials/explain.vue'
 export default {
-  name: "page_index",
-  data() {
+  name: 'page_index',
+  data () {
     return {
       showItem: 7,
       allpage: undefined,
       arrcouponsDetails: [
         {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon1",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ",
-          price: "$98.00",
-          coupons: "$18.00"
+          imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
+          platfrom: 'amazon1',
+          descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ',
+          price: '$98.00',
+          coupons: '$18.00'
         },
         {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00"
+          imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
+          platfrom: 'amazon2',
+          descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ',
+          price: '$98.00',
+          coupons: '$18.00'
         }
       ],
       couponsDetails: {
-          id: 1,
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          priceOld: "$98.00",
-          priceRefund: "$88.00",
+        id: 1,
+        imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
+        platfrom: 'amazon2',
+        descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ',
+        priceOld: '$98.00',
+        priceRefund: '$88.00',
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination,
     explain
   },
-  mounted() {
-    this.$root.eventHub.$on("selectClassify", data => {
-      this.msg = "";
+  mounted () {
+    this.$root.eventHub.$on('selectClassify', data => {
+      this.msg = ''
       setTimeout(() => {
-        this.msg = data;
-      }, 500);
-    });
+        this.msg = data
+      }, 500)
+    })
   },
   methods: {
-    test(index) {
-      console.log(`当前跳转到 ${index} 页`);
+    test (index) {
+      console.log(`当前跳转到 ${index} 页`)
     },
-    gotodetails (id) {
+    gotodetails () {
       this.$router.push({ path: '/trialsDetails'})
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

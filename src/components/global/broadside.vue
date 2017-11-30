@@ -20,7 +20,7 @@ export default {
   methods: {
     goTop () {
       animate(document.body, {scrollTop: 0},800)
-      animate(document.documentElement, {scrollTop: 0},800)
+      animate(document.documentElement, {scrollTop: 0}, 800)
       animate(window, {scrollTop: 0},800)
     }
   }

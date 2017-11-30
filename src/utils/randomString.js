@@ -2,7 +2,7 @@
 
 export default function RandomString () {
   const timeStamp = Date.now()
-  const RandonNum = parseInt( Math.random() * 100000 )+ "1"
+  const RandonNum = parseInt( Math.random() * 100000 )+ '1'
   return parseInt(RandonNum + timeStamp).toString(32).slice(1,6)
 }
 

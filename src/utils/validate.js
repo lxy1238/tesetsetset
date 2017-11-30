@@ -31,8 +31,8 @@ export function validateImg (imgUrl) {
   var ImgObj = new Image()//判断图片是否存在  
   ImgObj.src = imgUrl  
   if (ImgObj.width > 0 && ImgObj.height > 0) {  
-    return true;  
+    return true  
   } else {  
-    return false;
+    return false
   }  
 }

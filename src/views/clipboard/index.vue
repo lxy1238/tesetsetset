@@ -16,7 +16,7 @@ export default {
   name: 'page_index',
   data () {
     return { 
-      msg: "pageindex"
+      msg: 'pageindex'
     }
   },
   methods : {

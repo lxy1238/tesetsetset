@@ -61,7 +61,7 @@
                 </span>
                 <div v-if="showDropdownC" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <li v-for="item in countryLists" @click="filterCountry(item.id, item.name)">{{item.name}} </li>
+                   <li v-for="item in countryLists" @click="filterCountry(item.id)">{{item.name}} </li>
                  </ul>
                </div>
             </div><div class="inline-b login-y language" :class="{active: showDropdownL}"   @click.stop="showDropdownLanguage($event)">
@@ -240,22 +240,22 @@
 
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
-import { validateEmail, validateImg } from '@/utils/validate.js'
-import { sign, login,getHeadCateList, retrievePassword, getUserCountry} from '@/api/login.js'
+import { validateEmail } from '@/utils/validate.js'
+import { sign,getHeadCateList, retrievePassword } from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
-  name: "header",
-  data() {
+  name: 'header',
+  data () {
     const validateEmailRule =  (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("Please enter your Email"))
-        } else if (!validateEmail(value)) {
-          return callback(new Error("Please enter the correct mailbox"))
-        } else {
-          callback()
-        }
+      if (!value) {
+        return callback(new Error('Please enter your Email'))
+      } else if (!validateEmail(value)) {
+        return callback(new Error('Please enter the correct mailbox'))
+      } else {
+        callback()
+      }
     }
     return {
       signform: {
@@ -296,7 +296,7 @@ export default {
       },
       rules: {
         email: [
-           {  validator:validateEmailRule , trigger: 'blur' },
+          {  validator:validateEmailRule , trigger: 'blur' },
         ]
       },
 
@@ -314,27 +314,27 @@ export default {
           id: 1,
           name: 'USA',
         },
-          {
+        {
           id: 2,
-          name: "Britain",
+          name: 'Britain',
         },
-          {
+        {
           id: 3,
           name: 'Germany',
         },
-          {
+        {
           id: 4,
           name: 'Japan',
         },
-          {
+        {
           id: 5,
           name: 'France',
         },
-          {
+        {
           id: 6,
           name: 'Italy',
         },
-          {
+        {
           id: 7,
           name: 'Spain',
         },
@@ -428,7 +428,7 @@ export default {
     },
     //点击空白或者其他地方的时候下拉菜单消失
     docuemntAddEvent () {
-      document.body.addEventListener('click', (e) => {
+      document.body.addEventListener('click', () => {
         this.showDropdownU = false
         this.showDropdownC = false
         this.showDropdownL = false
@@ -459,9 +459,9 @@ export default {
     },
 
     //接受其他组件传递的事件
-    getOtherEvent() {
+    getOtherEvent () {
       this.$root.eventHub.$on('initClassify', () => {
-      this.selectedC = -1
+        this.selectedC = -1
       })
       this.$root.eventHub.$on('selectClassify1', data => {
         for (var i of this.classifyList) {
@@ -477,10 +477,10 @@ export default {
     },
 
     //通过国家过滤首页的优惠券信息
-    filterCountry (id, name) {
+    filterCountry (id) {
       setStore('country_id',id)
       this.selectedCountryShop  = id
-      this.keyword = ""
+      this.keyword = ''
       this.$root.eventHub.$emit('changeCountryId', id)
       // this.$root.eventHub.$emit('filterkeyword', "")
       this.selectClassify(this.classifyList[0])
@@ -498,43 +498,43 @@ export default {
     },
 
     //选择不同的分类时，跳转到相应的路由
-    selectClassify(item) {
+    selectClassify (item) {
       this.selectedC = item.id
-      this.keyword = ""
+      this.keyword = ''
       this.$router.push({path: '/'+ item.name})
     },
-    coupons() {
-      this.keyword = ""
-      this.$router.push({ path: "/"})
+    coupons () {
+      this.keyword = ''
+      this.$router.push({ path: '/'})
       this.selectedC = 0
-      this.$store.dispatch("setLevel", 0)
+      this.$store.dispatch('setLevel', 0)
     },
-    trials() {
-      this.$router.push({ path: "/trials" })
-      this.selectedC = 0;
-      this.$store.dispatch("setLevel", 1)
+    trials () {
+      this.$router.push({ path: '/trials' })
+      this.selectedC = 0
+      this.$store.dispatch('setLevel', 1)
     },
-    ShowLoginDialog() {
+    ShowLoginDialog () {
       this.loginform.email = getEmail()
       this.loginform.password = base64Decode(getPass())
       this.resetPassword = false
       this.loginDialog = true
      
     },
-    ShowSignDialog() {
+    ShowSignDialog () {
       this.loginDialog = false
       this.signDialog = true
     },
-    signSubmit(formName, callback) {
+    signSubmit (formName, callback) {
       //element-ui 的表单验证
-       this.$refs[formName].validate((valid) => {
-          if (valid) {
-            callback()
-          } else {
-            console.log('error submit!!');
-            return false
-          }
-        });
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          callback()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
 
     //弹出忘记密码窗口
@@ -544,7 +544,7 @@ export default {
     },
 
     //下拉菜单的功能实现
-    showDropdownUser (e) {
+    showDropdownUser () {
       setTimeout( () => {
         this.showDropdownU = !this.showDropdownU
         this.showDropdownC = false
@@ -558,7 +558,7 @@ export default {
         this.showDropdownL = false
       })
     },
-    showDropdownLanguage (e) {
+    showDropdownLanguage () {
       setTimeout( () => {
         this.showDropdownC = false
         this.showDropdownU = false
@@ -571,17 +571,17 @@ export default {
     signUp () {
       this.signSubmit('signform', () => {
         this.signloading = true
-        this.signform.activate_url = location.protocol + "//" + location.host + '/#/activate/' + this.signform.email
+        this.signform.activate_url = location.protocol + '//' + location.host + '/#/activate/' + this.signform.email
         sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
-            this.$notify.success("Please login to the mailbox for activation validation")
+            this.$notify.success('Please login to the mailbox for activation validation')
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
           this.signloading = false
-          console.error("sign fail")
+          console.error('sign fail' + error)
         })
       })
     },
@@ -594,8 +594,8 @@ export default {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
-            this.$notify.success("login success")
-            this.$refs['loginform'].resetFields();
+            this.$notify.success('login success')
+            this.$refs['loginform'].resetFields()
           }
           this.$store.dispatch('GetInfo').then(res => {
             console.log(res)
@@ -609,20 +609,20 @@ export default {
       })
     },
     resetPasswordBtn () {
-       this.signSubmit('resetform', () => {
-         this.resetLoading = true
-          this.resetform.url = location.protocol + "//" + location.host + '/#/resetpass/' + this.resetform.email + '/'
-          console.log(this.resetform)
-          retrievePassword(this.resetform).then(res => {
-            console.log(res)
-            if (res.code === 200) {
-              this.resetLoading = false
-              this.$notify.success('Please click the link to change the password')
-            }
-          }).catch(error => {
+      this.signSubmit('resetform', () => {
+        this.resetLoading = true
+        this.resetform.url = location.protocol + '//' + location.host + '/#/resetpass/' + this.resetform.email + '/'
+        console.log(this.resetform)
+        retrievePassword(this.resetform).then(res => {
+          console.log(res)
+          if (res.code === 200) {
             this.resetLoading = false
-          })
-       })
+            this.$notify.success('Please click the link to change the password')
+          }
+        }).catch(() => {
+          this.resetLoading = false
+        })
+      })
     },
 
     //登出
@@ -640,7 +640,7 @@ export default {
       })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

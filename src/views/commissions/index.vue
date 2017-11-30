@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import Clip from "@/utils/clipboard.js"
+import Clip from '@/utils/clipboard.js'
 export default {
   name: 'commissions',
   data () {
@@ -118,7 +118,7 @@ export default {
           { required: true, trigger: 'blur'}
         ],
       },
-    optionsWebsite: [{
+      optionsWebsite: [{
         value: '亚马逊',
         label: '亚马逊'
       }, {
@@ -133,7 +133,7 @@ export default {
       }, {
         value: '亚马逊4',
         label: '亚马逊4'
-    }],
+      }],
     }
   },
   mounted () {

@@ -34,7 +34,7 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { userCoupons, couponDetails } from '@/api/login'
+import { userCoupons } from '@/api/login'
 import { mapGetters } from 'vuex'
 export default {
   name: 'my_coupons',

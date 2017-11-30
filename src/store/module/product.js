@@ -1,11 +1,9 @@
-
 const product = {
   state : {
     oneLevel: 0,
     productId: '',
     couponId: '',
   },
-
   mutations: {
     SET_ONE_LEVEL (state, level) {
       state.oneLevel = level
@@ -17,7 +15,6 @@ const product = {
       state.couponId = id
     }
   },
-  
   actions: {
     setLevel ({ commit }, level) {
       commit('SET_ONE_LEVEL', level)
@@ -30,5 +27,4 @@ const product = {
     }
   }
 }
-
 export default product

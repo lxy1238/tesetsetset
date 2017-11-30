@@ -13,7 +13,7 @@ export default {
   name: 'explain',
   data () {
     return {
-       reminderData : [
+      reminderData : [
         {
           title: 'Apply a product',
           content: 'Choose your favorite product',
