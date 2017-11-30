@@ -48,8 +48,8 @@
             </td>
             <td class="coupons-table-title">
               <div>amazon</div>
-              <div class="table-product-title" @click="gotoDetails(item.id, item.user_id)">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item.id, item.user_id)">Electronics</a>
+              <div class="table-product-title" @click="gotoDetails(item.id, item.status)">{{item.product_title}}</div>
+              <a href="javascript:void(0);" @click="gotoDetails(item.id, item.status)">Electronics</a>
             </td>
 
             <td class="prcie">
@@ -61,7 +61,8 @@
             <td class="qty">
               <div>
                 <a href="javascript:void(0);" @click="gotoReceiptor(item)">{{item.pick_numbers}}</a>/
-                <span>{{item.total_quantity}}</span>
+                <span v-if="item.use_type === 'Alone'">{{item.total_quantity}}</span>
+                <span v-else>--</span>
               </div>
             </td>
             <td class="valid-date">
@@ -247,7 +248,10 @@ export default {
     },
 
     //跳转到优惠券详情页面
-    gotoDetails (id) {
+    gotoDetails (id, status) {
+      if (status !== 2) {
+        return
+      }
       this.$router.push({ path: '/coupons/' + base64Encode(id)  })
     },
 

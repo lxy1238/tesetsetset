@@ -201,7 +201,7 @@ export default {
     }
   }
   .statistics {
-    padding-left: 1.5rem;
+    // padding-left: 1.5rem;
     padding-top: 1rem;
     margin-bottom: 2rem;
     .statistics-child {

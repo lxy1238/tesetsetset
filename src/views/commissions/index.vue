@@ -20,14 +20,14 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Asin: " prop="product_price" class="item-inline" v-if="active === 0" >
+        <el-form-item label="Asin: " prop="product_price" class="" v-if="active === 0" >
           <el-input class="input-price-fee" v-model="commissionForm.product_price"></el-input>
         </el-form-item>
-        <el-form-item label="Asin: " prop="product_price" class="item-inline" v-if="active === 1">
-          <el-input type="textarea" class="input-price-fee" v-model="commissionForm.product_price"></el-input>
+        <el-form-item label="Asin: " prop="product_price" class="" v-if="active === 1">
+          <el-input type="textarea"  v-model="commissionForm.product_price"></el-input>
         </el-form-item>
-        <el-form-item label="Amazon PID: "  class="item-inline" prop="shipping_fee">
-          <el-input class="input-price-fee" v-model="commissionForm.shipping_fee"></el-input>
+        <el-form-item label="Amazon PID: "  class="" prop="shipping_fee">
+          <el-input  v-model="commissionForm.shipping_fee"></el-input>
         </el-form-item>
         <el-form-item >
           <button type="button" class="search">Generate</button> <button type="button" class="clear" >Clear</button>

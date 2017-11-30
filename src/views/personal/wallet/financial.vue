@@ -84,7 +84,7 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      margin-right: 5%;
+      margin-right: 3%;
       min-width: 10%;
     }
     .search {
