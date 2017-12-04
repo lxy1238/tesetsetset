@@ -73,6 +73,7 @@ export default {
       this.requestData.user_id = this.user_id
       userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
+          console.log(res.data)   // 少了一个product_url 字段
           this.couponLists = res.data.data
           this.allpage = res.data.last_page
         }

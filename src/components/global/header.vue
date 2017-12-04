@@ -114,7 +114,7 @@
               <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google"><i class="iconfont icon-googleplus"></i> Join with Google</button>
+              <button class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
             </div>
           </div>
           <div class="bottom">
@@ -207,9 +207,7 @@
                 If you have forgotten your password, you can request to reset your password. When you fill in your registered email address, you will be sent instructions on how to reset your password.
               </span>
             </div>
-           
           <div class="bottom top">
-           
             <el-form :model="resetform" :rules="rules" ref="resetform" >
               <el-form-item  prop="email">
                 <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
@@ -245,6 +243,7 @@ import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/lo
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
+import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -398,7 +397,8 @@ export default {
         }
       }
     },
-    //点击空白或者其他地方的时候下拉菜单消失
+
+    //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
     docuemntAddEvent () {
       document.body.addEventListener('click', () => {
         this.showDropdownU = false
@@ -487,15 +487,23 @@ export default {
       this.$store.dispatch('setLevel', 1)
     },
     ShowLoginDialog () {
+      this.googleLogin()
       this.loginform.email = getEmail()
-      this.loginform.password = base64Decode(getPass())
-      this.resetPassword = false
+      if (getPass()) {
+        this.loginform.password = base64Decode(getPass())
+      }
+      this.signDialog = false 
       this.loginDialog = true
      
     },
     ShowSignDialog () {
       this.loginDialog = false
       this.signDialog = true
+    },
+    //弹出忘记密码窗口
+    forgetPass () {
+      this.loginDialog = false
+      this.resetPassword = true
     },
     signSubmit (formName, callback) {
       //element-ui 的表单验证
@@ -507,12 +515,6 @@ export default {
           return false
         }
       })
-    },
-
-    //弹出忘记密码窗口
-    forgetPass () {
-      this.loginDialog = false
-      this.resetPassword = true
     },
 
     //下拉菜单的功能实现
@@ -532,9 +534,9 @@ export default {
     },
     showDropdownLanguage () {
       setTimeout( () => {
+        this.showDropdownL = !this.showDropdownL
         this.showDropdownC = false
         this.showDropdownU = false
-        this.showDropdownL = !this.showDropdownL
       })
     },
     showAllLanguage () {
@@ -614,11 +616,62 @@ export default {
     //获取国家列表，携带货币符号，
     getUserCountryInfo () {
       getUserCountry().then(res => {
-        console.log(res)
         this.countryLists = res.data
       }).catch(error => {
         console.log(error)
       })
+    },
+
+    //google 登录
+    googleLogin () {
+      var startApp = function () {
+        gapi.load('auth2', function (){
+          // Retrieve the singleton for the GoogleAuth library and set up the client.
+          let auth2 = gapi.auth2.init({
+            client_id: '308959858897-r2qme5tvr34qlbnq3qs5j5d3ohdqlopi.apps.googleusercontent.com',
+            cookiepolicy: 'single_host_origin',
+            // Request scopes in addition to 'profile' and 'email'
+            // scope: 'additional_scope'
+            scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
+          })
+          auth2.attachClickHandler('customBtn', {}, onSuccess, onFailure)
+        })
+      }
+      /**
+     * Handle successful sign-ins.
+     */
+      var onSuccess = function (user) {
+        var profile = user.getBasicProfile()
+        console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName())
+        console.log('Given Name: ' + profile.getGivenName())
+        console.log('Family Name: ' + profile.getFamilyName())
+        console.log('Image URL: ' + profile.getImageUrl())
+        console.log('Email: ' + profile.getEmail())
+        
+        // document.getElementById('name').innerText = 'Signed in: ' + profile.getName()
+    
+        // The ID token you need to pass to your backend:
+        var id_token = user.getAuthResponse().id_token
+        console.log('ID Token: ' + id_token)
+    
+        var xhr = new XMLHttpRequest()
+        xhr.open('POST', '/login.php')
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xhr.onload = function () {
+          console.log('Signed in as: ' + xhr.responseText)
+        }
+        xhr.send('id_token=' + id_token)
+      }
+
+      /**
+     * Handle sign-in failures.
+     */
+      var onFailure = function (error) {
+        console.log(error)
+      }
+    
+      startApp()
     }
   }
 }
@@ -632,7 +685,7 @@ export default {
 .header {
   .p(f);
   display: block;
-  z-index: 999;
+  z-index: 1999;
   width: 100%;
   color: white;
   height: 70px;

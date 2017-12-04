@@ -1,5 +1,6 @@
 import axios from 'axios'
-import store from 'vuex'
+import store from '../store'
+
 import { Message, MessageBox } from 'element-ui'
 import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css'// Progress 进度条样式

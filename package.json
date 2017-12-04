@@ -27,6 +27,7 @@
     "net": "^1.0.2",
     "normalize.css": "^7.0.0",
     "nprogress": "^0.2.0",
+    "request": "^2.83.0",
     "summernote": "^0.8.8",
     "tls": "0.0.1",
     "translate-api": "^0.3.12",

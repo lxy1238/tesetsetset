@@ -17,7 +17,7 @@
           <div class="promotion">
             <img class="img"  src="../../assets/amazon.png" alt="">
             <div class="title">
-              <span >
+              <span @click="gotoPlatform(couponDetail.product_url)">
                 {{couponDetail.product_title}}
               </span>
             </div>
@@ -134,14 +134,14 @@
     </div>
     <!-- 弹出窗  getcode-->
       <el-dialog  :visible.sync="showGetCodeDialog" class="code-dialog">
-        <span slot="title" class="title">
+        <span slot="title" class="title" @click="gotoPlatform(couponDetail.product_url)">
           {{couponDetail.product_title}}
           <img src="../../assets/amazon.png" alt="">
         </span>
         <div class="dialog-body">
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
-            <div class="goto-amazon"><span ><a href="#">Go to Amszon</a> and paste this code at checkout</span></div>
+            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
             <div class="discount" @click="getCouponCode" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
@@ -449,6 +449,7 @@ export default {
           res.data.joined_date = timestampFormat(res.data.joined_date)
           this.userInfo = res.data
           this.userInfo.user_id = this.couponDetail.user_id
+          this.userInfo.product_url = this.couponDetail.product_url
         })
         .catch(error => {
           console.log(error + ' postedUserInfo')
@@ -562,7 +563,11 @@ export default {
     //显示问题反馈选项
     flagCoupon () {
       this.isFlagCoupon = !this.isFlagCoupon
-    } 
+    } ,
+
+    gotoPlatform (url) {
+      window.open(url)
+    }
 
   }
 }
@@ -604,7 +609,7 @@ export default {
     margin-top: 54px;
     .promotion {
       position: relative;
-      height: 22rem;
+      // height: 22rem;
       padding: 1rem;
       background: white;
       border-radius: 5px;
@@ -616,6 +621,7 @@ export default {
       }
       .title {
         width: 70%;
+        cursor: pointer;
         font-size: 1.33rem;
         color: #1a1a1a;
         font-weight: bold;
@@ -940,6 +946,7 @@ export default {
 .code-dialog {
   .title {
     margin-left: 8rem;
+    cursor: pointer;
     display: inline-block;
     width: 24rem;
     font-weight: bold;

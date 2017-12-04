@@ -15,7 +15,7 @@
           <div slot="content" class="copy-content" :id="productDetails">
             <img class="copy-img" :src="couponsDetails.product_img.split(',')[0]" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
-            <div class="content-line">coupons ${{couponsDetails.discount_price}}</div>
+            <div class="content-line">coupons {{currency}} {{couponsDetails.discount_price}}</div>
             <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>
@@ -38,6 +38,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getToken } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
 import { promotionAddCoupon, promotionUserRemove } from '@/api/login'
 import Clip from '@/utils/clipboard.js'
 export default {
@@ -131,6 +132,9 @@ export default {
     },
     productDetails1 () {
       return '#' + this.productDetails 
+    },
+    currency () {
+      getStore('currency') || '$'
     }
   },
  
@@ -246,12 +250,12 @@ export default {
   .descript {
     font-size: 13px;
     color: rgb(51, 51, 51);
-    height: 2.2rem;
+    height: 26px;
     overflow: hidden; /*内容超出后隐藏*/
     // text-overflow: ellipsis;/* 超出内容显示为省略号*/
     // white-space: nowrap;/*文本不进行换行*/
     margin-top: 0.5rem;
-    margin-bottom: 0;
+    margin-bottom: 5px;
   }
   .price {
     font-size: 15px;

@@ -93,7 +93,6 @@
       <el-form-item label="Is Full Return: " class="item-inline1" >
         <el-radio class="radio" v-model="trialsForm.is_full_return" label="yes">yes</el-radio>
         <el-radio class="radio" v-model="trialsForm.is_full_return" label="no">no</el-radio>
-        
       </el-form-item>
         <el-form-item label=" Each trial returns: " v-if="trialsForm.is_full_return === 'no'"  class="item-inline1" >
              <el-input type="text" v-model="trialsForm.return_fee"></el-input>

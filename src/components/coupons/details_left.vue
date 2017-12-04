@@ -3,7 +3,9 @@
       <div class="content" id="content">
         <div class="img">
           <div class="img-big">
-            <img :src="imgList[activeNum]" >
+            <a :href="userInfo.product_url" target="_blank">
+              <img :src="imgList[activeNum]"  >
+            </a>
           </div>
           <div class="img-small">
             <span class="left" @click="pre"> <i class="iconfont icon-huidaodingbu-copy "></i> </span>
@@ -38,25 +40,13 @@
 </template>
 
 <script>
-import { getStore } from '@/utils/utils'
-import { postedUserInfo } from '@/api/login'
-import { timestampFormat } from '@/utils/date'
 import { base64Encode } from '@/utils/randomString'
 export default {
-  name: "detailsLeft",
-  data() {
+  name: 'detailsLeft',
+  data () {
     return {
       activeNum: 0,
-      // userInfo: {
-      //   // avatar_img: '',
-      //   // username: '',
-      //   // type: '',
-      //   // level: '',
-      //   // joined_date: '',
-      //   // coupon_posteds: ''
-      //   // user_id: ''
-      // },
-    };
+    }
   },
   props: {
     isTop: {
@@ -77,12 +67,12 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.activeNum = 0
   },
   computed: {
-    imgLen() {
-      return this.imgList.length;
+    imgLen () {
+      return this.imgList.length
     }
   },
   methods: {
@@ -90,7 +80,6 @@ export default {
     emitdata (index) {
       this.$emit('send', this.imgList[index])
     },
-
     //图片效果
     hover (i) {
       this.activeNum = i
@@ -112,13 +101,12 @@ export default {
       }
       this.emitdata(this.activeNum)
     },
-
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
       this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
