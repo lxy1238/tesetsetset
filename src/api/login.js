@@ -179,6 +179,30 @@ export const addProblem = data => fetch({
 
 /**
  * 
+ * @param 优惠券审核
+ *  
+ * 
+ */
+
+//优惠券审核不通过查看详情
+export const couponCensor = data => fetch({
+  url: '/api/v1/coupon/censor',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//更新状态
+export const couponUpdateRunStatus = data => fetch({
+  url: '/api/v1/coupon/update-run-status',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+
+/**
+ * 
  * @param 试用品
  *  
  * 
