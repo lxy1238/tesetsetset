@@ -7,62 +7,98 @@
       Product Information
     </div>
     <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
-      <el-form-item label="Product URL: " prop="product_url" >
-        <el-input class="url-input" v-model="couponsForm.product_url"></el-input>
-        <button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)">get</button>
-      </el-form-item>
-      <el-form-item label="Wedsite: " prop="website" class="item-inline" >
-        <el-select v-model="couponsForm.website" @change="websiteChange" >
-          <el-option
-            v-for="item in optionsWebsite"
-            :key="item.id"
-            :label="item.label"
-            :value="item.id">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Category: " prop="menu_name" class="item-inline" >
-        <!-- <el-select v-model="couponsForm.menu_id"  @change="categoryChange">
-          <el-option
-            v-for="(item, index) in optionsCategory"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
-        </el-select> -->
-        <select-self :list="options"  @child="getSelectValue" v-model="couponsForm.menu_name"></select-self>   
-      </el-form-item>
-      <el-form-item label="List price: " prop="product_price" class="item-inline" >
-        <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" >
-          <template slot="prepend">{{currency}}</template>
-        </el-input>
-      </el-form-item>
-      <el-form-item label="Shipping fee: "  class="item-inline" prop="shipping_fee">
-        <el-input class="input-price-fee" @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee" >
-          <template slot="prepend">{{currency}}</template>
-        </el-input>
-      </el-form-item>
-      <el-form-item label="Image"  prop="product_img_s">
-        <el-upload 
-              class="upload-demo-img" 
-              action="upload"
-              :on-remove="handleRemoveP" 
-              :before-upload="beforeAvatarUploadP" 
-              :file-list="couponsForm.product_img_s"
-              ref="upload"
-              list-type="picture">
-            <el-button size="small" type="primary">Upload</el-button>
-            <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.</div>
-        </el-upload>
-      </el-form-item>
-      <el-form-item label="Title: " prop="product_title" >
-        <el-input v-model="couponsForm.product_title">
-          
-        </el-input>
-      </el-form-item>
-      <el-form-item label="Reason: " prop="product_reason" >
-        <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea"></el-input>
-      </el-form-item>
+      <template v-if="isEditorData">
+        <el-form-item label="Product URL: " prop="product_url" >
+          <el-input class="url-input" v-model="couponsForm.product_url"  ></el-input>
+          <button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)">get</button>
+        </el-form-item>
+        <el-form-item label="Wedsite: " prop="website" class="item-inline" >
+          <el-select v-model="couponsForm.website"  @change="websiteChange" >
+            <el-option
+              v-for="item in optionsWebsite"
+              :key="item.label"
+              :label="item.label"
+              :value="item.label">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Category: " prop="menu_id" class="item-inline" >
+          <el-select v-model="couponsForm.menu_id"   >
+            <el-option
+              v-for="item in optionsCategory"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+          <!-- <select-self  :list="options"  @child="getSelectValue" v-model="couponsForm.menu_name"></select-self>    -->
+        </el-form-item>
+        <el-form-item label="List price: " prop="product_price" class="item-inline" >
+          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" >
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Shipping fee: "  class="item-inline" prop="shipping_fee">
+          <el-input class="input-price-fee" @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee" >
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Image"  prop="product_img_s">
+          <el-upload 
+                class="upload-demo-img" 
+                action="upload"
+                :on-remove="handleRemoveP" 
+                :before-upload="beforeAvatarUploadP" 
+                :file-list="couponsForm.product_img_s"
+                ref="upload"
+                list-type="picture">
+              <el-button size="small" type="primary">Upload</el-button>
+              <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.</div>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="Title: " prop="product_title" >
+          <el-input v-model="couponsForm.product_title">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Reason: " prop="product_reason" >
+          <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea"></el-input>
+        </el-form-item>
+      </template> 
+      <template v-if="couponsForm.menu">
+         <el-form-item label="Product URL: " >
+          <el-input class="url-input" v-model="couponsForm.product_url" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Wedsite: " class="item-inline" >
+          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.website" disabled >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Category: " class="item-inline" >
+          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.menu.name" disabled >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="List price: " class="item-inline" >
+          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" disabled >
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Shipping fee: "  class="item-inline" >
+          <el-input class="input-price-fee" @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee"  disabled>
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Image: "  >
+          <ul class="is-editor-img">
+            <li v-for="item in couponsForm.product_img_s"><img :src="item.url" alt="" ></li>
+          </ul>
+        </el-form-item>
+        <el-form-item label="Title: "  >
+          <el-input v-model="couponsForm.product_title" disabled>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Reason: "  >
+          <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea" disabled></el-input>
+        </el-form-item>
+      </template>
     <div class="title-s">
        Coupon Information
     </div>
@@ -75,11 +111,11 @@
       </el-input>
     </el-form-item>
     <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-      <el-input class="input-price-fee" @blur="filterMoney('quantity_per_day')" v-model="couponsForm.quantity_per_day" >
+      <el-input class="input-price-fee" @blur="filterMoney('quantity_per_day')" v-model.number="couponsForm.quantity_per_day" >
       </el-input>
     </el-form-item>
     <el-form-item label="Type: " class="item-inline1" >
-      <el-radio class="radio" v-model="couponsForm.use_type" label="Unlimited">Unllimited</el-radio>
+      <el-radio class="radio" v-model="couponsForm.use_type" label="Unlimited">Unlimited</el-radio>
       <el-radio class="radio" v-model="couponsForm.use_type" label="Alone">Alone</el-radio>
     </el-form-item>
     <el-form-item label="Coupon code: " class="item-inline" prop="coupon_code">
@@ -97,7 +133,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { addCoupon, uploadImg, getPlatformCate, getHeadCateList } from '@/api/login'
+import { addCoupon, editorCoupon, uploadImg, getPlatformCate, editDetail, getHeadCateList } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { toTimestamp } from '@/utils/date'
@@ -111,8 +147,8 @@ export default {
       rules: {
         product_url: [{ required: true, trigger: 'blur' }],
         product_price: [{ required: true, trigger: 'blur' }],
-        website: [{type:'number', required: true, message: 'website is required', trigger: 'blur' }],
-        category_id: [{type:'number', required: true, message: 'category is required' ,trigger: 'blur' }],
+        website: [{ required: true, message: 'website is required', trigger: 'blur' }],
+        menu_id: [{type:'number', required: true, message: 'category is required' ,trigger: 'blur' }],
         menu_name: [{required: true, message: 'category is required' ,trigger: 'blur' }],
         product_img_s: [
           {
@@ -128,35 +164,31 @@ export default {
         product_reason: [{ required: true, trigger: 'blur' }],
         valid_date: [{ type: 'date', required: true, trigger: 'blur' }],
         discount_rate: [{ required: true,message: 'discount rate is required', trigger: 'blur' }],
-        quantity_per_day: [{message: 'quantity per day is required', required: true, trigger: 'blur' }],
+        quantity_per_day: [{type: 'number' ,message: 'quantity per day is required', required: true, trigger: 'blur' }],
         coupon_code: [{ required: true, trigger: 'blur' }]
       },
       optionsWebsite: [],
       optionsCategory: [],
       couponsForm: {
-        product_url: 'https://www.amazon.com/Name-Marker-Metallic-Colors-Personalize/dp/B0175P2TLU/ref=br_msw_pdt-3?_encoding=UTF8&smid=AFRZSAC6T7ZD7&pf_rd_m=ATVPDKIKX0DER&pf_rd_s=&pf_rd_r=4J3TNDBBT9BZBJW4FQ3C&pf_rd_t=36701&pf_rd_p=23279975-c88e-4ef9-89a8-31600c4751c2&pf_rd_i=desktop', //产品链接， 是
+        product_url: '', //产品链接， 是
         user_name: '', // 发布用户名称， 是
         menu_name: '', // 所属分类 , 是   int
         country_id: parseInt(getStore('country_id')) || 1, // 国家  是
         website: '', // 平台   是
         product_title:'', // 商品标题   是 ，
-        product_img_s: [],
-        product_reason: 'This is a product I like very much', //产品描述  是
+        product_img_s: [
+          
+        ],
+        product_reason: '', //产品描述  是
         use_type: 'Unlimited',
-        coupon_code: 'QAKLWEFALWEKFJ', //优惠券
-        reward_type: '1.5', //PerOrder: 按每订单奖励,
-        product_price: '65', //商品价格
-        shipping_fee: '1.11', //运费   否
-        discount_rate: '12', //折扣率    否
-        valid_date: new Date(), //到期时间  int
-        quantity_per_day: '10', // 每天上限数量 int
-        // influencer_reward: '1.5', // 推荐费用/每个
-        // platform_fee: '2.2', //支付平台费用/每个
-        // influencer_reward_count: '66', //推荐总费用
-        // platform_reward: '55', //  支付平台总费用， 否
-        // categoryData: '',
-        category_id: '1',
-        // commission_ratio: '12',
+        coupon_code: '', //优惠券
+        // reward_type: '1.5', //PerOrder: 按每订单奖励,
+        product_price: '', //商品价格
+        shipping_fee: '', //运费   否
+        discount_rate: '', //折扣率    否
+        valid_date:  '', //到期时间  int
+        quantity_per_day: '', // 每天上限数量 int
+        menu_id: '',
         websiteData: '',
         api_token: getToken(),
         user_id: getUserId(), // 用户ID ， 是，
@@ -169,10 +201,18 @@ export default {
         file: ''
       },
       requestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
         country_id: parseInt(getStore('country_id')) || 1
       },
+      couponDetailsrequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        id: '',
+      },
       options: [],
-      select: ''
+      select: '',
+      isEditorData: true
     }
   },
   components: {
@@ -180,6 +220,7 @@ export default {
   },
   mounted () {
     this.init()
+
   },
   computed: {
     ...mapGetters(['user_id', 'username', 'token']),
@@ -188,6 +229,28 @@ export default {
     }
   },
   methods: {
+
+    //页面初始化
+    init () {
+      this.initData()
+      this.isEditor()
+      this.getHeadCateListInfo()
+    },
+
+    //数据初始化
+    initData () {
+      this.couponsForm.user_name = this.username
+    },
+
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.optionsCategory = res.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       this.$message.info('For information on goods, please wait a moment')
@@ -203,7 +266,7 @@ export default {
             let data = res.data.data
             for (let i of this.options) {
               for (let j of i.childrens) {
-                if (data.category.search(j.name) >= 0) {
+                if (data.category[data.category.length - 1].search(j.name) >= 0) {
                   this.getSelectValue(i, j)
                 }
               }
@@ -222,19 +285,9 @@ export default {
         .catch(function (err){
           console.log(err)
         })
+     
     },
 
-    //页面初始化
-    init () {
-      this.initData()
-      // this.getHeadCateListInfo()
-      
-    },
-
-    //数据初始化
-    initData () {
-      this.couponsForm.user_name = this.username
-    },
 
     //获取平台品类信息
     getPlatformCateInfo () {
@@ -243,20 +296,16 @@ export default {
         .then(res => {
           console.log(res.data) 
           if(res.data.length <= 0) {return}
-          let arrKeysWeb = Object.keys(res.data)
-          for (let i of arrKeysWeb) {
-            if (i === 'category') {
-              return
-            }
+          for (let i of res.data) {
             var ObjWebsite = {
               label: '',
               id: ''
             }
-            ObjWebsite.label = res.data[i].platform.website
-            ObjWebsite.id = res.data[i].platform.id
+            ObjWebsite.label = i.website
+            ObjWebsite.id = i.id
             this.optionsWebsite.push(ObjWebsite)
-            if (this.couponsForm.product_url.search(res.data[i].platform.url) >= 0) {
-              this.couponsForm.website = res.data[i].platform.id
+            if (this.couponsForm.product_url.search(i.url) >= 0) {
+              this.couponsForm.website = i.website
             }
           }
         })
@@ -266,48 +315,13 @@ export default {
     },
 
     //平台发生改变
-    websiteChange (id) {
-      this.options = []
-      getPlatformCate(this.requestData).then(res => {
-        if(res.data.length <= 0) {return}
-        this.couponsForm.websiteData = res.data[id]
-        let arrKeysWeb = Object.keys(res.data[id].menu)
-        for (let i of arrKeysWeb) {
-          var ObjWebsite = {
-            name: '',
-            id: '',
-            childrens: []
-          }
-          ObjWebsite.name = res.data[id].menu[i].name
-          ObjWebsite.id = res.data[id].menu[i].id
-          let arrKeysWebCate = Object.keys(res.data.category)
-          let category = res.data.category
-          for (let j of arrKeysWebCate) {
-            var childrens = {
-              name: '',
-              id: '' ,
-              commission_ratio: '',
-            }
-            if (category[j].menu_id === ObjWebsite.id && category[j].platform_id === id) {
-              childrens.name = category[j].website_category
-              childrens.id = category[j].category_id
-              childrens.commission_ratio = category[j].commission_ratio
-              ObjWebsite.childrens.push(childrens)
-            }
-          }
-          this.options.push(ObjWebsite)
+    websiteChange (label) {
+      for (let i of this.optionsWebsite) {
+        console.log(i.label, label)
+        if (i.label == label) {
+          this.couponsForm.platform_id = i.id
         }
-        this.couponsForm.menu_name  = ''
-      }).catch(error => {
-        console.log(error + 'getPlatformCate')
-      }) 
-    },
-
-    //品类发生改变
-    getSelectValue (items, item) {
-      this.couponsForm.menu_name = items.name
-      this.couponsFormSubmit.menu_id = items.id
-      this.couponsFormSubmit.commission_ratio = item.commission_ratio
+      }  
     },
 
     //上传图片
@@ -336,7 +350,8 @@ export default {
         formData.append('file', file)
         uploadImg(formData)
           .then(res => {
-            this.couponsForm.product_img_s.push({ url: 'http://' + res.data })
+            console.log(res)
+            this.couponsForm.product_img_s.push({ url: res.data })
           })
           .catch(error => {
             console.log(error)
@@ -347,22 +362,34 @@ export default {
     },
     handleRemoveP (file, fileList) {
       this.couponsForm.product_img_s = fileList
-      console.log(file)
     },
     issueCoupon (data) {
-      addCoupon(data)
-        .then(res => {
+      if (this.$route.query.editor) {
+        data.id = this.$route.query.editor
+        console.log(this.couponsFormSubmit)
+        editorCoupon(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
             this.$router.push({ path: '/posted/coupons' })
           }
-        })
-        .catch(error => {
+        }).catch(error => {
           console.log(error)
         })
+      } else {
+        addCoupon(data)
+          .then(res => {
+            if (res.code === 200) {
+              this.$notify.success('issue coupon success')
+              this.$router.push({ path: '/posted/coupons' })
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+      
     },
     Submit () {
-      
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['couponsForm'].validate(valid => {
@@ -371,9 +398,10 @@ export default {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }
           this.couponsFormSubmit.valid_date = toTimestamp(this.couponsForm.valid_date)
-          this.couponsFormSubmit.website = this.couponsForm.websiteData.platform.website
-          this.couponsFormSubmit.platform_id = this.couponsForm.websiteData.platform.id
           this.couponsFormSubmit.product_img = this.couponsForm.product_img_s.map((e) => e.url)
+          if (this.$route.query.editor) {
+            this.couponsFormSubmit.website = this.couponsForm.website
+          }
           console.log(this.couponsFormSubmit)
           this.issueCoupon(this.couponsFormSubmit)
         } else {
@@ -402,7 +430,23 @@ export default {
       }
     },
 
- 
+    //编辑，判断是否有editor
+    isEditor () {
+      if (!this.$route.query.editor) {
+        return
+      }
+      this.isEditorData = false
+      this.couponDetailsrequestData.id = this.$route.query.editor
+      editDetail(this.couponDetailsrequestData).then(res => {
+        res.data.valid_date = new Date(res.data.valid_date * 1000)
+        res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
+        this.couponsForm = res.data
+        this.couponsForm.api_token = getToken()
+        this.couponsForm.user_id = getUserId()
+        this.couponsForm.user_name = this.username
+        this.couponsForm.country_id = parseInt(getStore('country_id')) || 1
+      })
+    }
   }
 }
 </script>
@@ -462,6 +506,20 @@ export default {
         background: darken(#79b6e0, 10%);
         border-color: darken(#79b6e0, 10%);
       }
+    }
+  }
+}
+.is-editor-img {
+  li {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #e1e1e1;
+    float: left;
+    margin-right: 5px;
+    img {
+      width: 80px;
+      height: 80px;
     }
   }
 }

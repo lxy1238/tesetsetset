@@ -102,6 +102,21 @@ export const addCoupon = data => fetch({
   data: qs.stringify(data)
 })
 
+//编辑优惠券
+export const editorCoupon = data => fetch({
+  url: '/api/v1/coupon/edit',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//获取需要编辑的优惠券详情
+
+export const editDetail = data => fetch({
+  url: '/api/v1/coupon/edit-detail',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 //优惠券详情  通过优惠卷ID查看优惠卷详情
 export const couponDetails = data => fetch({
   url: '/api/v1/coupon/detail',
@@ -177,6 +192,8 @@ export const addProblem = data => fetch({
 })
 
 
+
+
 /**
  * 
  * @param 优惠券审核
@@ -198,6 +215,13 @@ export const couponUpdateRunStatus = data => fetch({
   data: qs.stringify(data)
 })
 
+//删除优惠券
+export const couponDetele = data => fetch({
+  url: '/api/v1/coupon/delete',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 
@@ -210,7 +234,7 @@ export const couponUpdateRunStatus = data => fetch({
 
 //商户新增试用品
 export const trialsAdd = data => fetch({
-  url: '/api/v1/trial/add',
+  url: 'http:www.zhuo.com/api/v1/trial/add',
   method: 'POST',
   data: qs.stringify(data)
 })
@@ -234,7 +258,7 @@ export const uploadImg = data => fetch({
 
 //获取平台品类
 export const getPlatformCate = data => fetch({
-  url: '/api/v1/platform/platform-category',
+  url: '/api/v1/platform/show',
   method: 'POST',
   data: qs.stringify(data)
 })

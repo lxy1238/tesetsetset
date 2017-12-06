@@ -13,7 +13,7 @@
         <div class="line"></div>
         <el-tooltip placement="right">
           <div slot="content" class="copy-content" :id="productDetails">
-            <img class="copy-img" :src="couponsDetails.product_img.split(',')[0]" />
+            <img class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
             <div class="content-line">coupons {{currency}} {{couponsDetails.discount_price}}</div>
             <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
@@ -72,6 +72,7 @@ export default {
   },
   mounted () {
     this.init()
+    console.log(this.couponsDetails)
   },
   methods: {
     init () {

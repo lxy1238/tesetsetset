@@ -86,7 +86,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">
@@ -99,12 +99,12 @@
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
               </template>
             </td>
           </tr>
           <tr v-if="trLists.length === 0">
-            <td colspan="10">no data</td>
+            <td colspan="10">No Data</td>
           </tr>
         </tbody>
       </table>
@@ -113,6 +113,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestdata.page"
       @handlecurrent="gotoPage">
     </pagination>
     <!-- 查看详情弹窗 -->
@@ -127,7 +128,7 @@
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
-import { userPickCoupons, couponCensor, couponUpdateRunStatus, getHeadCateList } from '@/api/login'
+import { userPickCoupons, couponCensor, couponUpdateRunStatus, getHeadCateList , couponDetele} from '@/api/login'
 import { setStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
@@ -206,6 +207,11 @@ export default {
         user_id: getUserId(),
         coupon_id: '',
         run_status: '',
+      },
+      couponDeteleRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: ''
       }
     }
   },
@@ -252,7 +258,6 @@ export default {
     getHeadCateListInfo () {
       getHeadCateList().then(res => {
         this.classifyList = res.data
-        this.initData()
       }).catch(error => {
         console.log(error)
       })
@@ -265,8 +270,7 @@ export default {
 
     //发布的优惠券查询
     postedCouponsSearch () {
-      this.requestdata.page = 1
-      this.getUserPickCoupons()
+      this.gotoPage(1)
     },
 
     //跳转到优惠券详情页面
@@ -293,13 +297,19 @@ export default {
     },
 
     //删除优惠券
-    DeleteCoupon () {
+    DeleteCoupon (id) {
       this.$confirm('Determine deleting coupons?', 'reminder', {
         confirmButtonText: 'confirm',
         cancelButtonText: 'cancel',
         type: 'warning'
       })
         .then(() => {
+          this.couponDeteleRequestData.id = id
+          console.log(this.couponDeteleRequestData)
+          couponDetele(this.couponDeteleRequestData).then(res => {
+            console.log(res)
+            this.getUserPickCoupons()
+          })
           this.$notify({
             type: 'success',
             message: 'delete success!'

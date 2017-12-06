@@ -89,6 +89,7 @@ export const constantRouterMap = [
     name: '404page',
     component: _import('404')
   },
+  { path: '*', redirect: '/404/index', hidden: true }
 ]
 
 //帮助中心路由配置

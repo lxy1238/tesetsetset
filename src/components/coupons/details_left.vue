@@ -77,13 +77,13 @@ export default {
   },
   methods: {
     //页面图片效果
-    emitdata (index) {
-      this.$emit('send', this.imgList[index])
+    emitdata () {
+      this.$emit('send', this.imgList[0])
     },
     //图片效果
     hover (i) {
       this.activeNum = i
-      this.emitdata(i)
+      // this.emitdata(i)
     },
     pre () {
       if (this.activeNum === 0) {
@@ -91,7 +91,7 @@ export default {
       } else {
         this.activeNum--
       }
-      this.emitdata(this.activeNum)
+      // this.emitdata(this.activeNum)
     },
     next () {
       if (this.activeNum === this.imgLen - 1) {
@@ -99,7 +99,7 @@ export default {
       } else {
         this.activeNum++
       }
-      this.emitdata(this.activeNum)
+      // this.emitdata(this.activeNum)
     },
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {

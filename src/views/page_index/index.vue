@@ -160,8 +160,13 @@ export default {
       }
       getAllCoupons(this.requestData)
         .then(res => {
-          console.log(res.data.data)
-          this.arrcouponsDetails = res.data.data
+          let newArr = []
+          res.data.data.forEach(e => {
+            if (e.status == 1 && e.run_status == 'active') {
+              newArr.push(e)
+            }
+          })
+          this.arrcouponsDetails = newArr
           this.allpage = res.data.last_page
           this.getUserInfo()
         })

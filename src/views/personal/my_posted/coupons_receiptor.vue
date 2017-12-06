@@ -5,31 +5,7 @@
       <h3 class="title">Coupons</h3>
     </div>
     <div class="search-form">
-      <label for="title">
-        Title: 
-      </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="searchForm.title" />
-      <label for="title">
-        Category: 
-      </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.category">
-        <option value="1">母婴</option>
-        <option value="2">其他</option>
-        <option value="3">很多</option>
-      </select>
-
-      <label for="title" >
-        Status: 
-      </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.status">
-        <option value="1">Pending</option>
-        <option value="2">Stop</option>
-        <option value="3">Close</option>
-        <option value="4">Decline</option>
-        <option value="5">Article</option>
-        <option value="6">Expired</option>
-      </select>
-
+          <el-date-picker type="daterange" placeholder="Applied date" v-model="daterange"></el-date-picker>
       <button class="search" @click="postedCouponsSearch">Search</button>
 
     </div>
@@ -87,6 +63,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
 import { pickCoupons } from '@/api/login'
 import {  getStore, removeStore } from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'center_coupons',
   data () {
@@ -135,17 +112,15 @@ export default {
       ],
       allpage: undefined,
       showItem: 7,
-      searchForm: {
-        title: '',
-        category: '',
-        status: ''
-      },
+      daterange: '',
       requestdata: {
+        user_id: getUserId(),
+        api_token: getToken(),
         coupon_id: '',
-        user_id: '',
-        api_token: '',
         page: 1,
-        page_size: 5
+        page_size: 5,
+        start_time: '',
+        end_time: '',
       },
       couponsDetails: {
         product_img: '',
@@ -163,9 +138,8 @@ export default {
     ...mapGetters(['token', 'user_id'])
   },
   mounted () {
-    this.requestdata.api_token = this.token
-    this.requestdata.user_id = this.user_id
     this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
+    console.log(this.requestdata)
     var couponsDetails = JSON.parse(getStore('couponDetails'))
     for (var i in this.couponsDetails) {
       this.couponsDetails[i] = couponsDetails[i]
@@ -195,22 +169,34 @@ export default {
 
     //发布的优惠券查询
     postedCouponsSearch () {
-      console.log(this.searchForm)
+      if (this.daterange.length) {
+        this.requestdata.start_time = this.daterange[0]
+        this.requestdata.end_time = this.daterange[1]
+      }
+      console.log(this.requestdata)
+      pickCoupons(this.requestdata)
+        .then(res => {
+          console.log(res)
+          this.trLists = res.data.data
+          this.allpage = res.data.last_page
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
 
     //跳转到优惠券详情页面
     gotoDetails () {},
-    //跳转到 领取优惠券的用户页面
-    gotoReceiptor () {
-      this.$router.push({ path: '/posted/coupons/receiptor' })
-    }
+
+
   }
 }
 </script>
 
-<style lang="less"  >
+<style lang="less" scoped>
 @import url("../../../styles/mixin.less");
 .posted-coupons {
+  font-size: 12px;
   .pro-header {
     position: relative;
     border-bottom: 1px solid #e6e6e6;
@@ -227,6 +213,10 @@ export default {
     line-height: 2rem;
     color: #1a1a1a;
     border-bottom: 1px solid #e6e6e6;
+  }
+  .item-inline {
+    display: inline-block;
+    width: 50%;
   }
   .search-form {
     position: relative;

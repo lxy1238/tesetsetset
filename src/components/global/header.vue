@@ -685,7 +685,7 @@ export default {
 .header {
   .p(f);
   display: block;
-  z-index: 1999;
+  z-index: 999;
   width: 100%;
   color: white;
   height: 70px;

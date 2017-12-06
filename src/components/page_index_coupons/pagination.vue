@@ -2,7 +2,7 @@
   <div class="pagination-all" >
     <ul class="pagination" >
         <li   class="left">
-          <button @click="current-- && goto(current--)"  class="items btn-s" href="javascript:void(0);" :class="{notallow: current == 1}"> 
+          <button @click="goto(current - 1)"  class="items btn-s" href="javascript:void(0);" :class="{notallow: current == 1}"> 
             <i class="el-icon-caret-left"></i>
           </button>
         </li>
@@ -10,7 +10,7 @@
           <a  class="items" href="javascript:void(0);" >{{index}}</a>
         </li>
         <li class="right">
-          <button @click="current++ && goto(current++)" class="items btn-s" href="javascript:void(0); " :class="{notallow: current == allpage}"> 
+          <button @click="goto(current + 1)" class="items btn-s" href="javascript:void(0); " :class="{notallow: current == allpage}"> 
             <i class="el-icon-caret-right"></i>
           </button>
         </li>
@@ -28,12 +28,15 @@ export default {
   data () {
     return {
       gotoPageValue: 1,
-      current: 1,
     }
   },
   props: {
     showItem: Number,
-    allpage: Number
+    allpage: Number,
+    current: {
+      type: Number,
+      default: 1
+    }
   },
   computed: {
     pages () {
@@ -57,7 +60,7 @@ export default {
         }
       }
       return pag
-    }
+    },
   },
   methods: {
     goto (index) {
@@ -73,7 +76,7 @@ export default {
         document.getElementsByClassName('btn-s')[0].disabled = false
       }
       if (index == this.current) return
-      this.current = index
+      // this.current = index
       this.$emit('handlecurrent', index)
     },
     limit (e) {

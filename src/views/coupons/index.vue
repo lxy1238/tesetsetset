@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index">
-    <div class="pages-content">
+  <div class="page-index" >
+    <div class="pages-content" v-if="couponDetail.valid_date">
       <div class="head-crumbs">
         <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
@@ -85,11 +85,8 @@
                  <div class="img" >
                    <img :src="imgUrl" alt="">
                  </div>
-                 <div class="text-describe">
-                   (Amazon) 2-Pk of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tum<br><br>
-                    Save price: $99.00       Discount: 25%off       Coupon Value: $15.00<br><br>
-                    Women’s Girls Soft PU Multi Card Holder Long Wallet Purse Cellphone Bag Clutch Bag.<br><br>
-                    Click to get coupon: https://translate.google.cn/dp/vppdsdf
+                 <div class="text-describe" v-html="templateText" >
+                   
                  </div>
                </div>
                <div class="share-to-p">
@@ -178,14 +175,14 @@
               <h3>Generic label</h3>
             <div class="content">
               <p>Labels are recommended,You can adjust your content display methods yourself.</p>
-              <div class="text"><span>#Platform#</span> <span class="right">This is the title of the promotion. </span></div>
+              <div class="text"><span>#Platform#</span> <span class="right">This is the platform of the promotion. </span></div>
               <div class="text"><span>#Promo_title#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_listprice#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_saleprice#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Coupon_value#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Discount_scale#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_description#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_link#</span> <span class="right">This is the title of the promotion. </span></div>
+              <div class="text"><span>#Promo_listprice#</span> <span class="right">This is the listprice of the promotion. </span></div>
+              <div class="text"><span>#Promo_saleprice#</span> <span class="right">This is the saleprice of the promotion. </span></div>
+              <div class="text"><span>#Coupon_value#</span> <span class="right">This is the coupon of the promotion. </span></div>
+              <div class="text"><span>#Discount_scale#</span> <span class="right">This is the scale of the promotion. </span></div>
+              <div class="text"><span>#Promo_description#</span> <span class="right">This is the description of the promotion. </span></div>
+              <div class="text"><span>#Promo_link#</span> <span class="right">This is the link of the promotion. </span></div>
             </div>
             <div class="footer">
               <span>
@@ -198,11 +195,11 @@
           <div class="box dialog-r">
               <h3>Promotion template</h3>
             <div class="content">
-              <textarea name="" id="" cols="30" rows="10"></textarea>
+              <textarea name="" id="" cols="30" rows="10" v-model="promotionTemplate"></textarea>
             </div>
             <button class="save" @click="saveTemplate">Save</button>
             <div class="footer right">
-              <span class="reset"><i class="iconfont icon-reset"></i> Restore</span>
+              <span class="reset" @click="restoreTemplate"><i class="iconfont icon-reset"></i> Restore</span>
               <span @click="templateDialog = false"> <i class="iconfont icon-cha"></i> Cancel</span>
             </div>
           </div>
@@ -318,7 +315,12 @@ export default {
       ],
 
       //是否显示问题反馈
-      isFlagCoupon: false
+      isFlagCoupon: false,
+
+      //模板默认样式
+      promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
+      promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
+      templateText: '',
     }
   },
   computed: {
@@ -344,10 +346,27 @@ export default {
   },
   methods: {
     test () {
-      var a = document.getElementById('test').value
-      var b = a.replace(/\n/g, '<br>').replace(/a/g, this.html)
-      document.getElementById('box').innerHTML = b
-      console.log(this.selected)
+      let template = this.promotionTemplate
+      let promoLink = `${location.href}?promoter=${getUserId()}`
+      this.templateText = template
+        .replace(/\n/g, '<br>')
+        .replace(/#Platform#/g, this.couponDetail.website)
+        .replace(/#Promo_title#/g, this.couponDetail.product_title)
+        .replace(/#Promo_listprice#/g, `${this.currency}${this.couponDetail.product_price}`)
+        .replace(/#Promo_scleprice#/g, this.couponDetail.discount_price)
+        .replace(/#Coupon_value#/g, this.currency+(this.couponDetail.product_price - this.couponDetail.discount_price).toFixed(2))
+        .replace(/#Discount_scale#/g, '%'+'this.couponDetail.discount_rate')
+        .replace(/#Promo_desctiption#/g, this.couponDetail.product_reason)
+        .replace(/#Promo_link#/g, promoLink)
+    },
+
+    //模板保存
+    saveTemplate () {
+      console.log(this.promotionTemplate)
+    },
+    restoreTemplate () {
+      this.promotionTemplate = this.promotionTemplateinit
+      this.saveTemplate()
     },
 
     //初始化
@@ -363,7 +382,6 @@ export default {
       this.reqGetCodeData.user_id = this.user_id
       this.reqGetCodeData.username = this.username
       this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
-
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
     },
 
@@ -382,7 +400,7 @@ export default {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
       this.$router.push({ path: '/coupons/' + base64Encode(id) })
-      this.getCouponsDetails(this.requestCouponDetails)
+      this.getCouponsDetails()
     },
 
     //领取优惠券
@@ -409,7 +427,7 @@ export default {
     gotoTrials () {
       this.$router.push({ path: '/trials' })
     },
-    saveTemplate () {},
+    
 
     //获取优惠券详情
     getCouponsDetails () {
@@ -418,12 +436,13 @@ export default {
         .then(res => {
           console.log(res)
           this.imgList = res.data.product_img.split(',')
-          this.imgUrl = this.imgList[0]
+          this.imgUrl = res.data.current_img
           this.couponDetail = res.data
           this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
           this.requestData.menu_id = res.data.menu_id
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
+          this.test()
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -434,7 +453,13 @@ export default {
     getAllCouponsInfo () {
       getAllCoupons(this.requestData) 
         .then(res => {
-          this.arrcouponsDetails = res.data.data
+          let newArr = []
+          res.data.data.forEach(e => {
+            if (e.status == 1 && e.run_status == 'active') {
+              newArr.push(e)
+            }
+          })
+          this.arrcouponsDetails = newArr
         })
         .catch(error => {
           console.log(error + 'getAllCoupons')
@@ -567,7 +592,7 @@ export default {
 
     gotoPlatform (url) {
       window.open(url)
-    }
+    },
 
   }
 }
@@ -797,7 +822,7 @@ export default {
     }
     .promotion-template {
       position: relative;
-      height: 48.9rem;
+      // height: 48.9rem;
       background: white;
       border-radius: 5px;
       // padding: 1rem;
@@ -829,7 +854,7 @@ export default {
       .promo-content {
         padding: 1rem;
         .card {
-          height: 36rem;
+          // height: 36rem;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
           border-radius: 5px;
           .img {
@@ -1116,8 +1141,8 @@ export default {
         padding-left: 20px;
       }
       .content {
-        padding-left: 20px;
-        padding-right: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
         .right {
           float: right;
         }

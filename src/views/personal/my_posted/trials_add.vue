@@ -116,7 +116,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlatformCate, uploadImg } from '@/api/login'
+import { getPlatformCate, uploadImg, trialsAdd } from '@/api/login'
 // import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
@@ -329,23 +329,6 @@ export default {
       getPlatformCate(this.requestData).then(res => {
         if(res.data.length <= 0) {return}
         this.trialsForm.websiteData = res.data[id]
-        // var arrKeysWeb1 = Object.keys(res.data[id].category)
-        // for (var j of arrKeysWeb1) {
-        //   var ObjCate = {
-        //     label: '',
-        //     category_id: '',
-        //     commission_ratio: '',
-        //     menu_id: '',
-        //     platform_id: '',
-        //   }
-        //   ObjCate.label = res.data[id].category[j].website_category
-        //   ObjCate.category_id = res.data[id].category[j].category_id
-        //   ObjCate.commission_ratio = res.data[id].category[j].commission_ratio
-        //   ObjCate.menu_id = res.data[id].category[j].menu_id
-        //   ObjCate.platform_id = res.data[id].category[j].platform_id
-        //   this.optionsCategory.push(ObjCate)
-        //   this.trialsForm.category_id = ''
-        // }
       }).catch(error => {
         console.log(error + 'getPlatformCate')
       }) 
@@ -419,18 +402,6 @@ export default {
           }
           this.trialsFormSubmit.active_date_start = parseInt((+this.trialsForm.active_date[0])/1000)
           this.trialsFormSubmit.active_date_end = parseInt((+this.trialsForm.active_date[1])/1000)
-          this.trialsFormSubmit.quantity_per_day = parseInt(
-            this.trialsForm.quantity_per_day
-          )
-          this.trialsFormSubmit.website = this.trialsForm.websiteData.website
-          this.trialsFormSubmit.category_id = parseInt(this.trialsForm.categoryData.category_id)
-          this.trialsFormSubmit.menu_id = this.trialsForm.categoryData.menu_id
-          this.trialsFormSubmit.country_id = this.trialsForm.websiteData.country_id
-          this.trialsFormSubmit.commission_ratio = this.trialsForm.categoryData.commission_ratio
-          this.trialsFormSubmit.platform_id = this.trialsFormSubmit.categoryData.platform_id
-          this.trialsFormSubmit.refund = this.refund
-          this.trialsFormSubmit.platform_fee = this.platform_fee
-          this.trialsFormSubmit.total_fee = this.total_fee
           var imgArr = []
           for (let i of this.trialsForm.product_img_s) {
             imgArr.push(i.url)
