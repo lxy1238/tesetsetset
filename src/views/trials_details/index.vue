@@ -7,14 +7,14 @@
     <div class="blank explain"></div>
       <explain :is-active="0" class="trials-explain"></explain>
       <div class="details-content clearfix">
-        <div class="left inline">
+        <div class="left inline clearfix">
           <details-left :isTop="isTop" 
                         :imgList="imgList" 
                         :userInfo="userInfo"
                         class="trials-details-left"
            ></details-left>      
         </div>
-        <div class="right inline">
+        <div class="right inline trials-right-content">
           <div class="promotion">
             <img class="img"  src="../../assets/amazon.png" alt="">
             <div class="title">
@@ -259,8 +259,6 @@ export default {
 }
 .inline {
   display: inline-block;
-  &.left {
-  }
   &.right {
     float: right;
     width: 55.5rem;
