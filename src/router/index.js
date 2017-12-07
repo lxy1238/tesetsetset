@@ -64,10 +64,10 @@ export const constantRouterMap = [
         path: '/enter/invite',
         component: _import('enter_s/invite')
       },
-      {
-        path: '/commissions/index',
-        component: _import('commissions/index')
-      },
+      // {
+      //   path: '/commissions/index',
+      //   component: _import('commissions/index')
+      // },
       {
         path: '/activate/:email',
         component: _import('another/activate/index')
@@ -89,7 +89,6 @@ export const constantRouterMap = [
     name: '404page',
     component: _import('404')
   },
-  { path: '*', redirect: '/404/index', hidden: true }
 ]
 
 //帮助中心路由配置
@@ -300,6 +299,7 @@ export const asyncRouterMap = [
       }
     ]
   },
+  // { path: '*', redirect: '/404/index', hidden: true }
 ]
 
 

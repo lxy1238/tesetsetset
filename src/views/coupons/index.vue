@@ -75,7 +75,7 @@
               <div class="promo-head-l">
                 Promotion template
               </div>
-              <div class="promo-head-r" @click="templateDialog = true">
+              <div class="promo-head-r" @click="modifyTemplate">
                 <i class="iconfont icon-modify1"></i>
                 Modify template
               </div>
@@ -226,7 +226,8 @@ import {
   promotionUserRemove,
   getInfo,
   addProblem,
-  getHeadCateList 
+  getHeadCateList,
+  editTemplate
 } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
@@ -277,7 +278,8 @@ export default {
         page_size: 9
       },
       requestCouponDetails: {
-        id: ''
+        id: '',
+        user_id: getUserId() 
       },
       reqGetCodeData: {
         api_token: getToken(),
@@ -318,6 +320,11 @@ export default {
       isFlagCoupon: false,
 
       //模板默认样式
+      submitTemplateData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        content: ''
+      },
       promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
       promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
       templateText: '',
@@ -347,7 +354,7 @@ export default {
   methods: {
     test () {
       let template = this.promotionTemplate
-      let promoLink = `${location.href}?promoter=${getUserId()}`
+      let promoLink = `${location.href}?promoter=${getUserId() ? getUserId() : ''}`
       this.templateText = template
         .replace(/\n/g, '<br>')
         .replace(/#Platform#/g, this.couponDetail.website)
@@ -359,10 +366,24 @@ export default {
         .replace(/#Promo_desctiption#/g, this.couponDetail.product_reason)
         .replace(/#Promo_link#/g, promoLink)
     },
-
+    //显示编辑模板
+    modifyTemplate () {
+      if(this.isLogin()) {
+        this.templateDialog = true
+      }
+    }, 
     //模板保存
     saveTemplate () {
-      console.log(this.promotionTemplate)
+      if (this.isLogin()) {
+        this.submitTemplateData.content = this.promotionTemplate
+        editTemplate(this.submitTemplateData).then(res => {
+          if (res.code === 200) {
+            this.$message.success('Save success')
+            this.getCouponsDetails()
+            this.templateDialog = false
+          }
+        })
+      }
     },
     restoreTemplate () {
       this.promotionTemplate = this.promotionTemplateinit
@@ -383,6 +404,7 @@ export default {
       this.reqGetCodeData.username = this.username
       this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
+      this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
     },
 
     //获取左边的图片信息
@@ -435,6 +457,9 @@ export default {
       couponDetails(this.requestCouponDetails)
         .then(res => {
           console.log(res)
+          if (res.data.coupon_user_template) {
+            this.promotionTemplate = res.data.coupon_user_template.content
+          }
           this.imgList = res.data.product_img.split(',')
           this.imgUrl = res.data.current_img
           this.couponDetail = res.data

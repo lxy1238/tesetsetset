@@ -5,8 +5,8 @@
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
       <img v-if="!loading" src="../../assets/01.png"   alt="img">
     </div>
-    <div class="promo-copy-parent">
-     <div class="promo-copy" v-if="addpromo">
+    <div class="promo-copy-parent"  v-if="addpromo">
+     <div class="promo-copy">
         <div class="span-btn" @click="addPromo(couponsDetails.id)">
           <span>{{addPromoMsg}}</span>
         </div>
@@ -23,7 +23,6 @@
         </el-tooltip>
       </div>
      </div> 
-      <!-- <div v-else class="promo-copy-hidden"></div> -->
       <p class="platfrom content" >{{couponsDetails.website}}</p>
       <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <slot name="price"></slot>

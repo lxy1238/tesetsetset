@@ -1,5 +1,5 @@
 import { login, getInfo, updateLogin } from '@/api/login'
-import { getEmail, setEmail, getToken, setToken, removeToken, setUserId, getUserId } from '@/utils/auth'
+import { getEmail, setEmail, getToken, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
 import router from '../../router'
 
 const user = {
@@ -77,6 +77,7 @@ const user = {
             commit('SET_AVATAR',data.base.avatar_img)   
           } else if (res.code === 500) {
             removeToken()
+            removeUserId()
             commit('SET_EMAIL', '')
             commit('SET_TOKEN', '')
             router.push({path: '/'})
@@ -89,6 +90,7 @@ const user = {
     },
     LogOut ({ commit }) {
       removeToken()
+      removeUserId()
       commit('SET_TOKEN', '')
       commit('SET_USERID', '') 
       router.push({path: '/'})

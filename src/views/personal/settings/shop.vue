@@ -9,28 +9,52 @@
           <th v-for="item in thLists">{{item}}</th>
         </tr>
       </thead>
-        <tr>
-          <!-- <td>Amazon.com</td>
-          <td>Amazon.com</td>
-          <td>Amazon.com</td>
-          <td>pedding</td>
+      <tbody v-if="trLists.length !== 0">
+        <tr v-for="item in trLists"  >
+          <td>{{item.platform.url}}</td>
+          <td>{{item.store_id}}</td>
+          <td>{{item.store_name}}</td>
           <td>
+            <div class="blue" v-if="item.status == 0">Pedding</div>
+            <div class="green" v-if="item.status == 1 && item.run_status == 'normal'">Normal</div>
+            <div class="red" v-if="item.status == 1 && item.run_status == 'close'">Close</div>
+            <div class="red" v-if="item.status == 2 ">Decline</div>
+          </td>
+          <td class="oprate">
+            <template v-if="item.status == 0">
             <a href="javascript:void(0);">edit</a>
             <a href="javascript:void(0);">delete</a>
-          </td> -->
+            </template>
+            <template v-if="item.status == 1">
+            <a href="javascript:void(0);">delete</a>
+            </template>
+            <template  v-if="item.status == 2">
+            <a href="javascript:void(0);">edit</a>
+            <a href="javascript:void(0);">details</a>
+            <a href="javascript:void(0);">delete</a>
+            </template>
+          </td>
         </tr>
+        </tbody>
         <tr v-if="trLists.length === 0">
             <td colspan="10">No Data</td>
         </tr>
     </table>
+      <pagination class="coupons-pagination" 
+      v-if="allpage && allpage != 1"
+      :allpage="allpage"
+      :show-item="showItem"
+      :current="requestdata.page"
+      @handlecurrent="gotoPage">
+    </pagination>
 
 
      <el-dialog :visible.sync = "addStoreDialog" class="add-store-dialog" >
       <span slot="title" class="title">Add Store</span>
         <div class="dialog-body">
         <el-form :model="addStoreForm" ref="addStoreForm" :rules="rules" label-width="100px">
-          <el-form-item label="Website: " prop="website">
-            <el-select v-model="addStoreForm.website" >
+          <el-form-item label="Website: " prop="platform_id">
+            <el-select v-model="addStoreForm.platform_id" @change="websiteChange">
           <el-option 
             v-for="item in optionsWebsite"
             :key="item.id"
@@ -59,14 +83,16 @@
 </template>
 
 <script>
-import { getPlatformCate } from '@/api/login'
+import pagination from '@/components/page_index_coupons/pagination.vue'
+
+import { getPlatformCate, addStore, showStore } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'store_settings',
   data () {
     return {
       rules: {
-        website: [{type:'number', required: true, message: 'website is required', trigger: 'blur' }],
+        platform_id: [{type:'number', required: true, message: 'website is required', trigger: 'blur' }],
         store_id: [{ required: true, message: 'store id is required', trigger: 'blur' }],
         store_name: [{ required: true, message: 'store name is required', trigger: 'blur' }],
         store_url: [{ required: true, message: 'store url is required' ,trigger: 'blur' }],
@@ -79,37 +105,83 @@ export default {
         }
       ],
       addStoreDialog: false,
+      allpage: undefined,
+      showItem: 7,
       addStoreForm: {
-        website: '',
+        api_token: getToken(),
+        user_id: getUserId(),
+        platform_id: '',
       },
       optionsWebsite:[],
       reqPlatformData: {
         api_token: getToken(),
         user_id: getUserId()
+      },
+      reqStoreData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        page: 1,
+        page_size: '5'
       }
     }
+  },
+  components: {
+    pagination
   },
   mounted () {
     this.init()
   },
   methods: {
     init () {
+      this.initData()
+    },
+
+    initData () {
       this.getPlatformCateInfo()
+      this.getStoreList()
     },
 
     //平台初始化
     getPlatformCateInfo () {
       getPlatformCate(this.reqPlatformData).then(res => {
+        console.log(res)
         this.optionsWebsite = res.data
       })
     },
+    websiteChange (id) {
+      for (let i of this.optionsWebsite) {
+        if (i.id == id) {
+          this.addStoreForm.country_id = i.country_id
+
+        }
+      } 
+    },
+    //显示列表
+    getStoreList () {
+      showStore(this.reqStoreData).then(res => {
+        console.log(res)
+        this.trLists = res.data.data
+      })
+    },
+
+    //列表数据显示
     addStore () {
       this.addStoreDialog = true
     },
 
     //新增店铺数据获取
-    addStoreSubmit () {
-      console.log(this.addStoreForm)
+    addStoreSubmit (data) {
+      console.log(data)
+      addStore(data).then(res => {
+        if (res.code === 200) {
+          this.$notify.success('add store success!')
+          this.addStoreDialog = false
+          this.getStoreList()
+        }
+      }).catch(error => {
+        console.log(error)
+        this.addStoreDialog = false
+      })
     },
 
     //新增店铺提交
@@ -171,6 +243,12 @@ export default {
 
       }
       text-align: center;
+    }
+  }
+  .oprate {
+    a {
+      display: inline-block;
+      margin-right: 6px;
     }
   }
 </style>

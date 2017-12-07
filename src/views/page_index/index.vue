@@ -7,6 +7,7 @@
                      :key="1" 
                      :couponsDetails="couponsDetails"
                      :promotions="userPromotions"
+                     :addpromo="true"
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
@@ -160,13 +161,13 @@ export default {
       }
       getAllCoupons(this.requestData)
         .then(res => {
-          let newArr = []
-          res.data.data.forEach(e => {
-            if (e.status == 1 && e.run_status == 'active') {
-              newArr.push(e)
-            }
-          })
-          this.arrcouponsDetails = newArr
+          // let newArr = []
+          // res.data.data.forEach(e => {
+          //   if (e.status == 1 && e.run_status == 'active') {
+          //     newArr.push(e)
+          //   }
+          // })
+          this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
           this.getUserInfo()
         })

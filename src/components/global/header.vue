@@ -9,7 +9,7 @@
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
              <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
-              <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
+              <!-- <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a> -->
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
                 <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
@@ -482,7 +482,7 @@ export default {
       this.$store.dispatch('setLevel', 0)
     },
     trials () {
-      this.$router.push({ path: '/trials' })
+      this.$router.push({ path: '/trials/index' })
       this.selectedC = 0
       this.$store.dispatch('setLevel', 1)
     },
@@ -497,6 +497,7 @@ export default {
      
     },
     ShowSignDialog () {
+      this.resetPassword = false
       this.loginDialog = false
       this.signDialog = true
     },
@@ -656,7 +657,7 @@ export default {
         console.log('ID Token: ' + id_token)
     
         var xhr = new XMLHttpRequest()
-        xhr.open('POST', '/login.php')
+        xhr.open('POST', 'http://dealsbank.com/api/v1/user/loginGoogle')
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
         xhr.onload = function () {
           console.log('Signed in as: ' + xhr.responseText)
@@ -906,7 +907,7 @@ export default {
         }
         .search {
           .p(r);
-          width: 20rem;
+          width: 32rem;
           height: 36px;
           margin-right: 0.90rem;
           input {

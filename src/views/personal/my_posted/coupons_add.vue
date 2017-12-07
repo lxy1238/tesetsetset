@@ -264,13 +264,6 @@ export default {
           setTimeout(() => {
             console.log(res)
             let data = res.data.data
-            for (let i of this.options) {
-              for (let j of i.childrens) {
-                if (data.category[data.category.length - 1].search(j.name) >= 0) {
-                  this.getSelectValue(i, j)
-                }
-              }
-            }
             this.couponsForm.product_img_s = data.product_img.map((e) => {
               return {url: e}
             })

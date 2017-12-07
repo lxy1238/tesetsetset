@@ -2,12 +2,16 @@
   <div class="page-index ">
     <div class="pages-content clearfix">
       <explain ></explain>
-      <coupons-pro v-for="n in 60"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+      <coupons-pro  v-for="couponsDetails in arrcouponsDetails"  
+                    :key="1" 
+                    :couponsDetails="couponsDetails"
+                    :addpromo="false" 
+                    @gotodetails="gotodetails">
         <template slot="price">
          <p class="trials-price content">
-          <span class="old"> <i >{{couponsDetails.priceOld}} </i></span>
+          <span class="old"> <i >{{couponsDetails.product_price}} </i></span>
           <span class="gray-s"> Refund </span>
-          <span class="coupon-right"><strong> {{couponsDetails.priceRefund}}</strong>  </span>
+          <span class="coupon-right"><strong> {{couponsDetails.refund_price}}</strong>  </span>
          </p>
          </template>
          <template slot="btn" >View trials</template>
@@ -23,10 +27,13 @@
 </template>
 
 <script>
-import Clip from '@/utils/clipboard.js'
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
+import { getAllTrial, getHeadCateList } from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString'
 export default {
   name: 'page_index',
   data () {
@@ -34,28 +41,14 @@ export default {
       showItem: 7,
       allpage: undefined,
       arrcouponsDetails: [
-        {
-          imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
-          platfrom: 'amazon1',
-          descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ',
-          price: '$98.00',
-          coupons: '$18.00'
-        },
-        {
-          imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
-          platfrom: 'amazon2',
-          descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ',
-          price: '$98.00',
-          coupons: '$18.00'
-        }
       ],
-      couponsDetails: {
-        id: 1,
-        imgUrl: 'http://www.ghostxy.top/dealsbank/img/01.png',
-        platfrom: 'amazon2',
-        descript: 'STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ',
-        priceOld: '$98.00',
-        priceRefund: '$88.00',
+    
+      requestData: {
+        page: 1,
+        page_size: '',
+        menu_id: 0,
+        country_id: parseInt(getStore('country_id')) || 1,
+        keyword: '',
       }
     }
   },
@@ -65,19 +58,27 @@ export default {
     explain
   },
   mounted () {
-    this.$root.eventHub.$on('selectClassify', data => {
-      this.msg = ''
-      setTimeout(() => {
-        this.msg = data
-      }, 500)
-    })
+    this.init()
   },
   methods: {
+    init () {
+      this.getTrialsList()
+    },
+    initData () {
+
+    },
+    getTrialsList () {
+      getAllTrial(this.requestData).then(res => {
+        this.arrcouponsDetails = res.data.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
     test (index) {
       console.log(`当前跳转到 ${index} 页`)
     },
     gotodetails () {
-      this.$router.push({ path: '/trialsDetails'})
+      this.$router.push({ path: '/trialsDetails/index'})
     }
   }
 }

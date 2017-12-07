@@ -28,12 +28,7 @@ export const login = data => fetch({
 })
 
 
-//首页获取所有的优惠券的信息
-export const getAllCoupons = data => fetch({
-  url: '/api/v1/coupon/show',
-  method: 'POST',
-  data: qs.stringify(data)
-})
+
 
 //获取用户基本信息
 export const getInfo = data => fetch({
@@ -95,6 +90,13 @@ export const postedUserInfo = data => fetch({
  * 
  * 
  */
+
+//首页获取所有的优惠券的信息
+export const getAllCoupons = data => fetch({
+  url: '/api/v1/coupon/show',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 //新增优惠券
 export const addCoupon = data => fetch({
   url: '/api/v1/coupon/add',
@@ -191,6 +193,13 @@ export const addProblem = data => fetch({
   data: qs.stringify(data)
 })
 
+//优惠券模板编辑
+export const editTemplate = data => fetch({
+  url: '/api/v1/coupon/edit-template',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 
@@ -232,9 +241,40 @@ export const couponDetele = data => fetch({
  * 
  */
 
-//商户新增试用品
+//首页获取所有的优惠券的信息
+export const getAllTrial = data => fetch({
+  url: '/api/v1/trial/show',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//显示试用品店铺列表
 export const trialsAdd = data => fetch({
-  url: 'http:www.zhuo.com/api/v1/trial/add',
+  url: '/api/v1/trial/add',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//商户新增试用品
+export const trialsStore = data => fetch({
+  url: '/api/v1/trial/trial-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+//新增店铺
+export const addStore = data => fetch({
+  url: '/api/v1/user/add-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//显示店铺列表
+
+export const showStore = data => fetch({
+  url: '/api/v1/user/show-store',
   method: 'POST',
   data: qs.stringify(data)
 })

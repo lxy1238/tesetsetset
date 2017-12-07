@@ -8,36 +8,36 @@
     </div>
     <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="140px" class="coupons-form" >
       <el-form-item label="Product URL: " prop="product_url" >
-        <el-input class="url-input" v-model="trialsForm.product_url"></el-input>
-        <button class="get-pro-info"  type="button" @click="getProInfo">get</button>
+        <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
+        <button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)">get</button>
       </el-form-item>
       <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
         <el-select v-model="trialsForm.website"  @change="websiteChange">
           <el-option 
             v-for="item in optionsWebsite"
-            :key="item.id"
+            :key="item.label"
             :label="item.label"
+            :value="item.label">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Store: " prop="user_store_id" class="item-inline"  >
+        <el-select v-model="trialsForm.user_store_id">
+           <el-option 
+            v-for="item in optionsStore"
+            :key="item.id"
+            :label="item.store_name"
             :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Store: " prop="store_id" class="item-inline"  >
-        <el-select v-model="trialsForm.store_id">
-           <el-option 
-            v-for="item in optionsStore"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Category: " prop="category_id" class="item-inline"   >
-        <el-select v-model="trialsForm.category_id" @change="categoryChange">
+      <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
+        <el-select v-model="trialsForm.menu_id">
            <el-option 
             v-for="(item, index) in optionsCategory"
-            :key="index"
-            :label="item.label"
-            :value="index">
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
           </el-option>
         </el-select>
       </el-form-item>
@@ -91,10 +91,10 @@
         <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
       <el-form-item label="Is Full Return: " class="item-inline1" >
-        <el-radio class="radio" v-model="trialsForm.is_full_return" label="yes">yes</el-radio>
-        <el-radio class="radio" v-model="trialsForm.is_full_return" label="no">no</el-radio>
+        <el-radio class="radio" v-model="trialsForm.full_refund" label="1">yes</el-radio>
+        <el-radio class="radio" v-model="trialsForm.full_refund" label="0">no</el-radio>
       </el-form-item>
-        <el-form-item label=" Each trial returns: " v-if="trialsForm.is_full_return === 'no'"  class="item-inline1" >
+        <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
              <el-input type="text" v-model="trialsForm.return_fee"></el-input>
       </el-form-item>
     <div class="title-s">
@@ -116,8 +116,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlatformCate, uploadImg, trialsAdd } from '@/api/login'
-// import axios from 'axios'
+import { getPlatformCate, uploadImg, trialsAdd, getHeadCateList, trialsStore } from '@/api/login'
+import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
@@ -140,26 +140,24 @@ export default {
       ],
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
-        product_url: 'http://www.baidu.com',
+        product_url: 'https://www.amazon.com/Braun-MGK3040-Trimming-Grooming-Precision/dp/B01M5FRLLS/ref=lp_17474487011_1_2_s_it?s=beauty&ie=UTF8&qid=1512548077&sr=1-2&th=1',
         product_title: 'this is titie of trials',
         product_reason: 'this is reason of trials',
         specifications: 'this is specifications of trials',
         website: '',
-        country: '',         //string 国家
-        category_id: '',     // 所属分类 , 是   int
-        store_id: '',        // int
+        menu_id: '',     // 所属分类 , 是   int
+        user_store_id: '',        // int
         product_price: '88.00',      //产品价格
         shipping_fee: '1.2',                       //运费
         product_img: [],                        //产品图片
         product_img_s: [],
         product_details: '<div></div>',
         active_date: '',
-        active_date_start: '',
-        active_date_end: '',
+        start_time: '',
+        end_time: '',
         quantity_per_day: '10',                //每天上限数量 int
         total_quantity: '1000' ,                 //发行总量
-        total_fee: '1234.54',                  //总费用
-        is_full_return: 'yes',
+        full_refund: '1',
         
         return_fee: '',
         refund: '',
@@ -177,12 +175,9 @@ export default {
           {required: true ,message: 'product url is required', trigger: 'blur'}
         ],
         website: [
-          {type:'number',required: true, message: 'website is required', trigger: 'change'}
+          {required: true, message: 'website is required', trigger: 'change'}
         ],
-        store_id: [
-          {required: true, message: 'store is required', trigger: 'change'}
-        ],
-        category_id: [
+        menu_id: [
           {type:'number',required: true, message: 'category is required', trigger: 'change'}
         ],
         product_price: [
@@ -201,6 +196,9 @@ export default {
         ],
         product_title: [
           {required: true ,message: 'product title is required', trigger: 'blur'}
+        ],
+        user_store_id: [
+          {type: 'number', required: true ,message: 'store is required', trigger: 'blur'}
         ],
         product_reason: [
           {required: true ,message: 'reason is required', trigger: 'blur'}
@@ -221,8 +219,16 @@ export default {
       fileList2: [
       ],
       requestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
         country_id: parseInt(getStore('country_id')) || 1
-      }
+      },
+      requestStoreData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        platform_id: ''
+      },
+
     }
   },
   mounted () {
@@ -236,9 +242,9 @@ export default {
     ]),
     refund () {
       if(this.trialsForm.return_fee) {
-        return NumAdd(this.trialsForm.return_fee, this.trialsForm.shipping_fee)
+        return NumAdd(this.trialsForm.return_fee, this.trialsForm.shipping_fee).toFixed(2)
       } else {
-        return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee)
+        return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee).toFixed(2)
       }
     },
     platform_fee () {
@@ -276,19 +282,107 @@ export default {
     }
   },  
   methods: {
-    getProInfo () {
-      console.log('获取产品信息')
-    },
 
     // 初始化操作
     init () {
       this.showEditor()
       this.initData()
-      this.getPlatformCateInfo()
+      this.getHeadCateListInfo()
+      this.getTrialsStore()
     },
     initData () {
       this.trialsForm.user_name = this.username
     },
+
+    //blur 时请求信息
+    urlBlur () {
+      this.getPlatformCateInfo()
+    },
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.optionsCategory = res.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    //获取店铺列表
+    getTrialsStore () {
+      trialsStore(this.requestStoreData).then(res => {
+        this.optionsStore = res.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //通过输入链接获取所有产品信息
+    getProInfo (url) {
+      this.$message.info('For information on goods, please wait a moment')
+      axios.get('http://23.91.2.69/productsm/index.php/api/asin', {
+        params: {
+          url: url,
+        }
+      })
+        .then( (res) =>{
+          this.getPlatformCateInfo()
+          setTimeout(() => {
+            console.log(res)
+            let data = res.data.data
+            this.trialsForm.product_img_s = data.product_img.map((e) => {
+              return {url: e}
+            })
+            this.trialsForm.product_price = data.product_price.slice(1)
+            // this.trialsForm.product_reason  = data.product_reason.replace(/<br\s*\/?>/gi,'\r\n').replace(/<b>/gi, '').replace(/<\/b>/gi, '')
+            this.trialsForm.product_title = data.product_title
+            if (res.data.data.Error) {
+              this.$notify.error('please enter a right url')
+            }
+          }, 50)
+        })
+        .catch(function (err){
+          console.log(err)
+        })
+     
+    },
+
+    //获取平台品类信息
+    getPlatformCateInfo () {
+      this.optionsWebsite = []
+      getPlatformCate(this.requestData)
+        .then(res => {
+          console.log(res.data) 
+          if(res.data.length <= 0) {return}
+          for (let i of res.data) {
+            console.log(i)
+            var ObjWebsite = {
+              label: '',
+              id: ''
+            }
+            ObjWebsite.label = i.website
+            ObjWebsite.id = i.id
+            this.optionsWebsite.push(ObjWebsite)
+            if (this.trialsForm.product_url.search(i.url) >= 0) {
+              this.trialsForm.website = i.website
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+
+    //平台发生改变
+    websiteChange (label) {
+      for (let i of this.optionsWebsite) {
+        if (i.label == label) {
+          this.trialsForm.platform_id = i.id
+          this.requestStoreData.platform_id = i.id
+          this.getTrialsStore()
+        }
+      }  
+    },
+
+    
 
     //显示富文本编辑器插件
     showEditor () {
@@ -300,45 +394,7 @@ export default {
         $('#summernote').summernote('code', '')
       },10)
     },
-    //获取平台品类信息
-    getPlatformCateInfo () {
-      getPlatformCate(this.requestData)
-        .then(res => {
-          console.log(res)
-          if(res.data.length <= 0) {return}
-          var arrKeysWeb = Object.keys(res.data)
-          for (var i of arrKeysWeb) {
-            var ObjWebsite = {
-              label: '',
-              id: ''
-            }
-            ObjWebsite.label = res.data[i].website
-            ObjWebsite.id = parseInt(i)
-            this.optionsWebsite.push(ObjWebsite)
-          }
-          this.trialsForm.website = ''
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    },
 
-    //平台发生改变
-    websiteChange (id) {
-      this.optionsCategory = []
-      getPlatformCate(this.requestData).then(res => {
-        if(res.data.length <= 0) {return}
-        this.trialsForm.websiteData = res.data[id]
-      }).catch(error => {
-        console.log(error + 'getPlatformCate')
-      }) 
-      console.log(this.trialsForm)
-    },
-
-    //品类发生改变
-    categoryChange (id) {
-      this.trialsForm.categoryData = this.optionsCategory[id]
-    },
 
     //上传图片
     beforeAvatarUploadP (file) {
@@ -380,12 +436,11 @@ export default {
       this.trialsForm.product_img_s = fileList
     },
     issueCoupon (data) {
-      addCoupon (data)
+      trialsAdd (data)
         .then(res => {
-          console.log(res)
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
-            this.$router.push({ path: '/posted/coupons' })
+            this.$router.push({ path: '/posted/trials' })
           }
         })
         .catch(error => {
@@ -400,8 +455,11 @@ export default {
           for (var i in this.trialsForm) {
             this.trialsFormSubmit[i] = this.trialsForm[i]
           }
-          this.trialsFormSubmit.active_date_start = parseInt((+this.trialsForm.active_date[0])/1000)
-          this.trialsFormSubmit.active_date_end = parseInt((+this.trialsForm.active_date[1])/1000)
+          this.trialsFormSubmit.start_time = parseInt((+this.trialsForm.active_date[0])/1000)
+          this.trialsFormSubmit.end_time = parseInt((+this.trialsForm.active_date[1])/1000)
+          this.trialsFormSubmit.platform_fee = this.platform_fee
+          this.trialsFormSubmit.refund = this.refund
+          this.trialsFormSubmit.total_fee  = this.total_fee
           var imgArr = []
           for (let i of this.trialsForm.product_img_s) {
             imgArr.push(i.url)
@@ -410,7 +468,7 @@ export default {
           var markupStr = $('#summernote').summernote('code')
           this.trialsFormSubmit.product_details = markupStr
           console.log(this.trialsFormSubmit)
-          // this.issueCoupon(this.trialsFormSubmit)
+          this.issueCoupon(this.trialsFormSubmit)
         } else {
           console.log('error submit!!')
           return false
@@ -435,15 +493,6 @@ export default {
         this.trialsForm[value] = ''
       }
     },
-
-    // 获取所有品类的信息
-    getHeadCateListInfo () {
-      getHeadCateList().then(res => {
-        this.optionsCategory = res.data
-      }).catch(error => {
-        console.log(error)
-      })
-    }
   }
 }
 </script>
