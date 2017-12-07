@@ -34,6 +34,7 @@
         class="coupons-pagination"
         :allpage="allpage"
         :show-item="showItem"
+        :current="requestdata.page"
         @handlecurrent="gotoPage">
       </pagination>
   </div>

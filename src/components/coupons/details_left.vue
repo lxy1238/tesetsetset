@@ -113,7 +113,7 @@ export default {
 .details-left {
   // position: fixed;
   float: left;
-  width: 28.9rem;
+  width: 26.9rem;
   height: 44.44rem;
   .img {
     height: 22rem;
@@ -145,7 +145,7 @@ export default {
           left: 1rem;
         }
         &.right {
-          right: 1rem;
+          right: .5rem;
         }
         i {
           font-size: 2rem;
@@ -217,7 +217,7 @@ export default {
            float: left;
            margin-bottom: .5rem;
            margin-top: .5rem;
-           width: 10rem;
+           width: 8rem;
         }
       }
       .coupons-posted {

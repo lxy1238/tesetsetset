@@ -28,7 +28,7 @@ export const constantRouterMap = [
       component: _import('coupons/index')
     },
     {
-      path: '/trialsDetails/index',
+      path: '/trialsDetails/:trialId',
       component: _import('trials_details/index')
     },
     {

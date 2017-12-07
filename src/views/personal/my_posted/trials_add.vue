@@ -7,62 +7,92 @@
       Product Information
     </div>
     <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="140px" class="coupons-form" >
-      <el-form-item label="Product URL: " prop="product_url" >
-        <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
-        <button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)">get</button>
-      </el-form-item>
-      <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
-        <el-select v-model="trialsForm.website"  @change="websiteChange">
-          <el-option 
-            v-for="item in optionsWebsite"
-            :key="item.label"
-            :label="item.label"
-            :value="item.label">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Store: " prop="user_store_id" class="item-inline"  >
-        <el-select v-model="trialsForm.user_store_id">
-           <el-option 
-            v-for="item in optionsStore"
-            :key="item.id"
-            :label="item.store_name"
-            :value="item.id">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
-        <el-select v-model="trialsForm.menu_id">
-           <el-option 
-            v-for="(item, index) in optionsCategory"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')"></el-input>
-      </el-form-item>
-      <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')"></el-input>
-      </el-form-item>
-      <el-form-item label="Image" prop="product_img_s" >
-        <el-upload 
-              class="upload-demo-img" 
-              action="https://jsonplaceholder.typicode.com/posts/" 
-              :on-remove="handleRemoveP" 
-              :before-upload="beforeAvatarUploadP" 
-                :file-list="trialsForm.product_img_s"
-              list-type="picture">
-            <el-button size="small" type="primary">Upload</el-button>
-            <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
-            </div>
-        </el-upload>
-      </el-form-item>
-      <el-form-item label="Title: " prop="product_title"  >
-        <el-input v-model="trialsForm.product_title"></el-input>
-      </el-form-item>
+      <template v-if="isEditorData">
+        <el-form-item label="Product URL: " prop="product_url" >
+          <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
+          <button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)">get</button>
+        </el-form-item>
+        <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
+          <el-select v-model="trialsForm.website"  @change="websiteChange">
+            <el-option 
+              v-for="item in optionsWebsite"
+              :key="item.label"
+              :label="item.label"
+              :value="item.label">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Store: " prop="user_store_id" class="item-inline"  >
+          <el-select v-model="trialsForm.user_store_id">
+            <el-option 
+              v-for="item in optionsStore"
+              :key="item.id"
+              :label="item.store_name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
+          <el-select v-model="trialsForm.menu_id">
+            <el-option 
+              v-for="(item, index) in optionsCategory"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
+          <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')"></el-input>
+        </el-form-item>
+        <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
+          <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')"></el-input>
+        </el-form-item>
+        <el-form-item label="Image" prop="product_img_s" >
+          <el-upload 
+                class="upload-demo-img" 
+                action="https://jsonplaceholder.typicode.com/posts/" 
+                :on-remove="handleRemoveP" 
+                :before-upload="beforeAvatarUploadP" 
+                  :file-list="trialsForm.product_img_s"
+                list-type="picture">
+              <el-button size="small" type="primary">Upload</el-button>
+              <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
+              </div>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="Title: " prop="product_title"  >
+          <el-input v-model="trialsForm.product_title"></el-input>
+        </el-form-item>
+      </template>
+      <template v-else>
+        <el-form-item label="Product URL: " prop="product_url" >
+          <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
+          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Store: " prop="user_store_id" class="item-inline"  >
+          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
+         <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
+          <el-input class="url-input" v-model="trialsForm.product_price"  disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
+          <el-input class="url-input" v-model="trialsForm.shipping_fee"  disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Image: " prop="product_img_s" >
+          <ul class="is-editor-img" v-if="trialsForm.product_img_s">
+            <li v-for="item in trialsForm.product_img_s"><img :src="item.url" alt="" ></li>
+          </ul>
+        </el-form-item>
+        <el-form-item label="Title: " prop="product_title"  >
+          <el-input v-model="trialsForm.product_title" disabled></el-input>
+        </el-form-item>
+      </template>
       <el-form-item label="Reason: "  prop="product_reason" >
         <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea"></el-input>
       </el-form-item>
@@ -84,26 +114,26 @@
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-        <el-input v-model="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
+        <el-input v-model.number="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
       </el-form-item>
     
       <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
-        <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
+        <el-input v-model.number="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
       <el-form-item label="Is Full Return: " class="item-inline1" >
-        <el-radio class="radio" v-model="trialsForm.full_refund" label="1">yes</el-radio>
-        <el-radio class="radio" v-model="trialsForm.full_refund" label="0">no</el-radio>
+        <el-radio class="radio" v-model="trialsForm.full_refund" label="1" >yes</el-radio>
+        <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >no</el-radio>
       </el-form-item>
-        <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
-             <el-input type="text" v-model="trialsForm.return_fee"></el-input>
+      <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
+        <el-input type="text" v-model="trialsForm.return_fee" @blur="filterMoney('return_fee')"></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
       </div>
     <div class="trials-money">
-      <p class="money"><label>Pefund:</label> ${{refund}}</p>
-      <p class="money"><label>Platform fee:</label>  ${{platform_fee}}</p>
-      <p class="money"><label>Total fee:</label>  <span class="red">${{total_fee}}</span></p>
+      <p class="money"><label>Refund:</label> {{currency}}{{refund}}</p>
+      <p class="money"><label>Platform fee:</label>  {{currency}}{{platform_fee}}</p>
+      <p class="money"><label>Total fee:</label>  <span class="red">{{currency}}{{total_fee}}</span></p>
     </div>
     
     <el-form-item class="footer-btn" >
@@ -116,7 +146,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlatformCate, uploadImg, trialsAdd, getHeadCateList, trialsStore } from '@/api/login'
+import { getPlatformCate, uploadImg, trialsAdd, getHeadCateList, trialsStore, trialEditDetail, editTrial } from '@/api/login'
 import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
@@ -138,6 +168,7 @@ export default {
       ],
       optionsCategory: [
       ],
+      isEditorData: true,
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
         product_url: 'https://www.amazon.com/Braun-MGK3040-Trimming-Grooming-Precision/dp/B01M5FRLLS/ref=lp_17474487011_1_2_s_it?s=beauty&ie=UTF8&qid=1512548077&sr=1-2&th=1',
@@ -150,9 +181,9 @@ export default {
         product_price: '88.00',      //产品价格
         shipping_fee: '1.2',                       //运费
         product_img: [],                        //产品图片
-        product_img_s: [],
+        product_img_s: [{url: 'https://images-na.ssl-images-amazon.com/images/I/5194nZpL9ZL._SL160_.jpg'}],
         product_details: '<div></div>',
-        active_date: '',
+        active_date: [],
         start_time: '',
         end_time: '',
         quantity_per_day: '10',                //每天上限数量 int
@@ -210,10 +241,10 @@ export default {
           {type: 'array',required: true ,message: 'active date is required', trigger: 'change'}
         ],
         quantity_per_day: [
-          {required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
+          {type: 'number', required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
         ],
         total_quantity: [
-          {required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
+          {type: 'number', required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
         ]
       },
       fileList2: [
@@ -228,6 +259,11 @@ export default {
         user_id: getUserId(),
         platform_id: ''
       },
+      trialDetailsrequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        id: '',
+      },
 
     }
   },
@@ -240,11 +276,21 @@ export default {
       'user_id',
       'username'
     ]),
-    refund () {
+    currency () {
+      return getStore('currency') || '$'
+    },
+    refund_one () {
       if(this.trialsForm.return_fee) {
         return NumAdd(this.trialsForm.return_fee, this.trialsForm.shipping_fee).toFixed(2)
       } else {
         return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee).toFixed(2)
+      }
+    },
+    refund () {
+      if(this.trialsForm.return_fee && this.trialsForm.full_refund == '0') {
+        return (NumAdd(this.trialsForm.return_fee, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
+      } else {
+        return (NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
       }
     },
     platform_fee () {
@@ -255,21 +301,21 @@ export default {
       case 5:
       case 6:
       case 7:
-        if (this.refund < 10) {
-          return 1
-        } else if (this.refund <= 20 && this.refund >= 10) {
-          return 2
-        } else if (this.refund > 20) {
-          return 3
+        if (this.refund_one < 10) {
+          return 1 * this.trialsForm.total_quantity
+        } else if (this.refund_one <= 20 && this.refund_one >= 10) {
+          return 2 * this.trialsForm.total_quantity
+        } else if (this.refund_one > 20) {
+          return 3 * this.trialsForm.total_quantity
         }
         break
       case 4:
-        if (this.refund < 1200) {
-          return 120
-        } else if (this.refund <= 2400 && this.refund >= 1200) {
-          return 240
-        } else if (this.refund > 2400) {
-          return 360
+        if (this.refund_one < 1200) {
+          return 120 * this.trialsForm.total_quantity
+        } else if (this.refund_one <= 2400 && this.refund_one >= 1200) {
+          return 240 * this.trialsForm.total_quantity
+        } else if (this.refund_one > 2400) {
+          return 360 * this.trialsForm.total_quantity
         }
         break
       
@@ -289,6 +335,7 @@ export default {
       this.initData()
       this.getHeadCateListInfo()
       this.getTrialsStore()
+      this.isEditor()
     },
     initData () {
       this.trialsForm.user_name = this.username
@@ -328,9 +375,13 @@ export default {
           setTimeout(() => {
             console.log(res)
             let data = res.data.data
-            this.trialsForm.product_img_s = data.product_img.map((e) => {
-              return {url: e}
+            let newArr = []
+            data.product_img.forEach((e) => {
+              if (e) {
+                newArr.push({url: e})
+              }
             })
+            this.trialsForm.product_img_s = newArr
             this.trialsForm.product_price = data.product_price.slice(1)
             // this.trialsForm.product_reason  = data.product_reason.replace(/<br\s*\/?>/gi,'\r\n').replace(/<b>/gi, '').replace(/<\/b>/gi, '')
             this.trialsForm.product_title = data.product_title
@@ -373,6 +424,7 @@ export default {
 
     //平台发生改变
     websiteChange (label) {
+      this.trialsForm.user_store_id = ''
       for (let i of this.optionsWebsite) {
         if (i.label == label) {
           this.trialsForm.platform_id = i.id
@@ -382,7 +434,9 @@ export default {
       }  
     },
 
-    
+    radioChange (i) {
+      console.log(i)
+    },
 
     //显示富文本编辑器插件
     showEditor () {
@@ -394,7 +448,6 @@ export default {
         $('#summernote').summernote('code', '')
       },10)
     },
-
 
     //上传图片
     beforeAvatarUploadP (file) {
@@ -436,16 +489,28 @@ export default {
       this.trialsForm.product_img_s = fileList
     },
     issueCoupon (data) {
-      trialsAdd (data)
-        .then(res => {
+      if (this.$route.query.editor) {
+        data.id = this.$route.query.editor
+        editTrial(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
             this.$router.push({ path: '/posted/trials' })
           }
-        })
-        .catch(error => {
+        }).catch(error => {
           console.log(error)
         })
+      } else {
+        trialsAdd (data)
+          .then(res => {
+            if (res.code === 200) {
+              this.$notify.success('issue coupon success')
+              this.$router.push({ path: '/posted/trials' })
+            }
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      } 
     },
     Submit () {
       //element-ui 的表单验证
@@ -493,6 +558,28 @@ export default {
         this.trialsForm[value] = ''
       }
     },
+
+    //编辑，判断是否有editor
+    isEditor () {
+      if (!this.$route.query.editor) {
+        return
+      }
+      this.isEditorData = false
+      this.trialDetailsrequestData.id = this.$route.query.editor
+      trialEditDetail(this.trialDetailsrequestData).then(res => {
+        res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
+        let newArr = []
+        newArr[0] = new Date(res.data.start_time * 1000)
+        newArr[1] = new Date(res.data.end_time * 1000)
+        res.data.active_date = newArr
+        this.trialsForm = res.data
+        this.trialsForm.api_token = getToken()
+        this.trialsForm.user_id = getUserId()
+        this.trialsForm.user_name = this.username
+        this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
+        $('#summernote').summernote('code', res.data.product_details)
+      })
+    }
   }
 }
 </script>
@@ -571,5 +658,19 @@ export default {
         line-height: 18px;
       }
     }
+}
+.is-editor-img {
+  li {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #e1e1e1;
+    float: left;
+    margin-right: 5px;
+    img {
+      width: 80px;
+      height: 80px;
+    }
+  }
 }
 </style>

@@ -51,6 +51,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestdata.page"
       @handlecurrent="gotoPage">
     </pagination>
   </template>

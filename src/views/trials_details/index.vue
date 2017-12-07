@@ -1,34 +1,38 @@
 <template>
   <div class="page-index">
-    <div class="pages-content">
+    <div class="pages-content" v-if="trialDetailData.menu">
       <div class="head-crumbs">
-        <span class=" gray-s">Trials > Home</span> 
+        <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
     <div class="blank explain"></div>
       <explain :is-active="0" class="trials-explain"></explain>
       <div class="details-content clearfix">
         <div class="left inline">
-          <details-left :isTop="isTop" class="trials-details-left" ></details-left>      
+          <details-left :isTop="isTop" 
+                        :imgList="imgList" 
+                        :userInfo="userInfo"
+                        class="trials-details-left"
+           ></details-left>      
         </div>
         <div class="right inline">
           <div class="promotion">
             <img class="img"  src="../../assets/amazon.png" alt="">
             <div class="title">
               <span>
-                2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers
+                {{trialDetailData.product_title}}
               </span>
             </div>
             <div class="describe">
-              <div class="time"> <i class="iconfont icon-icon-test">
-                </i> Ends in <strong>3</strong>  days <strong>16</strong> hours <strong>52</strong> minutes</div>
+              <div class="time" v-if="leftTime"> <i class="iconfont icon-icon-test">
+                </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes</div>
             </div>
             <div class="price-details">
-                <div class="price">Price: <del>$198.00</del> </div>
-              <div class="refund-price">Refund: <span >$198.00</span> </div>
-              <div class="reminder">Specifications: <span> Multi-color optiona</span>  </div>
+                <div class="price">Price: <del>{{currency}}{{trialDetailData.product_price}}</del> </div>
+              <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
+              <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
               <div class="reason">Reason: 
                 <span>
-                   Walmart.com has 2-Pack Ozark Trail Double-Wall Vacuum-Sealed Tumblers on sale with prices below.
+                  {{trialDetailData.product_reason}}
                 </span>
               </div>
             </div>
@@ -55,8 +59,8 @@
                 </div>
               </div>
               <div class="tabs-body">
-                <div v-if="selected == 0" class="content">
-                  <img src="../../assets/details.png" alt="">
+                <div v-if="selected == 0" class="content1" v-html="trialDetailData.product_details">
+                  
                 </div>
                 <div v-if="selected == 1" class="content">
                   <div class="head">
@@ -95,6 +99,10 @@
 <script>
 import detailsLeft from '@/components/coupons/details_left.vue'
 import explain from '@/components/trials/explain.vue'
+import { trialDetail,postedUserInfo } from '@/api/login'
+import { base64Encode, base64Decode } from '@/utils/randomString'
+import { timestampFormat, getTimeDetail } from '@/utils/date'
+import { getStore } from '@/utils/utils'
 export default {
   name: 'coupons',
   components: {
@@ -106,7 +114,6 @@ export default {
       isTop: false,
       selected: 0,
       added: true,
-      imgtest:require('../../assets/process01.png'),
       processData: [
         {
           'title':'Register users, apply for products',
@@ -143,14 +150,73 @@ export default {
       notGetTrialsDialog: false,
       tabsHead: [
         'Description', 'Novice Process'
-      ]
+      ],
+      trialDetailData: {
 
+      },
+      userInfo: {
+        avatar_img: '',
+        username: '',
+        type: '',
+        level: '',
+        joined_date: '',
+        coupon_posteds: ''
+      },
+      imgList: [],
+      reqData: {
+        id: '',
+      }
+    }
+  },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
+    },
+    leftTime () {
+      if (this.trialDetailData.end_time) {
+        return getTimeDetail(this.trialDetailData.end_time)
+      } else {
+        return ''
+      }
     }
   },
   mounted () {
-
+    this.init()
   },
   methods: {
+    init () {
+      this.initData()
+      this.getTrialDetail()
+    },
+    initData () {
+      this.reqData.id = base64Decode(this.$route.params.trialId)
+    },
+
+    //获取试用品详情
+    getTrialDetail () {
+      console.log(this.reqData)
+      trialDetail(this.reqData).then(res => {
+        console.log(res)
+        this.imgList = res.data.product_img.split(',')
+        this.trialDetailData = res.data
+        this.getPostUserInfo(res.data.user_id)
+      })
+    },
+
+    //获取发布人的信息
+    getPostUserInfo (id) {
+      var request = { user_id: id }
+      postedUserInfo(request)
+        .then(res => {
+          res.data.joined_date = timestampFormat(res.data.joined_date)
+          this.userInfo = res.data
+          this.userInfo.user_id = this.trialDetailData.user_id
+          this.userInfo.product_url = this.trialDetailData.product_url
+        })
+        .catch(error => {
+          console.log(error + ' postedUserInfo')
+        })
+    },
     getImgUrl (data) {
       this.imgUrl = data
     },
@@ -197,11 +263,10 @@ export default {
   }
   &.right {
     float: right;
-    width: 53.5rem;
+    width: 55.5rem;
     margin-top: 3.1rem;
     .promotion {
       position: relative;
-      height: 22rem;
       padding: 1rem;
       background: white;
       border-radius: 5px;

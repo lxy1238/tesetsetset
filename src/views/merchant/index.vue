@@ -48,6 +48,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestCouponData.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>

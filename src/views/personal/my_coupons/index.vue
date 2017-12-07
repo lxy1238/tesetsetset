@@ -27,6 +27,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestdata.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>
@@ -135,7 +136,7 @@ export default {
           .pro-title {
             font-size: 0.78rem;
             color: #333;
-            height: 2.2rem;
+            height: 1.56rem;
             overflow: hidden;
             margin-bottom: .3rem;
           }

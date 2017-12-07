@@ -6,7 +6,7 @@
                     :key="1" 
                     :couponsDetails="couponsDetails"
                     :addpromo="false" 
-                    @gotodetails="gotodetails">
+                    @gotodetails="gotodetails(couponsDetails.id)">
         <template slot="white">
           <div class="white-trials"></div>
         </template>
@@ -24,6 +24,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestdata.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>
@@ -137,8 +138,8 @@ export default {
     },
 
     //跳转到trials详情页面
-    gotodetails () {
-      this.$router.push({ path: '/trialsDetails/index'})
+    gotodetails (id) {
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(id) })
     },
 
     //根据页面尺寸宽度判断首页展示的商品数量

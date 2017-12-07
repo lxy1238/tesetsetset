@@ -8,13 +8,27 @@ export  function timestampFormat (timestamp) {
   return dateString.slice(4, 7) +' '+ dateString.slice(-4)
 }
 
-//获取的时间转化时间戳
+//获取的js时间对象 转化时间戳
 export function toTimestamp (time) {
   if(time) {
     return parseInt(time.getTime() / 1000)
   }
 }
+//获取剩下多少时间, 传入时间戳
+export function getTimeDetail (time) {
+  let now = toTimestamp(new Date())
+  let leftTime = time - now
+  let result = {
+    day: '',
+    hours: '',
+    minutes: '',
+  }
+  result.day = parseInt( leftTime / 86400 )
+  result.hours = parseInt((leftTime - result.day * 86400) / 3600)
+  result.minutes  = parseInt ((leftTime - result.day * 86400 - result.hours * 3600) / 60)
 
+  return result
+}
 export function parseTime (time, cFormat) {
   if (arguments.length === 0) {
     return null

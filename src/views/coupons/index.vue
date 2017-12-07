@@ -372,6 +372,7 @@ export default {
         this.templateDialog = true
       }
     }, 
+    
     //模板保存
     saveTemplate () {
       if (this.isLogin()) {
@@ -385,6 +386,8 @@ export default {
         })
       }
     },
+
+    //模版重置
     restoreTemplate () {
       this.promotionTemplate = this.promotionTemplateinit
       this.saveTemplate()
@@ -655,7 +658,7 @@ export default {
   }
   &.right {
     float: right;
-    width: 53.5rem;
+    width: 55.5rem;
     margin-top: 54px;
     .promotion {
       position: relative;

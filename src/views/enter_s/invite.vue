@@ -45,7 +45,7 @@ export default {
   .enter-s {
     height: 1000px;
     padding-top: 200px;
-    background-image: url('../../assets/VCG41AA023536.jpg');
+    background-image: url('../../assets/invite_friend.png');
     .invite-content {
       width: 1000px;
       margin: 0 auto;

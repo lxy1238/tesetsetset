@@ -262,13 +262,15 @@ export default {
         .then( (res) =>{
           this.getPlatformCateInfo()
           setTimeout(() => {
-            console.log(res)
             let data = res.data.data
-            this.couponsForm.product_img_s = data.product_img.map((e) => {
-              return {url: e}
+            let newArr = []
+            data.product_img.forEach((e) => {
+              if (e) {
+                newArr.push({url: e})
+              }
             })
+            this.couponsForm.product_img_s = newArr
             this.couponsForm.product_price = data.product_price.slice(1)
-            // this.couponsForm.product_reason  = data.product_reason.replace(/<br\s*\/?>/gi,'\r\n').replace(/<b>/gi, '').replace(/<\/b>/gi, '')
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$notify.error('please enter a right url')
@@ -287,10 +289,9 @@ export default {
       this.optionsWebsite = []
       getPlatformCate(this.requestData)
         .then(res => {
-          console.log(res.data) 
           if(res.data.length <= 0) {return}
           for (let i of res.data) {
-            var ObjWebsite = {
+            let ObjWebsite = {
               label: '',
               id: ''
             }
@@ -310,7 +311,6 @@ export default {
     //平台发生改变
     websiteChange (label) {
       for (let i of this.optionsWebsite) {
-        console.log(i.label, label)
         if (i.label == label) {
           this.couponsForm.platform_id = i.id
         }
@@ -343,7 +343,6 @@ export default {
         formData.append('file', file)
         uploadImg(formData)
           .then(res => {
-            console.log(res)
             this.couponsForm.product_img_s.push({ url: res.data })
           })
           .catch(error => {
@@ -359,7 +358,6 @@ export default {
     issueCoupon (data) {
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
-        console.log(this.couponsFormSubmit)
         editorCoupon(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
@@ -380,7 +378,6 @@ export default {
             console.log(error)
           })
       }
-      
     },
     Submit () {
       //element-ui 的表单验证

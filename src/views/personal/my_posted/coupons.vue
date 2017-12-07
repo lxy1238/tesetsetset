@@ -53,7 +53,7 @@
             </td>
 
             <td class="prcie">
-              <div>${{item.product_price}}</div>
+              <div>{{currency}}{{item.product_price}}</div>
             </td>
             <td class="discount">
               <div>{{item.discount_rate}}%</div>
@@ -80,6 +80,7 @@
             <td class="operation">
               <template v-if="item.status === 0">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
@@ -129,7 +130,7 @@
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
 import { userPickCoupons, couponCensor, couponUpdateRunStatus, getHeadCateList , couponDetele} from '@/api/login'
-import { setStore } from '@/utils/utils'
+import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
 import { base64Encode } from '@/utils/randomString'
@@ -222,7 +223,10 @@ export default {
     this.init()
   },
   computed: {
-    ...mapGetters(['user_id', 'token'])
+    ...mapGetters(['user_id', 'token']),
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
   methods: {
     init () {
