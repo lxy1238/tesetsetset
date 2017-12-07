@@ -20,7 +20,7 @@ export const constantRouterMap = [
       component: _import('page_index/index')
     },
     {
-      path: '/trials/index',
+      path: '/trials/:menuId?',
       component: _import('trials/index')
     },
     {

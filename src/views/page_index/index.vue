@@ -108,7 +108,7 @@ export default {
       this.requestData.keyword = this.$route.query.search
       this.getHeadCateListInfo()
       window.onresize = this.widthToNum
-      this.getheadData()
+      // this.getheadData()
     },
     //翻页功能实现
     gotoPage (index) {
@@ -118,14 +118,14 @@ export default {
     },
 
     //接收 选择国家时传递的数据
-    getheadData () {
-      this.$root.eventHub.$on('changeCountryId', data => {
-        this.requestData.country_id = data
-        this.requestData.page = 1
-        this.requestData.keyword = ''
-        this.getAllCouponsInfo()
-      })
-    },
+    // getheadData () {
+    //   this.$root.eventHub.$on('changeCountryId', data => {
+    //     this.requestData.country_id = data
+    //     this.requestData.page = 1
+    //     this.requestData.keyword = ''
+    //     this.getAllCouponsInfo()
+    //   })
+    // },
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails (id) {
@@ -161,12 +161,6 @@ export default {
       }
       getAllCoupons(this.requestData)
         .then(res => {
-          // let newArr = []
-          // res.data.data.forEach(e => {
-          //   if (e.status == 1 && e.run_status == 'active') {
-          //     newArr.push(e)
-          //   }
-          // })
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
           this.getUserInfo()

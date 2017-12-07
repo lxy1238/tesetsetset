@@ -362,7 +362,8 @@ export default {
       'token',
       'roles',
       'addRouters',
-      'avatar'
+      'avatar',
+      'currentRouter'
     ]),
     avatar_img () {
       return this.avatar
@@ -435,6 +436,8 @@ export default {
       this.$root.eventHub.$on('initClassify', () => {
         this.selectedC = -1
       })
+
+      //优惠券点击更多的时候触发的事件
       this.$root.eventHub.$on('selectClassify1', data => {
         for (var i of this.classifyList) {
           if (i.id === data) {
@@ -443,6 +446,8 @@ export default {
           }
         }
       })
+
+      //头部接受其他组件需要弹出登录的信号
       this.$root.eventHub.$on('isLoginInfo', () => {
         this.ShowLoginDialog()
       })
@@ -452,28 +457,35 @@ export default {
     filterCountry (item) {
       setStore('country_id',item.id)
       setStore('currency',item.currency)
-      this.selectedCountryShop  = item.id
-      this.keyword = ''
-      this.$root.eventHub.$emit('changeCountryId', item.id)
-      this.selectClassify(this.classifyList[0])
+      this.$router.push({path: '/'})
+      window.location.reload()
+      // this.selectedCountryShop  = item.id
+      // this.keyword = ''
+      // this.$root.eventHub.$emit('changeCountryId', item.id)
+      // this.selectClassify(this.classifyList[0])
     },
 
     //通过关键字查询过滤首页商品
     filterKeyword (keyword) {
       this.selectedC = -1
-      this.$router.push({ path: '/', query: { search: keyword }})
-    },
-
-    //跳转至佣金计算页面
-    gotoCommissions () {
-      this.$router.push({path: '/commissions/index'})
+      if (this.currentRouter.search('/trials') >= 0) {
+        this.$router.push({ path: '/trials/index', query: { search: keyword }})
+      } else {
+        this.$router.push({ path: '/', query: { search: keyword }})
+      }
+      
     },
 
     //选择不同的分类时，跳转到相应的路由
     selectClassify (item) {
       this.selectedC = item.id
       this.keyword = ''
-      this.$router.push({path: '/'+ item.name})
+      if (this.currentRouter.search('/trials') >= 0) {
+        this.$router.push({path: '/trials/'+ item.name})
+      } else {
+        this.$router.push({path: '/'+ item.name})
+      }
+      
     },
     coupons () {
       this.keyword = ''
@@ -482,8 +494,8 @@ export default {
       this.$store.dispatch('setLevel', 0)
     },
     trials () {
-      this.$router.push({ path: '/trials/index' })
       this.selectedC = 0
+      this.$router.push({ path: '/trials/index' })
       this.$store.dispatch('setLevel', 1)
     },
     ShowLoginDialog () {

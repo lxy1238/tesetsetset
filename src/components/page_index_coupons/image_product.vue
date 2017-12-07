@@ -5,6 +5,7 @@
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
       <img v-if="!loading" src="../../assets/01.png"   alt="img">
     </div>
+    <slot name="white"></slot>
     <div class="promo-copy-parent"  v-if="addpromo">
      <div class="promo-copy">
         <div class="span-btn" @click="addPromo(couponsDetails.id)">
@@ -71,7 +72,6 @@ export default {
   },
   mounted () {
     this.init()
-    console.log(this.couponsDetails)
   },
   methods: {
     init () {
@@ -110,7 +110,7 @@ export default {
           .catch(error => {
             console.log(error + 'promotionaddcoupon')
           })
-      } else {
+      } else if (this.addPromoMsg == 'Cancel Promo'){
         this.addPromoMsg = this.runningMsg
         promotionUserRemove(this.addPromoRequestData)
           .then(() => {
@@ -141,14 +141,14 @@ export default {
 }
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 @import url("../../styles/mixin.less");
 .coupons-product {
   .p(r);
   display: inline-block;
   overflow: hidden;
   width: 240px;
-  height: 370px;
+  height: 355px;
   background: white;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
@@ -176,6 +176,14 @@ export default {
     margin-bottom: 0;
     margin-top: 2px;
     color: rgb(137, 137, 137);
+    .old {
+      text-decoration: line-through;
+      margin-right: 5px;
+    }
+    .coupon-right {
+      color: #1a1a1a;
+      margin-left: 5px;
+    }
     .price-left {
       margin-right: 10px;
       text-decoration: line-through;
@@ -199,6 +207,10 @@ export default {
       width: 180px;
       height: 180px;
     }
+  }
+  .white-trials {
+    width: 100%;
+    height: 15px;
   }
   
   .promo-copy-parent {
