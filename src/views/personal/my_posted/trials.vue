@@ -360,8 +360,25 @@ export default {
       })
     },
 
-    //更新优惠券
+    //更新优惠券 判断close 的时候给与提示信息
     updateRunStatus (id, run_status) {
+      if (run_status == 'close') {
+        this.$confirm('Determine close trial?', 'reminder', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'cancel',
+          type: 'warning'
+        }).then(() => {
+          this.updateRunStatusFun(id, run_status)
+        }).catch (error => {
+          console.log(error)
+        })
+      } else {
+        this.updateRunStatusFun(id, run_status)
+      }
+    },
+
+    //更新状态执行函数
+    updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.trial_id = id
       this.updateRunStatusRequestData.run_status = run_status
       console.log(this.updateRunStatusRequestData)
@@ -372,7 +389,7 @@ export default {
       }).catch(error => {
         console.log(error)
       })
-    },
+    }
 
   
 

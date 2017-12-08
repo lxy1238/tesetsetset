@@ -309,7 +309,6 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
-          console.log(this.couponDeteleRequestData)
           couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
@@ -337,9 +336,24 @@ export default {
 
     //更新优惠券
     updateRunStatus (id, run_status) {
+      if (run_status == 'close') {
+        this.$confirm('Determine close trial?', 'reminder', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'cancel',
+          type: 'warning'
+        }).then(() => {
+          this.updateRunStatusFun(id, run_status)
+        }).catch (error => {
+          console.log(error)
+        })
+      } else {
+        this.updateRunStatusFun(id, run_status)
+      }
+    },
+
+    updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.coupon_id = id
       this.updateRunStatusRequestData.run_status = run_status
-      console.log(this.updateRunStatusRequestData)
       couponUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
         if (res.code === 200) {
           this.getUserPickCoupons()
