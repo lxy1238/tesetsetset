@@ -14,7 +14,7 @@
           </div>
         </div>
         <template v-if="userInfo.username">
-          <div class="user" @click="gotouser"    >
+          <div class="user" @click="gotouser" >
             <div class=" head inline-b">
               <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt="">
               <img  v-else src="../../assets/user.png" alt="">
@@ -103,6 +103,9 @@ export default {
     },
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
+      if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {
+        return
+      }
       this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
   }

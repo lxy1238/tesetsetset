@@ -3,7 +3,7 @@
     <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
-      <img v-if="!loading" src="../../assets/01.png"   alt="img">
+      <img v-if="!loading" src="../../assets/timg.gif"   alt="img">
     </div>
     <slot name="white"></slot>
     <div class="promo-copy-parent"  v-if="addpromo">
