@@ -22,7 +22,7 @@
               <i class="el-icon-delete"></i>
             </span>
           </p>
-          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.coupons.discount_rate}}%</span></p>
+          <p class="coupons content"><span>discount</span> <span class="com-right">{{couponsDetails.coupons.discount_rate}}%</span></p>
           </template>
           <template slot="btn">
             View Coupons
@@ -47,6 +47,7 @@ import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { base64Encode } from '@/utils/randomString'
 import { getStore } from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'promotion',
   data () {
@@ -55,19 +56,19 @@ export default {
       allpage: undefined,
       showItem: 7,
       requestData: {
-        api_token: '',
-        user_id: '',
+        api_token: getToken(),
+        user_id: getUserId(),
         page: 1,
         page_size: 8,
       },
       removeRequestData: {
-        api_token: '',
-        user_id: '',
+        api_token: getToken(),
+        user_id: getUserId(),
         coupon_id: ''
       },
       removeAllRequestData: {
-        api_token: '',
-        user_id: '',
+        api_token: getToken(),
+        user_id: getUserId(),
       }
     }
   },
@@ -80,23 +81,16 @@ export default {
   },
   methods: {
     init () {
-      this.initData()
       this.getPromotionDetails()
     },
     initData () {
-      this.requestData.api_token = this.token
-      this.requestData.user_id = this.user_id
-
-      this.removeRequestData.api_token = this.token
-      this.removeRequestData.user_id = this.user_id
-
-      this.removeAllRequestData.api_token = this.token
-      this.removeAllRequestData.user_id = this.user_id
+      
     },
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails () {
       promotionUserCoupon(this.requestData)
         .then(res => {
+          console.log(res)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
         })

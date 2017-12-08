@@ -7,7 +7,7 @@
         <div class="link-box">
            <p>Exclusive invitation link:</p>
            <div class="link">
-             <a id="inviteLink" href="javascript:void(0)">http://laqu.com/user-spokesman-index?inviteCode=5FSNJYLVA</a>
+             <a id="inviteLink" href="javascript:void(0)">{{invite_link}}</a>
            </div>
            <div class="footer-btn-copy">
             <button type="primary" data-clipboard-target="#inviteLink" @click="copy($event)">copy</button>
@@ -19,11 +19,12 @@
 
 <script>
 import Clip from '@/utils/clipboard.js'
+import { getUserId } from '@/utils/auth'
 export default {
   name: 'enter_s',
   data () {
     return {
-
+      invite_link: `http://${location.host}/#/?invitePromoter=${getUserId()}`
     }
   },
   mounted () {

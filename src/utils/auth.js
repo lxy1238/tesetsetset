@@ -7,7 +7,7 @@ const USER_ID = 'user_id'
 
 //查询领取人的信息时要用到的，防止页面强制刷新后数据丢失
 
-const expiresData = 30
+const expiresData = 7
 
 export function getEmail () {
   return Cookie.get(EMAIL)

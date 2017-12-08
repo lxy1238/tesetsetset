@@ -1,6 +1,7 @@
 import { login, getInfo, updateLogin } from '@/api/login'
 import { getEmail, setEmail, getToken, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
 import router from '../../router'
+import { removeEmail, removePass } from '../../utils/auth'
 
 const user = {
   state: {
@@ -52,7 +53,6 @@ const user = {
     Login ({ commit , state}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
-          console.log(res)
           setToken(res.data.api_token)
           setUserId(res.data.user_id)
           commit('SET_TOKEN', res.data.api_token)
@@ -78,6 +78,8 @@ const user = {
           } else if (res.code === 500) {
             removeToken()
             removeUserId()
+            removeEmail()
+            removePass()
             commit('SET_EMAIL', '')
             commit('SET_TOKEN', '')
             router.push({path: '/'})
@@ -91,6 +93,8 @@ const user = {
     LogOut ({ commit }) {
       removeToken()
       removeUserId()
+      removeEmail()
+      removePass()
       commit('SET_TOKEN', '')
       commit('SET_USERID', '') 
       router.push({path: '/'})

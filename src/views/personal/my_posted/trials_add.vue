@@ -125,7 +125,7 @@
         <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >no</el-radio>
       </el-form-item>
       <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
-        <el-input type="text" v-model="trialsForm.return_fee" @blur="filterMoney('return_fee')"></el-input>
+        <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('return_fee')"></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
@@ -186,8 +186,8 @@ export default {
         active_date: [],
         start_time: '',
         end_time: '',
-        quantity_per_day: '10',                //每天上限数量 int
-        total_quantity: '1000' ,                 //发行总量
+        quantity_per_day: 10,                //每天上限数量 int
+        total_quantity: 1000 ,                 //发行总量
         full_refund: '1',
         
         return_fee: '',
@@ -280,15 +280,15 @@ export default {
       return getStore('currency') || '$'
     },
     refund_one () {
-      if(this.trialsForm.return_fee) {
-        return NumAdd(this.trialsForm.return_fee, this.trialsForm.shipping_fee).toFixed(2)
+      if(this.trialsForm.refund_price) {
+        return NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee).toFixed(2)
       } else {
         return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee).toFixed(2)
       }
     },
     refund () {
-      if(this.trialsForm.return_fee && this.trialsForm.full_refund == '0') {
-        return (NumAdd(this.trialsForm.return_fee, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
+      if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
+        return (NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
       } else {
         return (NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
       }
@@ -470,8 +470,8 @@ export default {
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
         var formData = new FormData()
-        formData.append('api_token', this.token)
-        formData.append('user_id', this.user_id)
+        formData.append('api_token', getToken())
+        formData.append('user_id', getUserId())
         formData.append('file', file)
         uploadImg(formData)
           .then(res => {

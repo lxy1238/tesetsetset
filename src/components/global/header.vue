@@ -243,7 +243,7 @@ import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/lo
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
-import '../../utils/google'
+// import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -499,7 +499,7 @@ export default {
       this.$store.dispatch('setLevel', 1)
     },
     ShowLoginDialog () {
-      this.googleLogin()
+      // this.googleLogin()
       this.loginform.email = getEmail()
       if (getPass()) {
         this.loginform.password = base64Decode(getPass())
@@ -546,6 +546,7 @@ export default {
       })
     },
     showDropdownLanguage () {
+      return
       setTimeout( () => {
         this.showDropdownL = !this.showDropdownL
         this.showDropdownC = false
@@ -584,8 +585,7 @@ export default {
             this.$notify.success('login success')
             this.$refs['loginform'].resetFields()
           }
-          this.$store.dispatch('GetInfo').then(res => {
-            console.log(res)
+          this.$store.dispatch('GetInfo').then(() => {
             this.loginLoading = false
             window.location.reload()
           })

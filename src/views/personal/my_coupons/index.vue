@@ -3,7 +3,7 @@
     <div class="title-bottom">
       My Coupons
     </div>
-    <div class="coupons-content">
+    <div class="coupons-content" v-if="couponLists.length != 0">
       <div class="pro-card" v-for="item in couponLists">
         <div class="expried">EXPRIED</div>
         <div class="card-top">
@@ -37,6 +37,7 @@
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { userCoupons } from '@/api/login'
 import { mapGetters } from 'vuex'
+import { getToken, getUserId } from '@/utils/auth' 
 export default {
   name: 'my_coupons',
   data () {
@@ -44,8 +45,8 @@ export default {
       allpage: undefined,
       showItem: 7,
       requestData: {
-        api_token: '',
-        user_id: '',
+        api_token: getToken(),
+        user_id: getUserId(),
         page: 1,
         page_size: 9
       },
@@ -70,8 +71,6 @@ export default {
       this.getUserCoupons()
     },
     getUserCoupons () {
-      this.requestData.api_token = this.token
-      this.requestData.user_id = this.user_id
       userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
           console.log(res.data)   // 少了一个product_url 字段

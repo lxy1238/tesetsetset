@@ -338,8 +338,8 @@ export default {
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
         var formData = new FormData()
-        formData.append('api_token', this.token)
-        formData.append('user_id', this.user_id)
+        formData.append('api_token', getToken())
+        formData.append('user_id', getUserId())
         formData.append('file', file)
         uploadImg(formData)
           .then(res => {

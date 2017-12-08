@@ -53,6 +53,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { userInfoSet, uploadImg, getInfo } from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'settings-account',
   data () {
@@ -74,7 +75,7 @@ export default {
     ...mapGetters(['token', 'user_id'])
   },
   mounted () {
-    getInfo({ api_token: this.token, user_id: this.user_id })
+    getInfo({ api_token: getToken(), user_id: getUserId() })
       .then(res => {
         this.userInfo = res.data
         this.accountForm.api_token = this.token

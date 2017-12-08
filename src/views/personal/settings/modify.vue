@@ -21,6 +21,7 @@
 <script>
 import { resetPassword } from '@/api/login'
 import { mapGetters } from 'vuex'
+import {getToken, getUserId } from '@/utils/auth'
 export default {  
   name: 'affiliate_pid',
   data () {
@@ -52,8 +53,8 @@ export default {
         oldpassword: '', 
         password: '',
         password_confirmation: '',
-        api_token: '',
-        user_id: ''
+        api_token: getToken(),
+        user_id: getUserId()
       },
       rules:{
         oldpassword: [
@@ -87,8 +88,6 @@ export default {
     changePassword () {
       this.$refs['pidForm'].validate((valid) => {
         if (valid) {
-          this.pidForm.api_token = this.token
-          this.pidForm.user_id = this.user_id
           resetPassword(this.pidForm).then(res => {
             console.log(res)
             if (res.code === 402) {

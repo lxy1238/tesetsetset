@@ -43,7 +43,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in trLists">
+            <tr v-for="item in trLists" v-if="trLists.length != 0">
               <td>
                 <img class="trials-table-img" :src="item.product_img.split(',')[0]" alt="">
               </td>
@@ -188,27 +188,10 @@ export default {
         'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
         'Cost', 'Valid date', 'Status', 'Operation'
       ],
-      trLists: [{
-        product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',
-        product_title: 'this is title',
-        platform: 'Amazon',
-        store: 'A11',
-        product_prcie: '98.00',
-        quantity: '20',
-        applied: '15',
-        shipping_fee: '68.00',
-        promotion_fee: '85.00',
-        refund: '1969.00',
-        security_deposit: '2060.00',
-        cost: '0',            
-        valid_date: '2017-09-08 to 2017-10-01',
-        status: '1',
-
-
-      }],
+      trLists: [],
       allpage: undefined,
       showItem: 7,
-      nonApproval: '',
+      nonApproval: 'self closing',
       detailsDialog: false,
       all_run_status: ['pending','active', 'decline', 'stop', 'close', 'expired', 'underbalance' ],  // 待审核  暂停， 关闭 上线， 审核未通过  过期
       classifyList: [
@@ -276,7 +259,7 @@ export default {
 
     //查询 trails
     postedCouponsSearch () {
-      this.getPostTrialsList()
+      this.gotoPage(1)
     },
 
     //获取商家发布的试用品的列表
@@ -334,7 +317,6 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
-          console.log(this.couponDeteleRequestData)
           trialDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getPostTrialsList()
@@ -354,6 +336,10 @@ export default {
       this.detailsRequestData.trial_id = id
       this.detailsDialog = true
       trialCensor(this.detailsRequestData).then(res => {
+        if (res.data.content == '通过') {
+          this.nonApproval = 'self closing'
+          return
+        }
         this.nonApproval = res.data.content
       }).catch(error => {
         console.log(error)
@@ -381,7 +367,6 @@ export default {
     updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.trial_id = id
       this.updateRunStatusRequestData.run_status = run_status
-      console.log(this.updateRunStatusRequestData)
       trialUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
         if (res.code === 200) {
           this.getPostTrialsList()
