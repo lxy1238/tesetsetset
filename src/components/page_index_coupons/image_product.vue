@@ -186,7 +186,22 @@ export default {
     }
     .price-left {
       margin-right: 10px;
-      text-decoration: line-through;
+      font-size: 12px;
+      
+      // text-decoration: line-through;
+      color: #1a1a1a;
+      i {
+        color: rgb(137, 137, 137);
+      }
+    }
+    .price-right-bottom {
+      font-size: 12px;
+      float: right;
+      margin-right: 10px;
+      color: #1a1a1a;
+      i {
+        color: rgb(137, 137, 137);
+      }
     }
     .price-right {
       color: #1a1a1a;

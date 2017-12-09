@@ -98,10 +98,11 @@ export default {
   beforeDestroy () {
     window.onresize = null
     this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
-    this.$root.eventHub.$off('changeCountryId')
+    // this.$root.eventHub.$off('changeCountryId')
   },
   methods: {
     init () {
+      this.initData()
       this.getHeadCateListInfo()
       window.onresize = this.widthToNum
     },
@@ -120,11 +121,11 @@ export default {
     getTrialsList () {
       this.arrcouponsDetails = []
       if (this.$route.params.menuId) {
+        this.requestData.menu_id = 0
         for (var i of this.classifyList) {
           if (i.name === this.$route.params.menuId) {
             this.selectedC = i.id
             this.requestData.menu_id = i.id
-            // this.$router.push({path:'/trials/' + i.name})
           }
         }
       } else {

@@ -6,7 +6,7 @@
     <div class="title-s">
       Product Information
     </div>
-    <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="140px" class="coupons-form" >
+    <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="130px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
           <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
@@ -51,7 +51,7 @@
         <el-form-item label="Image" prop="product_img_s" >
           <el-upload 
                 class="upload-demo-img" 
-                action="https://jsonplaceholder.typicode.com/posts/" 
+                action="upload" 
                 :on-remove="handleRemoveP" 
                 :before-upload="beforeAvatarUploadP" 
                   :file-list="trialsForm.product_img_s"
@@ -362,6 +362,17 @@ export default {
       })
     },
 
+    //图片拖动位置 
+
+    imgChange () {
+      setTimeout(() => {
+        $('.el-upload-list__item').mousedown((e) => {
+          e.stopPropagation()
+          console.log(e)
+        })
+      }, 500)
+    },
+
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       this.$message.info('For information on goods, please wait a moment')
@@ -381,7 +392,9 @@ export default {
                 newArr.push({url: e})
               }
             })
+
             this.trialsForm.product_img_s = newArr
+            this.imgChange()
             this.trialsForm.product_price = data.product_price.slice(1)
             // this.trialsForm.product_reason  = data.product_reason.replace(/<br\s*\/?>/gi,'\r\n').replace(/<b>/gi, '').replace(/<\/b>/gi, '')
             this.trialsForm.product_title = data.product_title
@@ -476,7 +489,8 @@ export default {
         uploadImg(formData)
           .then(res => {
             console.log(res)
-            this.trialsForm.product_img_s.push({ url: 'http://' + res.data })
+            this.trialsForm.product_img_s.push({ url: res.data })
+            this.imgChange()
           })
           .catch(error => {
             console.log(error)
@@ -533,7 +547,7 @@ export default {
           var markupStr = $('#summernote').summernote('code')
           this.trialsFormSubmit.product_details = markupStr
           console.log(this.trialsFormSubmit)
-          this.issueCoupon(this.trialsFormSubmit)
+          // this.issueCoupon(this.trialsFormSubmit)
         } else {
           console.log('error submit!!')
           return false
@@ -579,7 +593,7 @@ export default {
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
         $('#summernote').summernote('code', res.data.product_details)
       })
-    }
+    },
   }
 }
 </script>
@@ -671,6 +685,12 @@ export default {
       width: 80px;
       height: 80px;
     }
+  }
+}
+.coupons-form .el-upload-list__item {
+  cursor: move;
+  img {
+    cursor: move;
   }
 }
 </style>

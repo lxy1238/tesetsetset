@@ -25,7 +25,7 @@
           </div>
           <div class="footer">
             <div v-if="userData.base.introduce">{{userData.base.introduce}} </div>
-             <div> Find this site interesting, <a href="javascript:void(0);" @click="gotoInvite">Invite Friends</a> to join.</div>
+             <!-- <div> Find this site interesting, <a href="javascript:void(0);" @click="gotoInvite">Invite Friends</a> to join.</div> -->
           </div>
         </div>
       </div>

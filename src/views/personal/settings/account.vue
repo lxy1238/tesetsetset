@@ -12,8 +12,8 @@
         </el-form-item>
         <el-form-item label="Avatar: " prop="" class="account-item" >
           <el-upload class="avatar-uploader" 
-                    action="https://jsonplaceholder.typicode.com/posts/" 
-                    :show-file-list="false" :on-success="handleAvatarSuccess" 
+                    action="upload" 
+                    :show-file-list="false" 
                     :before-upload="beforeAvatarUpload"
                     >
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -30,7 +30,7 @@
           <el-date-picker type="date" v-model="accountForm.birthday" ></el-date-picker>
         </el-form-item>
         <el-form-item label="Introduce: " prop="" class="account-item" >
-          <el-input type="textarea" v-model="accountForm.introduce" ></el-input>
+          <el-input type="textarea" v-model="accountForm.introduce" :rows="6" ></el-input>
         </el-form-item>
       </el-form>
       <div class="title-s">Linked Accounts</div>
@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { userInfoSet, uploadImg, getInfo } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
@@ -59,27 +58,23 @@ export default {
   data () {
     return {
       accountForm: {
-        api_token: '',
-        user_id: '',
+        api_token: getToken(),
+        user_id: getUserId(),
         birthday: '',
         introduce: '',
         sex: '男',
         avatar_img: require('../../../assets/user.png')
       },
       imageUrl: require('../../../assets/user.png'),
-      radio: '男',
       userInfo: {}
     }
   },
   computed: {
-    ...mapGetters(['token', 'user_id'])
   },
   mounted () {
     getInfo({ api_token: getToken(), user_id: getUserId() })
       .then(res => {
         this.userInfo = res.data
-        this.accountForm.api_token = this.token
-        this.accountForm.user_id = this.user_id
         this.accountForm.sex = this.userInfo.base.sex
         this.accountForm.birthday = this.userInfo.base.birthday
         this.accountForm.introduce = this.userInfo.base.introduce
@@ -91,9 +86,7 @@ export default {
       })
   },
   methods: {
-    handleAvatarSuccess (res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
+    //上传图片
     beforeAvatarUpload (file) {
       var isJPG = file.type === 'image/jpeg'
       var isGIF = file.type === 'image/gif'
@@ -108,12 +101,13 @@ export default {
       }
       if ((isJPG || isGIF || isPNG) && isLt500K) {
         var formData = new FormData()
-        formData.append('api_token', this.token)
-        formData.append('user_id', this.user_id)
+        formData.append('api_token', getToken())
+        formData.append('user_id', getUserId())
         formData.append('file', file)
         uploadImg(formData)
           .then(res => {
-            this.accountForm.avatar_img = 'http://' + res.data
+            console.log(res)
+            this.accountForm.avatar_img = res.data
             this.imageUrl = this.accountForm.avatar_img
           })
           .catch(error => {
@@ -123,8 +117,12 @@ export default {
         return false
       }
     },
+
+    
+
+
+    //改变用户信息接口
     changeUserInfo () {
-      console.log(this.accountForm)
       userInfoSet(this.accountForm)
         .then(() => {
           this.$notify.success('reset info success')
@@ -139,7 +137,7 @@ export default {
 }
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 @import url("../../../styles/mixin.less");
 
 .facebook-text {
@@ -212,5 +210,6 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+  border-radius: 100%;
 }
 </style>

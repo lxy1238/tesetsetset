@@ -59,7 +59,7 @@
                 </div>
             </div>
           </div>
-          <div class="commission">
+          <!-- <div class="commission">
              <div class="commission-title">
               <span>
                 Affiliate reward
@@ -69,7 +69,7 @@
               <span>Get {{couponDetail.commission_ratio}}% commission, about $ {{couponDetail.commission_amount}} affiliate reward
               </span>
             </div>
-          </div>
+          </div> -->
           <div class="promotion-template">
             <div class="promo-head">
               <div class="promo-head-l">

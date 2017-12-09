@@ -13,11 +13,11 @@
           </div>
           <div class="pro-info">
             <span class="old-price">${{item.coupons.product_price}}</span>
-            <span class="coupons-price"><i>coupons</i><b>${{item.coupons.product_price * item.coupons.discount_rate / 100}}</b></span>
+            <span class="coupons-price"><i>coupons</i><b>${{(item.coupons.product_price * item.coupons.discount_rate / 100).toFixed(2)}}</b></span>
             <span class="proportion"><b>{{item.coupons.discount_rate}}%</b><i>off</i></span>
           </div>
         </div>
-        <div class="card-bottom">
+        <div class="card-bottom" >
           <span class="code" :title="item.coupons.coupon_code">{{item.coupons.coupon_code}}</span>
           <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go To Amazon </a> </button>
         </div>
@@ -27,7 +27,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
-      :current="requestdata.page"
+      :current="requestData.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>
@@ -73,7 +73,7 @@ export default {
     getUserCoupons () {
       userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
-          console.log(res.data)   // 少了一个product_url 字段
+          console.log(res.data)    // 少了一个product_url 字段
           this.couponLists = res.data.data
           this.allpage = res.data.last_page
         }
@@ -133,9 +133,9 @@ export default {
             height: 3rem;
           }
           .pro-title {
-            font-size: 0.78rem;
+            font-size: 12px;
             color: #333;
-            height: 1.56rem;
+            height: 24px;
             overflow: hidden;
             margin-bottom: .3rem;
           }

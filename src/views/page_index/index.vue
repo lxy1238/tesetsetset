@@ -11,13 +11,17 @@
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-left">{{currency}}{{couponsDetails.product_price}}</span>
-            <span class="price-right">{{currency}}{{couponsDetails.discount_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
           </p>
-          <el-tooltip  :visible-arrow="false" placement="top" effect="light">
+          <p class="price content">
+            <span class="price-left"><i>coupon</i> {{currency}}{{couponsDetails.discount_price}}</span>
+            <span class="price-right-bottom"> 35% <i>off</i></span>
+          </p>
+          
+          <!-- <el-tooltip  :visible-arrow="false" placement="top" effect="light">
              <div slot="content">Expected Commissions {{currency}} {{couponsDetails.commission_amount}}</div>
             <p class="coupons content" ><span>Commissions</span> <span class="com-right">{{couponsDetails.commission_ratio}}%</span></p>
-          </el-tooltip>
+          </el-tooltip> -->
           </template>
           <template slot="btn">
             View Coupons
@@ -28,7 +32,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
-      :current="requestdata.page"
+      :current="requestData.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>
@@ -54,10 +58,10 @@ export default {
         name: 'Top Coupons'
       }],
       requestData: {
+        country_id: parseInt(getStore('country_id')) || 1,
         page: 1,
         page_size: '',
         menu_id: 0,
-        country_id: parseInt(getStore('country_id')) || 1,
         keyword: '',
       }
     }
@@ -72,7 +76,7 @@ export default {
   beforeDestroy () {
     window.onresize = null
     this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
-    this.$root.eventHub.$off('changeCountryId')
+    // this.$root.eventHub.$off('changeCountryId')
   },
   computed: {
     //导航条变化的时候触发查询需要展示商品的信息
@@ -162,6 +166,7 @@ export default {
       }
       getAllCoupons(this.requestData)
         .then(res => {
+          console.log(res.data.data)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
           this.getUserInfo()
