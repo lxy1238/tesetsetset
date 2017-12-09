@@ -3,7 +3,9 @@
       <div class="content" id="content">
         <div class="img">
           <div class="img-big">
-            <img :src="imgList[activeNum]" >
+            <a :href="userInfo.product_url" target="_blank">
+              <img :src="imgList[activeNum]"  >
+            </a>
           </div>
           <div class="img-small">
             <span class="left" @click="pre"> <i class="iconfont icon-huidaodingbu-copy "></i> </span>
@@ -12,7 +14,7 @@
           </div>
         </div>
         <template v-if="userInfo.username">
-          <div class="user" @click="gotouser"    >
+          <div class="user" @click="gotouser" >
             <div class=" head inline-b">
               <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt="">
               <img  v-else src="../../assets/user.png" alt="">
@@ -38,25 +40,13 @@
 </template>
 
 <script>
-import { getStore } from '@/utils/utils'
-import { postedUserInfo } from '@/api/login'
-import { timestampFormat } from '@/utils/date'
 import { base64Encode } from '@/utils/randomString'
 export default {
-  name: "detailsLeft",
-  data() {
+  name: 'detailsLeft',
+  data () {
     return {
       activeNum: 0,
-      // userInfo: {
-      //   // avatar_img: '',
-      //   // username: '',
-      //   // type: '',
-      //   // level: '',
-      //   // joined_date: '',
-      //   // coupon_posteds: ''
-      //   // user_id: ''
-      // },
-    };
+    }
   },
   props: {
     isTop: {
@@ -77,24 +67,23 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.activeNum = 0
   },
   computed: {
-    imgLen() {
-      return this.imgList.length;
+    imgLen () {
+      return this.imgList.length
     }
   },
   methods: {
     //页面图片效果
-    emitdata (index) {
-      this.$emit('send', this.imgList[index])
+    emitdata () {
+      this.$emit('send', this.imgList[0])
     },
-
     //图片效果
     hover (i) {
       this.activeNum = i
-      this.emitdata(i)
+      // this.emitdata(i)
     },
     pre () {
       if (this.activeNum === 0) {
@@ -102,7 +91,7 @@ export default {
       } else {
         this.activeNum--
       }
-      this.emitdata(this.activeNum)
+      // this.emitdata(this.activeNum)
     },
     next () {
       if (this.activeNum === this.imgLen - 1) {
@@ -110,22 +99,24 @@ export default {
       } else {
         this.activeNum++
       }
-      this.emitdata(this.activeNum)
+      // this.emitdata(this.activeNum)
     },
-
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
+      if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {
+        return
+      }
       this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
 .details-left {
   // position: fixed;
   float: left;
-  width: 28.9rem;
+  width: 26.9rem;
   height: 44.44rem;
   .img {
     height: 22rem;
@@ -157,7 +148,7 @@ export default {
           left: 1rem;
         }
         &.right {
-          right: 1rem;
+          right: .5rem;
         }
         i {
           font-size: 2rem;
@@ -229,7 +220,7 @@ export default {
            float: left;
            margin-bottom: .5rem;
            margin-top: .5rem;
-           width: 10rem;
+           width: 8rem;
         }
       }
       .coupons-posted {

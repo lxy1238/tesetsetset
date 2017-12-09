@@ -3,26 +3,27 @@
     <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
-      <img v-if="!loading" src="../../assets/01.png"   alt="img">
+      <img v-if="!loading" src="../../assets/timg.gif"   alt="img">
     </div>
-     <div class="promo-copy" v-if="addpromo">
+    <slot name="white"></slot>
+    <div class="promo-copy-parent"  v-if="addpromo">
+     <div class="promo-copy">
         <div class="span-btn" @click="addPromo(couponsDetails.id)">
           <span>{{addPromoMsg}}</span>
         </div>
         <div class="line"></div>
         <el-tooltip placement="right">
           <div slot="content" class="copy-content" :id="productDetails">
-            <img class="copy-img" :src="couponsDetails.product_img.split(',')[0]" />
+            <img class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
-            <div class="content-line">coupons ${{couponsDetails.discount_price}}</div>
+            <div class="content-line">coupons {{currency}} {{couponsDetails.discount_price}}</div>
             <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
-           
           </div>
           <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
         </el-tooltip>
       </div>
-      <!-- <div v-else class="promo-copy-hidden"></div> -->
+     </div> 
       <p class="platfrom content" >{{couponsDetails.website}}</p>
       <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
       <slot name="price"></slot>
@@ -35,23 +36,24 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { getToken } from "@/utils/auth";
-import { promotionAddCoupon, promotionUserRemove } from "@/api/login";
-import Clip from "@/utils/clipboard.js";
+import { mapGetters } from 'vuex'
+import { getToken } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { promotionAddCoupon, promotionUserRemove } from '@/api/login'
+import Clip from '@/utils/clipboard.js'
 export default {
-  name: "image_product",
-  data() {
+  name: 'image_product',
+  data () {
     return {
       loading: false,
-      addPromoMsg: "Add Promo",
-      runningMsg: "Running . . .",
+      addPromoMsg: 'Add Promo',
+      runningMsg: 'Running . . .',
       addPromoRequestData: {
         api_token: getToken(),
-        user_id: "",
-        coupon_id: ""
+        user_id: '',
+        coupon_id: ''
       }
-    };
+    }
   },
   props: {
     couponsDetails: {
@@ -63,12 +65,12 @@ export default {
     },
     promotions: {
       type: Array,
-      default: function() {
-        return [];
+      default: function () {
+        return []
       }
     }
   },
-  mounted() {
+  mounted () {
     this.init()
   },
   methods: {
@@ -77,73 +79,76 @@ export default {
       //判断是否加入推广
       setTimeout(() => {
         if (this.promotions.includes(this.couponsDetails.id)) {
-          this.addPromoMsg = "Cancel Promo"
+          this.addPromoMsg = 'Cancel Promo'
         }
       }, 150)
     },
     //跳转到详情也，携带coupon_id ,user_id
-    goToCouponsPage(id) {
-      this.$emit("gotodetails", id)
+    goToCouponsPage (id) {
+      this.$emit('gotodetails', id)
     },
 
-    loadImg() {
+    loadImg () {
       this.loading = true
     },
 
     //加入 移除  推广
-    addPromo(coupon_id) {
+    addPromo (coupon_id) {
       this.addPromoRequestData.coupon_id = coupon_id
-      if (this.addPromoMsg == "Add Promo") {
+      if (this.addPromoMsg == 'Add Promo') {
         this.addPromoMsg = this.runningMsg
         if (!getToken()) {
           setTimeout( () => {
-            this.addPromoMsg = "Add Promo"
+            this.addPromoMsg = 'Add Promo'
           }, 100)
           return
         }
         promotionAddCoupon(this.addPromoRequestData)
-          .then(res => {
-            this.addPromoMsg = "Cancel Promo"
+          .then(() => {
+            this.addPromoMsg = 'Cancel Promo'
           })
           .catch(error => {
-            console.log(error + "promotionaddcoupon")
-          });
-      } else {
+            console.log(error + 'promotionaddcoupon')
+          })
+      } else if (this.addPromoMsg == 'Cancel Promo'){
         this.addPromoMsg = this.runningMsg
         promotionUserRemove(this.addPromoRequestData)
-          .then(res => {
-            this.addPromoMsg = "Add Promo"
+          .then(() => {
+            this.addPromoMsg = 'Add Promo'
           })
           .catch(error => {
-            console.log(error + "promotionaddcoupon")
-          });
+            console.log(error + 'promotionaddcoupon')
+          })
       }
     },
-    copy(e) {
+    copy (e) {
       Clip(e)
     }
   },
   computed: {
-    ...mapGetters(["token", "user_id"]),
-    productDetails() {
+    ...mapGetters(['token', 'user_id']),
+    productDetails () {
       return 'productDetails' + this.couponsDetails.id
     },
     productDetails1 () {
-      return "#" + this.productDetails 
+      return '#' + this.productDetails 
+    },
+    currency () {
+      getStore('currency') || '$'
     }
   },
  
-};
+}
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 @import url("../../styles/mixin.less");
 .coupons-product {
   .p(r);
   display: inline-block;
   overflow: hidden;
   width: 240px;
-  height: 370px;
+  height: 355px;
   background: white;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
@@ -151,7 +156,7 @@ export default {
   z-index: 1;
   &:hover {
     .promo-copy {
-      height: 36px;
+      transform: translateY(-4px);
     }
   }
   .expried {
@@ -171,9 +176,32 @@ export default {
     margin-bottom: 0;
     margin-top: 2px;
     color: rgb(137, 137, 137);
+    .old {
+      text-decoration: line-through;
+      margin-right: 5px;
+    }
+    .coupon-right {
+      color: #1a1a1a;
+      margin-left: 5px;
+    }
     .price-left {
       margin-right: 10px;
-      text-decoration: line-through;
+      font-size: 12px;
+      
+      // text-decoration: line-through;
+      color: #1a1a1a;
+      i {
+        color: rgb(137, 137, 137);
+      }
+    }
+    .price-right-bottom {
+      font-size: 12px;
+      float: right;
+      margin-right: 10px;
+      color: #1a1a1a;
+      i {
+        color: rgb(137, 137, 137);
+      }
     }
     .price-right {
       color: #1a1a1a;
@@ -195,17 +223,26 @@ export default {
       height: 180px;
     }
   }
-  .promo-copy-hidden {
-    height: 2rem;
+  .white-trials {
+    width: 100%;
+    height: 15px;
+  }
+  
+  .promo-copy-parent {
+    .p(a);
+    overflow: hidden;
+    width: 100%;
+    top: 160px;
+    height: 36px;
   }
   .promo-copy {
     .p(a);
-    top: 160px;
     font-size: 12px;
     width: 100%;
-    height: 0;
+    height: 36px;
     overflow: hidden;
     line-height: 36px;
+    transform: translateY(36px);
     margin-top: 0.5rem;
     background: #bfbfbf;
     transition: all 0.2s ease 0.2s;
@@ -240,12 +277,12 @@ export default {
   .descript {
     font-size: 13px;
     color: rgb(51, 51, 51);
-    height: 2.2rem;
+    height: 26px;
     overflow: hidden; /*内容超出后隐藏*/
     // text-overflow: ellipsis;/* 超出内容显示为省略号*/
     // white-space: nowrap;/*文本不进行换行*/
     margin-top: 0.5rem;
-    margin-bottom: 0;
+    margin-bottom: 5px;
   }
   .price {
     font-size: 15px;

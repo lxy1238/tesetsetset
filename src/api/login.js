@@ -28,12 +28,7 @@ export const login = data => fetch({
 })
 
 
-//首页获取所有的优惠券的信息
-export const getAllCoupons = data => fetch({
-  url: '/api/v1/coupon/show',
-  method: 'POST',
-  data: qs.stringify(data)
-})
+
 
 //获取用户基本信息
 export const getInfo = data => fetch({
@@ -95,9 +90,31 @@ export const postedUserInfo = data => fetch({
  * 
  * 
  */
+
+//首页获取所有的优惠券的信息
+export const getAllCoupons = data => fetch({
+  url: '/api/v1/coupon/show',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 //新增优惠券
 export const addCoupon = data => fetch({
   url: '/api/v1/coupon/add',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//编辑优惠券
+export const editorCoupon = data => fetch({
+  url: '/api/v1/coupon/edit',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//获取需要编辑的优惠券详情
+
+export const editDetail = data => fetch({
+  url: '/api/v1/coupon/edit-detail',
   method: 'POST',
   data: qs.stringify(data)
 })
@@ -176,6 +193,46 @@ export const addProblem = data => fetch({
   data: qs.stringify(data)
 })
 
+//优惠券模板编辑
+export const editTemplate = data => fetch({
+  url: '/api/v1/coupon/edit-template',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+
+/**
+ * 
+ * @param 优惠券审核
+ *  
+ * 
+ */
+
+//优惠券审核不通过查看详情
+export const couponCensor = data => fetch({
+  url: '/api/v1/coupon/censor',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//更新状态
+export const couponUpdateRunStatus = data => fetch({
+  url: '/api/v1/coupon/update-run-status',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//删除优惠券
+export const couponDetele = data => fetch({
+  url: '/api/v1/coupon/delete',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
 
 /**
  * 
@@ -184,13 +241,104 @@ export const addProblem = data => fetch({
  * 
  */
 
-//商户新增试用品
+//首页获取所有的优惠券的信息
+export const getAllTrial = data => fetch({
+  url: '/api/v1/trial/show',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//显示试用品店铺列表
 export const trialsAdd = data => fetch({
   url: '/api/v1/trial/add',
   method: 'POST',
   data: qs.stringify(data)
 })
 
+//商户新增试用品
+export const trialsStore = data => fetch({
+  url: '/api/v1/trial/trial-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//商户新增试用品
+export const trialDetail = data => fetch({
+  url: '/api/v1/trial/detail',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//商户发布的试用品
+export const userTrials = data => fetch({
+  url: '/api/v1/trial/user-trials',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+//新增店铺
+export const addStore = data => fetch({
+  url: '/api/v1/user/add-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//显示店铺列表
+
+export const showStore = data => fetch({
+  url: '/api/v1/user/show-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+/**
+ * 
+ * @param 试用品审核修改状态
+ *  
+ * 
+ */
+
+// 试用品审核信息
+export const trialCensor = data => fetch({
+  url: '/api/v1/trial/censor',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//更新试用品状态
+export const trialUpdateRunStatus = data => fetch({
+  url: '/api/v1/trial/update-run-status',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+// 删除试用品
+export const trialDetele = data => fetch({
+  url: '/api/v1/trial/delete',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//编辑优惠券
+export const editTrial = data => fetch({
+  url: '/api/v1/trial/edit',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//获取需要编辑的优惠券详情
+
+export const trialEditDetail = data => fetch({
+  url: '/api/v1/trial/edit-detail',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+ 
 
 
 
@@ -210,7 +358,7 @@ export const uploadImg = data => fetch({
 
 //获取平台品类
 export const getPlatformCate = data => fetch({
-  url: '/api/v1/platform/platform-category',
+  url: '/api/v1/platform/show',
   method: 'POST',
   data: qs.stringify(data)
 })
@@ -229,7 +377,7 @@ export const getHeadCateList = () => fetch({
  *  
  * 
  */
-//获取首页头部的品类列表
+//获取首页国家列表
 export const getUserCountry = () => fetch({
   url: '/api/v1/platform/country',
   method: 'POST',

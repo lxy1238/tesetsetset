@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index">
-    <div class="pages-content">
+  <div class="page-index" >
+    <div class="pages-content" v-if="couponDetail.valid_date">
       <div class="head-crumbs">
         <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
@@ -17,7 +17,7 @@
           <div class="promotion">
             <img class="img"  src="../../assets/amazon.png" alt="">
             <div class="title">
-              <span >
+              <span @click="gotoPlatform(couponDetail.product_url)">
                 {{couponDetail.product_title}}
               </span>
             </div>
@@ -26,9 +26,9 @@
               </span>
             </div>
             <div class="price-details" v-if="couponDetail.discount_price">
-              <span class="inline-b n-price">${{couponDetail.discount_price}}</span>
-              <span class="inline-b o-price">${{couponDetail.product_price}}</span>
-              <span class="inline-b c-price">Coupons ${{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
+              <span class="inline-b n-price">{{currency}}{{couponDetail.discount_price}}</span>
+              <span class="inline-b o-price">{{currency}}{{couponDetail.product_price}}</span>
+              <span class="inline-b c-price">Coupons {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
               <span class="inline-b ratio">{{couponDetail.discount_rate}}%off</span>
             </div>
             <div class="data-info">
@@ -59,7 +59,7 @@
                 </div>
             </div>
           </div>
-          <div class="commission">
+          <!-- <div class="commission">
              <div class="commission-title">
               <span>
                 Affiliate reward
@@ -69,13 +69,13 @@
               <span>Get {{couponDetail.commission_ratio}}% commission, about $ {{couponDetail.commission_amount}} affiliate reward
               </span>
             </div>
-          </div>
+          </div> -->
           <div class="promotion-template">
             <div class="promo-head">
               <div class="promo-head-l">
                 Promotion template
               </div>
-              <div class="promo-head-r" @click="templateDialog = true">
+              <div class="promo-head-r" @click="modifyTemplate">
                 <i class="iconfont icon-modify1"></i>
                 Modify template
               </div>
@@ -85,11 +85,8 @@
                  <div class="img" >
                    <img :src="imgUrl" alt="">
                  </div>
-                 <div class="text-describe">
-                   (Amazon) 2-Pk of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tum<br><br>
-                    Save price: $99.00       Discount: 25%off       Coupon Value: $15.00<br><br>
-                    Women’s Girls Soft PU Multi Card Holder Long Wallet Purse Cellphone Bag Clutch Bag.<br><br>
-                    Click to get coupon: https://translate.google.cn/dp/vppdsdf
+                 <div class="text-describe" v-html="templateText" >
+                   
                  </div>
                </div>
                <div class="share-to-p">
@@ -118,7 +115,7 @@
                 :promotions="userPromotions" 
                 @gotodetails="gotodetails">
                 <template slot="price">
-                <p class="price content">${{couponsDetails.product_price}}</p>
+                <p class="price content">{{currency}}{{couponsDetails.product_price}}</p>
                 <p class="coupons content">
                   <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.discount_price}}</strong></span>
                   <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
@@ -134,14 +131,14 @@
     </div>
     <!-- 弹出窗  getcode-->
       <el-dialog  :visible.sync="showGetCodeDialog" class="code-dialog">
-        <span slot="title" class="title">
+        <span slot="title" class="title" @click="gotoPlatform(couponDetail.product_url)">
           {{couponDetail.product_title}}
           <img src="../../assets/amazon.png" alt="">
         </span>
         <div class="dialog-body">
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
-            <div class="goto-amazon"><span ><a href="#">Go to Amszon</a> and paste this code at checkout</span></div>
+            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
             <div class="discount" @click="getCouponCode" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
@@ -178,14 +175,14 @@
               <h3>Generic label</h3>
             <div class="content">
               <p>Labels are recommended,You can adjust your content display methods yourself.</p>
-              <div class="text"><span>#Platform#</span> <span class="right">This is the title of the promotion. </span></div>
+              <div class="text"><span>#Platform#</span> <span class="right">This is the platform of the promotion. </span></div>
               <div class="text"><span>#Promo_title#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_listprice#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_saleprice#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Coupon_value#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Discount_scale#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_description#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_link#</span> <span class="right">This is the title of the promotion. </span></div>
+              <div class="text"><span>#Promo_listprice#</span> <span class="right">This is the listprice of the promotion. </span></div>
+              <div class="text"><span>#Promo_saleprice#</span> <span class="right">This is the saleprice of the promotion. </span></div>
+              <div class="text"><span>#Coupon_value#</span> <span class="right">This is the coupon of the promotion. </span></div>
+              <div class="text"><span>#Discount_scale#</span> <span class="right">This is the scale of the promotion. </span></div>
+              <div class="text"><span>#Promo_description#</span> <span class="right">This is the description of the promotion. </span></div>
+              <div class="text"><span>#Promo_link#</span> <span class="right">This is the link of the promotion. </span></div>
             </div>
             <div class="footer">
               <span>
@@ -198,11 +195,11 @@
           <div class="box dialog-r">
               <h3>Promotion template</h3>
             <div class="content">
-              <textarea name="" id="" cols="30" rows="10"></textarea>
+              <textarea name="" id="" cols="30" rows="10" v-model="promotionTemplate"></textarea>
             </div>
             <button class="save" @click="saveTemplate">Save</button>
             <div class="footer right">
-              <span class="reset"><i class="iconfont icon-reset"></i> Restore</span>
+              <span class="reset" @click="restoreTemplate"><i class="iconfont icon-reset"></i> Restore</span>
               <span @click="templateDialog = false"> <i class="iconfont icon-cha"></i> Cancel</span>
             </div>
           </div>
@@ -212,15 +209,13 @@
 </template>
 
 <script>
-import detailsLeft from "@/components/coupons/details_left.vue";
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import codeDialog from "@/components/coupons/code_dialog.vue";
-import explain from "@/components/trials/explain.vue";
-import Clip from "@/utils/clipboard.js";
+import detailsLeft from '@/components/coupons/details_left.vue'
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import explain from '@/components/trials/explain.vue'
+import Clip from '@/utils/clipboard.js'
 
-import { getStore, removeStore } from "@/utils/utils";
 import { parseTime } from '@/utils/date'
-import { timestampFormat } from "@/utils/date";
+import { timestampFormat } from '@/utils/date'
 import {
   getAllCoupons,
   couponDetails,
@@ -231,45 +226,46 @@ import {
   promotionUserRemove,
   getInfo,
   addProblem,
-  getHeadCateList 
-} from "@/api/login";
-import { getToken, getUserId } from "@/utils/auth";
-import { mapGetters } from "vuex";
+  getHeadCateList,
+  editTemplate
+} from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { mapGetters } from 'vuex'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
-  name: "coupons",
+  name: 'coupons',
   components: {
     detailsLeft,
     couponsPro,
-    codeDialog,
     explain
   },
-  data() {
+  data () {
     return {
       isTop: true,
       userInfo: {
-        avatar_img: "",
-        username: "",
-        type: "",
-        level: "",
-        joined_date: "",
-        coupon_posteds: ""
+        avatar_img: '',
+        username: '',
+        type: '',
+        level: '',
+        joined_date: '',
+        coupon_posteds: ''
       },
       imgList: [],
-      html: "hello",
+      html: 'hello',
       options: [
-        "Choose reason",
-        "Dead deal",
-        "Duplicate",
-        "Bad link",
-        "Spam",
-        "Inaccurate",
-        "No value",
-        "Alive again"
+        'Choose reason',
+        'Dead deal',
+        'Duplicate',
+        'Bad link',
+        'Spam',
+        'Inaccurate',
+        'No value',
+        'Alive again'
       ],
-      selected: "Choose reason",
+      selected: 'Choose reason',
       added: true,
-      imgUrl: "",
+      imgUrl: '',
       arrcouponsDetails: [],
       couponDetail: {},
       showGetCodeDialog: false,
@@ -282,25 +278,26 @@ export default {
         page_size: 9
       },
       requestCouponDetails: {
-        id: ""
+        id: '',
+        user_id: getUserId() 
       },
       reqGetCodeData: {
         api_token: getToken(),
-        coupon_id: "",
-        user_id: "",
-        username: "",
-        generalize_uid: "",
-        generalize_username: ""
+        coupon_id: '',
+        user_id: '',
+        username: '',
+        generalize_uid: '',
+        generalize_username: ''
       },
       checkGetCodeData: {
         api_token: getToken(),
-        coupon_id: "",
-        user_id: ""
+        coupon_id: '',
+        user_id: ''
       },
       addPromotionData: {
         api_token: getToken(),
-        coupon_id: "",
-        user_id: ""
+        coupon_id: '',
+        user_id: getUserId()
       },
       addProblemData: {
         api_token: getToken(),
@@ -320,33 +317,80 @@ export default {
       ],
 
       //是否显示问题反馈
-      isFlagCoupon: false
-    };
+      isFlagCoupon: false,
+
+      //模板默认样式
+      submitTemplateData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        content: ''
+      },
+      promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
+      promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
+      templateText: '',
+    }
   },
   computed: {
-    ...mapGetters(["username", "user_id"]),
+    ...mapGetters(['username', 'user_id']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
           return i.name
         }
       }
+    },
+    currency () {
+      return getStore('currency') || '$'
     }
   },
-  mounted() {
+  mounted () {
     this.init()
   },
 
   //组件销毁前
-  beforeDestroy() {
+  beforeDestroy () {
     // removeStore('couponId')
   },
   methods: {
     test () {
-      var a = document.getElementById("test").value;
-      var b = a.replace(/\n/g, "<br>").replace(/a/g, this.html);
-      document.getElementById("box").innerHTML = b;
-      console.log(this.selected);
+      let template = this.promotionTemplate
+      let promoLink = `${location.href}?promoter=${getUserId() ? getUserId() : ''}`
+      this.templateText = template
+        .replace(/\n/g, '<br>')
+        .replace(/#Platform#/g, this.couponDetail.website)
+        .replace(/#Promo_title#/g, this.couponDetail.product_title)
+        .replace(/#Promo_listprice#/g, `${this.currency}${this.couponDetail.product_price}`)
+        .replace(/#Promo_scleprice#/g, this.couponDetail.discount_price)
+        .replace(/#Coupon_value#/g, this.currency+(this.couponDetail.product_price - this.couponDetail.discount_price).toFixed(2))
+        .replace(/#Discount_scale#/g, '%'+'this.couponDetail.discount_rate')
+        .replace(/#Promo_desctiption#/g, this.couponDetail.product_reason)
+        .replace(/#Promo_link#/g, promoLink)
+    },
+    //显示编辑模板
+    modifyTemplate () {
+      if(this.isLogin()) {
+        this.templateDialog = true
+      }
+    }, 
+    
+    //模板保存
+    saveTemplate () {
+      if (this.isLogin()) {
+        this.submitTemplateData.content = this.promotionTemplate
+        editTemplate(this.submitTemplateData).then(res => {
+          if (res.code === 200) {
+            this.$message.success('Save success')
+            this.getCouponsDetails()
+            this.templateDialog = false
+          }
+        })
+      }
+    },
+
+    //模版重置
+    restoreTemplate () {
+      this.promotionTemplate = this.promotionTemplateinit
+      this.saveTemplate()
     },
 
     //初始化
@@ -358,35 +402,34 @@ export default {
     },
 
     //数据初始化
-    initData() {
-      this.reqGetCodeData.user_id = this.user_id;
-      this.reqGetCodeData.username = this.username;
-      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId);
-
-      this.addPromotionData.user_id = this.user_id;
-      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId);
+    initData () {
+      this.reqGetCodeData.user_id = this.user_id
+      this.reqGetCodeData.username = this.username
+      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
+      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
+      this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
     },
 
     //获取左边的图片信息
-    getImgUrl(data) {
-      this.imgUrl = data;
+    getImgUrl (data) {
+      this.imgUrl = data
     },
 
     //复制产品推广文案
-    handleClip(e) {
-      Clip(e);
+    handleClip (e) {
+      Clip(e)
     },
 
     //跳转到产品详情页面
-    gotodetails(id, user_id) {
+    gotodetails (id) {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: "/coupons/" + base64Encode(id) })
-      this.getCouponsDetails(this.requestCouponDetails)
+      this.$router.push({ path: '/coupons/' + base64Encode(id) })
+      this.getCouponsDetails()
     },
 
     //领取优惠券
-    getCode() {
+    getCode () {
       if(!this.isLogin()) {
         return
       }
@@ -395,105 +438,117 @@ export default {
       isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
         if (!res.data) {
+          console.log('no res data')
         } else {
           this.getCodeSuccess = true
         }
-      });
+      })
     },
     //关闭领取优惠券的弹窗
-    close() {
+    close () {
       this.showGetCodeDialog = false
     },
 
-    gotoTrials() {
-      this.$router.push({ path: "/trials" })
+    gotoTrials () {
+      this.$router.push({ path: '/trials' })
     },
-    saveTemplate() {},
+    
 
     //获取优惠券详情
-    getCouponsDetails() {
+    getCouponsDetails () {
       this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       couponDetails(this.requestCouponDetails)
         .then(res => {
           console.log(res)
-          this.imgList = res.data.product_img.split(",")
-          this.imgUrl = this.imgList[0]
+          if (res.data.coupon_user_template) {
+            this.promotionTemplate = res.data.coupon_user_template.content
+          }
+          this.imgList = res.data.product_img.split(',')
+          this.imgUrl = res.data.current_img
           this.couponDetail = res.data
           this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
           this.requestData.menu_id = res.data.menu_id
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
+          this.test()
         })
         .catch(error => {
-          console.log(error + "couponDetails");
-        });
+          console.log(error + 'couponDetails')
+        })
     },
 
     //获取该品类下的优惠券
     getAllCouponsInfo () {
       getAllCoupons(this.requestData) 
-      .then(res => {
-        this.arrcouponsDetails = res.data.data
-      })
-      .catch(error => {
-        console.log(error + "getAllCoupons");
-      })
+        .then(res => {
+          let newArr = []
+          res.data.data.forEach(e => {
+            if (e.status == 1 && e.run_status == 'active') {
+              newArr.push(e)
+            }
+          })
+          this.arrcouponsDetails = newArr
+        })
+        .catch(error => {
+          console.log(error + 'getAllCoupons')
+        })
     },
 
     //获取发布人的信息
-    getPostUserInfo(user_id) {
-      var request = { user_id: user_id };
+    getPostUserInfo (user_id) {
+      var request = { user_id: user_id }
       postedUserInfo(request)
         .then(res => {
           res.data.joined_date = timestampFormat(res.data.joined_date)
           this.userInfo = res.data
           this.userInfo.user_id = this.couponDetail.user_id
+          this.userInfo.product_url = this.couponDetail.product_url
         })
         .catch(error => {
-          console.log(error + " postedUserInfo");
-        });
+          console.log(error + ' postedUserInfo')
+        })
     },
 
     //取消推广
-    removePromotion() {
+    removePromotion () {
       if (this.isLogin()) {
         promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.couponsGetInfo();
-            this.added = true;
+            this.couponsGetInfo()
+            this.added = true
           }
-        });
+        })
       }
     },
 
     //加入推广
-    addPromotion() {
+    addPromotion () {
       if (this.isLogin()) {
         promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.couponsGetInfo();
-            this.added = false;
+            this.couponsGetInfo()
+            this.added = false
           }
-        });
+        })
       }
     },
 
     //领取优惠券
-    getCouponCode() {
+    getCouponCode () {
       if (this.isLogin()) {
-        userGetCoupon(this.reqGetCodeData).then(res => {
-          this.getCodeSuccess = true;
-        });
+        userGetCoupon(this.reqGetCodeData).then(() => {
+          this.getCodeSuccess = true
+        })
       }
     },
 
     //复制优惠券
-    copyCode(e) {
-      Clip(e);
+    copyCode (e) {
+      Clip(e)
     },
 
     //判断是否登录，否则提醒请登录
-    isLogin() {
+    isLogin () {
       if (!getToken()) {
         this.$root.eventHub.$emit('isLoginInfo')
         // this.$alert("please log in first", "reminder", {
@@ -506,7 +561,7 @@ export default {
     },
 
     //获取用户信息
-    couponsGetInfo() {
+    couponsGetInfo () {
       if (getToken()) {
         getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
           var promotions = []
@@ -514,17 +569,17 @@ export default {
             promotions.push(i.coupon_id)
           }
           this.userPromotions = promotions
-        });
+        })
       }
     },
 
     //选择不同品类优惠券过滤
     gotoIndex () {
-      this.$root.eventHub.$emit("selectClassify1", this.requestData.menu_id)
+      this.$root.eventHub.$emit('selectClassify1', this.requestData.menu_id)
     },
 
     //选择问题, 提交问题反馈
-    selectProblem (index) {
+    selectProblem () {
       this.addProblemData.title = this.selected
     },
     
@@ -532,7 +587,7 @@ export default {
     addProblemSubmit () {
       if (base64Decode(this.$route.params.couponsId)) {
         this.addProblemData.menu = 'coupons'
-        this.addProblemData.product_id = base64Decode(this.$route.params.couponsId);
+        this.addProblemData.product_id = base64Decode(this.$route.params.couponsId)
       }
       if (!this.addProblemData.content) {
         return
@@ -550,7 +605,7 @@ export default {
       })
     },
 
-         //获取头部品类列表
+    //获取头部品类列表
     getHeadCateListInfo () {
       getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
@@ -561,10 +616,14 @@ export default {
     //显示问题反馈选项
     flagCoupon () {
       this.isFlagCoupon = !this.isFlagCoupon
-    } 
+    } ,
+
+    gotoPlatform (url) {
+      window.open(url)
+    },
 
   }
-};
+}
 </script>
 
 <style lang="less" scoped >
@@ -599,11 +658,11 @@ export default {
   }
   &.right {
     float: right;
-    width: 53.5rem;
+    width: 55.5rem;
     margin-top: 54px;
     .promotion {
       position: relative;
-      height: 22rem;
+      // height: 22rem;
       padding: 1rem;
       background: white;
       border-radius: 5px;
@@ -615,6 +674,7 @@ export default {
       }
       .title {
         width: 70%;
+        cursor: pointer;
         font-size: 1.33rem;
         color: #1a1a1a;
         font-weight: bold;
@@ -790,7 +850,7 @@ export default {
     }
     .promotion-template {
       position: relative;
-      height: 48.9rem;
+      // height: 48.9rem;
       background: white;
       border-radius: 5px;
       // padding: 1rem;
@@ -822,7 +882,7 @@ export default {
       .promo-content {
         padding: 1rem;
         .card {
-          height: 36rem;
+          // height: 36rem;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
           border-radius: 5px;
           .img {
@@ -939,6 +999,7 @@ export default {
 .code-dialog {
   .title {
     margin-left: 8rem;
+    cursor: pointer;
     display: inline-block;
     width: 24rem;
     font-weight: bold;
@@ -1108,8 +1169,8 @@ export default {
         padding-left: 20px;
       }
       .content {
-        padding-left: 20px;
-        padding-right: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
         .right {
           float: right;
         }

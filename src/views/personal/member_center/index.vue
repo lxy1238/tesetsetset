@@ -25,7 +25,7 @@
           </div>
           <div class="footer">
             <div v-if="userData.base.introduce">{{userData.base.introduce}} </div>
-             <div> Find this site interesting, <a href="javascript:void(0);" @click="gotoInvite">Invite Friends</a> to join.</div>
+             <!-- <div> Find this site interesting, <a href="javascript:void(0);" @click="gotoInvite">Invite Friends</a> to join.</div> -->
           </div>
         </div>
       </div>
@@ -87,44 +87,47 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { getInfo } from "@/api/login.js";
-import { setStore } from "@/utils/utils";
-import { getToken, getUserId } from "@/utils/auth";
+import { mapGetters } from 'vuex'
+import { getInfo } from '@/api/login.js'
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
 import { timestampFormat } from '@/utils/date'
 export default {
-  name: "member_center",
-  data() {
+  name: 'member_center',
+  data () {
     return {
       userData: {
         account: {},
         base: {},
-        joined_date: ""
+        joined_date: ''
       },
       getInfoRequest: {
         api_token: getToken(),
         user_id: getUserId()
       }
-    };
+    }
   },
-  mounted() {
+  mounted () {
     getInfo(this.getInfoRequest)
       .then(res => {
-        this.userData.account = res.data.account;
-        this.userData.base = res.data.base;
+        this.userData.account = res.data.account
+        this.userData.base = res.data.base
         this.userData.joined_date = timestampFormat(res.data.joined_date)
       })
       .catch(error => {
-        console.log(error + " getInfo member");
-      });
+        console.log(error + ' getInfo member')
+      })
   },
   computed: {
-    ...mapGetters(["username", "token", "roles", "user_id"])
+    ...mapGetters(['username', 'token', 'roles', 'user_id']),
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
   methods: {
     //路由跳转
-    gotoAnotherRouter(url) {
-      this.$router.push({ path: url });
+    gotoAnotherRouter (url) {
+      this.$router.push({ path: url })
     },
 
     //跳转到邀请好友页面
@@ -132,7 +135,7 @@ export default {
       this.$router.push({path:'/enter/invite' })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
@@ -202,7 +205,7 @@ export default {
     }
   }
   .statistics {
-    padding-left: 1.5rem;
+    // padding-left: 1.5rem;
     padding-top: 1rem;
     margin-bottom: 2rem;
     .statistics-child {

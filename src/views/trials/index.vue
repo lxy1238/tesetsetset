@@ -2,12 +2,19 @@
   <div class="page-index ">
     <div class="pages-content clearfix">
       <explain ></explain>
-      <coupons-pro v-for="n in 60"  :key="n" :couponsDetails="couponsDetails" @gotodetails="gotodetails">
+      <coupons-pro  v-for="couponsDetails in arrcouponsDetails"  
+                    :key="1" 
+                    :couponsDetails="couponsDetails"
+                    :addpromo="false" 
+                    @gotodetails="gotodetails(couponsDetails.id)">
+        <template slot="white">
+          <div class="white-trials"></div>
+        </template>
         <template slot="price">
          <p class="trials-price content">
-          <span class="old"> <i >{{couponsDetails.priceOld}} </i></span>
+          <span class="old"> <i >{{currency}}{{couponsDetails.product_price}} </i></span>
           <span class="gray-s"> Refund </span>
-          <span class="coupon-right"><strong> {{couponsDetails.priceRefund}}</strong>  </span>
+          <span class="coupon-right"><strong> {{currency}}{{couponsDetails.refund_price}}</strong>  </span>
          </p>
          </template>
          <template slot="btn" >View trials</template>
@@ -17,74 +24,164 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
-      @handlecurrent="test">
+      :current="requestdata.page"
+      @handlecurrent="gotoPage">
     </pagination>
   </div>
 </template>
 
 <script>
-import Clip from "@/utils/clipboard.js";
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import explain from "@/components/trials/explain.vue"
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import explain from '@/components/trials/explain.vue'
+import { getAllTrial, getHeadCateList } from '@/api/login'
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString'
 export default {
-  name: "page_index",
-  data() {
+  name: 'page_index',
+  data () {
     return {
       showItem: 7,
       allpage: undefined,
-      arrcouponsDetails: [
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon1",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress111 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        },
-        {
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          price: "$98.00",
-          coupons: "$18.00"
-        }
-      ],
-      couponsDetails: {
-          id: 1,
-          imgUrl: "http://www.ghostxy.top/dealsbank/img/01.png",
-          platfrom: "amazon2",
-          descript: "STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress113 ",
-          priceOld: "$98.00",
-          priceRefund: "$88.00",
+      arrcouponsDetails: [],
+      classifyList: [{
+        id: 0,
+        name: 'Top Coupons'
+      }],
+      requestData: {
+        page: 1,
+        page_size: '',
+        menu_id: 0,
+        country_id: parseInt(getStore('country_id')) || 1,
+        keyword: '',
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination,
     explain
   },
-  mounted() {
-    this.$root.eventHub.$on("selectClassify", data => {
-      this.msg = "";
-      setTimeout(() => {
-        this.msg = data;
-      }, 500);
-    });
+  computed: {
+    //导航条变化的时候触发查询需要展示商品的信息
+    menu_name () {
+      if (this.$route.params.menuId) {
+        return this.$route.params.menuId
+      } else {
+        return 'Top Coupons'
+      }
+    },
+    //查询字段变化的时候触发
+    search () {
+      if (this.$route.query.search) {
+        return this.$route.query.search
+      } else {
+        return ''
+      }
+    },
+    currency () {
+      return getStore('currency') || '$'
+    }
+  },
+  watch: {
+    menu_name () {
+      this.gotoPage(1)
+    },
+    search () {
+      this.gotoPage(1)
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  beforeDestroy () {
+    window.onresize = null
+    this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
+    // this.$root.eventHub.$off('changeCountryId')
   },
   methods: {
-    test(index) {
-      console.log(`当前跳转到 ${index} 页`);
+    init () {
+      this.initData()
+      this.getHeadCateListInfo()
+      window.onresize = this.widthToNum
     },
+    initData () {
+      this.requestData.keyword = this.$route.query.search
+    },
+
+    //翻页功能实现
+    gotoPage (index) {
+      this.requestData.keyword = this.search
+      this.requestData.page = index
+      this.getTrialsList()
+    },
+    
+    //获取试用品首页列表信息
+    getTrialsList () {
+      this.arrcouponsDetails = []
+      if (this.$route.params.menuId) {
+        this.requestData.menu_id = 0
+        for (var i of this.classifyList) {
+          if (i.name === this.$route.params.menuId) {
+            this.selectedC = i.id
+            this.requestData.menu_id = i.id
+          }
+        }
+      } else {
+        this.requestData.menu_id = 0
+      }
+      getAllTrial(this.requestData).then(res => {
+        this.arrcouponsDetails = res.data.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //跳转到trials详情页面
     gotodetails (id) {
-      this.$router.push({ path: '/trialsDetails'})
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(id) })
+    },
+
+    //根据页面尺寸宽度判断首页展示的商品数量
+    widthToNum () {
+      const LINE_NUM = 8 //默认显示的行数
+      if (
+        window.innerWidth <= 1270 &&
+        this.requestData.page_size != 4 * LINE_NUM
+      ) {
+        this.requestData.page_size = 4 * LINE_NUM
+        this.getTrialsList()
+      } else if (
+        window.innerWidth > 1270 &&
+        window.innerWidth <= 1557 &&
+        this.requestData.page_size != 5 * LINE_NUM
+      ) {
+        this.requestData.page_size = 5 * LINE_NUM
+        this.getTrialsList()
+      } else if (
+        window.innerWidth > 1557 &&
+        this.requestData.page_size != 6 * LINE_NUM
+      ) {
+        this.requestData.page_size = 6 * LINE_NUM
+        this.getTrialsList()
+      }
+    },
+
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.classifyList = this.classifyList.concat(res.data)
+        this.widthToNum()
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
-
 .icon-tuite1 {
   font-size: 34px;
   color: white;

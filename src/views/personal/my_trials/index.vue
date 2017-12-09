@@ -50,6 +50,7 @@
                v-if="allpage && allpage != 1"
               :allpage="allpage"
               :show-item="showItem"
+              :current="requestdata.page"
               @handlecurrent="test">
               </pagination>
             </div>

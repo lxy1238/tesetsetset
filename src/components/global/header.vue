@@ -9,7 +9,7 @@
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
              <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
-              <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a>
+              <!-- <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a> -->
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
                 <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
@@ -61,7 +61,7 @@
                 </span>
                 <div v-if="showDropdownC" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <li v-for="item in countryLists" @click="filterCountry(item.id, item.name)">{{item.name}} </li>
+                   <li v-for="item in countryLists" @click="filterCountry(item)">{{item.name}} </li>
                  </ul>
                </div>
             </div><div class="inline-b login-y language" :class="{active: showDropdownL}"   @click.stop="showDropdownLanguage($event)">
@@ -114,7 +114,7 @@
               <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google"><i class="iconfont icon-googleplus"></i> Join with Google</button>
+              <button class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
             </div>
           </div>
           <div class="bottom">
@@ -207,9 +207,7 @@
                 If you have forgotten your password, you can request to reset your password. When you fill in your registered email address, you will be sent instructions on how to reset your password.
               </span>
             </div>
-           
           <div class="bottom top">
-           
             <el-form :model="resetform" :rules="rules" ref="resetform" >
               <el-form-item  prop="email">
                 <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
@@ -240,22 +238,23 @@
 
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
-import { validateEmail, validateImg } from '@/utils/validate.js'
-import { sign, login,getHeadCateList, retrievePassword, getUserCountry} from '@/api/login.js'
+import { validateEmail } from '@/utils/validate.js'
+import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
+// import '../../utils/google'
 export default {
-  name: "header",
-  data() {
+  name: 'header',
+  data () {
     const validateEmailRule =  (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error("Please enter your Email"))
-        } else if (!validateEmail(value)) {
-          return callback(new Error("Please enter the correct mailbox"))
-        } else {
-          callback()
-        }
+      if (!value) {
+        return callback(new Error('Please enter your Email'))
+      } else if (!validateEmail(value)) {
+        return callback(new Error('Please enter the correct mailbox'))
+      } else {
+        callback()
+      }
     }
     return {
       signform: {
@@ -296,7 +295,7 @@ export default {
       },
       rules: {
         email: [
-           {  validator:validateEmailRule , trigger: 'blur' },
+          {  validator:validateEmailRule , trigger: 'blur' },
         ]
       },
 
@@ -310,34 +309,6 @@ export default {
 
       //国家列表
       countryLists: [
-        {
-          id: 1,
-          name: 'USA',
-        },
-          {
-          id: 2,
-          name: "Britain",
-        },
-          {
-          id: 3,
-          name: 'Germany',
-        },
-          {
-          id: 4,
-          name: 'Japan',
-        },
-          {
-          id: 5,
-          name: 'France',
-        },
-          {
-          id: 6,
-          name: 'Italy',
-        },
-          {
-          id: 7,
-          name: 'Spain',
-        },
       ],
       allLanguage: [
         ['中文(简体)'],
@@ -391,7 +362,8 @@ export default {
       'token',
       'roles',
       'addRouters',
-      'avatar'
+      'avatar',
+      'currentRouter'
     ]),
     avatar_img () {
       return this.avatar
@@ -407,8 +379,7 @@ export default {
       set (value) {
         this.country_id = value
       }
-      
-    }
+    },
   },
   methods: {
     //初始化 
@@ -417,6 +388,7 @@ export default {
       this.enterSubmitForm()
       this.getHeadCateListInfo()
       this.getOtherEvent()
+      this.getUserCountryInfo()
     },
     //数据初始化
     initData () {
@@ -426,9 +398,10 @@ export default {
         }
       }
     },
-    //点击空白或者其他地方的时候下拉菜单消失
+
+    //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
     docuemntAddEvent () {
-      document.body.addEventListener('click', (e) => {
+      document.body.addEventListener('click', () => {
         this.showDropdownU = false
         this.showDropdownC = false
         this.showDropdownL = false
@@ -459,10 +432,12 @@ export default {
     },
 
     //接受其他组件传递的事件
-    getOtherEvent() {
+    getOtherEvent () {
       this.$root.eventHub.$on('initClassify', () => {
-      this.selectedC = -1
+        this.selectedC = -1
       })
+
+      //优惠券点击更多的时候触发的事件
       this.$root.eventHub.$on('selectClassify1', data => {
         for (var i of this.classifyList) {
           if (i.id === data) {
@@ -471,80 +446,92 @@ export default {
           }
         }
       })
+
+      //头部接受其他组件需要弹出登录的信号
       this.$root.eventHub.$on('isLoginInfo', () => {
         this.ShowLoginDialog()
       })
     },
 
     //通过国家过滤首页的优惠券信息
-    filterCountry (id, name) {
-      setStore('country_id',id)
-      this.selectedCountryShop  = id
-      this.keyword = ""
-      this.$root.eventHub.$emit('changeCountryId', id)
-      // this.$root.eventHub.$emit('filterkeyword', "")
-      this.selectClassify(this.classifyList[0])
+    filterCountry (item) {
+      setStore('country_id',item.id)
+      setStore('currency',item.currency)
+      this.$router.push({path: '/'})
+      window.location.reload()
+      // this.selectedCountryShop  = item.id
+      // this.keyword = ''
+      // this.$root.eventHub.$emit('changeCountryId', item.id)
+      // this.selectClassify(this.classifyList[0])
     },
 
     //通过关键字查询过滤首页商品
     filterKeyword (keyword) {
       this.selectedC = -1
-      this.$router.push({ path: '/', query: { search: keyword }})
-    },
-
-    //跳转至佣金计算页面
-    gotoCommissions () {
-      this.$router.push({path: '/commissions/index'})
+      if (this.currentRouter.search('/trials') >= 0) {
+        this.$router.push({ path: '/trials/index', query: { search: keyword }})
+      } else {
+        this.$router.push({ path: '/', query: { search: keyword }})
+      }
+      
     },
 
     //选择不同的分类时，跳转到相应的路由
-    selectClassify(item) {
+    selectClassify (item) {
       this.selectedC = item.id
-      this.keyword = ""
-      this.$router.push({path: '/'+ item.name})
+      this.keyword = ''
+      if (this.currentRouter.search('/trials') >= 0) {
+        this.$router.push({path: '/trials/'+ item.name})
+      } else {
+        this.$router.push({path: '/'+ item.name})
+      }
+      
     },
-    coupons() {
-      this.keyword = ""
-      this.$router.push({ path: "/"})
+    coupons () {
+      this.keyword = ''
+      this.$router.push({ path: '/'})
       this.selectedC = 0
-      this.$store.dispatch("setLevel", 0)
+      this.$store.dispatch('setLevel', 0)
     },
-    trials() {
-      this.$router.push({ path: "/trials" })
-      this.selectedC = 0;
-      this.$store.dispatch("setLevel", 1)
+    trials () {
+      this.selectedC = 0
+      this.$router.push({ path: '/trials/index' })
+      this.$store.dispatch('setLevel', 1)
     },
-    ShowLoginDialog() {
+    ShowLoginDialog () {
+      // this.googleLogin()
       this.loginform.email = getEmail()
-      this.loginform.password = base64Decode(getPass())
-      this.resetPassword = false
+      if (getPass()) {
+        this.loginform.password = base64Decode(getPass())
+      }
+      this.signDialog = false 
       this.loginDialog = true
      
     },
-    ShowSignDialog() {
+    ShowSignDialog () {
+      this.resetPassword = false
       this.loginDialog = false
       this.signDialog = true
     },
-    signSubmit(formName, callback) {
-      //element-ui 的表单验证
-       this.$refs[formName].validate((valid) => {
-          if (valid) {
-            callback()
-          } else {
-            console.log('error submit!!');
-            return false
-          }
-        });
-    },
-
     //弹出忘记密码窗口
     forgetPass () {
       this.loginDialog = false
       this.resetPassword = true
     },
+    signSubmit (formName, callback) {
+      //element-ui 的表单验证
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          callback()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
 
     //下拉菜单的功能实现
-    showDropdownUser (e) {
+    showDropdownUser () {
       setTimeout( () => {
         this.showDropdownU = !this.showDropdownU
         this.showDropdownC = false
@@ -558,11 +545,12 @@ export default {
         this.showDropdownL = false
       })
     },
-    showDropdownLanguage (e) {
+    showDropdownLanguage () {
+      return
       setTimeout( () => {
+        this.showDropdownL = !this.showDropdownL
         this.showDropdownC = false
         this.showDropdownU = false
-        this.showDropdownL = !this.showDropdownL
       })
     },
     showAllLanguage () {
@@ -571,17 +559,17 @@ export default {
     signUp () {
       this.signSubmit('signform', () => {
         this.signloading = true
-        this.signform.activate_url = location.protocol + "//" + location.host + '/#/activate/' + this.signform.email
+        this.signform.activate_url = location.protocol + '//' + location.host + '/#/activate/' + this.signform.email
         sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
-            this.$notify.success("Please login to the mailbox for activation validation")
+            this.$notify.success('Please login to the mailbox for activation validation')
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
           this.signloading = false
-          console.error("sign fail")
+          console.error('sign fail' + error)
         })
       })
     },
@@ -594,11 +582,10 @@ export default {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
-            this.$notify.success("login success")
-            this.$refs['loginform'].resetFields();
+            this.$notify.success('login success')
+            this.$refs['loginform'].resetFields()
           }
-          this.$store.dispatch('GetInfo').then(res => {
-            console.log(res)
+          this.$store.dispatch('GetInfo').then(() => {
             this.loginLoading = false
             window.location.reload()
           })
@@ -609,20 +596,20 @@ export default {
       })
     },
     resetPasswordBtn () {
-       this.signSubmit('resetform', () => {
-         this.resetLoading = true
-          this.resetform.url = location.protocol + "//" + location.host + '/#/resetpass/' + this.resetform.email + '/'
-          console.log(this.resetform)
-          retrievePassword(this.resetform).then(res => {
-            console.log(res)
-            if (res.code === 200) {
-              this.resetLoading = false
-              this.$notify.success('Please click the link to change the password')
-            }
-          }).catch(error => {
+      this.signSubmit('resetform', () => {
+        this.resetLoading = true
+        this.resetform.url = location.protocol + '//' + location.host + '/#/resetpass/' + this.resetform.email + '/'
+        console.log(this.resetform)
+        retrievePassword(this.resetform).then(res => {
+          console.log(res)
+          if (res.code === 200) {
             this.resetLoading = false
-          })
-       })
+            this.$notify.success('Please click the link to change the password')
+          }
+        }).catch(() => {
+          this.resetLoading = false
+        })
+      })
     },
 
     //登出
@@ -638,9 +625,69 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    },
+    //获取国家列表，携带货币符号，
+    getUserCountryInfo () {
+      getUserCountry().then(res => {
+        this.countryLists = res.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //google 登录
+    googleLogin () {
+      var startApp = function () {
+        gapi.load('auth2', function (){
+          // Retrieve the singleton for the GoogleAuth library and set up the client.
+          let auth2 = gapi.auth2.init({
+            client_id: '308959858897-r2qme5tvr34qlbnq3qs5j5d3ohdqlopi.apps.googleusercontent.com',
+            cookiepolicy: 'single_host_origin',
+            // Request scopes in addition to 'profile' and 'email'
+            // scope: 'additional_scope'
+            scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
+          })
+          auth2.attachClickHandler('customBtn', {}, onSuccess, onFailure)
+        })
+      }
+      /**
+     * Handle successful sign-ins.
+     */
+      var onSuccess = function (user) {
+        var profile = user.getBasicProfile()
+        console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName())
+        console.log('Given Name: ' + profile.getGivenName())
+        console.log('Family Name: ' + profile.getFamilyName())
+        console.log('Image URL: ' + profile.getImageUrl())
+        console.log('Email: ' + profile.getEmail())
+        
+        // document.getElementById('name').innerText = 'Signed in: ' + profile.getName()
+    
+        // The ID token you need to pass to your backend:
+        var id_token = user.getAuthResponse().id_token
+        console.log('ID Token: ' + id_token)
+    
+        var xhr = new XMLHttpRequest()
+        xhr.open('POST', 'http://dealsbank.com/api/v1/user/loginGoogle')
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+        xhr.onload = function () {
+          console.log('Signed in as: ' + xhr.responseText)
+        }
+        xhr.send('id_token=' + id_token)
+      }
+
+      /**
+     * Handle sign-in failures.
+     */
+      var onFailure = function (error) {
+        console.log(error)
+      }
+    
+      startApp()
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
@@ -872,7 +919,7 @@ export default {
         }
         .search {
           .p(r);
-          width: 20rem;
+          width: 32rem;
           height: 36px;
           margin-right: 0.90rem;
           input {

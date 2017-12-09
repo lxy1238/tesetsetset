@@ -3,7 +3,7 @@
     <div class="title-bottom">
       My Coupons
     </div>
-    <div class="coupons-content">
+    <div class="coupons-content" v-if="couponLists.length != 0">
       <div class="pro-card" v-for="item in couponLists">
         <div class="expried">EXPRIED</div>
         <div class="card-top">
@@ -13,12 +13,12 @@
           </div>
           <div class="pro-info">
             <span class="old-price">${{item.coupons.product_price}}</span>
-            <span class="coupons-price"><i>coupons</i><b>${{item.coupons.product_price * item.coupons.discount_rate / 100}}</b></span>
+            <span class="coupons-price"><i>coupons</i><b>${{(item.coupons.product_price * item.coupons.discount_rate / 100).toFixed(2)}}</b></span>
             <span class="proportion"><b>{{item.coupons.discount_rate}}%</b><i>off</i></span>
           </div>
         </div>
-        <div class="card-bottom">
-          <span class="code">{{item.coupons.coupon_code}}</span>
+        <div class="card-bottom" >
+          <span class="code" :title="item.coupons.coupon_code">{{item.coupons.coupon_code}}</span>
           <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go To Amazon </a> </button>
         </div>
       </div>
@@ -27,6 +27,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestData.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>
@@ -34,8 +35,9 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { userCoupons, couponDetails } from '@/api/login'
+import { userCoupons } from '@/api/login'
 import { mapGetters } from 'vuex'
+import { getToken, getUserId } from '@/utils/auth' 
 export default {
   name: 'my_coupons',
   data () {
@@ -43,8 +45,8 @@ export default {
       allpage: undefined,
       showItem: 7,
       requestData: {
-        api_token: '',
-        user_id: '',
+        api_token: getToken(),
+        user_id: getUserId(),
         page: 1,
         page_size: 9
       },
@@ -69,10 +71,9 @@ export default {
       this.getUserCoupons()
     },
     getUserCoupons () {
-      this.requestData.api_token = this.token
-      this.requestData.user_id = this.user_id
       userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
+          console.log(res.data)    // 少了一个product_url 字段
           this.couponLists = res.data.data
           this.allpage = res.data.last_page
         }
@@ -132,9 +133,9 @@ export default {
             height: 3rem;
           }
           .pro-title {
-            font-size: 0.78rem;
+            font-size: 12px;
             color: #333;
-            height: 2.2rem;
+            height: 24px;
             overflow: hidden;
             margin-bottom: .3rem;
           }
@@ -171,12 +172,19 @@ export default {
           position: relative;
           height: 2.7rem;
           line-height: 2.7rem;
+          overflow: hidden;
           width: 100%;
           background: #f2f2f2;
           .code {
+            float: left;
             font-size: 12px;
             // line-height: 1.5rem;
             color: #1a1a1a;
+            margin-left: 5px;
+            width: 7rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             display: inline-block;
             margin-right: 5px;
             font-weight: bold;

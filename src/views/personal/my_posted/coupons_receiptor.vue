@@ -5,31 +5,7 @@
       <h3 class="title">Coupons</h3>
     </div>
     <div class="search-form">
-      <label for="title">
-        Title: 
-      </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="searchForm.title" />
-      <label for="title">
-        Category: 
-      </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.category">
-        <option value="1">母婴</option>
-        <option value="2">其他</option>
-        <option value="3">很多</option>
-      </select>
-
-      <label for="title" >
-        Status: 
-      </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.status">
-        <option value="1">Pending</option>
-        <option value="2">Stop</option>
-        <option value="3">Close</option>
-        <option value="4">Decline</option>
-        <option value="5">Article</option>
-        <option value="6">Expired</option>
-      </select>
-
+          <el-date-picker type="daterange" placeholder="Applied date" v-model="daterange"></el-date-picker>
       <button class="search" @click="postedCouponsSearch">Search</button>
 
     </div>
@@ -75,6 +51,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestdata.page"
       @handlecurrent="gotoPage">
     </pagination>
   </template>
@@ -83,91 +60,88 @@
 </template>
 
 <script>
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import { mapGetters } from "vuex";
-import { pickCoupons } from "@/api/login";
-import { getToken } from "@/utils/auth";
-import { setStore, getStore, removeStore } from "@/utils/utils";
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import { mapGetters } from 'vuex'
+import { pickCoupons } from '@/api/login'
+import {  getStore, removeStore } from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
 export default {
-  name: "center_coupons",
-  data() {
+  name: 'center_coupons',
+  data () {
     return {
       thLists: [
-        "Image",
-        "Title",
-        "List Price",
-        "Discount",
-        "Receiptor",
-        "Applied date",
-        "Coupon Code"
+        'Image',
+        'Title',
+        'List Price',
+        'Discount',
+        'Receiptor',
+        'Applied date',
+        'Coupon Code'
       ],
       trLists: [
         {
           user_id: undefined, // 用户ID ， 是，
-          user_name: "", // 发布用户名称， 是
+          user_name: '', // 发布用户名称， 是
           category_id: 1, // 所属分类 , 是   int
-          country: "美国", // 国家  是
-          website: "亚马逊2", // 平台   是
+          country: '美国', // 国家  是
+          website: '亚马逊2', // 平台   是
 
-          product_reason: "This is a product I like very much", //产品描述  是
-          use_type: "Unlimited",
-          reward_type: "1.5", //PerOrder:按每订单奖励,
-          product_price: "65", //商品价格
-          shipping_fee: "1.11", //运费   否
-          discount_rate: "12%", //折扣率    否
+          product_reason: 'This is a product I like very much', //产品描述  是
+          use_type: 'Unlimited',
+          reward_type: '1.5', //PerOrder:按每订单奖励,
+          product_price: '65', //商品价格
+          shipping_fee: '1.11', //运费   否
+          discount_rate: '12%', //折扣率    否
           valid_date: new Date(), //到期时间  int
 
-          quantity_per_day: "10", // 每天上限数量 int
-          influencer_reward: "1.5", // 推荐费用/每个
-          platform_fee: "2.2", //支付平台费用/每个
-          influencer_reward_count: "66", //推荐总费用
-          platform_reward: "55", //  支付平台总费用， 否
-          total_fee: "123", //总费用
+          quantity_per_day: '10', // 每天上限数量 int
+          influencer_reward: '1.5', // 推荐费用/每个
+          platform_fee: '2.2', //支付平台费用/每个
+          influencer_reward_count: '66', //推荐总费用
+          platform_reward: '55', //  支付平台总费用， 否
+          total_fee: '123', //总费用
 
-          product_title: "this is project", // 商品标题   是 ，
-          product_img: "http://www.ghostxy.top/dealsbank/img/01.png", // 产品图片， string, 用逗号拼接 , 否
+          product_title: 'this is project', // 商品标题   是 ，
+          product_img: 'http://www.ghostxy.top/dealsbank/img/01.png', // 产品图片， string, 用逗号拼接 , 否
           coupon_id: 1,
           total_receiptor: 365,
-          username: "Skyer", //领取人
-          coupon_code: "QAKLWEFALWEKFJ", //优惠券
+          username: 'Skyer', //领取人
+          coupon_code: 'QAKLWEFALWEKFJ', //优惠券
           applied_date: new Date(), //领取时间
           status: 1
         }
       ],
       allpage: undefined,
       showItem: 7,
-      searchForm: {
-        title: "",
-        category: "",
-        status: ""
-      },
+      daterange: '',
       requestdata: {
-        coupon_id: "",
-        user_id: '',
-        api_token: "",
+        user_id: getUserId(),
+        api_token: getToken(),
+        coupon_id: '',
         page: 1,
-        page_size: 5
+        page_size: 5,
+        start_time: '',
+        end_time: '',
       },
       couponsDetails: {
-        product_img: "",
-        product_title: "",
-        product_price: "",
-        discount_rate: "",
-        coupon_code: ""
+        product_img: '',
+        product_title: '',
+        product_price: '',
+        discount_rate: '',
+        coupon_code: ''
       }
-    };
+    }
   },
   components: {
     pagination
   },
   computed: {
-    ...mapGetters(["token", "user_id"])
+    ...mapGetters(['token', 'user_id'])
   },
-  mounted() {
-    this.requestdata.api_token = this.token
-    this.requestdata.user_id = this.user_id
-    this.requestdata.coupon_id = JSON.parse(getStore("couponDetails")).id
-    var couponsDetails = JSON.parse(getStore("couponDetails"))
+  mounted () {
+    this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
+    console.log(this.requestdata)
+    var couponsDetails = JSON.parse(getStore('couponDetails'))
     for (var i in this.couponsDetails) {
       this.couponsDetails[i] = couponsDetails[i]
     }
@@ -177,41 +151,53 @@ export default {
         this.allpage = res.data.last_page
       })
       .catch(error => {
-        console.log(error);
-      });
+        console.log(error)
+      })
   },
   //组件销毁前执行的回调
-  beforeDestroy() {
-    removeStore("couponDetails");
+  beforeDestroy () {
+    removeStore('couponDetails')
   },
   methods: {
     //分页跳转
-    gotoPage(i) {
-      this.requestdata.page = i;
+    gotoPage (i) {
+      this.requestdata.page = i
       pickCoupons(this.requestdata).then(res => {
-        this.trLists = res.data.data;
-        this.allpage = res.data.last_page;
-      });
+        this.trLists = res.data.data
+        this.allpage = res.data.last_page
+      })
     },
 
     //发布的优惠券查询
-    postedCouponsSearch() {
-      console.log(this.searchForm);
+    postedCouponsSearch () {
+      if (this.daterange.length) {
+        this.requestdata.start_time = this.daterange[0]
+        this.requestdata.end_time = this.daterange[1]
+      }
+      console.log(this.requestdata)
+      pickCoupons(this.requestdata)
+        .then(res => {
+          console.log(res)
+          this.trLists = res.data.data
+          this.allpage = res.data.last_page
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
 
     //跳转到优惠券详情页面
-    gotoDetails(id) {},
-    //跳转到 领取优惠券的用户页面
-    gotoReceiptor() {
-      this.$router.push({ path: "/posted/coupons/receiptor" });
-    }
+    gotoDetails () {},
+
+
   }
-};
+}
 </script>
 
-<style lang="less"  >
+<style lang="less" scoped>
 @import url("../../../styles/mixin.less");
 .posted-coupons {
+  font-size: 12px;
   .pro-header {
     position: relative;
     border-bottom: 1px solid #e6e6e6;
@@ -229,6 +215,10 @@ export default {
     color: #1a1a1a;
     border-bottom: 1px solid #e6e6e6;
   }
+  .item-inline {
+    display: inline-block;
+    width: 50%;
+  }
   .search-form {
     position: relative;
     width: 100%;
@@ -236,7 +226,7 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      margin-right: 4%;
+      margin-right: 3%;
       min-width: 10%;
     }
     .search {

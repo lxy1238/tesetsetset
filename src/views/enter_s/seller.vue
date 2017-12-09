@@ -75,7 +75,7 @@
         <el-input v-model="sellerForm.store_url" type="text" ></el-input>
       </el-form-item>
       <el-form-item class="submit-btn">
-        <button type="button" >Submit</button>
+        <button type="button" @click="submit">Submit</button>
       </el-form-item>
     </el-form>
     </div>
@@ -100,19 +100,21 @@ export default {
         }
       ],
       sellerForm: {
-        full_name: '',
-        email: '',
-        country: '',
-        province_state: '',
-        city_town: '',
-        street_address: '',
-        postcode: '',
-        daytime_phone: '',
-        income_situation: '',
+        full_name: 'awef',
+        email: 'awef',
+        country: 'awef',
+        province_state: 'awef',
+        city_town: 'awef',
+        street_address: 'awef',
+        postcode: 'awef',
+        daytime_phone: 'awef',
+        income_situation: 'awef',
         category: 'Team',
-        detailed_introduction: '',
-        expertises: [],
-        owned_platform: '',
+        detailed_introduction: 'awef',
+        owned_platform: 'aewf',
+        store_id: 'awef',
+        store_name: 'awef',
+        store_url:  'awef'
      
       },
       rules: {
@@ -149,7 +151,7 @@ export default {
         store_name: [
           {required: true ,message: 'Store name required', trigger: 'blur'}
         ],
-         store_url: [
+        store_url: [
           {required: true ,message: 'Store URL is required', trigger: 'blur'}
         ],
         owned_platform: [
@@ -159,6 +161,15 @@ export default {
     }
   },
   methods: {
+    submit () {
+      this.$refs['sellerForm'].validate((valid) => {
+        if(valid) {
+          console.log(this.sellerForm)
+        } else {
+          console.log('submit error')
+        }
+      })
+    },
   },
   mounted () {
   

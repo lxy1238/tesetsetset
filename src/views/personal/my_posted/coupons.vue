@@ -7,26 +7,26 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.title" />
+      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" />
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.category_id">
-        <option value="1">母婴</option>
-        <option value="2">其他</option>
-        <option value="3">很多</option>
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.menu_id">
+        <option :value="''" >请选择</option>
+        <option :value="item.id" v-for="item in classifyList">{{item.name}}</option>
       </select>
 
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.status">
-        <option value="1">Pending</option>
-        <option value="2">Stop</option>
-        <option value="3">Close</option>
-        <option value="4">Decline</option>
-        <option value="5">Article</option>
-        <option value="6">Expired</option>
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.run_status">
+        <option :value="''" >请选择</option>
+        <option :value="all_run_status[0]">Pending</option>
+        <option :value="all_run_status[1]">Active</option>
+        <option :value="all_run_status[2]">Decline</option>
+        <option :value="all_run_status[3]">Stop</option>
+        <option :value="all_run_status[4]">Close</option>
+        <option :value="all_run_status[5]">Expired</option>
       </select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
@@ -48,12 +48,12 @@
             </td>
             <td class="coupons-table-title">
               <div>amazon</div>
-              <div class="table-product-title" @click="gotoDetails(item.id, item.user_id)">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item.id, item.user_id)">Electronics</a>
+              <div class="table-product-title" @click="gotoDetails(item)">{{item.product_title}}</div>
+              <a href="javascript:void(0);" @click="gotoDetails(item)">Electronics</a>
             </td>
 
             <td class="prcie">
-              <div>${{item.product_price}}</div>
+              <div>{{currency}}{{item.product_price}}</div>
             </td>
             <td class="discount">
               <div>{{item.discount_rate}}%</div>
@@ -61,48 +61,51 @@
             <td class="qty">
               <div>
                 <a href="javascript:void(0);" @click="gotoReceiptor(item)">{{item.pick_numbers}}</a>/
-                <span>{{item.total_quantity}}</span>
+                <span v-if="item.use_type === 'Alone'">{{item.total_quantity}}</span>
+                <span v-else>--</span>
               </div>
             </td>
             <td class="valid-date">
               <div>{{item.valid_date}}</div>
             </td>
             <td class="status">
-              <div class="blue" v-if="item.status === 0">Pedding</div>
-              <div class="blue" v-if="item.status === 1">Stop</div>
-              <div class="red" v-if="item.status === 2">Close</div>
-              <div class="red" v-if="item.status === 3">Decline</div>
-              <div class="green" v-if="item.status === 4">Article</div>
-              <div class="red" v-if="item.status === 5">Expired</div>
+              <div class="blue" v-if="item.status === 0 ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
+              <div class="red" v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">Decline</div>
+              
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
             </td>
             <td class="operation">
               <template v-if="item.status === 0">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-              </template>
-              <template v-if="item.status === 1">
-                <div> <a href="javascript:void(0)">Open</a></div>
-                <div> <a href="javascript:void(0)">Close</a></div>
-              </template>
-              <template v-if="item.status === 2"> 
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+              </template>
+              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
+              </template>
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
+                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 3">
+              <template  v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 4">
-                <div> <a href="javascript:void(0)">Stop</a></div>
-                <div> <a href="javascript:void(0)">Close</a></div>
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
+                <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
-              <template v-if="item.status === 5">
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">
+                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
               </template>
             </td>
           </tr>
           <tr v-if="trLists.length === 0">
-            <td colspan="10">no data</td>
+            <td colspan="10">No Data</td>
           </tr>
         </tbody>
       </table>
@@ -111,67 +114,69 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
+      :current="requestdata.page"
       @handlecurrent="gotoPage">
     </pagination>
-    
     <!-- 查看详情弹窗 -->
     <el-dialog  :visible.sync="detailsDialog" title="Decline details" class="details-dialog" size="tiny">
-        <p class="dialog-title">Decline details</p>
         <div class="details-reason">
-          Insufficient balance
+          {{nonApproval}}
         </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import { mapGetters } from "vuex";
-import { userPickCoupons } from "@/api/login";
-import { setStore, getStore, removeStore } from "@/utils/utils";
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import { mapGetters } from 'vuex'
+import { userPickCoupons, couponCensor, couponUpdateRunStatus, getHeadCateList , couponDetele} from '@/api/login'
+import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
-import { parseTime } from "@/utils/date";
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import { parseTime } from '@/utils/date'
+import { base64Encode } from '@/utils/randomString'
 export default {
-  name: "center_coupons",
-  data() {
+  name: 'center_coupons',
+  data () {
     return {
       thLists: [
-        "Image",
-        "Title",
-        "Price",
-        "Discount",
-        "Qty",
-        "Valid Date",
-        "Status",
-        "Operation"
+        'Image',
+        'Title',
+        'Price',
+        'Discount',
+        'Qty',
+        'Valid Date',
+        'Status',
+        'Operation'
+      ],
+      classifyList: [
+
       ],
       trListsTest: [
         {
           user_id: undefined, // 用户ID ， 是，
-          user_name: "", // 发布用户名称， 是
+          user_name: '', // 发布用户名称， 是
           category_id: 1, // 所属分类 , 是   int
-          country: "美国", // 国家  是
-          website: "亚马逊2", // 平台   是
+          country: '美国', // 国家  是
+          website: '亚马逊2', // 平台   是
 
-          product_reason: "This is a product I like very much", //产品描述  是
-          use_type: "Unlimited",
-          coupon_code: "QAKLWEFALWEKFJ", //优惠券码
-          reward_type: "1.5", //PerOrder:按每订单奖励,
-          product_price: "65", //商品价格
-          shipping_fee: "1.11", //运费   否
-          discount_rate: "12%", //折扣率    否
+          product_reason: 'This is a product I like very much', //产品描述  是
+          use_type: 'Unlimited',
+          coupon_code: 'QAKLWEFALWEKFJ', //优惠券码
+          reward_type: '1.5', //PerOrder:按每订单奖励,
+          product_price: '65', //商品价格
+          shipping_fee: '1.11', //运费   否
+          discount_rate: '12%', //折扣率    否
           valid_date: new Date(), //到期时间  int
 
           quantity_per_day: 10, // 每天上限数量 int
-          influencer_reward: "1.5", // 推荐费用/每个
-          platform_fee: "2.2", //支付平台费用/每个
-          influencer_reward_count: "66", //推荐总费用
-          platform_reward: "55", //  支付平台总费用， 否
-          total_fee: "123", //总费用
+          influencer_reward: '1.5', // 推荐费用/每个
+          platform_fee: '2.2', //支付平台费用/每个
+          influencer_reward_count: '66', //推荐总费用
+          platform_reward: '55', //  支付平台总费用， 否
+          total_fee: '123', //总费用
 
-          product_title: "this is project", // 商品标题   是 ，
-          product_img: "http://www.ghostxy.top/dealsbank/img/01.png", // 产品图片， string, 用逗号拼接 , 否
+          product_title: 'this is project', // 商品标题   是 ，
+          product_img: 'http://www.ghostxy.top/dealsbank/img/01.png', // 产品图片， string, 用逗号拼接 , 否
           coupon_id: 1,
           total_quantity: 1000, // 总数量   int
           total_receiptor: 365,
@@ -182,115 +187,183 @@ export default {
       trLists: [],
       allpage: undefined,
       showItem: 7,
-      searchForm: {
-        title: "",
-        category: "",
-        status: ""
-      },
+      nonApproval: '',       //审核不通过详情
+      all_run_status: ['pending','active', 'decline', 'stop', 'close', 'expired' ],  // 待审核  暂停， 关闭 上线， 审核未通过  过期
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
         page: 1,
         page_size: 6,
-        title: '',
-        category_id: '',
-        status: '',
+        product_title: '',
+        menu_id: '',
+        run_status: '',
+      },
+      detailsRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: ''
+      },
+      updateRunStatusRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: '',
+        run_status: '',
+      },
+      couponDeteleRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: ''
       }
-    };
+    }
   },
   components: {
     pagination
   },
   mounted () {
-    this.getUserPickCoupons()
+    this.init()
   },
   computed: {
-    ...mapGetters(["user_id", "token"])
+    ...mapGetters(['user_id', 'token']),
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
   methods: {
+    init () {
+      this.getUserPickCoupons()
+      this.getHeadCateListInfo()
+    },
     //分页跳转
-    gotoPage(i) {
+    gotoPage (i) {
       this.requestdata.page = i
       this.getUserPickCoupons()
     },
 
     //获取首页列表数据
-    getUserPickCoupons() {
+    getUserPickCoupons () {
       userPickCoupons(this.requestdata)
         .then(res => {
           console.log(res)
-          if (res.data.total !== 0) {
-            for (var i in res.data.data) {
-              res.data.data[i].valid_date = parseTime(
-                res.data.data[i].valid_date,
-                "{y}-{m}-{d}"
-              )
-            }
-            this.trLists = res.data.data
-            this.allpage = res.data.last_page
+          for (var i in res.data.data) {
+            res.data.data[i].valid_date = parseTime(
+              res.data.data[i].valid_date,
+              '{y}-{m}-{d}'
+            )
           }
+          this.trLists = res.data.data
+          this.allpage = res.data.last_page
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
+    },
+
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        this.classifyList = res.data
+      }).catch(error => {
+        console.log(error)
+      })
     },
 
     //跳转到添加优惠券页面
-    add() {
-      this.$router.push({ path: "/posted/coupons/add" })
+    add () {
+      this.$router.push({ path: '/posted/coupons/add' })
     },
 
     //发布的优惠券查询
-    postedCouponsSearch() {
-      console.log(this.requestdata)
-      this.getUserPickCoupons()
+    postedCouponsSearch () {
+      this.gotoPage(1)
     },
 
     //跳转到优惠券详情页面
-    gotoDetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + base64Encode(id)  });
+    gotoDetails (item) {
+      if (item.status == 1 && item.run_status == this.all_run_status[1]) {
+        this.$router.push({ path: '/coupons/' + base64Encode(item.id)  })
+      }
     },
 
     //跳转到 领取优惠券的用户页面
-    gotoReceiptor(item) {
+    gotoReceiptor (item) {
       if (item.pick_numbers === 0) {
         return false
       }
-      this.$router.push({ path: "/posted/coupons/receiptor" });
-      setStore("couponDetails", JSON.stringify(item));
+      this.$router.push({ path: '/posted/coupons/receiptor' })
+      setStore('couponDetails', JSON.stringify(item))
     },
 
     //编辑待审核状态下和审核未通过的优惠券   
-    EditCoupon(id) {
+    EditCoupon (id) {
       console.log(id)
       //携带id 查询需要修改的数据，然后进行修改
-      this.$router.push({ path: "/posted/coupons/add", query: { editor: id } })
+      this.$router.push({ path: '/posted/coupons/add', query: { editor: id } })
     },
 
     //删除优惠券
-    DeleteCoupon(id) {
-      this.$confirm("Determine deleting coupons?", "reminder", {
-        confirmButtonText: "confirm",
-        cancelButtonText: "cancel",
-        type: "warning"
+    DeleteCoupon (id) {
+      this.$confirm('Determine deleting coupons?', 'reminder', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        type: 'warning'
       })
         .then(() => {
+          this.couponDeteleRequestData.id = id
+          couponDetele(this.couponDeteleRequestData).then(res => {
+            console.log(res)
+            this.getUserPickCoupons()
+          })
           this.$notify({
-            type: "success",
-            message: "delete success!"
+            type: 'success',
+            message: 'delete success!'
           })
         })
         .catch(() => {
-          console.log("cancel")
-        });
+          console.log('cancel')
+        })
     },
 
     //显示详情弹窗
-    showDetails() {
+    showDetails (id) {
+      this.detailsRequestData.coupon_id = id
       this.detailsDialog = true
+      couponCensor(this.detailsRequestData).then(res => {
+        this.nonApproval = res.data.content
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //更新优惠券
+    updateRunStatus (id, run_status) {
+      if (run_status == 'close') {
+        this.$confirm('Determine close trial?', 'reminder', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'cancel',
+          type: 'warning'
+        }).then(() => {
+          this.updateRunStatusFun(id, run_status)
+        }).catch (error => {
+          console.log(error)
+        })
+      } else {
+        this.updateRunStatusFun(id, run_status)
+      }
+    },
+
+    updateRunStatusFun (id, run_status) {
+      this.updateRunStatusRequestData.coupon_id = id
+      this.updateRunStatusRequestData.run_status = run_status
+      couponUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
+        if (res.code === 200) {
+          this.getUserPickCoupons()
+        }
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less"  >
@@ -308,8 +381,9 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
+      
       margin-right: 3%;
-      min-width: 10%;
+      width: 16%;
     }
     .search {
       .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
@@ -364,5 +438,11 @@ export default {
 
 .details-dialog {
   text-align: center;
+  .details-reason {
+    padding-top: 20px;
+    min-height: 160px;
+    color: red;
+    font-size: 20px;
+  }
 }
 </style>

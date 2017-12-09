@@ -101,48 +101,47 @@ will be canceled.</div>
 </template>
 
 <script>
-import Clip from "@/utils/clipboard.js";
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import explain from "@/components/trials/explain.vue"
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import explain from '@/components/trials/explain.vue'
 export default {
-  name: "page_index",
-  data() {
+  name: 'page_index',
+  data () {
     return {
       options: [
-        "Choose areason",
-        "Dead deadl",
-        "Duplicate",
-        "Bad link",
-        "Spam",
-        "Inaccurate",
-        "No value",
-        "Alive again"
+        'Choose areason',
+        'Dead deadl',
+        'Duplicate',
+        'Bad link',
+        'Spam',
+        'Inaccurate',
+        'No value',
+        'Alive again'
       ],
-    };
+    }
   },
   components: {
     couponsPro,
     pagination,
     explain
   },
-  mounted() {
-    this.$root.eventHub.$on("selectClassify", data => {
-      this.msg = "";
+  mounted () {
+    this.$root.eventHub.$on('selectClassify', data => {
+      this.msg = ''
       setTimeout(() => {
-        this.msg = data;
-      }, 500);
-    });
+        this.msg = data
+      }, 500)
+    })
   },
   methods: {
-    test(index) {
-      console.log(`当前跳转到 ${index} 页`);
+    test (index) {
+      console.log(`当前跳转到 ${index} 页`)
     },
-    gotodetails (id) {
+    gotodetails () {
       this.$router.push({ path: '/trialsDetails'})
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

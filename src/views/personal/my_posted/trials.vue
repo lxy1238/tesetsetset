@@ -8,26 +8,27 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="searchForm.title" />
+      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" />
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.category">
-        <option value="1">母婴</option>
-        <option value="2">其他</option>
-        <option value="3">很多</option>
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.menu_id">
+        <option :value="''" >请选择</option>
+        <option :value="item.id" v-for="item in classifyList">{{item.name}}</option>
       </select>
 
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.status">
-        <option value="1">Pending</option>
-        <option value="2">Stop</option>
-        <option value="3">Close</option>
-        <option value="4">Decline</option>
-        <option value="5">Article</option>
-        <option value="6">Expired</option>
+      <select name="" class=" form-control-bootstrap" v-model="requestdata.run_status">
+        <option :value="''" >请选择</option>
+        <option :value="all_run_status[0]">Pending</option>
+        <option :value="all_run_status[1]">Active</option>
+        <option :value="all_run_status[2]">Decline</option>
+        <option :value="all_run_status[3]">Stop</option>
+        <option :value="all_run_status[4]">Close</option>
+        <option :value="all_run_status[5]">Expired</option>
+        <option :value="all_run_status[6]">Underbalance</option>
       </select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
@@ -42,92 +43,115 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in trLists">
+            <tr v-for="item in trLists" v-if="trLists.length != 0">
               <td>
-                <img class="trials-table-img" :src="item.product_img" alt="">
+                <img class="trials-table-img" :src="item.product_img.split(',')[0]" alt="">
               </td>
               <!-- title -->
               <td class="trials-title">
-                <div class="trials-title-platform">amazon</div>
-                <div class="trials-title-text">{{item.product_title}}</div>
-                <a href="javascript:void(0);">Electronics</a>
+                <div class="trials-title-platform">{{item.website}}</div>
+                <div class="trials-title-text"  @click="gotoDetails(item)">{{item.product_title}}</div>
+                <a href="javascript:void(0);"  @click="gotoDetails(item)">Electronics</a>
               </td>
               <!-- store -->
               <td class="trials-store">
-                <div class="trials-store-content">
-                  {{item.store}}
+                <div class="trials-store-content" v-if="item.user_store">
+                  {{item.user_store.store_name}}
                 </div>
               </td>
               <!-- List price -->
               <td>
                 <div >
-                  {{item.product_prcie}}
+                  {{currency}}{{item.product_price}}
                 </div>
               </td>
               <!-- quantity -->
               <td>
                 <div>
-                  {{item.quantity}}
+                  {{item.quantity_per_day}}
                 </div>
               </td>
               <!-- applied -->
               <td>
                  <a href="javascript:void(0)" @click="gotoTrailsreceiptor">
-                   {{item.applied}}
+                   {{item.apply_numbers}}
                 </a>
                
               </td>
               <!-- shipping_fee -->
               <td>
                 <div>
-                  {{item.shipping_fee}}
+                  {{currency}}{{item.shipping_fee}}
                 </div>
               </td> 
               <!-- promotion_fee -->
               <td>
                 <div>
-                  {{item.promotion_fee}}
+                  {{currency}}{{item.total_fee}}
                 </div>
               </td>
               <!-- refund -->
               <td>
                 <div>
-                  {{item.refund}}
+                  {{currency}}{{item.refund_price}}
                 </div>
               </td>
               <!-- security_deposit -->
               <td>
                 <div>
-                  {{item.security_deposit}}
+                  {{currency}}{{item.total_fee}}
                 </div>
               </td>
 
                 <!-- Cost -->
               <td>
                 <div>
-                  {{item.cost}}
+                  {{currency}}{{item.real_fee}}
                 </div>
               </td>
                 <!-- valid_date -->
               <td>
                 <div>
-                  {{item.valid_date}}
+                  {{item.start_time}} to {{item.end_time}}
                 </div>
               </td>
                 <!-- Status -->
-              <td>
-                <div>
-                  pedding
-                </div>
-              </td>
-                <!-- security_deposit -->
-              <td>
-                <div> <a href="javascript:void(0)">Edit</a></div>
-                <div> <a href="javascript:void(0)">Open</a></div>
-                <div> <a href="javascript:void(0)">Close</a></div>
-                <div> <a href="javascript:void(0)">Delete</a></div>
-                <div> <a href="javascript:void(0)">Details</a></div>
-              </td>
+               <td class="status">
+              <div class="blue" v-if="item.status === 0 ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
+              <div class="red" v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">Decline</div>
+              
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] ">Underbalance</div>
+            </td>
+            <td class="operation">
+              <template v-if="item.status === 0">
+                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+              </template>
+              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
+              </template>
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
+                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+              </template>
+              <template  v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">
+                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
+              </template>
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
+                <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
+              </template>
+            </td>
+            </tr>
+            <tr v-if="trLists.length === 0">
+              <td colspan="14">No Data</td>
             </tr>
           </tbody>
         </table>
@@ -136,48 +160,67 @@
         v-if="allpage && allpage != 1"
         :allpage="allpage"
         :show-item="showItem"
+        :current="requestdata.page"
         @handlecurrent="gotoPage">
       </pagination>
     </template>
-  
+        <!-- 查看详情弹窗 -->
+    <el-dialog  :visible.sync="detailsDialog" title="Decline details" class="details-dialog" size="tiny">
+        <div class="details-reason">
+          {{nonApproval}}
+        </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { getTestData } from '@/api/login.js'
+import { userTrials, getHeadCateList ,trialCensor, trialUpdateRunStatus, trialDetele } from '@/api/login'
+import { setStore , getStore} from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
+import { parseTime } from '@/utils/date'
+import { base64Encode } from '@/utils/randomString'
 export default {
   name: 'posted_trials',
   data () {
     return {
       thLists: ['Image', 'Title', 'Store' , 'List Price', 'Quantity', 'Applied', 
-                'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
-                'Cost', 'Valid date', 'Status', 'Operation'
+        'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
+        'Cost', 'Valid date', 'Status', 'Operation'
       ],
-      trLists: [{
-        product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',
-        product_title: 'this is title',
-        platform: 'Amazon',
-        store: 'A11',
-        product_prcie: '98.00',
-        quantity: '20',
-        applied: '15',
-        shipping_fee: '68.00',
-        promotion_fee: '85.00',
-        refund: '1969.00',
-        security_deposit: '2060.00',
-        cost: '0',            
-        valid_date: '2017-09-08 to 2017-10-01',
-        status: '1',
-
-
-      }],
+      trLists: [],
       allpage: undefined,
       showItem: 7,
-      searchForm: {
-        title: "",
-        category: '',
-        status: "",
+      nonApproval: 'self closing',
+      detailsDialog: false,
+      all_run_status: ['pending','active', 'decline', 'stop', 'close', 'expired', 'underbalance' ],  // 待审核  暂停， 关闭 上线， 审核未通过  过期
+      classifyList: [
+
+      ],
+      requestdata: {
+        user_id: getUserId(),
+        api_token: getToken(),
+        page: 1,
+        page_size: 3,
+        product_title: '',
+        menu_id: '',
+        run_status: '',
+      },
+      detailsRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: ''
+      },
+      updateRunStatusRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: '',
+        run_status: '',
+      },
+      couponDeteleRequestData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: ''
       }
      
    
@@ -186,25 +229,157 @@ export default {
   components: {
     pagination
   },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
+    }
+  },
   mounted () {
+    this.init()
   },
   methods: {
-    gotoPage (i) {
-      console.log(i)
+    init () {
+      this.getPostTrialsList()
+      this.getHeadCateListInfo()
     },
+    initData () {
+
+    },
+
+    //页面跳转
+    gotoPage (i) {
+      this.requestdata.page = i
+      this.getPostTrialsList()
+    },
+    
+    //跳转到新增试用品页面
     add () {
       this.$router.push({path: '/posted/trials/add'})
     },
 
     //查询 trails
     postedCouponsSearch () {
-      console.log(this.searchForm)
+      this.gotoPage(1)
     },
 
-    // 跳转到领取人详情页面
-    gotoTrailsreceiptor () {
-      this.$router.push({path: '/posted/trials/receiptor'})
+    //获取商家发布的试用品的列表
+    getPostTrialsList () {
+      userTrials(this.requestdata).then(res => {
+        console.log(res)
+        for (let i of res.data.data) {
+          i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
+          i.end_time = parseTime(i.end_time, '{y}-{m}-{d}')
+        }
+        this.trLists = res.data.data
+        this.allpage = res.data.last_page
+      })
+    }, 
+
+    //获取头部品类列表
+    getHeadCateListInfo () {
+      getHeadCateList().then(res => {
+        console.log(res)
+        this.classifyList = res.data
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //跳转到优惠券详情页面
+    gotoDetails (item) {
+      if (item.status == 1 && item.run_status == this.all_run_status[1]) {
+        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id)  })
+      }
+    },
+
+    //跳转到 领取优惠券的用户页面
+    gotoTrailsreceiptor (item) {
+      if (item.pick_numbers === 0) {
+        return false
+      }
+      this.$router.push({ path: '/posted/trials/receiptor' })
+      setStore('couponDetails', JSON.stringify(item))
+    },
+
+    //编辑待审核状态下和审核未通过的优惠券   
+    EditCoupon (id) {
+      console.log(id)
+      //携带id 查询需要修改的数据，然后进行修改
+      this.$router.push({ path: '/posted/trials/add', query: { editor: id } })
+    },
+
+    //删除优惠券
+    DeleteCoupon (id) {
+      this.$confirm('Determine deleting trial?', 'reminder', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        type: 'warning'
+      })
+        .then(() => {
+          this.couponDeteleRequestData.id = id
+          trialDetele(this.couponDeteleRequestData).then(res => {
+            console.log(res)
+            this.getPostTrialsList()
+          })
+          this.$notify({
+            type: 'success',
+            message: 'delete success!'
+          })
+        })
+        .catch(() => {
+          console.log('cancel')
+        })
+    },
+
+    //显示详情弹窗
+    showDetails (id) {
+      this.detailsRequestData.trial_id = id
+      this.detailsDialog = true
+      trialCensor(this.detailsRequestData).then(res => {
+        if (res.data.content == '通过') {
+          this.nonApproval = 'self closing'
+          return
+        }
+        this.nonApproval = res.data.content
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //更新优惠券 判断close 的时候给与提示信息
+    updateRunStatus (id, run_status) {
+      if (run_status == 'close') {
+        this.$confirm('Determine close trial?', 'reminder', {
+          confirmButtonText: 'confirm',
+          cancelButtonText: 'cancel',
+          type: 'warning'
+        }).then(() => {
+          this.updateRunStatusFun(id, run_status)
+        }).catch (error => {
+          console.log(error)
+        })
+      } else {
+        this.updateRunStatusFun(id, run_status)
+      }
+    },
+
+    //更新状态执行函数
+    updateRunStatusFun (id, run_status) {
+      this.updateRunStatusRequestData.trial_id = id
+      this.updateRunStatusRequestData.run_status = run_status
+      trialUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
+        if (res.code === 200) {
+          this.getPostTrialsList()
+        }
+      }).catch(error => {
+        console.log(error)
+      })
     }
+
+  
+
+   
+   
   
   }
 }
@@ -226,7 +401,7 @@ export default {
     margin-bottom: 1rem;
     .form-control-bootstrap {
       margin-right: 3%;
-      min-width: 10%;
+      width: 16%;
     }
     .search {
       .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
@@ -275,6 +450,18 @@ export default {
     height: 4rem;
   }
   
+}
+.trials-title {
+  width: 120px;
+}
+.details-dialog {
+  text-align: center;
+  .details-reason {
+    padding-top: 20px;
+    min-height: 160px;
+    color: red;
+    font-size: 20px;
+  }
 }
 
 </style>

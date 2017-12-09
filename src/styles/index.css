@@ -45,6 +45,7 @@
 .page-index {
   background: #e4e4e4;
   min-width: 83.333rem;
+  min-height: 500px;
 }
 .fixed {
   position: fixed !important;
@@ -223,15 +224,19 @@ table tbody tr td {
     font-size: 14.9px;
   }
   .coupons-product {
-    height: 355px !important;
+    height: 340px !important;
   }
   .trials-details-left {
     top: 10.3rem !important;
+    display: none;
+  }
+  .trials-right-content.right {
+    width: 100% !important;
   }
 }
 @media screen and (max-width: 1389px) {
   .coupons-product {
-    height: 355px !important;
+    height: 340px !important;
   }
 }
 @media screen and (max-width: 1270px) {
@@ -239,7 +244,7 @@ table tbody tr td {
     font-size: 12px;
   }
   .coupons-product {
-    height: 326px !important;
+    height: 330px !important;
   }
   .trials-explain {
     width: 98% !important;

@@ -146,6 +146,7 @@
         v-if="allpage && allpage != 1"
         :allpage="allpage"
         :show-item="showItem"
+        :current="requestdata.page"
         @handlecurrent="gotoPage">
       </pagination>
     </template>
@@ -155,14 +156,13 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { getTestData } from '@/api/login.js'
 export default {
   name: 'posted_trials',
   data () {
     return {
       thLists: ['Image', 'Title', 'Price' , 'User', 'Order date', 'Order number', 
-                'Review', 'Shipping fee', 'Platform fee', 'Refund', 
-                'Cost', 'Status', 'Operation'
+        'Review', 'Shipping fee', 'Platform fee', 'Refund', 
+        'Cost', 'Status', 'Operation'
       ],
       trLists: [{
         product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',
@@ -196,9 +196,9 @@ export default {
       allpage: undefined,
       showItem: 7,
       searchForm: {
-        title: "",
+        title: '',
         category: '',
-        status: "",
+        status: '',
       }
      
    

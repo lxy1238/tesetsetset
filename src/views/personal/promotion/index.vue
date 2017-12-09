@@ -16,13 +16,13 @@
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-left">${{couponsDetails.coupons.product_price}}</span>
-            <span class="price-right">${{couponsDetails.coupons.discount_price}}</span>
+            <span class="price-left">{{currency}}{{couponsDetails.coupons.product_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.coupons.discount_price}}</span>
             <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
               <i class="el-icon-delete"></i>
             </span>
           </p>
-          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.coupons.discount_rate}}%</span></p>
+          <p class="coupons content"><span>discount</span> <span class="com-right">{{couponsDetails.coupons.discount_rate}}%</span></p>
           </template>
           <template slot="btn">
             View Coupons
@@ -34,109 +34,108 @@
         class="coupons-pagination"
         :allpage="allpage"
         :show-item="showItem"
+        :current="requestdata.page"
         @handlecurrent="gotoPage">
       </pagination>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { promotionUserCoupon, promotionUserRemove } from "@/api/login";
-import couponsPro from "@/components/page_index_coupons/image_product.vue";
-import pagination from "@/components/page_index_coupons/pagination.vue";
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import { mapGetters } from 'vuex'
+import { promotionUserCoupon, promotionUserRemove } from '@/api/login'
+import couponsPro from '@/components/page_index_coupons/image_product.vue'
+import pagination from '@/components/page_index_coupons/pagination.vue'
+import { base64Encode } from '@/utils/randomString'
+import { getStore } from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
 export default {
-  name: "promotion",
-  data() {
+  name: 'promotion',
+  data () {
     return {
       arrcouponsDetails: [],
       allpage: undefined,
       showItem: 7,
       requestData: {
-        api_token: "",
-        user_id: "",
+        api_token: getToken(),
+        user_id: getUserId(),
         page: 1,
         page_size: 8,
       },
       removeRequestData: {
-        api_token: "",
-        user_id: "",
-        coupon_id: ""
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: ''
       },
       removeAllRequestData: {
-        api_token: "",
-        user_id: "",
+        api_token: getToken(),
+        user_id: getUserId(),
       }
-    };
+    }
   },
   components: {
     couponsPro,
     pagination
   },
-  mounted() {
+  mounted () {
     this.init()
   },
   methods: {
     init () {
-      this.initData()
       this.getPromotionDetails()
     },
     initData () {
-      this.requestData.api_token = this.token
-      this.requestData.user_id = this.user_id
-
-      this.removeRequestData.api_token = this.token
-      this.removeRequestData.user_id = this.user_id
-
-      this.removeAllRequestData.api_token = this.token
-      this.removeAllRequestData.user_id = this.user_id
+      
     },
     //获取用户加入推广（收藏）的优惠券信息
-    getPromotionDetails() {
+    getPromotionDetails () {
       promotionUserCoupon(this.requestData)
         .then(res => {
+          console.log(res)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
         })
         .catch(error => {
           console.log(error)
-        });
+        })
     },
 
     //移除优惠券
-    removePromotion(id) {
+    removePromotion (id) {
       this.removeRequestData.coupon_id = id
       promotionUserRemove(this.removeRequestData)
-        .then(res => {
+        .then(() => {
           this.getPromotionDetails()
         })
         .catch(error => {
           console.log(error)
-        });
+        })
     },
 
     //移除所有的优惠券
-    removeAllPromotion() {
-      this.$confirm("Do you really want to delete all?", "remove all", {
-        confirmButtonText: "confirm"
+    removeAllPromotion () {
+      if (this.arrcouponsDetails.length === 0) {
+        return
+      }
+      this.$confirm('Do you really want to delete all?', 'remove all', {
+        confirmButtonText: 'confirm'
       })
         .then(() => {
           promotionUserRemove(this.removeAllRequestData)
-            .then(res => {
+            .then(() => {
               this.getPromotionDetails()
             })
             .catch(error => {
               console.log(error)
-            });
+            })
         })
         .catch(() => {
-          console.log("quxiao")
-        });
+          console.log('quxiao')
+        })
     },
 
     //跳转到详情页面
-    gotodetails(id, user_id) {
-      this.$router.push({ path: "/coupons/" + base64Encode(id) })
+    gotodetails (id) {
+      this.$router.push({ path: '/coupons/' + base64Encode(id) })
     },
 
     //翻页功能
@@ -146,10 +145,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["user_id", "token"])
+    ...mapGetters(['user_id', 'token']),
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
 
-};
+}
 </script>
 
 <style lang="less" >

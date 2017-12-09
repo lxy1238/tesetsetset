@@ -33,7 +33,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { asyncRouterMap } from '../../router'
 export default {
   name: 'subnav',
   data () {
@@ -60,19 +59,19 @@ export default {
     currentRouter: function (value) {
       this.routers.forEach((parent) => {
         if (parent.children) {
-           parent.children.forEach((e) => {
-          if (e.path == value) {
-            parent.isToggle = true
-          }
-        })
+          parent.children.forEach((e) => {
+            if (e.path == value) {
+              parent.isToggle = true
+            }
+          })
         }
       })
     }
   },
   methods: {
-    clickHeader (items, index_p) {
+    clickHeader (items) {
       if (items.children) {
-          items.isToggle = !items.isToggle
+        items.isToggle = !items.isToggle
       }
     }
   }

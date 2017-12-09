@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "babel-eslint": "^8.0.2",
     "bootstrap": "^3.3.7",
     "child_process": "^1.0.2",
     "clipboard": "^1.7.1",
@@ -26,6 +27,7 @@
     "net": "^1.0.2",
     "normalize.css": "^7.0.0",
     "nprogress": "^0.2.0",
+    "request": "^2.83.0",
     "summernote": "^0.8.8",
     "tls": "0.0.1",
     "translate-api": "^0.3.12",

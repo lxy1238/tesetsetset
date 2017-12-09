@@ -1,16 +1,35 @@
 //时间函数
 
 //时间戳转化成需求中需要的格式
-export  function timestampFormat(timestamp) {
+export  function timestampFormat (timestamp) {
   var date = new Date() 
   date.setTime(timestamp * 1000)
   var dateString = date.toDateString()
-  return dateString.slice(4, 7) +" "+ dateString.slice(-4)
+  return dateString.slice(4, 7) +' '+ dateString.slice(-4)
 }
 
+//获取的js时间对象 转化时间戳
+export function toTimestamp (time) {
+  if(time) {
+    return parseInt(time.getTime() / 1000)
+  }
+}
+//获取剩下多少时间, 传入时间戳
+export function getTimeDetail (time) {
+  let now = toTimestamp(new Date())
+  let leftTime = time - now
+  let result = {
+    day: '',
+    hours: '',
+    minutes: '',
+  }
+  result.day = parseInt( leftTime / 86400 )
+  result.hours = parseInt((leftTime - result.day * 86400) / 3600)
+  result.minutes  = parseInt ((leftTime - result.day * 86400 - result.hours * 3600) / 60)
 
-
-export function parseTime(time, cFormat) {
+  return result
+}
+export function parseTime (time, cFormat) {
   if (arguments.length === 0) {
     return null
   }
@@ -42,7 +61,7 @@ export function parseTime(time, cFormat) {
   return time_str
 }
 
-export function formatTime(time, option) {
+export function formatTime (time, option) {
   time = +time * 1000
   const d = new Date(time)
   const now = Date.now()
@@ -66,7 +85,7 @@ export function formatTime(time, option) {
 }
 
 // 格式化时间
-export function getQueryObject(url) {
+export function getQueryObject (url) {
   url = url == null ? window.location.href : url
   const search = url.substring(url.lastIndexOf('?') + 1)
   const obj = {}
@@ -86,7 +105,7 @@ export function getQueryObject(url) {
 * @param {Sting} val input value
 * @returns {number} output value
 */
-export function getByteLen(val) {
+export function getByteLen (val) {
   let len = 0
   for (let i = 0; i < val.length; i++) {
     if (val[i].match(/[^\x00-\xff]/ig) != null) {
@@ -96,7 +115,7 @@ export function getByteLen(val) {
   return Math.floor(len)
 }
 
-export function cleanArray(actual) {
+export function cleanArray (actual) {
   const newArray = []
   for (let i = 0; i < actual.length; i++) {
     if (actual[i]) {
@@ -106,7 +125,7 @@ export function cleanArray(actual) {
   return newArray
 }
 
-export function param(json) {
+export function param (json) {
   if (!json) return ''
   return cleanArray(Object.keys(json).map(key => {
     if (json[key] === undefined) return ''
@@ -115,7 +134,7 @@ export function param(json) {
   })).join('&')
 }
 
-export function param2Obj(url) {
+export function param2Obj (url) {
   const search = url.split('?')[1]
   if (!search) {
     return {}
@@ -123,14 +142,14 @@ export function param2Obj(url) {
   return JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
 }
 
-export function html2Text(val) {
+export function html2Text (val) {
   const div = document.createElement('div')
   div.innerHTML = val
   return div.textContent || div.innerText
 }
 
-export function objectMerge(target, source) {
-   /* Merges two  objects,
+export function objectMerge (target, source) {
+  /* Merges two  objects,
     giving the last one precedence */
 
   if (typeof target !== 'object') {
@@ -152,7 +171,7 @@ export function objectMerge(target, source) {
   return target
 }
 
-export function scrollTo(element, to, duration) {
+export function scrollTo (element, to, duration) {
   if (duration <= 0) return
   const difference = to - element.scrollTop
   const perTick = difference / duration * 10
@@ -164,7 +183,7 @@ export function scrollTo(element, to, duration) {
   }, 10)
 }
 
-export function toggleClass(element, className) {
+export function toggleClass (element, className) {
   if (!element || !className) {
     return
   }
@@ -181,7 +200,7 @@ export function toggleClass(element, className) {
 export const pickerOptions = [
   {
     text: '今天',
-    onClick(picker) {
+    onClick (picker) {
       const end = new Date()
       const start = new Date(new Date().toDateString())
       end.setTime(start.getTime())
@@ -189,7 +208,7 @@ export const pickerOptions = [
     }
   }, {
     text: '最近一周',
-    onClick(picker) {
+    onClick (picker) {
       const end = new Date(new Date().toDateString())
       const start = new Date()
       start.setTime(end.getTime() - 3600 * 1000 * 24 * 7)
@@ -197,7 +216,7 @@ export const pickerOptions = [
     }
   }, {
     text: '最近一个月',
-    onClick(picker) {
+    onClick (picker) {
       const end = new Date(new Date().toDateString())
       const start = new Date()
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
@@ -205,7 +224,7 @@ export const pickerOptions = [
     }
   }, {
     text: '最近三个月',
-    onClick(picker) {
+    onClick (picker) {
       const end = new Date(new Date().toDateString())
       const start = new Date()
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
@@ -213,7 +232,7 @@ export const pickerOptions = [
     }
   }]
 
-export function getTime(type) {
+export function getTime (type) {
   if (type === 'start') {
     return new Date().getTime() - 3600 * 1000 * 24 * 90
   } else {
@@ -221,19 +240,19 @@ export function getTime(type) {
   }
 }
 
-export function debounce(func, wait, immediate) {
+export function debounce (func, wait, immediate) {
   let timeout, args, context, timestamp, result
 
-  const later = function() {
-   // 据上一次触发时间间隔
+  const later = function () {
+    // 据上一次触发时间间隔
     const last = +new Date() - timestamp
 
-   // 上次被包装函数被调用时间间隔last小于设定时间间隔wait
+    // 上次被包装函数被调用时间间隔last小于设定时间间隔wait
     if (last < wait && last > 0) {
       timeout = setTimeout(later, wait - last)
     } else {
       timeout = null
-     // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
+      // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
       if (!immediate) {
         result = func.apply(context, args)
         if (!timeout) context = args = null
@@ -241,11 +260,11 @@ export function debounce(func, wait, immediate) {
     }
   }
 
-  return function(...args) {
+  return function (...args) {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
-   // 如果延时不存在，重新设定延时
+    // 如果延时不存在，重新设定延时
     if (!timeout) timeout = setTimeout(later, wait)
     if (callNow) {
       result = func.apply(context, args)
@@ -256,7 +275,7 @@ export function debounce(func, wait, immediate) {
   }
 }
 
-export function deepClone(source) {
+export function deepClone (source) {
   if (!source && typeof source !== 'object') {
     throw new Error('error arguments', 'shallowClone')
   }

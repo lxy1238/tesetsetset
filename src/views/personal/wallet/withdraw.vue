@@ -40,7 +40,7 @@ export default {
   name: 'withdraw',
   data () {
     return {
-      radio: "1"
+      radio: '1'
     }
   }
 }
