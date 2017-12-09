@@ -37,7 +37,6 @@ export default {
   name: 'subnav',
   data () {
     return {
-      isToggle: 1,
     }
   },
   props: {
@@ -49,6 +48,9 @@ export default {
     }
   },
   mounted () {
+    setTimeout(() => {
+      this.init()
+    }, 100)
   },
   computed : {
     ...mapGetters([
@@ -57,6 +59,18 @@ export default {
   },
   watch: {
     currentRouter: function (value) {
+      this.changeToggle(value)
+    }
+  },
+  methods: {
+
+    //进入初始化
+    init () {
+      this.changeToggle(this.currentRouter)
+    },
+
+    //栏目自动展开
+    changeToggle (value) {
       this.routers.forEach((parent) => {
         if (parent.children) {
           parent.children.forEach((e) => {
@@ -66,9 +80,9 @@ export default {
           })
         }
       })
-    }
-  },
-  methods: {
+    },
+
+    //点击父节点的时候展开收起
     clickHeader (items) {
       if (items.children) {
         items.isToggle = !items.isToggle

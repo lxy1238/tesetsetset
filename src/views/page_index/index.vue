@@ -17,7 +17,6 @@
             <span class="price-left"><i>coupon</i> {{currency}}{{couponsDetails.discount_price}}</span>
             <span class="price-right-bottom"> 35% <i>off</i></span>
           </p>
-          
           <!-- <el-tooltip  :visible-arrow="false" placement="top" effect="light">
              <div slot="content">Expected Commissions {{currency}} {{couponsDetails.commission_amount}}</div>
             <p class="coupons content" ><span>Commissions</span> <span class="com-right">{{couponsDetails.commission_ratio}}%</span></p>

@@ -119,7 +119,7 @@
                <td class="status">
               <div class="blue" v-if="item.status === 0 ">Pending</div>
               <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
-              <div class="red" v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">Decline</div>
+              <div class="red" v-if="item.status === 2  ">Decline</div>
               
               <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
@@ -136,10 +136,9 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
-                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
               </template>
-              <template  v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">
+              <template  v-if="item.status === 2 ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>

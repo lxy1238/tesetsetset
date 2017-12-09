@@ -114,18 +114,18 @@
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-        <el-input v-model.number="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
+        <el-input v-model="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
       </el-form-item>
     
       <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
-        <el-input v-model.number="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
+        <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
       <el-form-item label="Is Full Return: " class="item-inline1" >
         <el-radio class="radio" v-model="trialsForm.full_refund" label="1" >yes</el-radio>
         <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >no</el-radio>
       </el-form-item>
       <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
-        <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('return_fee')"></el-input>
+        <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('refund_price')"></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
@@ -186,8 +186,8 @@ export default {
         active_date: [],
         start_time: '',
         end_time: '',
-        quantity_per_day: 10,                //每天上限数量 int
-        total_quantity: 1000 ,                 //发行总量
+        quantity_per_day: '',                //每天上限数量 int
+        total_quantity: '' ,                 //发行总量
         full_refund: '1',
         
         return_fee: '',
@@ -241,10 +241,10 @@ export default {
           {type: 'array',required: true ,message: 'active date is required', trigger: 'change'}
         ],
         quantity_per_day: [
-          {type: 'number', required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
+          { required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
         ],
         total_quantity: [
-          {type: 'number', required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
+          { required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
         ]
       },
       fileList2: [
@@ -547,7 +547,7 @@ export default {
           var markupStr = $('#summernote').summernote('code')
           this.trialsFormSubmit.product_details = markupStr
           console.log(this.trialsFormSubmit)
-          // this.issueCoupon(this.trialsFormSubmit)
+          this.issueCoupon(this.trialsFormSubmit)
         } else {
           console.log('error submit!!')
           return false

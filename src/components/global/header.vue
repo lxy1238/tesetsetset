@@ -303,7 +303,7 @@ export default {
       classifyList: [
         {
           id: 0,
-          name: 'Top Coupons'
+          name: 'Top'
         }
       ],
 
@@ -434,7 +434,7 @@ export default {
     //接受其他组件传递的事件
     getOtherEvent () {
       this.$root.eventHub.$on('initClassify', () => {
-        this.selectedC = -1
+        this.selectedC = 0
       })
 
       //优惠券点击更多的时候触发的事件
@@ -489,11 +489,12 @@ export default {
     },
     coupons () {
       this.keyword = ''
-      this.$router.push({ path: '/'})
       this.selectedC = 0
+      this.$router.push({ path: '/'})
       this.$store.dispatch('setLevel', 0)
     },
     trials () {
+      this.keyword = ''
       this.selectedC = 0
       this.$router.push({ path: '/trials/index' })
       this.$store.dispatch('setLevel', 1)
