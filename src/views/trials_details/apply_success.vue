@@ -5,7 +5,7 @@
       <div class="home-content">
         <div class="details">
           <div class="pro-img">
-            <img class="img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+            <img class="img" src="" alt="">
           </div>
           <div class="details-price">
             <div class="title">2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers</div>
@@ -13,15 +13,9 @@
             <div class="code-price">
               <div class="price">Price: <del>$198.00</del> </div>
               <div class="refund-price">Refund: <span >$198.00</span> </div>
-              <div class="reminder">Please place an order within 4 hours and complete the payment. 
+              <div class="reminder">Please place an order within 24 hours and complete the payment. 
 And timely upload your order number, or your trial qualification 
 will be canceled.</div>
-              <div class="code">
-                <!-- <img src="../../assets/code.png" alt="">
-                <div class="text">
-                    Scan the QR code code to find the product
-                </div> -->
-              </div>
             </div>
             <div class="footer">
               <button class="to-amazon">

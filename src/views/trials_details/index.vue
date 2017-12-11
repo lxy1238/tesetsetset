@@ -89,7 +89,7 @@
     </div>
 
       <!-- not get trials -->
-      <el-dialog  :visible.sync="notGetTrialsDialog" class="not-trials-dialog" size="tiny">
+      <el-dialog  :visible.sync="notGetTrialsDialog" title="result" class="not-trials-dialog" size="tiny">
           <p>You did not get trials</p>
 
           <div class="try-again">
@@ -239,16 +239,21 @@ export default {
 
     },
     gotoTrials () {
-      this.$router.push({path: '/trials'})
+      this.$router.push({path: '/trials/index'})
     },
     selectTabs (index) {
       this.selected = index
     },
     trialsApplyBtn () {
-      console.log(this.trialApplyData)
-      // this.isApply = true
+      this.isApply = true
       this.$api.trialApply(this.trialApplyData).then(res => {
-        console.log(res)
+        if (res.code === 200) {
+          if (res.data === 1) {
+            this.$router.push({ path: '/successDetails/' + this.$route.params.trialId })
+          } else {
+            this.notGetTrialsDialog = true
+          }
+        }
       })
     }
   }
@@ -485,6 +490,9 @@ export default {
 }
   // trials申请失败
 .not-trials-dialog {
+    p {
+      height: 40px;
+    }
     p, div {
       text-align: center;
     }
