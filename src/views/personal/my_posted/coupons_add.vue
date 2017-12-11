@@ -9,11 +9,11 @@
     <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
-          <el-input class="url-input" v-model="couponsForm.product_url"  ></el-input>
+          <el-input class="url-input" v-model="couponsForm.product_url"  @blu="getPlatformCateInfo" ></el-input>
           <button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)">get</button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline" >
-          <el-select v-model="couponsForm.website"  @change="websiteChange" >
+          <el-select v-model="couponsForm.website"  @change="websiteChange">
             <el-option
               v-for="item in optionsWebsite"
               :key="item.label"
@@ -107,7 +107,7 @@
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
       <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
-        <template slot="append">%</template>
+        <!-- <template slot="prepend">%</template> -->
       </el-input>
     </el-form-item>
     <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
@@ -212,7 +212,9 @@ export default {
       },
       options: [],
       select: '',
-      isEditorData: true
+      isEditorData: true,
+      //国家与要发布的产品链接是否一直
+      countryUrlIsRight: false
     }
   },
   components: {
@@ -253,13 +255,14 @@ export default {
 
     //通过输入链接获取所有产品信息
     getProInfo (url) {
-      this.$message.info('For information on goods, please wait a moment')
+      // this.$message.info('For information on goods, please wait a moment')
       axios.get('http://23.91.2.69/productsm/index.php/api/asin', {
         params: {
           url: url,
         }
       })
         .then( (res) =>{
+          console.log(res)
           this.getPlatformCateInfo()
           setTimeout(() => {
             let data = res.data.data
@@ -300,6 +303,9 @@ export default {
             this.optionsWebsite.push(ObjWebsite)
             if (this.couponsForm.product_url.search(i.url) >= 0) {
               this.couponsForm.website = i.website
+              this.countryUrlIsRight = true
+            } else {
+              this.$message.error('Only the products of the present country can be released')
             }
           }
         })
@@ -393,6 +399,10 @@ export default {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
           console.log(this.couponsFormSubmit)
+          if (!this.countryUrlIsRight) {
+            this.$message.error('Only the products of the present country can be released')
+            return
+          }
           this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')

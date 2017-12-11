@@ -2,6 +2,7 @@ import { login, getInfo, updateLogin } from '@/api/login'
 import { getEmail, setEmail, getToken, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
 import router from '../../router'
 import { removeEmail, removePass } from '../../utils/auth'
+import { getStore } from '../../utils/utils'
 
 const user = {
   state: {
@@ -50,7 +51,7 @@ const user = {
     },
   },
   actions: {
-    Login ({ commit , state}, userInfo) {
+    Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(res => {
           setToken(res.data.api_token)
@@ -64,9 +65,9 @@ const user = {
         })
       })
     },
-    GetInfo ({ commit , state }) {
+    GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-        getInfo({'api_token': getToken(), 'user_id': getUserId()}).then(res => {
+        getInfo({'api_token': getToken(), 'user_id': getUserId(), 'country_id': getStore('country_id') || 1}).then(res => {
           const data = res.data
           if (res.code === 200) {
             setEmail(data.email)

@@ -191,6 +191,7 @@ export default {
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
+        country_id: getStore('country_id'),
         page: 1,
         page_size: 6,
         product_title: '',
@@ -211,7 +212,7 @@ export default {
       couponDeteleRequestData: {
         api_token: getToken(),
         user_id: getUserId(),
-        coupon_id: ''
+        country_id: getStore('country_id'),
       }
     }
   },
@@ -308,14 +309,16 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
+          console.log(this.couponDeteleRequestData)
           couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
+            this.$notify({
+              type: 'success',
+              message: 'delete success!'
+            })
           })
-          this.$notify({
-            type: 'success',
-            message: 'delete success!'
-          })
+          
         })
         .catch(() => {
           console.log('cancel')

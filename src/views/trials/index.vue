@@ -50,10 +50,10 @@ export default {
         name: 'Top Coupons'
       }],
       requestData: {
+        country_id: parseInt(getStore('country_id')) || 1,
         page: 1,
         page_size: '',
         menu_id: 0,
-        country_id: parseInt(getStore('country_id')) || 1,
         keyword: '',
       }
     }

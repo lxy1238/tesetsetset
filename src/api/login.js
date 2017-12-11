@@ -248,6 +248,13 @@ export const getAllTrial = data => fetch({
   data: qs.stringify(data)
 })
 
+//用户申请试用品
+export const trialApply = data => fetch({
+  url: '/api/v1/trial/trial-apply',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 //显示试用品店铺列表
 export const trialsAdd = data => fetch({
   url: '/api/v1/trial/add',
@@ -322,14 +329,14 @@ export const trialDetele = data => fetch({
   data: qs.stringify(data)
 })
 
-//编辑优惠券
+//编辑试用品
 export const editTrial = data => fetch({
   url: '/api/v1/trial/edit',
   method: 'POST',
   data: qs.stringify(data)
 })
 
-//获取需要编辑的优惠券详情
+//获取需要编辑的试用品详情
 
 export const trialEditDetail = data => fetch({
   url: '/api/v1/trial/edit-detail',

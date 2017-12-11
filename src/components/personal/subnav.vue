@@ -3,7 +3,7 @@
    <div class="pages-content clearfix">
      <div class="subnav-l">
        <div class="nav">
-          <div class="nav-items" v-for="(items, index_p) in routers" :class="{last: index_p == routers.length}">
+          <div class="nav-items" v-for="(items, index_p) in routers" :class="{last: index_p == routers.length}" v-if="!items.hidden">
             <div class="nav-header" @click="clickHeader(items, index_p)">
               <router-link :to="items.path"  v-if="!items.hasChilds"  :class="{active: items.redirect == currentRouter}">
                 {{items.text}}
@@ -50,6 +50,7 @@ export default {
   mounted () {
     setTimeout(() => {
       this.init()
+      console.log(this.routers)
     }, 100)
   },
   computed : {
@@ -157,8 +158,6 @@ export default {
   .subnav-r {
     float: left;
     width: 74%;
-    // border: 1px solid #0072bc;
-    // height: 1000px;
   }
 
 }

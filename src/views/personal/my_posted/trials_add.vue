@@ -43,10 +43,14 @@
           </el-select>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-          <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')"></el-input>
+          <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')">
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-          <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')"></el-input>
+          <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" placeholder="Default free freight">
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="Image" prop="product_img_s" >
           <el-upload 
@@ -171,7 +175,7 @@ export default {
       isEditorData: true,
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
-        product_url: 'https://www.amazon.com/Braun-MGK3040-Trimming-Grooming-Precision/dp/B01M5FRLLS/ref=lp_17474487011_1_2_s_it?s=beauty&ie=UTF8&qid=1512548077&sr=1-2&th=1',
+        product_url: '',
         product_title: 'this is titie of trials',
         product_reason: 'this is reason of trials',
         specifications: 'this is specifications of trials',
@@ -179,10 +183,10 @@ export default {
         menu_id: '',     // 所属分类 , 是   int
         user_store_id: '',        // int
         product_price: '88.00',      //产品价格
-        shipping_fee: '1.2',                       //运费
+        shipping_fee: '',                       //运费
         product_img: [],                        //产品图片
         product_img_s: [{url: 'https://images-na.ssl-images-amazon.com/images/I/5194nZpL9ZL._SL160_.jpg'}],
-        product_details: '<div></div>',
+        product_details: 'details',
         active_date: [],
         start_time: '',
         end_time: '',
@@ -213,9 +217,6 @@ export default {
         ],
         product_price: [
           {required: true ,message: 'product price is required, Must be Numbers', trigger: 'blur'}
-        ],
-        shipping_fee: [
-          {required: true ,message: 'shipping fee is required , Must be Numbers', trigger: 'blur'}
         ],
         product_img_s: [
           {
@@ -267,9 +268,7 @@ export default {
 
     }
   },
-  mounted () {
-    this.init()
-  },
+
   computed : {
     ...mapGetters([
       'token',
@@ -327,6 +326,9 @@ export default {
       return NumAdd(this.refund, this.platform_fee)
     }
   },  
+  mounted () {
+    this.init()
+  },
   methods: {
 
     // 初始化操作
@@ -546,6 +548,10 @@ export default {
           this.trialsFormSubmit.product_img = imgArr
           var markupStr = $('#summernote').summernote('code')
           this.trialsFormSubmit.product_details = markupStr
+          this.trialsForm.product_details = markupStr
+          if (!markupStr) {
+            return
+          }
           console.log(this.trialsFormSubmit)
           this.issueCoupon(this.trialsFormSubmit)
         } else {
@@ -580,6 +586,7 @@ export default {
       }
       this.isEditorData = false
       this.trialDetailsrequestData.id = this.$route.query.editor
+      console.log(this.trialDetailsrequestData)
       trialEditDetail(this.trialDetailsrequestData).then(res => {
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
         let newArr = []
@@ -590,6 +597,8 @@ export default {
         this.trialsForm.api_token = getToken()
         this.trialsForm.user_id = getUserId()
         this.trialsForm.user_name = this.username
+        this.trialsForm.total_quantity = String(res.data.total_quantity)
+        this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
         $('#summernote').summernote('code', res.data.product_details)
       })

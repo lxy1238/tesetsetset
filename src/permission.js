@@ -26,6 +26,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next()
+      NProgress.start(100)
       NProgress.done()
     }
   }
@@ -33,6 +34,7 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach(() => {
+  NProgress.start(100)
   NProgress.done() // 结束Progress
 })
 

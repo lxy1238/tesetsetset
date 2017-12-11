@@ -299,7 +299,7 @@ export const asyncRouterMap = [
       }
     ]
   },
-  // { path: '*', redirect: '/404/index', hidden: true }
+  { path: '*', redirect: '/404/index', hidden: true }
 ]
 
 

@@ -77,7 +77,6 @@ export default {
           this.pidForm.api_token = this.$route.params.token
           this.pidForm.email = this.$route.params.email
           checkRetrievePassword(this.pidForm).then(res => {
-            console.log(res)
             if (res.code === 402) {
               this.$notify.error(res.message)
               return false

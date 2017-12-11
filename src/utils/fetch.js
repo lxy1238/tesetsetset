@@ -40,14 +40,13 @@ service.interceptors.response.use(
         })
       }
       if (response.data.code === 500) {
-        MessageBox.confirm('You have logged in elsewhere, please log in again', 'log out', {
+        MessageBox.alert('You have logged in elsewhere, please log in again', 'log out', {
           confirmButtonText: 'confirm',
-          cancelButtonText: 'cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('LogOut').then(() => {
-            console.log('log out success！！')
-          })
+          callback: () => {
+            store.dispatch('LogOut').then(() => {
+              console.log('log out success！！')
+            })
+          }
         })
         console.log(response)
       }

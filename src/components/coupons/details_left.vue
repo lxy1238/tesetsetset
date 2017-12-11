@@ -8,9 +8,9 @@
             </a>
           </div>
           <div class="img-small">
-            <span class="left" @click="pre"> <i class="iconfont icon-huidaodingbu-copy "></i> </span>
+            <!-- <span class="left" @click="pre"> <i class="iconfont icon-huidaodingbu-copy "></i> </span> -->
             <img v-for="(item, index) in imgList" v-if="index <= 5" :src="item" alt="" @mouseover="hover(index)"  :class="{active: activeNum == index}">
-            <span class="right" @click="next"> <i class="iconfont icon-huidaodingbu-copy"></i> </span>
+            <!-- <span class="right" @click="next"> <i class="iconfont icon-huidaodingbu-copy"></i> </span> -->
           </div>
         </div>
         <template v-if="userInfo.username">

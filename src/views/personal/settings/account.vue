@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { userInfoSet, uploadImg, getInfo } from '@/api/login'
+import { userInfoSet, uploadImg } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'settings-account',
@@ -72,18 +72,14 @@ export default {
   computed: {
   },
   mounted () {
-    getInfo({ api_token: getToken(), user_id: getUserId() })
-      .then(res => {
-        this.userInfo = res.data
-        this.accountForm.sex = this.userInfo.base.sex
-        this.accountForm.birthday = this.userInfo.base.birthday
-        this.accountForm.introduce = this.userInfo.base.introduce
-        this.accountForm.avatar_img = this.userInfo.base.avatar_img
-        this.imageUrl = this.accountForm.avatar_img
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    this.$store.dispatch('GetInfo').then(res => {
+      this.userInfo = res.data
+      this.accountForm.sex = this.userInfo.base.sex
+      this.accountForm.birthday = this.userInfo.base.birthday
+      this.accountForm.introduce = this.userInfo.base.introduce
+      this.accountForm.avatar_img = this.userInfo.base.avatar_img
+      this.imageUrl = this.accountForm.avatar_img
+    })
   },
   methods: {
     //上传图片

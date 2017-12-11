@@ -27,7 +27,8 @@
                 </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes</div>
             </div>
             <div class="price-details">
-                <div class="price">Price: <del>{{currency}}{{trialDetailData.product_price}}</del> </div>
+                <div class="price">Price: {{currency}}{{trialDetailData.product_price}} </div>
+                <div class="price">Shipping fee: {{currency}}{{trialDetailData.shipping_fee}} </div>
               <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
               <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
               <div class="reason">Reason: 
@@ -37,8 +38,11 @@
               </div>
             </div>
             <div class="btn-promotion">
-                <div class="inline-b add-promo">
-                  <button ><span>Apply</span></button>
+                <div class="inline-b add-promo" v-if="!trialDetailData.trial_apply && !isApply">
+                  <button @click="trialsApplyBtn"><span>Apply</span></button>
+                </div>
+                <div class="inline-b add-promo" v-else>
+                  您已经申请过了或者您不符合申请资格
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
@@ -99,10 +103,11 @@
 <script>
 import detailsLeft from '@/components/coupons/details_left.vue'
 import explain from '@/components/trials/explain.vue'
-import { trialDetail,postedUserInfo } from '@/api/login'
+import { trialDetail,postedUserInfo, trialApply } from '@/api/login'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 import { timestampFormat, getTimeDetail } from '@/utils/date'
 import { getStore } from '@/utils/utils'
+import { getUserId, getToken } from '@/utils/auth'
 export default {
   name: 'coupons',
   components: {
@@ -114,6 +119,7 @@ export default {
       isTop: false,
       selected: 0,
       added: true,
+      isApply: false,
       processData: [
         {
           'title':'Register users, apply for products',
@@ -165,6 +171,14 @@ export default {
       imgList: [],
       reqData: {
         id: '',
+        user_id: getUserId()
+      },
+      trialApplyData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: '',
+        country_id: parseInt(getStore('country_id')) || 1,
+        platform_id: '',
       }
     }
   },
@@ -197,6 +211,8 @@ export default {
       console.log(this.reqData)
       trialDetail(this.reqData).then(res => {
         console.log(res)
+        this.trialApplyData.trial_id = res.data.id
+        this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
         this.getPostUserInfo(res.data.user_id)
@@ -228,7 +244,14 @@ export default {
     },
     selectTabs (index) {
       this.selected = index
-    } 
+    },
+    trialsApplyBtn () {
+      console.log(this.trialApplyData)
+      // this.isApply = true
+      trialApply(this.trialApplyData).then(res => {
+        console.log(res)
+      })
+    }
   }
 }
 </script>

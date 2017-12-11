@@ -141,7 +141,7 @@
               <template  v-if="item.status === 2 ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
+                <div> <a href="javascript:void(0)" @click="showDetails(item.id)">Details</a></div>
               </template>
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
@@ -199,8 +199,9 @@ export default {
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
+        country_id: getStore('country_id'),
         page: 1,
-        page_size: 3,
+        page_size: 5,
         product_title: '',
         menu_id: '',
         run_status: '',
@@ -219,6 +220,7 @@ export default {
       couponDeteleRequestData: {
         api_token: getToken(),
         user_id: getUserId(),
+        country_id: getStore('country_id'),
         trial_id: ''
       }
      
@@ -335,6 +337,7 @@ export default {
       this.detailsRequestData.trial_id = id
       this.detailsDialog = true
       trialCensor(this.detailsRequestData).then(res => {
+        console.log(res.data)
         if (res.data.content == '通过') {
           this.nonApproval = 'self closing'
           return

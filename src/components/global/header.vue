@@ -44,7 +44,7 @@
                    <!-- <li class="items-li"> <router-link to="/personal">coup0ons</router-link></li>
                    <li> <router-link to="/combine">combine</router-link></li>
                    <li> <router-link to="/successTrials">successTrials</router-link></li> -->
-                   <li v-for="syncRouter in addRouters">
+                   <li v-for="syncRouter in addRouters" v-if="!syncRouter.hidden">
                      <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
                    </li>
                    <li  @click="logOut"> <a href="javascript:void(0);">log out</a></li>
@@ -111,7 +111,7 @@
         <div class="dialog-body">
           <div class="top">
             <div class="facebook">
-              <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
+              <button class="facebook" @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
               <button class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
@@ -243,7 +243,7 @@ import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/lo
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
-// import '../../utils/google'
+import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -332,7 +332,8 @@ export default {
       signloading: false,
       resetLoading: false,
       keyword: '',     //搜索用的关键字
-      country_id: parseInt(getStore('country_id')) || 1
+      country_id: parseInt(getStore('country_id')) || 1,
+      app_id: '894275327387425'
     }
   },
   props: {
@@ -397,6 +398,7 @@ export default {
           this.selectedC = i.id
         }
       }
+      this.initGoogle()
     },
 
     //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
@@ -485,22 +487,19 @@ export default {
       } else {
         this.$router.push({path: '/'+ item.name})
       }
-      
     },
     coupons () {
       this.keyword = ''
       this.selectedC = 0
       this.$router.push({ path: '/'})
-      this.$store.dispatch('setLevel', 0)
     },
     trials () {
       this.keyword = ''
       this.selectedC = 0
       this.$router.push({ path: '/trials/index' })
-      this.$store.dispatch('setLevel', 1)
     },
     ShowLoginDialog () {
-      // this.googleLogin()
+      this.googleLogin()
       this.loginform.email = getEmail()
       if (getPass()) {
         this.loginform.password = base64Decode(getPass())
@@ -686,6 +685,68 @@ export default {
       }
     
       startApp()
+    },
+    initGoogle () {
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId      : this.app_id,
+          cookie     : true,  // enable cookies to allow the server to access
+          // the session
+          xfbml      : true,  // parse social plugins on this page
+          version    : 'v2.11' // use graph api version 2.8
+        })
+      };
+    
+      // Load the SDK asynchronously
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s); js.id = id
+        js.src = 'https://connect.facebook.net/en_US/sdk.js'
+        fjs.parentNode.insertBefore(js, fjs)
+      }(document, 'script', 'facebook-jssdk'))
+    },
+    statusChangeCallback (response) {
+      console.log('login')
+      if (response.status === 'connected') {
+        // Logged into your app and Facebook.
+        console.log('Welcome!  Fetching your information.... ')
+        var user_id = response.authResponse.userID
+        var accessToken = response.authResponse.accessToken
+        // /me为API指定的调用方法，用于获取登陆用户相关信息
+        FB.api('/me?fields=name,first_name,last_name,email', function (response) {
+          if(response.email!=null){
+            var data = {
+              app_id: app_id,
+              user_id: user_id,
+              email: response.email,
+              accessToken: accessToken
+            }
+            $.ajax({
+              url: 'http://dealsbank.com/api/v1/user/loginFacebook',
+              data: data,
+              type: 'post',
+              timeout: 10000,
+              cache: false,
+              dataType: 'json',
+              success: function (res) {
+                if(res.code == 200){
+                  console.log(res)           
+                }
+              }
+            })
+          }else{
+            alert('获取登陆用户相关信息失败！')
+          }
+          console.log('Successful login for: ' + response.name)
+         
+        })
+      }
+    },
+    loginFacebook () {
+      FB.login((response) => { 
+        this.statusChangeCallback(response)  //登录回调函数
+      },{scope: 'email'})  //需要获取的信息scope
     }
   }
 }

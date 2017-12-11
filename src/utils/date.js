@@ -15,9 +15,9 @@ export function toTimestamp (time) {
   }
 }
 //获取剩下多少时间, 传入时间戳
-export function getTimeDetail (time) {
+export function getTimeDetail (timestamp) {
   let now = toTimestamp(new Date())
-  let leftTime = time - now
+  let leftTime = timestamp - now
   let result = {
     day: '',
     hours: '',

@@ -9,13 +9,13 @@
       </div>
     </div>
     <div class="promotion-coupons">
-       <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
+       <coupons-pro v-for="couponsDetails in arrcouponsDetails"  v-if="couponsDetails.coupons"
                      :key="1" 
                      :couponsDetails="couponsDetails.coupons"
                      :addpromo="false"
                      @gotodetails="gotodetails">
-          <template slot="price">
-          <p class="price content">
+          <template slot="price" v-if="couponsDetails.coupons">
+          <p class="price content" >
             <span class="price-left">{{currency}}{{couponsDetails.coupons.product_price}}</span>
             <span class="price-right">{{currency}}{{couponsDetails.coupons.discount_price}}</span>
             <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
@@ -58,6 +58,7 @@ export default {
       requestData: {
         api_token: getToken(),
         user_id: getUserId(),
+        country_id: getStore('country_id'),
         page: 1,
         page_size: 8,
       },

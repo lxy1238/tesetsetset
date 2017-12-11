@@ -16,7 +16,7 @@
           <div slot="content" class="copy-content" :id="productDetails">
             <img class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
-            <div class="content-line">coupons {{currency}} {{couponsDetails.discount_price}}</div>
+            <div class="content-line">coupons {{currency}} {{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</div>
             <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>
@@ -37,7 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getToken } from '@/utils/auth'
+import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { promotionAddCoupon, promotionUserRemove } from '@/api/login'
 import Clip from '@/utils/clipboard.js'
@@ -50,7 +50,8 @@ export default {
       runningMsg: 'Running . . .',
       addPromoRequestData: {
         api_token: getToken(),
-        user_id: '',
+        country_id: getStore('country_id'),
+        user_id: getUserId(),
         coupon_id: ''
       }
     }
@@ -75,7 +76,6 @@ export default {
   },
   methods: {
     init () {
-      this.addPromoRequestData.user_id = this.user_id
       //判断是否加入推广
       setTimeout(() => {
         if (this.promotions.includes(this.couponsDetails.id)) {
@@ -134,7 +134,7 @@ export default {
       return '#' + this.productDetails 
     },
     currency () {
-      getStore('currency') || '$'
+      return getStore('currency') || '$'
     }
   },
  

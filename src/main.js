@@ -13,8 +13,6 @@ import 'bootstrap/dist/js/bootstrap.js'
 import 'summernote/dist/summernote.css'
 import 'summernote'
 
-import $ from 'jquery'
-
 
 
 import Element from 'element-ui'
