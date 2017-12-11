@@ -128,7 +128,6 @@
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
-import { userPickCoupons, couponCensor, couponUpdateRunStatus, getHeadCateList , couponDetele} from '@/api/login'
 import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
@@ -241,7 +240,7 @@ export default {
 
     //获取首页列表数据
     getUserPickCoupons () {
-      userPickCoupons(this.requestdata)
+      this.$api.userPickCoupons(this.requestdata)
         .then(res => {
           console.log(res)
           for (var i in res.data.data) {
@@ -260,7 +259,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = res.data
       }).catch(error => {
         console.log(error)
@@ -310,7 +309,7 @@ export default {
         .then(() => {
           this.couponDeteleRequestData.id = id
           console.log(this.couponDeteleRequestData)
-          couponDetele(this.couponDeteleRequestData).then(res => {
+          this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
             this.$notify({
@@ -329,7 +328,7 @@ export default {
     showDetails (id) {
       this.detailsRequestData.coupon_id = id
       this.detailsDialog = true
-      couponCensor(this.detailsRequestData).then(res => {
+      this.$api.couponCensor(this.detailsRequestData).then(res => {
         this.nonApproval = res.data.content
       }).catch(error => {
         console.log(error)
@@ -356,7 +355,7 @@ export default {
     updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.coupon_id = id
       this.updateRunStatusRequestData.run_status = run_status
-      couponUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
+      this.$api.couponUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
         if (res.code === 200) {
           this.getUserPickCoupons()
         }

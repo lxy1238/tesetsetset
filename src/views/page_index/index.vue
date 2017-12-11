@@ -40,8 +40,7 @@
 <script>
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { getAllCoupons, getHeadCateList } from '@/api/login'
-import { getToken, getUserId } from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
 export default {
@@ -165,7 +164,7 @@ export default {
       } else {
         this.requestData.menu_id = 0
       }
-      getAllCoupons(this.requestData)
+      this.$api.getAllCoupons(this.requestData)
         .then(res => {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
@@ -203,7 +202,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
         // this.getAllCouponsInfo()

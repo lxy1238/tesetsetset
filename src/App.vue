@@ -6,12 +6,11 @@
 
 <script>
 import { getToken, getUserId } from '@/utils/auth.js'
-import { updateLogin } from '@/api/login.js'
 export default {
   name: 'app',
   mounted () {
     if (getToken()) {
-      updateLogin({'api_token': getToken(),'user_id': getUserId()}).then(res => {
+      this.$api.updateLogin({'api_token': getToken(),'user_id': getUserId()}).then(res => {
       }).catch(error => {
         console.log('登录记录更新失败' + error)
       })

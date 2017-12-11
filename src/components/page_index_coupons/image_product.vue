@@ -39,7 +39,6 @@
 import { mapGetters } from 'vuex'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
-import { promotionAddCoupon, promotionUserRemove } from '@/api/login'
 import Clip from '@/utils/clipboard.js'
 export default {
   name: 'image_product',
@@ -103,7 +102,7 @@ export default {
           }, 100)
           return
         }
-        promotionAddCoupon(this.addPromoRequestData)
+        this.$api.promotionAddCoupon(this.addPromoRequestData)
           .then(() => {
             this.addPromoMsg = 'Cancel Promo'
           })
@@ -112,7 +111,7 @@ export default {
           })
       } else if (this.addPromoMsg == 'Cancel Promo'){
         this.addPromoMsg = this.runningMsg
-        promotionUserRemove(this.addPromoRequestData)
+        this.$api.promotionUserRemove(this.addPromoRequestData)
           .then(() => {
             this.addPromoMsg = 'Add Promo'
           })

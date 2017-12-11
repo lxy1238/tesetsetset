@@ -42,7 +42,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { promotionUserCoupon, promotionUserRemove } from '@/api/login'
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { base64Encode } from '@/utils/randomString'
@@ -89,7 +88,7 @@ export default {
     },
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails () {
-      promotionUserCoupon(this.requestData)
+      this.$api.promotionUserCoupon(this.requestData)
         .then(res => {
           console.log(res)
           this.arrcouponsDetails = res.data.data
@@ -103,7 +102,7 @@ export default {
     //移除优惠券
     removePromotion (id) {
       this.removeRequestData.coupon_id = id
-      promotionUserRemove(this.removeRequestData)
+      this.$api.promotionUserRemove(this.removeRequestData)
         .then(() => {
           this.getPromotionDetails()
         })
@@ -121,7 +120,7 @@ export default {
         confirmButtonText: 'confirm'
       })
         .then(() => {
-          promotionUserRemove(this.removeAllRequestData)
+          this.$api.promotionUserRemove(this.removeAllRequestData)
             .then(() => {
               this.getPromotionDetails()
             })

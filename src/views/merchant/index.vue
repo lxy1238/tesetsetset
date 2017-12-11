@@ -59,7 +59,6 @@
 <script>
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { postedUserInfo ,getAllCoupons } from '@/api/login'
 import { timestampFormat } from '@/utils/date'
 import { getStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
@@ -131,7 +130,7 @@ export default {
 
     //获取发布人的信息
     getPostUserInfo () {
-      postedUserInfo (this.requestCouponData).then(res => {
+      this.$api.postedUserInfo (this.requestCouponData).then(res => {
         console.log(res)
         res.data.joined_date = timestampFormat(res.data.joined_date)
         this.userInfo = res.data
@@ -142,7 +141,7 @@ export default {
 
     //获取用户发布的优惠券信息
     getUserCouponInfo () {
-      getAllCoupons(this.requestCouponData).then(res => {
+      this.$api.getAllCoupons(this.requestCouponData).then(res => {
         if (res.code === 200) {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page

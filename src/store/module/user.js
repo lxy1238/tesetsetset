@@ -1,4 +1,4 @@
-import { login, getInfo, updateLogin } from '@/api/login'
+import api from '@/api/index'
 import { getEmail, setEmail, getToken, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
 import router from '../../router'
 import { removeEmail, removePass } from '../../utils/auth'
@@ -53,12 +53,12 @@ const user = {
   actions: {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        login(userInfo).then(res => {
+        api.login(userInfo).then(res => {
           setToken(res.data.api_token)
           setUserId(res.data.user_id)
           commit('SET_TOKEN', res.data.api_token)
           commit('SET_USERID',res.data.user_id)
-          updateLogin({'api_token': res.data.api_token, 'user_id': res.data.user_id})
+          api.updateLogin({'api_token': res.data.api_token, 'user_id': res.data.user_id})
           resolve(res)
         }).catch(err => {
           reject(err)
@@ -67,7 +67,7 @@ const user = {
     },
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-        getInfo({'api_token': getToken(), 'user_id': getUserId(), 'country_id': getStore('country_id') || 1}).then(res => {
+        api.getInfo({'api_token': getToken(), 'user_id': getUserId(), 'country_id': getStore('country_id') || 1}).then(res => {
           const data = res.data
           if (res.code === 200) {
             setEmail(data.email)
@@ -91,6 +91,8 @@ const user = {
         })
       })
     },
+
+    //前端登出
     LogOut ({ commit }) {
       removeToken()
       removeUserId()

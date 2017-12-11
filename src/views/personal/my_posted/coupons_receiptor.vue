@@ -62,7 +62,6 @@
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
-import { pickCoupons } from '@/api/login'
 import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
@@ -139,33 +138,42 @@ export default {
     ...mapGetters(['token', 'user_id'])
   },
   mounted () {
-    this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
-    console.log(this.requestdata)
-    var couponsDetails = JSON.parse(getStore('couponDetails'))
-    for (var i in this.couponsDetails) {
-      this.couponsDetails[i] = couponsDetails[i]
-    }
-    pickCoupons(this.requestdata)
-      .then(res => {
-        this.trLists = res.data.data
-        this.allpage = res.data.last_page
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    this.init()
   },
   //组件销毁前执行的回调
   beforeDestroy () {
     removeStore('couponDetails')
   },
   methods: {
+    //初始化
+    init () {
+      this.initData()
+    },
+    initData () {
+      this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
+      var couponsDetails = JSON.parse(getStore('couponDetails'))
+      for (var i in this.couponsDetails) {
+        this.couponsDetails[i] = couponsDetails[i]
+      }
+    },
+
+    //获取领取人列表信息
+    getPickCoupons () {
+      this.$api.pickCoupons(this.requestdata)
+        .then(res => {
+          this.trLists = res.data.data
+          this.allpage = res.data.last_page
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
     //分页跳转
     gotoPage (i) {
       this.requestdata.page = i
-      pickCoupons(this.requestdata).then(res => {
-        this.trLists = res.data.data
-        this.allpage = res.data.last_page
-      })
+      this.requestdata.start_time = ''
+      this.requestdata.end_time = ''
+      this.getPickCoupons()
     },
 
     //发布的优惠券查询
@@ -174,16 +182,7 @@ export default {
         this.requestdata.start_time = this.daterange[0]
         this.requestdata.end_time = this.daterange[1]
       }
-      console.log(this.requestdata)
-      pickCoupons(this.requestdata)
-        .then(res => {
-          console.log(res)
-          this.trLists = res.data.data
-          this.allpage = res.data.last_page
-        })
-        .catch(error => {
-          console.log(error)
-        })
+      this.getPickCoupons()
     },
 
     //跳转到优惠券详情页面

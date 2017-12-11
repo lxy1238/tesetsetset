@@ -150,7 +150,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlatformCate, uploadImg, trialsAdd, getHeadCateList, trialsStore, trialEditDetail, editTrial } from '@/api/login'
 import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
@@ -349,7 +348,7 @@ export default {
     },
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.optionsCategory = res.data
       }).catch(error => {
         console.log(error)
@@ -357,7 +356,7 @@ export default {
     },
     //获取店铺列表
     getTrialsStore () {
-      trialsStore(this.requestStoreData).then(res => {
+      this.$api.trialsStore(this.requestStoreData).then(res => {
         this.optionsStore = res.data
       }).catch(error => {
         console.log(error)
@@ -414,7 +413,7 @@ export default {
     //获取平台品类信息
     getPlatformCateInfo () {
       this.optionsWebsite = []
-      getPlatformCate(this.requestData)
+      this.$api.getPlatformCate(this.requestData)
         .then(res => {
           console.log(res.data) 
           if(res.data.length <= 0) {return}
@@ -488,7 +487,7 @@ export default {
         formData.append('api_token', getToken())
         formData.append('user_id', getUserId())
         formData.append('file', file)
-        uploadImg(formData)
+        this.$api.uploadImg(formData)
           .then(res => {
             console.log(res)
             this.trialsForm.product_img_s.push({ url: res.data })
@@ -507,7 +506,7 @@ export default {
     issueCoupon (data) {
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
-        editTrial(data).then(res => {
+        this.$api.editTrial(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
             this.$router.push({ path: '/posted/trials' })
@@ -516,7 +515,7 @@ export default {
           console.log(error)
         })
       } else {
-        trialsAdd (data)
+        this.$api.trialsAdd (data)
           .then(res => {
             if (res.code === 200) {
               this.$notify.success('issue coupon success')
@@ -587,7 +586,7 @@ export default {
       this.isEditorData = false
       this.trialDetailsrequestData.id = this.$route.query.editor
       console.log(this.trialDetailsrequestData)
-      trialEditDetail(this.trialDetailsrequestData).then(res => {
+      this.$api.trialEditDetail(this.trialDetailsrequestData).then(res => {
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
         let newArr = []
         newArr[0] = new Date(res.data.start_time * 1000)

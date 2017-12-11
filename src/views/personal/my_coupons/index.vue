@@ -35,7 +35,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { userCoupons } from '@/api/login'
 import { mapGetters } from 'vuex'
 import { getToken, getUserId } from '@/utils/auth' 
 import { getStore } from '@/utils/utils'
@@ -73,7 +72,7 @@ export default {
       this.getUserCoupons()
     },
     getUserCoupons () {
-      userCoupons(this.requestData).then(res => {
+      this.$api.userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
           console.log(res.data)    // 少了一个product_url 字段
           this.couponLists = res.data.data

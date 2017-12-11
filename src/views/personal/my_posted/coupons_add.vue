@@ -133,7 +133,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { addCoupon, editorCoupon, uploadImg, getPlatformCate, editDetail, getHeadCateList } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { toTimestamp } from '@/utils/date'
@@ -290,7 +289,7 @@ export default {
     //获取平台品类信息
     getPlatformCateInfo () {
       this.optionsWebsite = []
-      getPlatformCate(this.requestData)
+      this.$api.getPlatformCate(this.requestData)
         .then(res => {
           if(res.data.length <= 0) {return}
           for (let i of res.data) {
@@ -347,7 +346,7 @@ export default {
         formData.append('api_token', getToken())
         formData.append('user_id', getUserId())
         formData.append('file', file)
-        uploadImg(formData)
+        this.$api.uploadImg(formData)
           .then(res => {
             this.couponsForm.product_img_s.push({ url: res.data })
           })
@@ -364,7 +363,7 @@ export default {
     issueCoupon (data) {
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
-        editorCoupon(data).then(res => {
+        this.$api.editorCoupon(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
             this.$router.push({ path: '/posted/coupons' })
@@ -373,7 +372,7 @@ export default {
           console.log(error)
         })
       } else {
-        addCoupon(data)
+        this.$api.addCoupon(data)
           .then(res => {
             if (res.code === 200) {
               this.$notify.success('issue coupon success')
@@ -437,7 +436,7 @@ export default {
       }
       this.isEditorData = false
       this.couponDetailsrequestData.id = this.$route.query.editor
-      editDetail(this.couponDetailsrequestData).then(res => {
+      this.$api.editDetail(this.couponDetailsrequestData).then(res => {
         res.data.valid_date = new Date(res.data.valid_date * 1000)
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
         this.couponsForm = res.data

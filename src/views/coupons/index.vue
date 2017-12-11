@@ -214,20 +214,7 @@ import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import explain from '@/components/trials/explain.vue'
 import Clip from '@/utils/clipboard.js'
 
-import { parseTime } from '@/utils/date'
-import { timestampFormat } from '@/utils/date'
-import {
-  getAllCoupons,
-  couponDetails,
-  postedUserInfo,
-  userGetCoupon,
-  isUserGetCoupon,
-  promotionAddCoupon,
-  promotionUserRemove,
-  addProblem,
-  getHeadCateList,
-  editTemplate
-} from '@/api/login'
+import { parseTime, timestampFormat } from '@/utils/date'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { mapGetters } from 'vuex'
@@ -367,7 +354,7 @@ export default {
     //获取优惠券详情
     getCouponsDetails () {
       this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
-      couponDetails(this.requestCouponDetails)
+      this.$api.couponDetails(this.requestCouponDetails)
         .then(res => {
           if (res.data.coupon_user_template) {
             this.promotionTemplate = res.data.coupon_user_template.content
@@ -412,7 +399,7 @@ export default {
     saveTemplate () {
       if (this.isLogin()) {
         this.submitTemplateData.content = this.promotionTemplate
-        editTemplate(this.submitTemplateData).then(res => {
+        this.$api.editTemplate(this.submitTemplateData).then(res => {
           if (res.code === 200) {
             this.$message.success('Save success')
             this.getCouponsDetails()
@@ -452,7 +439,7 @@ export default {
         return
       }
       this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
-      isUserGetCoupon(this.checkGetCodeData).then(res => {
+      this.$api.isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
         if (!res.data) {
           console.log('no res data')
@@ -474,7 +461,7 @@ export default {
 
     //获取该品类下的优惠券
     getAllCouponsInfo () {
-      getAllCoupons(this.requestData) 
+      this.$api.getAllCoupons(this.requestData) 
         .then(res => {
           let newArr = []
           res.data.data.forEach(e => {
@@ -492,7 +479,7 @@ export default {
     //获取发布人的信息
     getPostUserInfo (user_id) {
       var request = { user_id: user_id }
-      postedUserInfo(request)
+      this.$api.postedUserInfo(request)
         .then(res => {
           res.data.joined_date = timestampFormat(res.data.joined_date)
           this.userInfo = res.data
@@ -507,7 +494,7 @@ export default {
     //加入推广
     addPromotion () {
       if (this.isLogin()) {
-        promotionAddCoupon(this.addPromotionData).then(res => {
+        this.$api.promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
             this.added = false
             this.couponsGetInfo()
@@ -519,7 +506,7 @@ export default {
     //取消推广
     removePromotion () {
       if (this.isLogin()) {
-        promotionUserRemove(this.addPromotionData).then(res => {
+        this.$api.promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
             this.added = true
             this.couponsGetInfo()
@@ -537,7 +524,7 @@ export default {
           this.$message.info('该活动已经结束,或者该优惠卷已经领取完了')
           return
         }
-        userGetCoupon(this.reqGetCodeData).then(() => {
+        this.$api.userGetCoupon(this.reqGetCodeData).then(() => {
           this.getCodeSuccess = true
         })
       }
@@ -602,7 +589,7 @@ export default {
         this.$notify.error('You can only type 30 characters')
         return
       }
-      addProblem(this.addProblemData).then(res => {
+      this.$api.addProblem(this.addProblemData).then(res => {
         if (res.code === 200) {
           this.$message.success('Submitted successfully!')
           this.isFlagCoupon = false
@@ -615,7 +602,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
       }).catch(error => {
         console.log(error)

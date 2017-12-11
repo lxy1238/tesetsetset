@@ -103,8 +103,7 @@
 <script>
 import detailsLeft from '@/components/coupons/details_left.vue'
 import explain from '@/components/trials/explain.vue'
-import { trialDetail,postedUserInfo, trialApply } from '@/api/login'
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import { base64Decode } from '@/utils/randomString'
 import { timestampFormat, getTimeDetail } from '@/utils/date'
 import { getStore } from '@/utils/utils'
 import { getUserId, getToken } from '@/utils/auth'
@@ -209,7 +208,7 @@ export default {
     //获取试用品详情
     getTrialDetail () {
       console.log(this.reqData)
-      trialDetail(this.reqData).then(res => {
+      this.$api.trialDetail(this.reqData).then(res => {
         console.log(res)
         this.trialApplyData.trial_id = res.data.id
         this.trialApplyData.platform_id = res.data.platform_id
@@ -222,7 +221,7 @@ export default {
     //获取发布人的信息
     getPostUserInfo (id) {
       var request = { user_id: id }
-      postedUserInfo(request)
+      this.$api.postedUserInfo(request)
         .then(res => {
           res.data.joined_date = timestampFormat(res.data.joined_date)
           this.userInfo = res.data
@@ -248,7 +247,7 @@ export default {
     trialsApplyBtn () {
       console.log(this.trialApplyData)
       // this.isApply = true
-      trialApply(this.trialApplyData).then(res => {
+      this.$api.trialApply(this.trialApplyData).then(res => {
         console.log(res)
       })
     }
@@ -439,6 +438,7 @@ export default {
           }
         }
         .tabs-body {
+          padding: 0 10px 0 10px;
           margin-top: 1rem;
           .content {
             padding: 0 3rem;

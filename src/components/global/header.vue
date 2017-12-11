@@ -239,7 +239,6 @@
 <script>
 import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
-import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
@@ -560,7 +559,7 @@ export default {
       this.signSubmit('signform', () => {
         this.signloading = true
         this.signform.activate_url = location.protocol + '//' + location.host + '/#/activate/' + this.signform.email
-        sign(this.signform).then(res => {
+        this.$api.sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
@@ -599,8 +598,7 @@ export default {
       this.signSubmit('resetform', () => {
         this.resetLoading = true
         this.resetform.url = location.protocol + '//' + location.host + '/#/resetpass/' + this.resetform.email + '/'
-        console.log(this.resetform)
-        retrievePassword(this.resetform).then(res => {
+        this.$api.retrievePassword(this.resetform).then(res => {
           console.log(res)
           if (res.code === 200) {
             this.resetLoading = false
@@ -619,7 +617,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.initData()
       }).catch(error => {
@@ -628,7 +626,7 @@ export default {
     },
     //获取国家列表，携带货币符号，
     getUserCountryInfo () {
-      getUserCountry().then(res => {
+      this.$api.getUserCountry().then(res => {
         this.countryLists = res.data
       }).catch(error => {
         console.log(error)

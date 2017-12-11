@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { userInfoSet, uploadImg } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'settings-account',
@@ -100,7 +99,7 @@ export default {
         formData.append('api_token', getToken())
         formData.append('user_id', getUserId())
         formData.append('file', file)
-        uploadImg(formData)
+        this.$api.uploadImg(formData)
           .then(res => {
             console.log(res)
             this.accountForm.avatar_img = res.data
@@ -119,7 +118,7 @@ export default {
 
     //改变用户信息接口
     changeUserInfo () {
-      userInfoSet(this.accountForm)
+      this.$api.userInfoSet(this.accountForm)
         .then(() => {
           this.$notify.success('reset info success')
           this.$store.dispatch('GetInfo')
@@ -136,76 +135,76 @@ export default {
 <style lang="less" scoped>
 @import url("../../../styles/mixin.less");
 
-.facebook-text {
-  img {
-    float: left;
-    margin-right: 10px;
+  .facebook-text {
+    img {
+      float: left;
+      margin-right: 10px;
+    }
+    span {
+      font-size: 0.88rem;
+      color: #666;
+    }
+    height: 32px;
+    line-height: 32px;
   }
-  span {
-    font-size: 0.88rem;
-    color: #666;
+  .google-text {
+    img {
+      float: left;
+      margin-right: 10px;
+    }
+    span {
+      font-size: 0.88rem;
+      color: #666;
+    }
+    height: 32px;
+    line-height: 32px;
+    margin-bottom: 3rem;
   }
-  height: 32px;
-  line-height: 32px;
-}
-.google-text {
-  img {
-    float: left;
-    margin-right: 10px;
-  }
-  span {
-    font-size: 0.88rem;
-    color: #666;
-  }
-  height: 32px;
-  line-height: 32px;
-  margin-bottom: 3rem;
-}
-.footer-account {
-  text-align: center;
-  button {
-    .btn-h(10rem,3rem, #83b938, #83b938, #fff);
-    &:active {
-      background: darken(#83b938, 10%);
-      border-color: darken(#83b938, 10%);
+  .footer-account {
+    text-align: center;
+    button {
+      .btn-h(10rem,3rem, #83b938, #83b938, #fff);
+      &:active {
+        background: darken(#83b938, 10%);
+        border-color: darken(#83b938, 10%);
+      }
     }
   }
-}
 
-.sex-img {
-  position: relative;
-  top: 3px;
-}
-.el-textarea {
-  textarea {
-    resize: none;
-    height: 200px;
+  .sex-img {
+    position: relative;
+    top: 3px;
   }
-}
+  .el-textarea {
+    textarea {
+      resize: none;
+      height: 200px;
+    }
+  }
 
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  border-radius: 100%;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 90px;
-  height: 90px;
-  line-height: 90px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-  border-radius: 100%;
-}
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-radius: 100%;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 90px;
+    height: 90px;
+    line-height: 90px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+    border-radius: 100%;
+  }
 </style>

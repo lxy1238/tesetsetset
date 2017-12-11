@@ -7,6 +7,7 @@ import 'babel-polyfill'
 require('es6-promise').polyfill()
 import router from './router'  // 路由配置文件
 import store from './store'    // 全局状态管理
+import api from './api/index'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
@@ -24,8 +25,11 @@ Vue.use(Element ,{ locale })
 // import 'normalize.css'
 import 'element-ui/lib/theme-default/index.css'
 
+
+//验证权限
 import './permission'
 
+Vue.prototype.$api = api
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

@@ -88,7 +88,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getInfo } from '@/api/login.js'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { timestampFormat } from '@/utils/date'

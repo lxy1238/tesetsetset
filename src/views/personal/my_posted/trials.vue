@@ -174,7 +174,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { userTrials, getHeadCateList ,trialCensor, trialUpdateRunStatus, trialDetele } from '@/api/login'
 import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
@@ -265,7 +264,7 @@ export default {
 
     //获取商家发布的试用品的列表
     getPostTrialsList () {
-      userTrials(this.requestdata).then(res => {
+      this.$api.userTrials(this.requestdata).then(res => {
         console.log(res)
         for (let i of res.data.data) {
           i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
@@ -278,7 +277,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         console.log(res)
         this.classifyList = res.data
       }).catch(error => {
@@ -318,7 +317,7 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
-          trialDetele(this.couponDeteleRequestData).then(res => {
+          this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getPostTrialsList()
           })
@@ -336,7 +335,7 @@ export default {
     showDetails (id) {
       this.detailsRequestData.trial_id = id
       this.detailsDialog = true
-      trialCensor(this.detailsRequestData).then(res => {
+      this.$api.trialCensor(this.detailsRequestData).then(res => {
         console.log(res.data)
         if (res.data.content == '通过') {
           this.nonApproval = 'self closing'
@@ -369,7 +368,7 @@ export default {
     updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.trial_id = id
       this.updateRunStatusRequestData.run_status = run_status
-      trialUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
+      this.$api.trialUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
         if (res.code === 200) {
           this.getPostTrialsList()
         }
