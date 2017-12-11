@@ -36,6 +36,6 @@ module.exports = {
         
         "space-before-function-paren": ["error", "always"],
 
-        "no-undef": 2
+        "no-undef": 1
     }
 };
