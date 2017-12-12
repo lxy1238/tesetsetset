@@ -128,8 +128,8 @@ export default {
       padding-top: 2rem;
       height: 15rem;
       img {
-        max-width: 28rem;
-        max-height: 14rem;
+        width: 16rem;
+        height: 14rem;
       }
     }
     .img-small {

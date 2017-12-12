@@ -80,7 +80,7 @@ export default {
       },
       arrcouponsDetails: [],
       requestCouponData: {
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
         user_id: '',
         menu_id: '',
         page: 1,

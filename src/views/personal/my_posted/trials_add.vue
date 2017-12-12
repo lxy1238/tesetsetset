@@ -141,7 +141,7 @@
     </div>
     
     <el-form-item class="footer-btn" >
-      <button type="button" class="save" @click="trialsSave">Save</button>
+      <button type="button" class="save" @click="Submit($event)">Save</button>
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -527,11 +527,12 @@ export default {
           })
       } 
     },
-    Submit () {
+    Submit (e) {
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['trialsForm'].validate(valid => {
         if (valid) {
+          e.target.disabled = true
           for (var i in this.trialsForm) {
             this.trialsFormSubmit[i] = this.trialsForm[i]
           }
@@ -563,13 +564,7 @@ export default {
     Cancel () {
       this.$router.go(-1)
     },
-    trialsSave () {
-      //获取内容
-      this.Submit()
-      //插入内容
-      //  $('#summernote').summernote('code', '<div>aefawe</div>')
-      console.log(this.trialsFormSubmit)
-    },
+  
 
     //限制输入
     filterMoney (value) {

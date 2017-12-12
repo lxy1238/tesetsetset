@@ -33,7 +33,8 @@
             </div>
             <div class="data-info">
               <span class="inline-b expried">Expried:{{couponDetail.valid_date}}</span>
-              <span class="inline-b">Free shopping</span>
+              <span class="inline-b" v-if="couponDetail.shipping_fee == '0.00'">Free shopping</span>
+              <span class="inline-b" v-else>Shipping fee: {{couponDetail.shipping_fee}}</span>
               <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
             </div>
             <div class="select" v-if="isFlagCoupon">
@@ -49,7 +50,7 @@
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
                 </div>
-                <div class="inline-b question" v-if="selected !== 'Choose reason'">
+                <div class="inline-b question" v-if="selected !== 'Choose reason' && isFlagCoupon">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
                     <input type="text" v-model="addProblemData.content">
@@ -270,7 +271,7 @@ export default {
       reqGetCodeData: {
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
         coupon_id: '',
         username: '',
         generalize_uid: '',
@@ -284,7 +285,7 @@ export default {
       addPromotionData: {
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
         coupon_id: '',
       },
       addProblemData: {
@@ -356,6 +357,7 @@ export default {
       this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       this.$api.couponDetails(this.requestCouponDetails)
         .then(res => {
+          console.log(res)
           if (res.data.coupon_user_template) {
             this.promotionTemplate = res.data.coupon_user_template.content
           }

@@ -49,7 +49,7 @@ export default {
       runningMsg: 'Running . . .',
       addPromoRequestData: {
         api_token: getToken(),
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
         user_id: getUserId(),
         coupon_id: ''
       }
@@ -140,7 +140,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 @import url("../../styles/mixin.less");
 .coupons-product {
   .p(r);

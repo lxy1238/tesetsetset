@@ -52,6 +52,7 @@
 
 <script>
 import { getToken, getUserId } from '@/utils/auth'
+import { toTimestamp } from '@/utils/date.js'
 export default {
   name: 'settings-account',
   data () {
@@ -119,10 +120,12 @@ export default {
     //改变用户信息接口
     changeUserInfo () {
       this.$api.userInfoSet(this.accountForm)
-        .then(() => {
-          this.$notify.success('reset info success')
-          this.$store.dispatch('GetInfo')
-          document.body.scrollTop = document.documentElement.scrollTop = 0
+        .then(res => {
+          if (res.code === 200) {
+            this.$notify.success('reset info success')
+            this.$store.dispatch('GetInfo')
+            document.body.scrollTop = document.documentElement.scrollTop = 0
+          }
         })
         .catch(error => {
           console.log(error)

@@ -123,7 +123,7 @@
       <el-input type="textarea" v-model="couponsForm.coupon_code" v-else ></el-input> 
     </el-form-item>
     <el-form-item class="footer-btn" >
-      <button type="button" class="save" @click="Submit">Save</button>
+      <button type="button" class="save" @click="Submit($event)">Save</button>
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -245,7 +245,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.optionsCategory = res.data
       }).catch(error => {
         console.log(error)
@@ -384,11 +384,12 @@ export default {
           })
       }
     },
-    Submit () {
+    Submit (e) {
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['couponsForm'].validate(valid => {
         if (valid) {
+          e.target.disabled = true
           for (var i in this.couponsForm) {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }

@@ -68,6 +68,55 @@ export const showStore = data => fetch({
   data: qs.stringify(data)
 })
 
+//试用品申请成功跳转页面
+export const userApplySucced = data => fetch({
+  url: '/api/v1/trial/user-apply-succed  ',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//提交试用品订单
+export const userAddOrderNumber = data => fetch({
+  url: '/api/v1/trial/user-add-order-number',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//查看个人中心 review 页面详情
+export const userTrialOrder = data => fetch({
+  url: '/api/v1/trial/user-trial-order',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//提交评论url 
+export const userAppraiseUrl = data => fetch({
+  url: '/api/v1/trial/user-appraise-url',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//编辑订单number 
+export const userOrderNumber = data => fetch({
+  url: '/api/v1/trial/user-edit-order-number',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//订单完成页面信息展示
+export const userApplyFinish = data => fetch({
+  url: '/api/v1/trial/user-apply-finish',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//订单过期页面信息展示
+export const userApplyExpired = data => fetch({
+  url: '/api/v1/trial/user-apply-expired',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 /**
  * 

@@ -22,11 +22,15 @@ export function getTimeDetail (timestamp) {
     day: '',
     hours: '',
     minutes: '',
+    seconds: '',
   }
   result.day = parseInt( leftTime / 86400 )
   result.hours = parseInt((leftTime - result.day * 86400) / 3600)
   result.minutes  = parseInt ((leftTime - result.day * 86400 - result.hours * 3600) / 60)
-
+  result.seconds = parseInt((leftTime - result.day * 86400 - result.hours * 3600 - result.minutes * 60))
+  result.hours = result.hours < 10 ? '0' + result.hours : result.hours
+  result.minutes = result.minutes < 10 ? '0' + result.minutes : result.minutes
+  result.seconds = result.seconds < 10 ? '0' + result.seconds : result.seconds
   return result
 }
 export function parseTime (time, cFormat) {

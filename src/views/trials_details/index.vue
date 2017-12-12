@@ -1,6 +1,6 @@
 <template>
   <div class="page-index">
-    <div class="pages-content" v-if="trialDetailData.menu">
+    <div class="pages-content" v-if="trialDetailData.id">
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
@@ -28,7 +28,8 @@
             </div>
             <div class="price-details">
                 <div class="price">Price: {{currency}}{{trialDetailData.product_price}} </div>
-                <div class="price">Shipping fee: {{currency}}{{trialDetailData.shipping_fee}} </div>
+                <div class="price" v-if="trialDetailData.shipping_fee != '0.00'">Shipping fee: {{currency}}{{trialDetailData.shipping_fee}} </div>
+                <div class="price" v-else >Free Shipping</div>
               <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
               <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
               <div class="reason">Reason: 
@@ -39,7 +40,7 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo" v-if="!trialDetailData.trial_apply && !isApply">
-                  <button @click="trialsApplyBtn"><span>Apply</span></button>
+                  <button @click="trialsApplyBtn($event)">Apply</button>
                 </div>
                 <div class="inline-b add-promo" v-else>
                   您已经申请过了或者您不符合申请资格
@@ -156,9 +157,7 @@ export default {
       tabsHead: [
         'Description', 'Novice Process'
       ],
-      trialDetailData: {
-
-      },
+      trialDetailData: {},
       userInfo: {
         avatar_img: '',
         username: '',
@@ -209,12 +208,13 @@ export default {
     getTrialDetail () {
       console.log(this.reqData)
       this.$api.trialDetail(this.reqData).then(res => {
-        console.log(res)
         this.trialApplyData.trial_id = res.data.id
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
         this.getPostUserInfo(res.data.user_id)
+      }).catch(error => {
+        console.log(error)
       })
     },
 
@@ -244,15 +244,33 @@ export default {
     selectTabs (index) {
       this.selected = index
     },
-    trialsApplyBtn () {
-      this.isApply = true
+    //判断是否登录，否则提醒请登录
+    isLogin () {
+      if (!getToken()) {
+        this.$root.eventHub.$emit('isLoginInfo')
+        return false
+      } else {
+        return true
+      }
+    },
+    trialsApplyBtn (e) {
+      if (!this.isLogin()) {
+        return
+      }
+      e.target.disabled = true
       this.$api.trialApply(this.trialApplyData).then(res => {
         if (res.code === 200) {
+          this.isApply = true
           if (res.data === 1) {
-            this.$router.push({ path: '/successDetails/' + this.$route.params.trialId })
+            this.$router.push({ path: '/successTrials/' + this.$route.params.trialId })
           } else {
             this.notGetTrialsDialog = true
           }
+        }
+      }).catch(error => {
+        if (error.code === 402) {
+          this.$router.push({path: '/personal/my-trials/index'})
+          this.$message.info('您已经申请成功一款产品了，根据规则您这个月暂时不能申请了')
         }
       })
     }
@@ -410,7 +428,7 @@ export default {
     }
  
     .promotion-template {
-      min-height: 10rem;
+      min-height: 1000px;
       background: white;
       border-radius: 5px;
       overflow: hidden;

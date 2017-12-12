@@ -1,34 +1,78 @@
 <template>
   <div class="affiliate-pid">
     <div class="title-bottom">Affiliate PID</div>
-    <el-form :model="pidForm" rules="rules" ref="pidForm" label-width="150px">
-      <el-form-item label="USA amazon: ">  
-        <el-input></el-input>
-        <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
+    <el-form :model="pidForm"  ref="pidForm" label-width="150px" v-if="platformArr.length != 0" >
+      <el-form-item v-for="item in platformArr" :key="1" :label="item.website + ': '">  
+        <el-input v-model="item.pid"></el-input>
       </el-form-item>
-      <el-form-item label="France amazon: ">  
-        <el-input></el-input>
-      </el-form-item>
-      <el-form-item label="Germany amazon: ">  
-        <el-input></el-input>
-      </el-form-item>
+
+      <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
     </el-form>
     <div class="pid-footer">
-      <button type="button">Save</button>
+      <button type="button" @click="submit">Save</button>
     </div>
   </div>
 </template>
 
 <script>
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
 export default {  
   name: 'affiliate_pid',
   data () {
     return {
-      msg: '',
+      msg: 'USA',
       pidForm: {
 
       },
-      rules: []
+      countryLists: [],
+      pid:[],
+      rules: [],
+      platformArr: [],
+      requestPlatData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        country_id: parseInt(getStore('country_id') || 1) 
+      },
+    }
+  },
+  mounted () {
+
+    this.init()
+   
+  },
+  methods: {
+    init () {
+      this.getPlatformCateInfo()
+    },
+    //获取该国家下的平台
+    getPlatformCateInfo () {
+      this.$api.getPlatformCate(this.requestPlatData).then(res => {
+        this.platformArr = res.data
+      })
+    },
+
+    submit () {
+      for (let i of this.platformArr) {
+        let requestData = {
+          api_token: getToken(),
+          user_id: getUserId(),
+          country_id: getStore('country_id') || 1,
+          platform_id: '',
+          PID: ''
+        }
+        requestData.platform_id = i.id
+        requestData.PID = i.pid
+        this.$api.userAlliancePID(requestData).then(res => {
+          if (res.code === 200) {
+            this.$message.success('save success')
+          }
+        })
+      }
+      
+      
+
+      
     }
   }
 }
@@ -41,8 +85,9 @@ export default {
     width: 40%;
   }
   .goto-getpid {
-    display: inline-block;
-    margin-left: 2rem;
+    position: absolute;
+    top: 220px;
+    left: 1200px;
   }
   .pid-footer {
     text-align: center;

@@ -118,6 +118,14 @@ export const editTemplate = data => fetch({
 })
 
 
+//添加,设置 pid 
+
+export const userAlliancePID = data => fetch({
+  url: '/api/v1/user/user-alliance-PID',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 /**

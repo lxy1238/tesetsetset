@@ -111,10 +111,10 @@
         <div class="dialog-body">
           <div class="top">
             <div class="facebook">
-              <button class="facebook" @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
+              <button type="button" class="facebook" @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
+              <button  type="button" class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
             </div>
           </div>
           <div class="bottom">
@@ -237,11 +237,12 @@
 </template>
 
 <script>
-import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
+// import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
+import { getEmail, setEmail, getToken,getPass, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
 import '../../utils/google'
 export default {
   name: 'header',
@@ -500,9 +501,9 @@ export default {
     ShowLoginDialog () {
       this.googleLogin()
       this.loginform.email = getEmail()
-      if (getPass()) {
-        this.loginform.password = base64Decode(getPass())
-      }
+      // if (getPass()) {
+      //   this.loginform.password = base64Decode(getPass())
+      // }
       this.signDialog = false 
       this.loginDialog = true
      
@@ -567,6 +568,7 @@ export default {
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
+          this.$message.error(error.message)
           this.signloading = false
           console.error('sign fail' + error)
         })
@@ -589,6 +591,7 @@ export default {
             window.location.reload()
           })
         }).catch(err => {
+          this.$message.error(err.message)
           this.loginLoading = false
           console.log(err+ ' login2')
         })    
@@ -604,8 +607,9 @@ export default {
             this.resetLoading = false
             this.$notify.success('Please click the link to change the password')
           }
-        }).catch(() => {
+        }).catch(err => {
           this.resetLoading = false
+          this.$message.error(err.message)
         })
       })
     },
@@ -635,11 +639,12 @@ export default {
 
     //google 登录
     googleLogin () {
+      var _this = this
       var startApp = function () {
         gapi.load('auth2', function (){
           // Retrieve the singleton for the GoogleAuth library and set up the client.
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-r2qme5tvr34qlbnq3qs5j5d3ohdqlopi.apps.googleusercontent.com',
+            client_id: '308959858897-kdhc3eecdh9v035qs7uodpuldfksmdmr.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             // Request scopes in addition to 'profile' and 'email'
             // scope: 'additional_scope'
@@ -651,7 +656,9 @@ export default {
       /**
      * Handle successful sign-ins.
      */
+      //google登录回调
       var onSuccess = function (user) {
+        console.log(this)
         var profile = user.getBasicProfile()
         console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
         console.log('Full Name: ' + profile.getName())
@@ -659,22 +666,21 @@ export default {
         console.log('Family Name: ' + profile.getFamilyName())
         console.log('Image URL: ' + profile.getImageUrl())
         console.log('Email: ' + profile.getEmail())
-        
         // document.getElementById('name').innerText = 'Signed in: ' + profile.getName()
     
         // The ID token you need to pass to your backend:
-        var id_token = user.getAuthResponse().id_token
-        console.log('ID Token: ' + id_token)
-    
-        var xhr = new XMLHttpRequest()
-        xhr.open('POST', 'http://dealsbank.com/api/v1/user/loginGoogle')
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        xhr.onload = function () {
-          console.log('Signed in as: ' + xhr.responseText)
+        let data = {
+          client_id : '308959858897-kdhc3eecdh9v035qs7uodpuldfksmdmr.apps.googleusercontent.com',
+          user_id : profile.getId(),
+          email : profile.getEmail(),
+          id_token : user.getAuthResponse().id_token
         }
-        xhr.send('id_token=' + id_token)
+        _this.$api.loginGoogle(data).then(res => {
+          _this.loginCallback(res)
+        }).catch(err => {
+          console.log(err)
+        })  
       }
-
       /**
      * Handle sign-in failures.
      */
@@ -684,17 +690,10 @@ export default {
     
       startApp()
     },
+
+
+    //facebook 登录初始化
     initGoogle () {
-      window.fbAsyncInit = function () {
-        FB.init({
-          appId      : this.app_id,
-          cookie     : true,  // enable cookies to allow the server to access
-          // the session
-          xfbml      : true,  // parse social plugins on this page
-          version    : 'v2.11' // use graph api version 2.8
-        })
-      };
-    
       // Load the SDK asynchronously
       (function (d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0]
@@ -703,48 +702,76 @@ export default {
         js.src = 'https://connect.facebook.net/en_US/sdk.js'
         fjs.parentNode.insertBefore(js, fjs)
       }(document, 'script', 'facebook-jssdk'))
+
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId      : '908467375968806',
+          cookie     : true,  // enable cookies to allow the server to access
+          // the session
+          xfbml      : true,  // parse social plugins on this page
+          version    : 'v2.11' // use graph api version 2.8
+        })
+      }
+    
+  
     },
+
+    //facebook 登录回调函数
     statusChangeCallback (response) {
-      console.log('login')
+      console.log(this)
       if (response.status === 'connected') {
         // Logged into your app and Facebook.
         console.log('Welcome!  Fetching your information.... ')
         var user_id = response.authResponse.userID
         var accessToken = response.authResponse.accessToken
+
         // /me为API指定的调用方法，用于获取登陆用户相关信息
-        FB.api('/me?fields=name,first_name,last_name,email', function (response) {
+        FB.api('/me?fields=name,first_name,last_name,email', response => {
           if(response.email!=null){
             var data = {
-              app_id: app_id,
+              app_id: '908467375968806',
               user_id: user_id,
               email: response.email,
               accessToken: accessToken
             }
-            $.ajax({
-              url: 'http://dealsbank.com/api/v1/user/loginFacebook',
-              data: data,
-              type: 'post',
-              timeout: 10000,
-              cache: false,
-              dataType: 'json',
-              success: function (res) {
-                if(res.code == 200){
-                  console.log(res)           
-                }
-              }
+            this.$api.loginFacebook(data).then(res => {
+              this.loginCallback(res)
+            }).catch(err => {
+              console.log(err)
             })
+
           }else{
-            alert('获取登陆用户相关信息失败！')
+            console.log('获取登陆用户相关信息失败！')
           }
           console.log('Successful login for: ' + response.name)
-         
         })
       }
     },
+
+    //登录facebook 按钮
     loginFacebook () {
       FB.login((response) => { 
         this.statusChangeCallback(response)  //登录回调函数
       },{scope: 'email'})  //需要获取的信息scope
+    },
+
+    //第三方登录回调
+    loginCallback (res) {
+      console.log(res)
+      if(res.code == 200){
+        console.log(res)  
+        let api_token = res.data.api_token
+        let user_id = res.data.user_id
+        setToken(api_token)
+        setUserId(user_id )
+        this.$api.updateLogin({'api_token': api_token, 'user_id': user_id})
+        this.$store.dispatch('GetInfo').then(res => {
+          console.log(res)
+          if (res.code === 200) {
+            window.location.reload()
+          }
+        })         
+      }
     }
   }
 }

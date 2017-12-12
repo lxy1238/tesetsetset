@@ -190,7 +190,7 @@ export default {
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 6,
         product_title: '',
@@ -211,7 +211,7 @@ export default {
       couponDeteleRequestData: {
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
       }
     }
   },

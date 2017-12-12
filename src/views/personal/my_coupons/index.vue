@@ -47,7 +47,7 @@ export default {
       requestData: {
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id'),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 9
       },

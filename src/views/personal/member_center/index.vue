@@ -10,7 +10,7 @@
       <div class="about-me">
         <div class="avatar">
           <img v-if="userData.base.avatar_img" class="avatar-img" :src="userData.base.avatar_img" alt="">
-          <img v-else src="../../../assets/user.png" />
+          <img v-else src="../../../assets/user.png" class="avatar-img" />
         </div>
         <div class="personal-info">
           <div class="name-level">
@@ -42,11 +42,11 @@
           <p>Trials posted</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my_coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
           <p>My Coupons</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my_trials/index', userData.account.trials)">{{userData.account.trials}}</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
           <p>My Trials</p>
         </div>
         <div class="statistics-child last">

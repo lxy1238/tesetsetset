@@ -118,7 +118,7 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         page: 1,
-        page_size: '5'
+        page_size: ''
       }
     }
   },

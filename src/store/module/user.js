@@ -101,7 +101,9 @@ const user = {
       commit('SET_TOKEN', '')
       commit('SET_USERID', '') 
       router.push({path: '/'})
-      window.location.reload()
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
     }
   }
 }
