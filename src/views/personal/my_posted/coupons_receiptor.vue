@@ -133,6 +133,7 @@ export default {
       for (var i in this.couponsDetails) {
         this.couponsDetails[i] = couponsDetails[i]
       }
+      this.couponsDetails.coupon_code = `****${this.couponsDetails.coupon_code.slice(-4)}`
     },
 
     //获取领取人列表信息
