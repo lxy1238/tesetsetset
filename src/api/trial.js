@@ -160,3 +160,24 @@ export const trialEditDetail = data => fetch({
   method: 'POST',
   data: qs.stringify(data)
 })
+
+/**
+ * 
+ * @param 试用品领取人列表
+ *  
+ * 
+ */
+
+//领取人展示
+export const trialOrder = data => fetch({
+  url: '/api/v1/trial/trial-order',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+// 领取人列表订单审核
+export const updateOrderStatus = data => fetch({
+  url: '/api/v1/trial/update-order-status',
+  method: 'POST',
+  data: qs.stringify(data)
+})

@@ -8,28 +8,26 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" />
+      <el-input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" ></el-input>
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.menu_id">
-        <option :value="''" >请选择</option>
-        <option :value="item.id" v-for="item in classifyList">{{item.name}}</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable  v-model="requestdata.menu_id">
+        <el-option :value="item.id" :key="item.id" v-for="item in classifyList" :label="item.name">{{item.name}}</el-option>
+      </el-select>
 
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.run_status">
-        <option :value="''" >请选择</option>
-        <option :value="all_run_status[0]">Pending</option>
-        <option :value="all_run_status[1]">Active</option>
-        <option :value="all_run_status[2]">Decline</option>
-        <option :value="all_run_status[3]">Stop</option>
-        <option :value="all_run_status[4]">Close</option>
-        <option :value="all_run_status[5]">Expired</option>
-        <option :value="all_run_status[6]">Underbalance</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.run_status">
+        <el-option :value="all_run_status[0]">Pending</el-option>
+        <el-option :value="all_run_status[1]">Active</el-option>
+        <el-option :value="all_run_status[2]">Decline</el-option>
+        <el-option :value="all_run_status[3]">Stop</el-option>
+        <el-option :value="all_run_status[4]">Close</el-option>
+        <el-option :value="all_run_status[5]">Expired</el-option>
+        <el-option :value="all_run_status[6]">Underbalance</el-option>
+      </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
@@ -51,7 +49,7 @@
               <td class="trials-title">
                 <div class="trials-title-platform">{{item.website}}</div>
                 <div class="trials-title-text"  @click="gotoDetails(item)">{{item.product_title}}</div>
-                <a href="javascript:void(0);"  @click="gotoDetails(item)">Electronics</a>
+                <a href="javascript:void(0);"  @click="gotoDetails(item)">{{item.menu.name}}</a>
               </td>
               <!-- store -->
               <td class="trials-store">
@@ -73,7 +71,7 @@
               </td>
               <!-- applied -->
               <td>
-                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor">
+                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
                    {{item.apply_numbers}}
                 </a>
                
@@ -294,11 +292,11 @@ export default {
 
     //跳转到 领取优惠券的用户页面
     gotoTrailsreceiptor (item) {
-      if (item.pick_numbers === 0) {
+      if (item.apply_numbers === 0) {
         return false
       }
       this.$router.push({ path: '/posted/trials/receiptor' })
-      setStore('couponDetails', JSON.stringify(item))
+      setStore('trialDetails', JSON.stringify(item))
     },
 
     //编辑待审核状态下和审核未通过的优惠券   

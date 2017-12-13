@@ -260,18 +260,20 @@ export default {
       getCodeSuccess: false, //是否领取优惠券成功
       userPromotions: [],
       requestData: {
+        country_id: getStore('country_id') || 1,
         menu_id: '',
         page: 1,
         page_size: 9
       },
       requestCouponDetails: {
+        country_id: getStore('country_id') || 1,
+        user_id: getUserId() ,
         id: '',
-        user_id: getUserId() 
       },
       reqGetCodeData: {
+        country_id: getStore('country_id') || 1,
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id') || 1,
         coupon_id: '',
         username: '',
         generalize_uid: '',
@@ -611,7 +613,7 @@ export default {
       })
     },
    
-    //跳转到相应胡商品链接
+    //跳转到相应 商品链接
     gotoPlatform (url) {
       window.open(url)
     },

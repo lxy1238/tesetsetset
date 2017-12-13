@@ -27,7 +27,7 @@
               <a href="javascript:void(0);" >Electronics</a>
             </td>
             <td class="prcie">
-              <div>${{couponsDetails.product_price}}</div>
+              <div>{{currency}}{{couponsDetails.product_price}}</div>
             </td>
             <td class="discount">
               <div>{{couponsDetails.discount_rate}}%</div>
@@ -43,6 +43,9 @@
             <td class="coupon-code">
               <div>{{couponsDetails.coupon_code}}</div>
             </td>
+          </tr>
+          <tr v-if="trLists.length === 0">
+            <td colspan="10">No Data</td>
           </tr>
         </tbody>
       </table>
@@ -61,7 +64,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { mapGetters } from 'vuex'
 import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
@@ -107,7 +109,9 @@ export default {
     pagination
   },
   computed: {
-    ...mapGetters(['token', 'user_id'])
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
   mounted () {
     this.init()
@@ -125,6 +129,7 @@ export default {
     initData () {
       this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
       var couponsDetails = JSON.parse(getStore('couponDetails'))
+      console.log(couponsDetails)
       for (var i in this.couponsDetails) {
         this.couponsDetails[i] = couponsDetails[i]
       }
@@ -152,9 +157,13 @@ export default {
 
     //发布的优惠券查询
     postedCouponsSearch () {
-      if (this.daterange.length) {
-        this.requestdata.start_time = this.daterange[0]
-        this.requestdata.end_time = this.daterange[1]
+      if (!this.daterange[0]) {
+        this.requestdata.start_time = ''
+        this.requestdata.end_time = ''
+        //对日期做处理，加上八个小时
+      } else {
+        this.requestdata.start_time = new Date(this.daterange[0].getTime() + 8 * 3600 * 1000) 
+        this.requestdata.end_time = new Date(this.daterange[1].getTime() + 8 * 3600 * 1000) 
       }
       this.getPickCoupons()
     },

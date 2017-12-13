@@ -7,27 +7,27 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" />
+      <el-input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" ></el-input>
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.menu_id">
-        <option :value="''" >请选择</option>
-        <option :value="item.id" v-for="item in classifyList">{{item.name}}</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.menu_id">
+        <!-- <option :value="''" >请选择</option> -->
+        <el-option :value="item.id" :key="item.id" v-for="item in classifyList" :label="item.name">{{item.name}}</el-option>
+      </el-select>
 
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.run_status">
-        <option :value="''" >请选择</option>
-        <option :value="all_run_status[0]">Pending</option>
-        <option :value="all_run_status[1]">Active</option>
-        <option :value="all_run_status[2]">Decline</option>
-        <option :value="all_run_status[3]">Stop</option>
-        <option :value="all_run_status[4]">Close</option>
-        <option :value="all_run_status[5]">Expired</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.run_status">
+        <!-- <option :value="''" >请选择</option> -->
+        <el-option :value="all_run_status[0]">Pending</el-option>
+        <el-option :value="all_run_status[1]">Active</el-option>
+        <el-option :value="all_run_status[2]">Decline</el-option>
+        <el-option :value="all_run_status[3]">Stop</el-option>
+        <el-option :value="all_run_status[4]">Close</el-option>
+        <el-option :value="all_run_status[5]">Expired</el-option>
+      </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
@@ -47,9 +47,9 @@
               <img v-else class="product-img" src="../../../assets/01.png" alt="">
             </td>
             <td class="coupons-table-title">
-              <div>amazon</div>
+              <div>{{item.website}}</div>
               <div class="table-product-title" @click="gotoDetails(item)">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item)">Electronics</a>
+              <a href="javascript:void(0);" @click="gotoDetails(item)">{{item.menu.name}}</a>
             </td>
 
             <td class="prcie">
@@ -147,7 +147,6 @@ export default {
         'Operation'
       ],
       classifyList: [
-
       ],
       trListsTest: [
         {
@@ -260,7 +259,7 @@ export default {
     //获取头部品类列表
     getHeadCateListInfo () {
       this.$api.getHeadCateList().then(res => {
-        this.classifyList = res.data
+        this.classifyList = this.classifyList.concat(res.data)
       }).catch(error => {
         console.log(error)
       })
@@ -382,7 +381,6 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      
       margin-right: 3%;
       width: 16%;
     }
