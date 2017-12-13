@@ -158,7 +158,6 @@ export default {
           if (i.name === this.$route.params.menuId) {
             this.selectedC = i.id
             this.requestData.menu_id = i.id
-            this.$router.push({path:'/' + i.name})
           }
         }
       } else {
