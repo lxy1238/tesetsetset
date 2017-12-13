@@ -262,6 +262,9 @@ export default {
       })
         .then( (res) =>{
           console.log(res)
+          if (!res.data.data) {
+            this.$message.info('获取商品信息失败, 请查看链接是否正确！')
+          }
           this.getPlatformCateInfo()
           setTimeout(() => {
             let data = res.data.data

@@ -8,7 +8,7 @@
             <img class="img" :src="trialDetail.product_img.split(',')[0]" alt="">
           </div>
           <div class="details-price">
-            <div class="title"  @click="gotoAmazon(trialDetail.product_url)">{{trialDetail.product_title}}</div>
+            <div class="title" :title="trialDetail.product_title" @click="gotoAmazon(trialDetail.product_url)">{{trialDetail.product_title}}</div>
             <div class="time"> Count down: {{countDownData.hours}}:{{countDownData.minutes}}:{{countDownData.seconds}} <span class="red" v-if="isExpired">已过期</span></div>
             <div class="code-price">
               <div class="price">Price: {{currency}} {{trialDetail.product_price}} </div>
@@ -296,7 +296,10 @@ export default {
       }
       .title {
         width: 35rem;
-        font-size: 1.33rem;
+        font-size: 24px;
+        height: 48px;
+        line-height: 1;
+        overflow: hidden;
         color: #1a1a1a;
         font-weight: bold;
       }
