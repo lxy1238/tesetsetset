@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import { resetPassword } from '@/api/login'
 import { mapGetters } from 'vuex'
 import {getToken, getUserId } from '@/utils/auth'
 export default {  
@@ -88,8 +87,7 @@ export default {
     changePassword () {
       this.$refs['pidForm'].validate((valid) => {
         if (valid) {
-          resetPassword(this.pidForm).then(res => {
-            console.log(res)
+          this.$api.resetPassword(this.pidForm).then(res => {
             if (res.code === 402) {
               this.$notify.error(res.message)
               return false

@@ -6,29 +6,21 @@
       </div>
  <div class="search-form">
       <label for="title">
-        Title: 
+        Order: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="searchForm.title" />
+      <el-input class=" form-control-bootstrap"  type="text" v-model="searchForm.order_number" ></el-input>
       <label for="title">
-        Category: 
+        Date: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.category">
-        <option value="1">母婴</option>
-        <option value="2">其他</option>
-        <option value="3">很多</option>
-      </select>
-
+       <el-date-picker type="daterange" placeholder="Applied date" v-model="searchForm.date"></el-date-picker>
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="searchForm.status">
-        <option value="1">Pending</option>
-        <option value="2">Stop</option>
-        <option value="3">Close</option>
-        <option value="4">Decline</option>
-        <option value="5">Article</option>
-        <option value="6">Expired</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" v-model="searchForm.status">
+        <el-option value="0" label="Pending">Pending</el-option>
+        <el-option value="1" label="Complete">Complete</el-option>
+        <el-option value="2" label="Decline">Decline</el-option>
+      </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
@@ -41,33 +33,33 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in trLists">
+            <tr v-for="item in trLists" v-if="trLists.length != 0">
               <td>
-                <img class="trials-table-img" :src="item.product_img" alt="">
+                <img class="trials-table-img" :src="trialDetails.product_img.split(',')[0]" alt="">
               </td>
               <!-- title -->
-              <td class="trials-title">
-                <div class="trials-title-platform">amazon</div>
-                <div class="trials-title-text">{{item.product_title}}</div>
-                <a href="javascript:void(0);">Electronics</a>
+              <td class="trials-title" v-if="trialDetails.menu">
+                <div class="trials-title-platform">{{trialDetails.website}}</div>
+                <div class="trials-title-text">{{trialDetails.product_title}}</div>
+                <a href="javascript:void(0);">{{trialDetails.menu.name}}</a>
               </td>
               <!-- List price -->
               <td>
                 <div >
-                  {{item.product_prcie}}
+                  {{currency}}{{trialDetails.product_price}}
                 </div>
               </td>
               <!-- user -->
               <td>
-                <div>
-                  {{item.receiptor_user}}
+                <div v-if="item.user">
+                  {{item.user.username}}
                 </div>
               </td>
 
               <!-- order_date -->
               <td>
                 <div>
-                  {{item.order_date}}
+                  {{item.apply_time}}
                 </div>
               </td>
               
@@ -79,8 +71,8 @@
               </td>
 
               <!-- review -->
-              <td class="trials-receiptor-review-td">
-                <div class="trials-receiptor-review">
+              <td class="trials-receiptor-review-td" >
+                <div class="trials-receiptor-review" v-if="item.review">
                   <el-rate  class="rate"
                       v-model="item.review.rate"
                       disabled
@@ -99,45 +91,65 @@
               <!-- shipping fee -->
               <td>
                 <div>
-                  {{item.shipping_fee}}
+                 {{currency}}{{trialDetails.shipping_fee}}
                 </div>
               </td>
 
               <!-- platform_fee -->
               <td>
                 <div>
-                  {{item.platform_fee}}
+                 {{currency}}{{trialDetails.platform_fee}}
                 </div>
               </td>
               <!-- refund -->
               <td>
                 <div>
-                  {{item.refund}}
+                 {{currency}}{{trialDetails.refund_price}}
                 </div>
               </td>
 
                 <!-- Cost -->
               <td>
                 <div>
-                  {{item.cost}}
+                 {{currency}}{{trialDetails.real_fee}}
                 </div>
               </td>
            
                 <!-- Status -->
               <td>
-                <div>
-                  pedding
+                <div v-if="item.status === 0 && item.run_status == 'normal' && !item.review"> 
+                  Waiting for review
+                </div>
+                <div v-if="item.status === 0 && item.run_status == 'normal' && item.review"> 
+                  To be confirmed
+                </div>
+                <div v-if="item.status === 0 && item.isExpired" class="red"> 
+                  Expired
+                </div>
+
+                <div v-if="item.status === 2" class="red"> 
+                  Decline
+                </div>
+                <div v-if="item.status === 1" class="green"> 
+                  Complete
                 </div>
               </td>
             
                 <!-- Operation -->
               <td>
-                <div> <a href="javascript:void(0)">Edit</a></div>
-                <div> <a href="javascript:void(0)">Open</a></div>
-                <div> <a href="javascript:void(0)">Close</a></div>
-                <div> <a href="javascript:void(0)">Delete</a></div>
-                <div> <a href="javascript:void(0)">Details</a></div>
+                <template v-if="item.status === 0 && item.run_status == 'normal' && item.review">
+                  <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
+                </template>
+                <template v-if="item.status === 2">
+                  <div> <a href="javascript:void(0)" @click="OrderDetails(item)">Details</a></div>
+                </template>
+                 <template v-if="item.status === 1">
+                  <div></div>
+                </template>
               </td>
+            </tr>
+            <tr v-if="trLists.length === 0">
+              <td colspan="13">No Data</td>
             </tr>
           </tbody>
         </table>
@@ -150,12 +162,68 @@
         @handlecurrent="gotoPage">
       </pagination>
     </template>
-  
+
+
+    <!-- 弹窗 -->
+        <!-- expiredDetail -->
+      <el-dialog  :visible.sync="expiredDetail" title="result" class="not-trials-dialog" size="tiny">
+          <p>用户超时未上评，保证金已退回账户</p>
+
+          <div class="try-again">
+            <button @click="check">check</button>
+          </div>
+
+      </el-dialog>
+
+       <!-- 审核-->
+      <el-dialog  :visible.sync="DeclineDetails" title="check" class="not-trials-dialog" size="tiny">
+          <p>Order number: {{checkDetails.order_number}}</p>
+          <p>Review link: </p>
+          <p>
+            <a href="javasctipt:void(0);">
+              https://www.amazon.com/gp/customer-reviews/R342IRE0KQXMMN/ref=cm_cr_arp_d_rvw_ttl?ie=UTF8&ASIN=B01AK8HPP4
+            </a>
+          </p>
+          <p>
+            <span>Picture: 3</span>
+            <span>Video: 0</span>
+          </p>
+          <span class="star-label">Star Level: </span>
+             <el-rate  class="rate"
+                      v-model="checkDetails.rate"
+                      disabled
+                      text-color="#ff9900"
+                      >
+                    </el-rate>
+          <template v-if="checkDetails.status === 0">
+          <div class="try-again">
+            <button @click="notPass" class="not-pass" >Not Pass</button>
+            <button @click="pass">Pass</button>
+          </div>
+          <div class="not-pass-select" v-if="notPassData">
+            <select v-model="notPassReason">
+              <!-- <option value="">请选择未通过原因</option> -->
+              <option value="未查到订单"  >未查到订单</option>
+              <option value="评论与内容不符合">评论与内容不符合</option>
+            </select>
+             <button @click="notPassSubmit">Save</button>
+          </div>
+          </template>
+           <template v-if="checkDetails.status === 2">
+          <div class="try-again red">
+              {{checkDetails.censor_content}}
+          </div>
+          </template>
+
+      </el-dialog>
   </div>
 </template>
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
+import {  getStore, removeStore } from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
+import { parseTime } from '@/utils/date'
 export default {
   name: 'posted_trials',
   data () {
@@ -165,59 +233,150 @@ export default {
         'Cost', 'Status', 'Operation'
       ],
       trLists: [{
-        product_img: 'http://www.ghostxy.top/dealsbank/img/01.png',
-        product_title: 'this is title',
-        platform: 'Amazon',
-        product_prcie: '98.00',
-        receiptor_user: 'Skyer',
-        order_date: '2017-09-08 10:26:35',
-        order_number: '116-7827885-8849945',
-        review: {
-          rate: 4.1,
-          picture: 3,
-          video: 0,
-          link: 'http://www.baidu.com'
-        },
-        shipping_fee: '68.00',
-        platform_fee: '11.00',
-        refund: '1969.00',
-        cost: '0',            
-        status: '1',
-        
-
-        quantity: '20',
-        applied: '15',
-        promotion_fee: '85.00',
-        security_deposit: '2060.00',
-        valid_date: '2017-09-08 to 2017-10-01',
-
-
       }],
+      DeclineDetails: false,
+      expiredDetail: false,
+
+      checkDetails: {
+        order_number: 12312,
+        rate: 3,
+      },
+      notPassReason:'未查到订单',
+      notPassData: false,
       allpage: undefined,
       showItem: 7,
-      searchForm: {
-        title: '',
-        category: '',
+      requestdata: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: '',
+        page: 1,
+        page_size: 5,
+        order_number: '',
         status: '',
+        start_time: '',
+        end_time: '',
+      },
+      //审核参数
+      reqCheckData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        id: '',
+        status: '',
+        censor_content: '',
+      },
+
+      searchForm: {
+        order_number:'',
+        date: '',
+        status: '',
+      },
+      trialDetails: {
+        product_img: '',
+        product_title: '',
+        product_price: '',
+        discount_rate: '',
+        coupon_code: '',
+        shipping_fee: '',
+        platform_fee: '',
+        refund_price: '',
+        real_fee: '',
       }
-     
-   
     }
   },
   components: {
     pagination
   },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
+    }
+  },
   mounted () {
+    this.init()
+  },
+  //组件销毁前执行的回调
+  beforeDestroy () {
+    removeStore('trialDetails')
   },
   methods: {
+    init () {
+      this.initData()
+      this.getReceiptorInfo()
+    },
+
+    initData () {
+      this.requestdata.trial_id = JSON.parse(getStore('trialDetails')).id
+      var trialDetails = JSON.parse(getStore('trialDetails'))
+      this.trialDetails = trialDetails
+    },
+
+    //获取领取人列表接口
+    getReceiptorInfo () {
+      this.$api.trialOrder(this.requestdata).then(res => {
+        this.trLists = res.data.data
+        for (let i of this.trLists) {
+          i.isExpired = (i.appraise_expiry_time < parseInt(new Date()/1000))
+          i.apply_time = parseTime(i.apply_time, '{y}-{m}-{d}')
+        }
+      })
+    },
+
     gotoPage (i) {
-      console.log(i)
+      this.requestdata.page = i
+      this.getReceiptorInfo()
     },
 
     //查询 trails
     postedCouponsSearch () {
-      console.log(this.searchForm)
+      this.requestdata.status = this.searchForm.status
+      this.requestdata.order_number = this.searchForm.order_number
+      if (!this.searchForm.date[0]) {
+        this.requestdata.start_time = ''
+        this.requestdata.end_time = ''
+        //对日期做处理，加上八个小时
+      } else {
+        this.requestdata.start_time = new Date(this.searchForm.date[0].getTime() + 8 * 3600 * 1000) 
+        this.requestdata.end_time = new Date(this.searchForm.date[1].getTime() + 8 * 3600 * 1000) 
+      }
+      this.getReceiptorInfo()
     },
+    confirmedOrder (item) {
+      this.checkDetails = item
+      this.DeclineDetails = true
+    },
+    OrderDetails (item) {
+      this.checkDetails = item
+      if (item.status === 0) {
+        this.expiredDetail = true
+      } else if (item.status === 2) {
+        this.DeclineDetails = true
+      }
+    },
+    check () {
+      
+    },
+    pass () {
+      this.notPassReason = ''
+      this.checkSubmit(1)
+    },
+    notPass () {
+      this.notPassData = !this.notPassData
+    },
+    notPassSubmit () {
+      this.checkSubmit(2)
+    },
+    //审核提交
+    checkSubmit (status) {
+      this.reqCheckData.id = this.checkDetails.id
+      this.reqCheckData.censor_content = this.notPassReason
+      this.reqCheckData.status = status
+      this.$api.updateOrderStatus(this.reqCheckData).then(res => {
+        if (res.code === 200) {
+          this.DeclineDetails = false
+          this.getReceiptorInfo()
+        }
+      })
+    }
 
   
   }
@@ -294,4 +453,32 @@ export default {
   
 }
 
+.trials-title {
+  width: 150px;
+}
+.star-label {
+  float: left;
+}
+.try-again {
+  text-align: center;
+  margin-top: 10px;
+  button {
+     .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
+  }
+  .not-pass {
+    .btn-h(80px, 34px,#3399FF,#3399FF,red);
+  }
+}
+.not-pass-select {
+  margin-top: 10px;
+  // width: 200px;
+  text-align: center;
+  button {
+    .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
+    line-height: 1.5;
+  }
+}
+.el-dialog--tiny {
+    width: 600px;
+}
 </style>

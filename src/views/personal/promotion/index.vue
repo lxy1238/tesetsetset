@@ -9,13 +9,13 @@
       </div>
     </div>
     <div class="promotion-coupons">
-       <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
+       <coupons-pro v-for="couponsDetails in arrcouponsDetails"  v-if="couponsDetails.coupons"
                      :key="1" 
                      :couponsDetails="couponsDetails.coupons"
                      :addpromo="false"
                      @gotodetails="gotodetails">
-          <template slot="price">
-          <p class="price content">
+          <template slot="price" v-if="couponsDetails.coupons">
+          <p class="price content" >
             <span class="price-left">{{currency}}{{couponsDetails.coupons.product_price}}</span>
             <span class="price-right">{{currency}}{{couponsDetails.coupons.discount_price}}</span>
             <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
@@ -42,7 +42,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { promotionUserCoupon, promotionUserRemove } from '@/api/login'
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { base64Encode } from '@/utils/randomString'
@@ -58,6 +57,7 @@ export default {
       requestData: {
         api_token: getToken(),
         user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 8,
       },
@@ -88,7 +88,7 @@ export default {
     },
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails () {
-      promotionUserCoupon(this.requestData)
+      this.$api.promotionUserCoupon(this.requestData)
         .then(res => {
           console.log(res)
           this.arrcouponsDetails = res.data.data
@@ -102,7 +102,7 @@ export default {
     //移除优惠券
     removePromotion (id) {
       this.removeRequestData.coupon_id = id
-      promotionUserRemove(this.removeRequestData)
+      this.$api.promotionUserRemove(this.removeRequestData)
         .then(() => {
           this.getPromotionDetails()
         })
@@ -120,7 +120,7 @@ export default {
         confirmButtonText: 'confirm'
       })
         .then(() => {
-          promotionUserRemove(this.removeAllRequestData)
+          this.$api.promotionUserRemove(this.removeAllRequestData)
             .then(() => {
               this.getPromotionDetails()
             })

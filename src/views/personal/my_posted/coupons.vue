@@ -7,27 +7,27 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" />
+      <el-input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" ></el-input>
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.menu_id">
-        <option :value="''" >请选择</option>
-        <option :value="item.id" v-for="item in classifyList">{{item.name}}</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.menu_id">
+        <!-- <option :value="''" >请选择</option> -->
+        <el-option :value="item.id" :key="item.id" v-for="item in classifyList" :label="item.name">{{item.name}}</el-option>
+      </el-select>
 
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.run_status">
-        <option :value="''" >请选择</option>
-        <option :value="all_run_status[0]">Pending</option>
-        <option :value="all_run_status[1]">Active</option>
-        <option :value="all_run_status[2]">Decline</option>
-        <option :value="all_run_status[3]">Stop</option>
-        <option :value="all_run_status[4]">Close</option>
-        <option :value="all_run_status[5]">Expired</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.run_status">
+        <!-- <option :value="''" >请选择</option> -->
+        <el-option :value="all_run_status[0]">Pending</el-option>
+        <el-option :value="all_run_status[1]">Active</el-option>
+        <el-option :value="all_run_status[2]">Decline</el-option>
+        <el-option :value="all_run_status[3]">Stop</el-option>
+        <el-option :value="all_run_status[4]">Close</el-option>
+        <el-option :value="all_run_status[5]">Expired</el-option>
+      </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
@@ -47,9 +47,9 @@
               <img v-else class="product-img" src="../../../assets/01.png" alt="">
             </td>
             <td class="coupons-table-title">
-              <div>amazon</div>
+              <div>{{item.website}}</div>
               <div class="table-product-title" @click="gotoDetails(item)">{{item.product_title}}</div>
-              <a href="javascript:void(0);" @click="gotoDetails(item)">Electronics</a>
+              <a href="javascript:void(0);" @click="gotoDetails(item)">{{item.menu.name}}</a>
             </td>
 
             <td class="prcie">
@@ -69,37 +69,36 @@
               <div>{{item.valid_date}}</div>
             </td>
             <td class="status">
-              <div class="blue" v-if="item.status === 0 ">Pending</div>
-              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
-              <div class="red" v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">Decline</div>
+              <div class="blue" v-if="item.status === 0 && !item.isExpired ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.isExpired">Active </div>
+              <div class="red" v-if="item.status === 2  && !item.isExpired ">Decline</div>
               
-              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] && !item.isExpired">Stop</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired">Close</div>
+              <div class="red" v-if="item.status === 1 && (item.run_status ==  all_run_status[5] || item.isExpired) ">Expired</div>
             </td>
             <td class="operation">
-              <template v-if="item.status === 0">
+              <template v-if="item.status === 0 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
+              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired  ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
-                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
+                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
               </template>
-              <template  v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">
+              <template  v-if="item.status === 2 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1]  && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">
+              <template v-if="item.status === 1 && (item.run_status ==  all_run_status[5] || item.isExpired) ">
                 <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
               </template>
             </td>
@@ -129,7 +128,6 @@
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
-import { userPickCoupons, couponCensor, couponUpdateRunStatus, getHeadCateList , couponDetele} from '@/api/login'
 import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
@@ -149,7 +147,6 @@ export default {
         'Operation'
       ],
       classifyList: [
-
       ],
       trListsTest: [
         {
@@ -192,6 +189,7 @@ export default {
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 6,
         product_title: '',
@@ -212,7 +210,7 @@ export default {
       couponDeteleRequestData: {
         api_token: getToken(),
         user_id: getUserId(),
-        coupon_id: ''
+        country_id: getStore('country_id') || 1,
       }
     }
   },
@@ -241,12 +239,16 @@ export default {
 
     //获取首页列表数据
     getUserPickCoupons () {
-      userPickCoupons(this.requestdata)
+      this.$api.userPickCoupons(this.requestdata)
         .then(res => {
           console.log(res)
-          for (var i in res.data.data) {
-            res.data.data[i].valid_date = parseTime(
-              res.data.data[i].valid_date,
+          for (var i of res.data.data) {
+            let now = parseInt(new Date().getTime() / 1000)
+            if (i.valid_date < now) {
+              i.isExpired = true
+            }
+            i.valid_date = parseTime(
+              i.valid_date,
               '{y}-{m}-{d}'
             )
           }
@@ -260,8 +262,8 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
-        this.classifyList = res.data
+      this.$api.getHeadCateList().then(res => {
+        this.classifyList = this.classifyList.concat(res.data)
       }).catch(error => {
         console.log(error)
       })
@@ -309,14 +311,16 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
-          couponDetele(this.couponDeteleRequestData).then(res => {
+          console.log(this.couponDeteleRequestData)
+          this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
+            this.$notify({
+              type: 'success',
+              message: 'delete success!'
+            })
           })
-          this.$notify({
-            type: 'success',
-            message: 'delete success!'
-          })
+          
         })
         .catch(() => {
           console.log('cancel')
@@ -327,7 +331,7 @@ export default {
     showDetails (id) {
       this.detailsRequestData.coupon_id = id
       this.detailsDialog = true
-      couponCensor(this.detailsRequestData).then(res => {
+      this.$api.couponCensor(this.detailsRequestData).then(res => {
         this.nonApproval = res.data.content
       }).catch(error => {
         console.log(error)
@@ -354,7 +358,7 @@ export default {
     updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.coupon_id = id
       this.updateRunStatusRequestData.run_status = run_status
-      couponUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
+      this.$api.couponUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
         if (res.code === 200) {
           this.getUserPickCoupons()
         }
@@ -381,7 +385,6 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      
       margin-right: 3%;
       width: 16%;
     }

@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import { checkRetrievePassword } from '@/api/login'
 export default {  
   name: 'affiliate_pid',
   data () {
@@ -76,8 +75,7 @@ export default {
         if (valid) {
           this.pidForm.api_token = this.$route.params.token
           this.pidForm.email = this.$route.params.email
-          checkRetrievePassword(this.pidForm).then(res => {
-            console.log(res)
+          this.$api.checkRetrievePassword(this.pidForm).then(res => {
             if (res.code === 402) {
               this.$notify.error(res.message)
               return false

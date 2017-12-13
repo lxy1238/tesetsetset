@@ -8,28 +8,26 @@
       <label for="title">
         Title: 
       </label>
-      <input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" />
+      <el-input class=" form-control-bootstrap"  type="text" v-model="requestdata.product_title" ></el-input>
       <label for="title">
         Category: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.menu_id">
-        <option :value="''" >请选择</option>
-        <option :value="item.id" v-for="item in classifyList">{{item.name}}</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable  v-model="requestdata.menu_id">
+        <el-option :value="item.id" :key="item.id" v-for="item in classifyList" :label="item.name">{{item.name}}</el-option>
+      </el-select>
 
       <label for="title" >
         Status: 
       </label>
-      <select name="" class=" form-control-bootstrap" v-model="requestdata.run_status">
-        <option :value="''" >请选择</option>
-        <option :value="all_run_status[0]">Pending</option>
-        <option :value="all_run_status[1]">Active</option>
-        <option :value="all_run_status[2]">Decline</option>
-        <option :value="all_run_status[3]">Stop</option>
-        <option :value="all_run_status[4]">Close</option>
-        <option :value="all_run_status[5]">Expired</option>
-        <option :value="all_run_status[6]">Underbalance</option>
-      </select>
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.run_status">
+        <el-option :value="all_run_status[0]">Pending</el-option>
+        <el-option :value="all_run_status[1]">Active</el-option>
+        <el-option :value="all_run_status[2]">Decline</el-option>
+        <el-option :value="all_run_status[3]">Stop</el-option>
+        <el-option :value="all_run_status[4]">Close</el-option>
+        <el-option :value="all_run_status[5]">Expired</el-option>
+        <el-option :value="all_run_status[6]">Underbalance</el-option>
+      </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
 
@@ -51,7 +49,7 @@
               <td class="trials-title">
                 <div class="trials-title-platform">{{item.website}}</div>
                 <div class="trials-title-text"  @click="gotoDetails(item)">{{item.product_title}}</div>
-                <a href="javascript:void(0);"  @click="gotoDetails(item)">Electronics</a>
+                <a href="javascript:void(0);"  @click="gotoDetails(item)">{{item.menu.name}}</a>
               </td>
               <!-- store -->
               <td class="trials-store">
@@ -73,7 +71,7 @@
               </td>
               <!-- applied -->
               <td>
-                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor">
+                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
                    {{item.apply_numbers}}
                 </a>
                
@@ -119,7 +117,7 @@
                <td class="status">
               <div class="blue" v-if="item.status === 0 ">Pending</div>
               <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
-              <div class="red" v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">Decline</div>
+              <div class="red" v-if="item.status === 2  ">Decline</div>
               
               <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
@@ -136,13 +134,12 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
-                <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
               </template>
-              <template  v-if="item.status === 2 && item.run_status ==  all_run_status[2] ">
+              <template  v-if="item.status === 2 ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
+                <div> <a href="javascript:void(0)" @click="showDetails(item.id)">Details</a></div>
               </template>
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
@@ -175,7 +172,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { userTrials, getHeadCateList ,trialCensor, trialUpdateRunStatus, trialDetele } from '@/api/login'
 import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
@@ -200,8 +196,9 @@ export default {
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
+        country_id: getStore('country_id') || 1,
         page: 1,
-        page_size: 3,
+        page_size: 5,
         product_title: '',
         menu_id: '',
         run_status: '',
@@ -220,6 +217,7 @@ export default {
       couponDeteleRequestData: {
         api_token: getToken(),
         user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
         trial_id: ''
       }
      
@@ -264,7 +262,7 @@ export default {
 
     //获取商家发布的试用品的列表
     getPostTrialsList () {
-      userTrials(this.requestdata).then(res => {
+      this.$api.userTrials(this.requestdata).then(res => {
         console.log(res)
         for (let i of res.data.data) {
           i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
@@ -277,7 +275,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         console.log(res)
         this.classifyList = res.data
       }).catch(error => {
@@ -294,11 +292,11 @@ export default {
 
     //跳转到 领取优惠券的用户页面
     gotoTrailsreceiptor (item) {
-      if (item.pick_numbers === 0) {
+      if (item.apply_numbers === 0) {
         return false
       }
       this.$router.push({ path: '/posted/trials/receiptor' })
-      setStore('couponDetails', JSON.stringify(item))
+      setStore('trialDetails', JSON.stringify(item))
     },
 
     //编辑待审核状态下和审核未通过的优惠券   
@@ -317,7 +315,7 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
-          trialDetele(this.couponDeteleRequestData).then(res => {
+          this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getPostTrialsList()
           })
@@ -335,7 +333,8 @@ export default {
     showDetails (id) {
       this.detailsRequestData.trial_id = id
       this.detailsDialog = true
-      trialCensor(this.detailsRequestData).then(res => {
+      this.$api.trialCensor(this.detailsRequestData).then(res => {
+        console.log(res.data)
         if (res.data.content == '通过') {
           this.nonApproval = 'self closing'
           return
@@ -367,7 +366,7 @@ export default {
     updateRunStatusFun (id, run_status) {
       this.updateRunStatusRequestData.trial_id = id
       this.updateRunStatusRequestData.run_status = run_status
-      trialUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
+      this.$api.trialUpdateRunStatus (this.updateRunStatusRequestData).then(res => {
         if (res.code === 200) {
           this.getPostTrialsList()
         }

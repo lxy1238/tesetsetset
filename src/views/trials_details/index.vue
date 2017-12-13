@@ -1,6 +1,6 @@
 <template>
   <div class="page-index">
-    <div class="pages-content" v-if="trialDetailData.menu">
+    <div class="pages-content" v-if="trialDetailData.id">
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
@@ -27,7 +27,9 @@
                 </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes</div>
             </div>
             <div class="price-details">
-                <div class="price">Price: <del>{{currency}}{{trialDetailData.product_price}}</del> </div>
+                <div class="price">Price: {{currency}}{{trialDetailData.product_price}} </div>
+                <div class="price" v-if="trialDetailData.shipping_fee != '0.00'">Shipping fee: {{currency}}{{trialDetailData.shipping_fee}} </div>
+                <div class="price" v-else >Free Shipping</div>
               <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
               <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
               <div class="reason">Reason: 
@@ -37,8 +39,11 @@
               </div>
             </div>
             <div class="btn-promotion">
-                <div class="inline-b add-promo">
-                  <button ><span>Apply</span></button>
+                <div class="inline-b add-promo" v-if="!trialDetailData.trial_apply && !isApply">
+                  <button @click="trialsApplyBtn($event)">Apply</button>
+                </div>
+                <div class="inline-b add-promo" v-else>
+                  您已经申请过了或者您不符合申请资格
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
@@ -85,7 +90,7 @@
     </div>
 
       <!-- not get trials -->
-      <el-dialog  :visible.sync="notGetTrialsDialog" class="not-trials-dialog" size="tiny">
+      <el-dialog  :visible.sync="notGetTrialsDialog" title="result" class="not-trials-dialog" size="tiny">
           <p>You did not get trials</p>
 
           <div class="try-again">
@@ -99,10 +104,10 @@
 <script>
 import detailsLeft from '@/components/coupons/details_left.vue'
 import explain from '@/components/trials/explain.vue'
-import { trialDetail,postedUserInfo } from '@/api/login'
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import { base64Decode } from '@/utils/randomString'
 import { timestampFormat, getTimeDetail } from '@/utils/date'
 import { getStore } from '@/utils/utils'
+import { getUserId, getToken } from '@/utils/auth'
 export default {
   name: 'coupons',
   components: {
@@ -114,6 +119,7 @@ export default {
       isTop: false,
       selected: 0,
       added: true,
+      isApply: false,
       processData: [
         {
           'title':'Register users, apply for products',
@@ -151,9 +157,7 @@ export default {
       tabsHead: [
         'Description', 'Novice Process'
       ],
-      trialDetailData: {
-
-      },
+      trialDetailData: {},
       userInfo: {
         avatar_img: '',
         username: '',
@@ -165,6 +169,14 @@ export default {
       imgList: [],
       reqData: {
         id: '',
+        user_id: getUserId()
+      },
+      trialApplyData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: '',
+        country_id: parseInt(getStore('country_id')) || 1,
+        platform_id: '',
       }
     }
   },
@@ -195,18 +207,21 @@ export default {
     //获取试用品详情
     getTrialDetail () {
       console.log(this.reqData)
-      trialDetail(this.reqData).then(res => {
-        console.log(res)
+      this.$api.trialDetail(this.reqData).then(res => {
+        this.trialApplyData.trial_id = res.data.id
+        this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
         this.getPostUserInfo(res.data.user_id)
+      }).catch(error => {
+        console.log(error)
       })
     },
 
     //获取发布人的信息
     getPostUserInfo (id) {
       var request = { user_id: id }
-      postedUserInfo(request)
+      this.$api.postedUserInfo(request)
         .then(res => {
           res.data.joined_date = timestampFormat(res.data.joined_date)
           this.userInfo = res.data
@@ -224,11 +239,41 @@ export default {
 
     },
     gotoTrials () {
-      this.$router.push({path: '/trials'})
+      this.$router.push({path: '/trials/index'})
     },
     selectTabs (index) {
       this.selected = index
-    } 
+    },
+    //判断是否登录，否则提醒请登录
+    isLogin () {
+      if (!getToken()) {
+        this.$root.eventHub.$emit('isLoginInfo')
+        return false
+      } else {
+        return true
+      }
+    },
+    trialsApplyBtn (e) {
+      if (!this.isLogin()) {
+        return
+      }
+      e.target.disabled = true
+      this.$api.trialApply(this.trialApplyData).then(res => {
+        if (res.code === 200) {
+          this.isApply = true
+          if (res.data === 1) {
+            this.$router.push({ path: '/successTrials/' + this.$route.params.trialId })
+          } else {
+            this.notGetTrialsDialog = true
+          }
+        }
+      }).catch(error => {
+        if (error.code === 402) {
+          this.$router.push({path: '/personal/my-trials/index'})
+          this.$message.info('您已经申请成功一款产品了，根据规则您这个月暂时不能申请了')
+        }
+      })
+    }
   }
 }
 </script>
@@ -383,7 +428,7 @@ export default {
     }
  
     .promotion-template {
-      min-height: 10rem;
+      min-height: 1000px;
       background: white;
       border-radius: 5px;
       overflow: hidden;
@@ -416,6 +461,7 @@ export default {
           }
         }
         .tabs-body {
+          padding: 0 10px 0 10px;
           margin-top: 1rem;
           .content {
             padding: 0 3rem;
@@ -462,6 +508,9 @@ export default {
 }
   // trials申请失败
 .not-trials-dialog {
+    p {
+      height: 40px;
+    }
     p, div {
       text-align: center;
     }

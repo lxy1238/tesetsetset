@@ -4,8 +4,8 @@
       My Coupons
     </div>
     <div class="coupons-content" v-if="couponLists.length != 0">
-      <div class="pro-card" v-for="item in couponLists">
-        <div class="expried">EXPRIED</div>
+      <div class="pro-card" v-for="item in couponLists" v-if="item.coupons">
+        <!-- <div class="expried">EXPRIED</div> -->
         <div class="card-top">
           <img class="card-top-img" :src="item.coupons.product_img.split(',')[0]" alt="">
           <div class="pro-title">
@@ -35,9 +35,9 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { userCoupons } from '@/api/login'
 import { mapGetters } from 'vuex'
 import { getToken, getUserId } from '@/utils/auth' 
+import { getStore } from '@/utils/utils'
 export default {
   name: 'my_coupons',
   data () {
@@ -47,6 +47,7 @@ export default {
       requestData: {
         api_token: getToken(),
         user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 9
       },
@@ -71,7 +72,7 @@ export default {
       this.getUserCoupons()
     },
     getUserCoupons () {
-      userCoupons(this.requestData).then(res => {
+      this.$api.userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
           console.log(res.data)    // 少了一个product_url 字段
           this.couponLists = res.data.data

@@ -2,47 +2,50 @@
   <div class="page-index ">
     <div class="pages-content clearfix">
       <explain :is-active="2"></explain>
-      <div class="home-content">
-        <div class="details">
+      <div class="home-content" v-if="trialDetail.product_price">
+        <div class="details" v-if="trialDetail.product_price">
           <div class="pro-img">
-            <img class="img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+            <img class="img" :src="trialDetail.product_img.split(',')[0]" alt="">
           </div>
           <div class="details-price">
-            <div class="title">2-PK of 30oz Ozark Trail Double-Wall Vacuum-Sealed Tumblers</div>
-            <div class="time"> <i class="iconfont icon-icon-test"></i> Ends in <strong>3</strong>  days <strong>16</strong> hours <strong>52</strong> minutes</div>
+            <div class="title" :title="trialDetail.product_title" @click="gotoAmazon(trialDetail.product_url)">{{trialDetail.product_title}}</div>
+            <div class="time"> Count down: {{countDownData.hours}}:{{countDownData.minutes}}:{{countDownData.seconds}} <span class="red" v-if="isExpired">已过期</span></div>
             <div class="code-price">
-              <div class="price">Price: <del>$198.00</del> </div>
-              <div class="refund-price">Refund: <span >$198.00</span> </div>
-              <div class="reminder">Please place an order within 4 hours and complete the payment. 
-And timely upload your order number, or your trial qualification 
-will be canceled.</div>
-              <div class="code">
-                <!-- <img src="../../assets/code.png" alt="">
-                <div class="text">
-                    Scan the QR code code to find the product
-                </div> -->
-              </div>
+              <div class="price">Price: {{currency}} {{trialDetail.product_price}} </div>
+              <div class="price">Shipping fee: {{currency}} {{trialDetail.shipping_fee}} </div>
+              <div class="refund-price">Refund: <span >{{currency}} {{trialDetail.refund_price}}</span> </div>
+              <div class="reminder">Please place an order within 24 hours and complete the payment. 
+                                    And timely upload your order number, or your trial qualification 
+                                    will be canceled.</div>
             </div>
             <div class="footer">
-              <button class="to-amazon">
+              <button class="to-amazon" @click="gotoAmazon(trialDetail.product_url)">
                 Go To Amazon 
               </button>
               <div class="right">
-                <div class="top"><i class="iconfont icon-xiaohongqi"></i> flow this trials</div>
-                <select>
-                  <option v-for="(item, index) in options" :value="index"  >{{item}}</option>
-                </select>
+                <div class="top" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> flow this trials</div>
+                <select name="" id="" v-model="selected" @change="selectProblem"  v-if="isFlagCoupon">
+                <option v-for="(item, index) in options" :value="item" :label="item" >{{item}}</option>
+              </select>
               </div>
+               <div class="inline-b question" v-if="selected !== 'Choose reason'">
+                  <div class="wrong"><span>What’s wrong with this deal?</span></div>
+                  <div class="submit">
+                    <input type="text" v-model="addProblemData.content">
+                    <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
+                    <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
+                  </div>
+                </div>
             </div>
             <img class="amazon" src="../../assets/amazon.png" alt="">
           </div>
         </div>
-        <div class="submit-order-number">
+        <div class="submit-order-number" v-if="!isExpired">
           <h3>Submit order number</h3>
           <div class="submit">
             <span>Order number: </span>
-            <input class="input" type="text" />
-            <button class="submit-btn">Confirm</button>
+            <input class="input" type="text" v-model="reqAddOrderData.order_number" />
+            <button class="submit-btn" @click="submitOrderNumber($event)">Confirm</button>
           </div>
           <div>Please confirm that the order number is valid and the transaction is successful, 
             otherwise your trial qualification will be canceled.</div>
@@ -104,12 +107,19 @@ will be canceled.</div>
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
+import { getToken, getUserId } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { getTimeDetail } from '@/utils/date.js'
+import { base64Decode } from '@/utils/randomString.js'
 export default {
   name: 'page_index',
   data () {
     return {
+      trialDetail: {},
+      countDownData: {},
+      isExpired: false,
       options: [
-        'Choose areason',
+        'Choose reason',
         'Dead deadl',
         'Duplicate',
         'Bad link',
@@ -118,6 +128,29 @@ export default {
         'No value',
         'Alive again'
       ],
+      selected: 'Choose reason',
+      isFlagCoupon: false,
+      reqSuccedDetailsData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
+        trial_id: '',
+      },
+      reqAddOrderData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        id: '',
+        order_number: ''
+      },
+      addProblemData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        product_id: '',
+        menu: '',
+        title: '',
+        content: ''
+
+      },
     }
   },
   components: {
@@ -125,21 +158,102 @@ export default {
     pagination,
     explain
   },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
+    },
+  },
   mounted () {
-    this.$root.eventHub.$on('selectClassify', data => {
-      this.msg = ''
-      setTimeout(() => {
-        this.msg = data
-      }, 500)
-    })
+    this.init()
   },
   methods: {
-    test (index) {
-      console.log(`当前跳转到 ${index} 页`)
+    init () {
+      this.initData()
+      this.getTrialDetails()
     },
-    gotodetails () {
-      this.$router.push({ path: '/trialsDetails'})
-    }
+    initData () {
+      this.reqSuccedDetailsData.trial_id = base64Decode(this.$route.params.trialId)
+    },
+    
+    gotoAmazon (url) {
+      window.open(url)
+    },
+
+    //进入页面获取到产品详情 以及id
+    getTrialDetails () {
+      this.$api.userApplySucced(this.reqSuccedDetailsData).then(res => {
+        let expiry_time = getTimeDetail(res.data[0].expiry_time)
+        this.reqAddOrderData.id = res.data[0].id
+        this.trialDetail = res.data[0].trials
+        this.countDownData = expiry_time
+        this.trialDetail.countDown = res.data[0].expiry_time
+        this.countDown()
+      })
+    },
+
+    //定时器，时间倒计时
+    countDown () {
+      let timer = null
+      timer = setInterval(() => {
+        let expiry_time1 = getTimeDetail(this.trialDetail.countDown)
+        this.countDownData = expiry_time1
+        if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+          clearInterval(timer)
+          this.isExpired = true
+        }
+      }, 1000)
+    },
+
+    //提交订单 号码
+    submitOrderNumber (e) {
+      e.target.disabled = true
+      console.log(this.reqAddOrderData)
+      if (!this.reqAddOrderData.order_number) {
+        return
+      }
+      this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
+        if (res.code === 200) {
+          this.$router.push({path: '/personal/my-trials/index', query: { status: 1 }})
+        }
+        e.target.disabled = false
+      }).catch(err => {
+        console.log(err)
+        e.target.disabled = false
+      })
+
+    },
+
+    //选择问题, 提交问题反馈
+    selectProblem () {
+      this.addProblemData.title = this.selected
+    },
+    //显示问题反馈选项
+    flagCoupon () {
+      this.isFlagCoupon = !this.isFlagCoupon
+    },
+    //提交问题
+    addProblemSubmit () {
+      if (base64Decode(this.$route.params.trialId)) {
+        this.addProblemData.menu = 'trials'
+        this.addProblemData.product_id = base64Decode(this.$route.params.trialId)
+      }
+      if (!this.addProblemData.content) {
+        return
+      }
+      if (this.addProblemData.content.length > 30) {
+        this.$notify.error('You can only type 30 characters')
+        return
+      }
+      this.$api.addProblem(this.addProblemData).then(res => {
+        if (res.code === 200) {
+          this.$message.success('Submitted successfully!')
+          this.isFlagCoupon = false
+          this.selected = 'Choose reason'
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+    },
   }
 }
 </script>
@@ -182,12 +296,16 @@ export default {
       }
       .title {
         width: 35rem;
-        font-size: 1.33rem;
+        font-size: 24px;
+        height: 48px;
+        line-height: 1;
+        overflow: hidden;
         color: #1a1a1a;
         font-weight: bold;
       }
       .time {
-        color: #808080;
+        color: #1a1a1a;
+        font-size: 18px;
         margin-bottom: 1.5rem;
         strong {
           color: #1a1a1a;
@@ -304,6 +422,45 @@ export default {
   .footer {
     height: 30px;
   }
+   .question {
+          float: right;
+          text-align: right;
+          margin-right: 5px;
+          .wrong {
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+            color: #808080;
+          }
+          .submit {
+            position: relative;
+            input {
+              height: 1.8rem;
+            }
+            button {
+              .btn-h;
+              width: 5rem;
+              height: 1.8rem;
+              background: #7db135;
+              border-color: #7db135;
+              color: white;
+              line-height: 0.4;
+              &:hover {
+                background: darken(#7db135, 10%);
+                border-color: darken(#7db135, 10%);
+              }
+              &:active {
+                background: lighten(#7db135, 10%);
+                border-color: lighten(#7db135, 10%);
+              }
+            }
+            .error {
+              position: absolute;
+              left: 0;
+              text-align: left;
+              color: red;
+            }
+          }
+        }
 }
 
 

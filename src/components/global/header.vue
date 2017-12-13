@@ -14,6 +14,7 @@
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
                 <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
               </div>
+              
             <template v-if="!isLogin">
               <button class="inline-b btn-h login" @click="ShowLoginDialog">Login</button>
               <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign up</button>
@@ -44,15 +45,16 @@
                    <!-- <li class="items-li"> <router-link to="/personal">coup0ons</router-link></li>
                    <li> <router-link to="/combine">combine</router-link></li>
                    <li> <router-link to="/successTrials">successTrials</router-link></li> -->
-                   <li v-for="syncRouter in addRouters">
+                   <li v-for="syncRouter in addRouters" v-if="!syncRouter.hidden">
                      <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
                    </li>
                    <li  @click="logOut"> <a href="javascript:void(0);">log out</a></li>
                  </ul>
                </div>
              </div>
-            </template><div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
-               <span>
+            </template>
+            <div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
+               <span class="country-span">
                  <i>{{selectedCountryShop}}</i> 
                  <template>
                  <i v-if="!showDropdownC" class="iconfont icon-xiangxia"></i>
@@ -64,36 +66,19 @@
                    <li v-for="item in countryLists" @click="filterCountry(item)">{{item.name}} </li>
                  </ul>
                </div>
-            </div><div class="inline-b login-y language" :class="{active: showDropdownL}"   @click.stop="showDropdownLanguage($event)">
-               <span>Language 
+            </div>
+            <div class="inline-b login-y language" :class="{active: showDropdownL}"  @click.stop="showDropdownLanguage($event)"  >
+               <span class="language-span" >Language 
                 <i v-if="!showDropdownL" class="iconfont icon-xiangxia"></i>
                  <i v-else class="iconfont icon-icon-"></i>
               </span>
-              <div v-if="showDropdownL" class="dropdown" style="position: absolute">
-                 <ul class="items" >
-                   <li> <router-link to="/personal">coup0ons</router-link></li>
-                   <li> <router-link to="/combine">combine</router-link></li>
-                   <li> <router-link to="/successTrials">successTrials</router-link></li>
-                    <li @click.stop="showAllLanguage">
-                      <input class="language-input" type="text" readonly  v-model="selectedCountry" >
-                      <img class="google" src="../../assets/language-google.png" />
-                      <i class="iconfont icon-xiangxia"></i>
-                      <div class="all-language" v-if="isShowAllLanguage" >
-                        <tbody>
-                          <tr>
-                            <template >
-                            <td>
-                              <div>aefawef</div>
-                            </td>
-                            <td class="line"></td>
-                            </template>
-                          </tr>
-                        </tbody>
-                      </div>
-                    </li>
+              <div v-show="showDropdownL" class="dropdown" style="position: absolute">
+                 <ul class="items" style="text-align:center" >
+                     <div id="google_translate_element"  @click.stop="showDropdownLanguage1($event)">加载google翻译插件</div>
                  </ul>
                </div>
             </div>
+          
            </div>
          </div>
        </div>
@@ -111,10 +96,10 @@
         <div class="dialog-body">
           <div class="top">
             <div class="facebook">
-              <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
+              <button type="button" class="facebook" @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
+              <button  type="button" class="google" id="customBtn"><i class="iconfont icon-googleplus" ></i> Join with Google</button>
             </div>
           </div>
           <div class="bottom">
@@ -233,17 +218,19 @@
           </div>
         </div>
      </el-dialog>
+
+    
    </div>
 </template>
 
 <script>
-import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
+// import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
-import { sign,getHeadCateList, retrievePassword , getUserCountry} from '@/api/login.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
-// import '../../utils/google'
+import { getEmail, setEmail, getToken,getPass, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
+import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -303,7 +290,7 @@ export default {
       classifyList: [
         {
           id: 0,
-          name: 'Top Coupons'
+          name: 'Top'
         }
       ],
 
@@ -332,7 +319,8 @@ export default {
       signloading: false,
       resetLoading: false,
       keyword: '',     //搜索用的关键字
-      country_id: parseInt(getStore('country_id')) || 1
+      country_id: parseInt(getStore('country_id')) || 1,
+      app_id: '894275327387425'
     }
   },
   props: {
@@ -341,18 +329,6 @@ export default {
       default: true
     }
   },
-  mounted () {
-    if(this.$route.query.search) {
-      this.keyword = this.$route.query.search
-    }
-    this.init()
-  },
-  //组件销毁时，关闭来自其他组件的事件接收
-  beforeDestroy () {
-    this.$root.eventHub.$off('initClassify')
-    this.$root.eventHub.$off('selectClassify1')
-    this.$root.eventHub.$off('isLoginInfo')
-  },  
   computed: {
     isLogin () {
       return getToken()
@@ -381,9 +357,23 @@ export default {
       }
     },
   },
+  mounted () {
+    if(this.$route.query.search) {
+      this.keyword = this.$route.query.search
+    }
+    this.init()
+  },
+  //组件销毁时，关闭来自其他组件的事件接收
+  beforeDestroy () {
+    this.$root.eventHub.$off('initClassify')
+    this.$root.eventHub.$off('selectClassify1')
+    this.$root.eventHub.$off('isLoginInfo')
+  },  
+
   methods: {
     //初始化 
     init () {
+      this.initLanguage()
       this.docuemntAddEvent()
       this.enterSubmitForm()
       this.getHeadCateListInfo()
@@ -397,6 +387,7 @@ export default {
           this.selectedC = i.id
         }
       }
+      this.initGoogle()
     },
 
     //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
@@ -434,7 +425,7 @@ export default {
     //接受其他组件传递的事件
     getOtherEvent () {
       this.$root.eventHub.$on('initClassify', () => {
-        this.selectedC = -1
+        this.selectedC = 0
       })
 
       //优惠券点击更多的时候触发的事件
@@ -485,25 +476,23 @@ export default {
       } else {
         this.$router.push({path: '/'+ item.name})
       }
-      
     },
     coupons () {
       this.keyword = ''
-      this.$router.push({ path: '/'})
       this.selectedC = 0
-      this.$store.dispatch('setLevel', 0)
+      this.$router.push({ path: '/'})
     },
     trials () {
+      this.keyword = ''
       this.selectedC = 0
       this.$router.push({ path: '/trials/index' })
-      this.$store.dispatch('setLevel', 1)
     },
     ShowLoginDialog () {
-      // this.googleLogin()
+      this.googleLogin()
       this.loginform.email = getEmail()
-      if (getPass()) {
-        this.loginform.password = base64Decode(getPass())
-      }
+      // if (getPass()) {
+      //   this.loginform.password = base64Decode(getPass())
+      // }
       this.signDialog = false 
       this.loginDialog = true
      
@@ -546,11 +535,19 @@ export default {
       })
     },
     showDropdownLanguage () {
-      return
       setTimeout( () => {
         this.showDropdownL = !this.showDropdownL
         this.showDropdownC = false
         this.showDropdownU = false
+        this.initLanguage()
+      })
+    },
+    showDropdownLanguage1 () {
+      setTimeout( () => {
+        this.showDropdownL = true
+        this.showDropdownC = false
+        this.showDropdownU = false
+        this.initLanguage()
       })
     },
     showAllLanguage () {
@@ -560,7 +557,7 @@ export default {
       this.signSubmit('signform', () => {
         this.signloading = true
         this.signform.activate_url = location.protocol + '//' + location.host + '/#/activate/' + this.signform.email
-        sign(this.signform).then(res => {
+        this.$api.sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
@@ -568,6 +565,7 @@ export default {
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
+          this.$message.error(error.message)
           this.signloading = false
           console.error('sign fail' + error)
         })
@@ -590,6 +588,7 @@ export default {
             window.location.reload()
           })
         }).catch(err => {
+          this.$message.error(err.message)
           this.loginLoading = false
           console.log(err+ ' login2')
         })    
@@ -599,15 +598,15 @@ export default {
       this.signSubmit('resetform', () => {
         this.resetLoading = true
         this.resetform.url = location.protocol + '//' + location.host + '/#/resetpass/' + this.resetform.email + '/'
-        console.log(this.resetform)
-        retrievePassword(this.resetform).then(res => {
+        this.$api.retrievePassword(this.resetform).then(res => {
           console.log(res)
           if (res.code === 200) {
             this.resetLoading = false
             this.$notify.success('Please click the link to change the password')
           }
-        }).catch(() => {
+        }).catch(err => {
           this.resetLoading = false
+          this.$message.error(err.message)
         })
       })
     },
@@ -619,7 +618,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.initData()
       }).catch(error => {
@@ -628,7 +627,7 @@ export default {
     },
     //获取国家列表，携带货币符号，
     getUserCountryInfo () {
-      getUserCountry().then(res => {
+      this.$api.getUserCountry().then(res => {
         this.countryLists = res.data
       }).catch(error => {
         console.log(error)
@@ -637,11 +636,12 @@ export default {
 
     //google 登录
     googleLogin () {
+      var _this = this
       var startApp = function () {
         gapi.load('auth2', function (){
           // Retrieve the singleton for the GoogleAuth library and set up the client.
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-r2qme5tvr34qlbnq3qs5j5d3ohdqlopi.apps.googleusercontent.com',
+            client_id: '308959858897-kdhc3eecdh9v035qs7uodpuldfksmdmr.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             // Request scopes in addition to 'profile' and 'email'
             // scope: 'additional_scope'
@@ -653,7 +653,9 @@ export default {
       /**
      * Handle successful sign-ins.
      */
+      //google登录回调
       var onSuccess = function (user) {
+        console.log(this)
         var profile = user.getBasicProfile()
         console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
         console.log('Full Name: ' + profile.getName())
@@ -661,22 +663,21 @@ export default {
         console.log('Family Name: ' + profile.getFamilyName())
         console.log('Image URL: ' + profile.getImageUrl())
         console.log('Email: ' + profile.getEmail())
-        
         // document.getElementById('name').innerText = 'Signed in: ' + profile.getName()
     
         // The ID token you need to pass to your backend:
-        var id_token = user.getAuthResponse().id_token
-        console.log('ID Token: ' + id_token)
-    
-        var xhr = new XMLHttpRequest()
-        xhr.open('POST', 'http://dealsbank.com/api/v1/user/loginGoogle')
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-        xhr.onload = function () {
-          console.log('Signed in as: ' + xhr.responseText)
+        let data = {
+          client_id : '308959858897-kdhc3eecdh9v035qs7uodpuldfksmdmr.apps.googleusercontent.com',
+          user_id : profile.getId(),
+          email : profile.getEmail(),
+          id_token : user.getAuthResponse().id_token
         }
-        xhr.send('id_token=' + id_token)
+        _this.$api.loginGoogle(data).then(res => {
+          _this.loginCallback(res)
+        }).catch(err => {
+          console.log(err)
+        })  
       }
-
       /**
      * Handle sign-in failures.
      */
@@ -685,6 +686,109 @@ export default {
       }
     
       startApp()
+    },
+
+
+    //facebook 登录初始化
+    initGoogle () {
+      // Load the SDK asynchronously
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s); js.id = id
+        js.src = 'https://connect.facebook.net/en_US/sdk.js'
+        fjs.parentNode.insertBefore(js, fjs)
+      }(document, 'script', 'facebook-jssdk'))
+
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId      : '908467375968806',
+          cookie     : true,  // enable cookies to allow the server to access
+          // the session
+          xfbml      : true,  // parse social plugins on this page
+          version    : 'v2.11' // use graph api version 2.8
+        })
+      }
+    
+  
+    },
+
+    //facebook 登录回调函数
+    statusChangeCallback (response) {
+      console.log(this)
+      if (response.status === 'connected') {
+        // Logged into your app and Facebook.
+        console.log('Welcome!  Fetching your information.... ')
+        var user_id = response.authResponse.userID
+        var accessToken = response.authResponse.accessToken
+
+        // /me为API指定的调用方法，用于获取登陆用户相关信息
+        FB.api('/me?fields=name,first_name,last_name,email', response => {
+          if(response.email!=null){
+            var data = {
+              app_id: '908467375968806',
+              user_id: user_id,
+              email: response.email,
+              accessToken: accessToken
+            }
+            this.$api.loginFacebook(data).then(res => {
+              this.loginCallback(res)
+            }).catch(err => {
+              console.log(err)
+            })
+
+          }else{
+            console.log('获取登陆用户相关信息失败！')
+          }
+          console.log('Successful login for: ' + response.name)
+        })
+      }
+    },
+
+    //登录facebook 按钮
+    loginFacebook () {
+      FB.login((response) => { 
+        this.statusChangeCallback(response)  //登录回调函数
+      },{scope: 'email'})  //需要获取的信息scope
+    },
+
+    //第三方登录回调
+    loginCallback (res) {
+      console.log(res)
+      if(res.code == 200){
+        console.log(res)  
+        let api_token = res.data.api_token
+        let user_id = res.data.user_id
+        setToken(api_token)
+        setUserId(user_id )
+        this.$api.updateLogin({'api_token': api_token, 'user_id': user_id})
+        this.$store.dispatch('GetInfo').then(res => {
+          console.log(res)
+          if (res.code === 200) {
+            window.location.reload()
+          }
+        })         
+      }
+    },
+
+    //语言翻译
+    initLanguage () {
+      // Load the SDK asynchronously
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s) 
+        js.id = id
+        js.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
+        fjs.parentNode.insertBefore(js, fjs)
+      }(document, 'script', 'google-translate'))
+
+      window.googleTranslateElementInit = function  () {
+        new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element')
+      }
+
+     
+
     }
   }
 }
@@ -727,13 +831,14 @@ export default {
           height: inherit;
         }
         .inline-b {
-          display: inline-block;
+          float: left;
           margin-right: 1rem;
         }
         .login-y {
           position: relative;
           margin-right: 1px;
           top: -1px;
+          width: 15%;
           text-align: center;
           cursor: pointer;
           min-width: 10px;
@@ -754,6 +859,7 @@ export default {
                   padding-left: 10px;
                   height: 32px;
                   line-height: 32px;
+                  overflow: hidden;
                   &:hover {
                     background: #3a4853;
                   }
@@ -817,18 +923,25 @@ export default {
           }
           &.country {
             top: -2px;
-            width: 6.27rem;
+            width: 10%;
             font-size: 0.833rem;
+            .country-span {
+              width: 100%;
+              overflow: hidden;
+            }
             .dropdown {
               width: 130%;
               left: -30%;
-             
             }
           }
           &.language {
             top: -2px;
-            width: 7.27rem;
+            width: 12%;
             font-size:  0.833rem;
+            .language-span {
+              width: 100%;
+              overflow: hidden;
+            }
             .dropdown {
               width: 130%;
               left: -30%;
@@ -907,6 +1020,10 @@ export default {
         .coupons {
           font-weight: bold;
           color: #c1c1c1;
+          text-align: center;
+          overflow: hidden;
+          width: 10%;
+          height: 70px;
           &:hover {
             color: white;
           }
@@ -919,8 +1036,9 @@ export default {
         }
         .search {
           .p(r);
-          width: 32rem;
+          width: 35%;
           height: 36px;
+          top: 17px;
           margin-right: 0.90rem;
           input {
             .el-input-self;
@@ -933,7 +1051,7 @@ export default {
           .icon-search {
             .p(a);
             right: 10px;
-            top: 0;
+            top: -15px;
             color: #999;
             font-size: 16px;
             cursor: pointer;
@@ -953,6 +1071,8 @@ export default {
           font-size: 0.78rem;
           font-weight: bold;
           text-align: center;
+          position: relative;
+          top: 17px;
         }
         .login {
           // font-family: Arial, Helvetica, sans-serif;
@@ -960,6 +1080,7 @@ export default {
           border-color: white;
           color: black;
           margin-left: 0;
+          margin-right: 1rem;
           &:hover {
             background: darken(white, 10%);
             border-color: darken(white, 10%);

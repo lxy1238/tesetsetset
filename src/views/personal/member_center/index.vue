@@ -10,7 +10,7 @@
       <div class="about-me">
         <div class="avatar">
           <img v-if="userData.base.avatar_img" class="avatar-img" :src="userData.base.avatar_img" alt="">
-          <img v-else src="../../../assets/user.png" />
+          <img v-else src="../../../assets/user.png" class="avatar-img" />
         </div>
         <div class="personal-info">
           <div class="name-level">
@@ -33,31 +33,31 @@
         My Statistics
       </div>
       <div class="statistics clearfix">
-        <div class="statistics-child">
-          <span class="count" @click="gotoAnotherRouter('/posted/coupons')">{{userData.account.coupon_posteds}}</span>
+        <div class="statistics-child"  v-if="roles[0] == 'celebrity' || roles[0] == 'merchant' ">
+          <span class="count" @click="gotoAnotherRouter('/posted/coupons', userData.account.coupon_posteds)">{{userData.account.coupon_posteds}}</span>
           <p>Coupons posted</p>
         </div>
-        <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/posted/trials')" >{{userData.account.trial_posteds}}</span>
+        <div class="statistics-child" v-if="roles[0] == 'merchant'">
+          <span class="count"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
           <p>Trials posted</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my_coupons/index')">{{userData.account.coupons}}</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
           <p>My Coupons</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my_trials/index')">{{userData.account.trials}}</span>
+          <span class="count"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
           <p>My Trials</p>
         </div>
-        <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/promotion/index')">{{userData.account.promotions}}</span>
+        <div class="statistics-child last">
+          <span class="count"  @click="gotoAnotherRouter('/personal/promotion/index', userData.account.promotions)">{{userData.account.promotions}}</span>
           <p>My Promotions</p>
         </div>
-        <div class="statistics-child last">
+        <!-- <div class="statistics-child last">
           <span class="count invite-friends">{{userData.account.invite_friends}}</span>
           <p>Invite friends</p>
         </div>
-        
+         -->
       </div>
       <div class="title-sm">
         My Wallet
@@ -88,7 +88,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getInfo } from '@/api/login.js'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { timestampFormat } from '@/utils/date'
@@ -103,20 +102,10 @@ export default {
       },
       getInfoRequest: {
         api_token: getToken(),
-        user_id: getUserId()
+        user_id: getUserId(),
+        country_id: getStore('country_id') || 1
       }
     }
-  },
-  mounted () {
-    getInfo(this.getInfoRequest)
-      .then(res => {
-        this.userData.account = res.data.account
-        this.userData.base = res.data.base
-        this.userData.joined_date = timestampFormat(res.data.joined_date)
-      })
-      .catch(error => {
-        console.log(error + ' getInfo member')
-      })
   },
   computed: {
     ...mapGetters(['username', 'token', 'roles', 'user_id']),
@@ -124,9 +113,22 @@ export default {
       return getStore('currency') || '$'
     }
   },
+  mounted () {
+    this.init()
+  },
   methods: {
+    init () {
+      this.$store.dispatch('GetInfo').then(res => {
+        this.userData.account = res.data.account
+        this.userData.base = res.data.base
+        this.userData.joined_date = timestampFormat(res.data.joined_date)
+      })
+    },
     //路由跳转
-    gotoAnotherRouter (url) {
+    gotoAnotherRouter (url, account) {
+      if (account === 0) {
+        return
+      }
       this.$router.push({ path: url })
     },
 

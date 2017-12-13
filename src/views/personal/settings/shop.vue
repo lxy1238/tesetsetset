@@ -83,8 +83,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-
-import { getPlatformCate, addStore, showStore } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'store_settings',
@@ -120,7 +118,7 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         page: 1,
-        page_size: '5'
+        page_size: ''
       }
     }
   },
@@ -142,7 +140,7 @@ export default {
 
     //平台初始化
     getPlatformCateInfo () {
-      getPlatformCate(this.reqPlatformData).then(res => {
+      this.$api.getPlatformCate(this.reqPlatformData).then(res => {
         console.log(res)
         this.optionsWebsite = res.data
       })
@@ -157,7 +155,7 @@ export default {
     },
     //显示列表
     getStoreList () {
-      showStore(this.reqStoreData).then(res => {
+      this.$api.showStore(this.reqStoreData).then(res => {
         console.log(res)
         this.trLists = res.data.data
       })
@@ -168,10 +166,9 @@ export default {
       this.addStoreDialog = true
     },
 
-    //新增店铺数据获取
+    //新增店铺提交 数据获取
     addStoreSubmit (data) {
-      console.log(data)
-      addStore(data).then(res => {
+      this.$api.addStore(data).then(res => {
         if (res.code === 200) {
           this.$notify.success('add store success!')
           this.addStoreDialog = false

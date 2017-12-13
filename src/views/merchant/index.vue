@@ -34,10 +34,12 @@
             @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-left">${{couponsDetails.product_price}}</span>
-            <span class="price-right">${{couponsDetails.discount_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
           </p>
-          <p class="coupons content"><span>Commissions</span> <span class="com-right">{{couponsDetails.discount_rate}}%</span></p>
+          <p class="price content">
+            <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>
+            <span class="price-right-bottom"> {{couponsDetails.discount_rate}}% <i>off</i></span>
+          </p>
           </template>
          <template slot="btn">
            View Coupons
@@ -57,8 +59,8 @@
 <script>
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { postedUserInfo ,getAllCoupons } from '@/api/login'
 import { timestampFormat } from '@/utils/date'
+import { getStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   name: 'page_index',
@@ -76,9 +78,9 @@ export default {
         type: '',
         username: '',
       },
-      arrcouponsDetails: [
-      ],
+      arrcouponsDetails: [],
       requestCouponData: {
+        country_id: getStore('country_id') || 1,
         user_id: '',
         menu_id: '',
         page: 1,
@@ -87,6 +89,11 @@ export default {
       requestUserData: {
         user_id: ''
       }
+    }
+  },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
     }
   },
   components: {
@@ -123,7 +130,7 @@ export default {
 
     //获取发布人的信息
     getPostUserInfo () {
-      postedUserInfo (this.requestCouponData).then(res => {
+      this.$api.postedUserInfo (this.requestCouponData).then(res => {
         console.log(res)
         res.data.joined_date = timestampFormat(res.data.joined_date)
         this.userInfo = res.data
@@ -134,7 +141,7 @@ export default {
 
     //获取用户发布的优惠券信息
     getUserCouponInfo () {
-      getAllCoupons(this.requestCouponData).then(res => {
+      this.$api.getAllCoupons(this.requestCouponData).then(res => {
         if (res.code === 200) {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page

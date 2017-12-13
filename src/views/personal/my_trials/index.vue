@@ -14,33 +14,32 @@
         <div class="tabs-body">
           <div v-if="selected == 0" class="content">
             <div class="wait-order">
-              <div class="order" v-for="(n, index) in 3" :class="{last: index == 2}">
-                <img class="order-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+              <div class="order" v-for="(item, index) in orderDetails0" :class="{last: index == 2}" v-if="!item.isExpried">
+                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                  <div class="order-title">STATE Geo Mesh CoidGeoMesh Cold Shoulder
-                  Shift Dress </div>
+                  <div class="order-title">{{item.trials.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.trials.product_price}}</i>
                     </span>
                     <span>
                       <label>Shipping fee: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
                     </span>
                     <span>
                       <label>Refund: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.trials.refund_price}}</i>
                     </span>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <el-input class="footer-input"></el-input>
-                    <button type="button">Save</button>
+                    <el-input class="footer-input" v-model="item.order_number"></el-input>
+                    <button type="button" @click="submitOrderNumber(item, $event)">Save</button>
                   </div>
                 </div>
                 <div class="right-content">
-                  <p> <i class="iconfont icon-icon-test"></i> Ends in <strong>3</strong> days <strong>16</strong> hours <strong>52</strong> minutes</p>
+                  <p> Count down: {{item.countDownData.hours}}:{{item.countDownData.minutes}}:{{item.countDownData.seconds}} </p>
                   <p>If the order number is not submitted within
                     the allowed time, your trial qualification will
                     be canceled.</p>
@@ -57,54 +56,53 @@
           </div>
           <div v-if="selected == 1" class="content">
             <div class="wait-order">
-             <div class="order" v-for="(n, index) in 3" :class="{last: index == 2}">
-               <img class="order-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+             <div class="order" v-for="(item, index) in orderDetails1" :class="{last: index == 2}">
+               <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                  <div class="order-title">STATE Geo Mesh CoidGeoMesh Cold Shoulder
-                  Shift Dress </div>
+                  <div class="order-title">{{item.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.product_price}}</i>
                     </span>
                     <span>
                       <label>Shipping fee: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span>
                       <label>Refund: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.refund_price}}</i>
                     </span>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <span class="footer-span" v-if="true">1119-3333-4446-0305</span>
-                    <el-input v-else class="footer-input"></el-input>
+                    <span class="footer-span" v-if="item.Modify">{{item.order_number}}</span>
+                    <el-input v-else class="footer-input" v-model="item.order_number"></el-input>
 
-                    <button v-if="true" type="button">Modity</button>
-                    <button v-else type="button">Save</button>
+                    <button v-if="item.Modify" type="button" @click="modifyOrderBtn(item)">Modity</button>
+                    <button v-else type="button" @click="editOrderNumberBtn(item, $event)">Save</button>
                   </div>
                 </div>
                 <div class="right-content">
-                  <template v-if="false">  
+                  <template v-if="item.status === 0 &&  !item.modifyUrl">  
                     <div class="footer">
                       <span class="footer-span">Review URL:</span>
-                      <el-input class="footer-input"></el-input>
-                      <button type="button">Save</button>
+                      <el-input class="footer-input" v-model="item.appraise_url_input"></el-input>
+                      <button type="button" @click="submitAppraiseUrl(item)">Save</button>
                     </div>
-                    <p>Please upload your review within 20 business days after 
+                    <p>Please upload your review within 30 business days after 
                       ordering and submit the link address for the review, 
                       otherwise your money will not the returned.</p>
                   </template>
-                  <template v-else-if="false">
+                  <template v-else-if="item.status === 0  && item.modifyUrl">
                     <div class="pending">
                       <span class="pending-l">Pending</span>
                     </div>
                     <div class="pending">
-                      <a  href="#" >View</a>
+                      <a  href="javascript:void(0);" target="_blank" @click="viewApprise(item.appraise_url)">View</a>
                     </div>
                     <div class="pending">
-                      <button type="button">Modity</button>
+                      <button type="button" @click="modifyUrlBtn(item)">Modity</button>
                     </div>
                   </template>
                   <template v-else>
@@ -120,7 +118,7 @@
                       <a  href="#" >View</a>
                     </div>
                     <div class="pending">
-                      <button type="button">Modity</button>
+                      <button type="button" @click="modifyUrlBtn(item)">Modity</button>
                     </div>
                   </template>
                 </div>
@@ -135,28 +133,27 @@
           </div>
           <div v-if="selected == 2" class="content">
             <div class="wait-order">
-              <div class="order" v-for="(n, index) in 3" :class="{last: index == 2}">
-                <img class="order-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+              <div class="order" v-for="(item, index) in orderDetails2" :class="{last: index == 2}">
+               <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                  <div class="order-title">STATE Geo Mesh CoidGeoMesh Cold Shoulder
-                  Shift Dress </div>
+                  <div class="order-title">{{item.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.product_price}}</i>
                     </span>
                     <span>
                       <label>Shipping fee: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span>
                       <label>Refund: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.refund_price}}</i>
                     </span>
                   </div>
                    <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <span class="footer-span" v-if="true">1119-3333-4446-0305</span>
+                    <span class="footer-span" v-if="true">{{item.order_number}}</span>
                   </div>
                 </div>
                 <div class="right-content">
@@ -191,28 +188,27 @@
           </div>
           <div v-if="selected == 3" class="content">
             <div class="wait-order">
-              <div class="order" v-for="(n, index) in 3" :class="{last: index == 2}">
-                <img class="order-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+              <div class="order" v-for="(item, index) in orderDetails3" :class="{last: index == 2}">
+                <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                  <div class="order-title">STATE Geo Mesh CoidGeoMesh Cold Shoulder
-                  Shift Dress </div>
+                 <div class="order-title">{{item.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.product_price}}</i>
                     </span>
                     <span>
                       <label>Shipping fee: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span>
                       <label>Refund: </label>
-                      <i>$196.00</i>
+                      <i>{{currency}}{{item.refund_price}}</i>
                     </span>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <span class="footer-span" v-if="true">1119-3333-4446-0305</span>
+                    <span class="footer-span" v-if="true">{{item.order_number}}</span>
                   </div>
                 </div>
                 <div class="right-content expired">
@@ -236,6 +232,9 @@ you will exceed the time limit of task.</p>
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
+import { getToken, getUserId } from '@/utils/auth'
+import { getTimeDetail } from '@/utils/date.js'
+import { getStore } from '@/utils/utils'
 export default {
   name: 'my_trials',
   components: {
@@ -249,14 +248,199 @@ export default {
       selected: 0,
       allpage: undefined,
       showItem: 7,
-      value5: 3.6
+      value5: 3.6,
+      isExpried: false,
+      countDownData: {},
+      orderDetails0: [],
+      orderDetails1: [],
+      orderDetails2: [],
+      orderDetails3: [],
+      reqSuccedDetailsData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
+      },
+      reqAddOrderData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        id: '',
+        order_number: ''
+      },
+      reqReviewData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
+        page: 1,
+        page_size: 3
+      }
 
     }
   },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
+    }
+  },
+  mounted () {
+    this.init()
+  },
   methods: {
+    init () {
+      this.gotoPanel()
+      this.getWaitingData()
+      this.getReviewInfo()
+      this.getCompleteInfo()
+      this.getExpiredInfo()
+    },
+    initData () {
+      
+    },
+
+    //获取第一个列表信息
+    getWaitingData () {
+      this.$api.userApplySucced(this.reqSuccedDetailsData).then(res => {
+        this.orderDetails0 = res.data
+        for (let i of this.orderDetails0) {
+          let expiry_time = getTimeDetail(i.expiry_time)
+          i.countDownData = expiry_time
+          i.countDownData = expiry_time
+          i.countDown = i.expiry_time
+          this.countDown(i)
+        }
+      }).catch(err => { 
+        console.log(err)
+      })
+    },
+    //定时器，时间倒计时
+    countDown (i) {
+      let timer = null
+      timer = setInterval(() => {
+        let expiry_time1 = getTimeDetail(i.countDown)
+        i.countDownData = expiry_time1
+        this.refresh(this.orderDetails0)
+        if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+          clearInterval(timer)
+          i.isExpried = true
+        }
+      }, 1000)
+    },
+    //提交订单 号码
+    submitOrderNumber (item, e) {
+      e.target.disabled = true
+      this.reqAddOrderData.id = item.id
+      this.reqAddOrderData.order_number = item.order_number
+      if (!this.reqAddOrderData.order_number) {
+        return
+      }
+      this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
+        if (res.code === 200) {
+          this.selected = 1
+        }
+        e.target.disabled = false
+      }).catch(() => {
+        e.target.disabled = false
+      })
+    },
+
+    //review
+    getReviewInfo () {
+      this.$api.userTrialOrder(this.reqReviewData).then(res => {
+        this.orderDetails1 = res.data.data
+        for (let i of this.orderDetails1) {
+          i.Modify = true
+          if (i.appraise_url) {
+            i.modifyUrl = true
+            i.appraise_url_input = i.appraise_url
+          }
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+
+    //修改按钮变成save 按钮
+    modifyOrderBtn (item) {
+      item.Modify = false
+      this.refresh(this.orderDetails1)
+    },
+    //修改订单号
+    editOrderNumberBtn (item, e) {
+      e.target.disabled = true
+      this.reqAddOrderData.order_id = item.id
+      this.reqAddOrderData.order_number = item.order_number
+      this.$api.userOrderNumber(this.reqAddOrderData).then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          e.target.disabled = false
+          this.getReviewInfo()
+        }
+      }).catch(() => {
+        e.target.disabled = false
+      })
+    },
+
+    //提交review url
+    submitAppraiseUrl (item) {
+      if (!item.appraise_url_input) {
+        return
+      }
+      let reqData =  {
+        api_token: getToken(),
+        user_id: getUserId(),
+        order_id: '',
+        appraise_url: '',
+      }
+      reqData.order_id = item.id
+      reqData.appraise_url = item.appraise_url_input
+      console.log(reqData)
+      this.$api.userAppraiseUrl(reqData).then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          this.getReviewInfo()
+        }
+      })
+    },
+
+    //点击modify按钮
+    modifyUrlBtn (item) {
+      item.modifyUrl = false
+      this.refresh(this.orderDetails1)
+    },  
+    viewApprise (url) {
+      if (url.search('http://') < 0) {
+        window.open('http://' + url)
+      }
+      window.open(url)
+    },
+    
+    //userApplyFinish  完成详情展示
+    getCompleteInfo () {
+      this.$api.userApplyFinish(this.reqSuccedDetailsData).then(res => {
+        this.orderDetails2 = res.data.data
+      })
+    },
+
+    //userApplyFinish  订单过期信息展示
+    getExpiredInfo () {
+      this.$api.userApplyExpired(this.reqSuccedDetailsData).then(res => {
+        console.log(res)
+        this.orderDetails3 = res.data.data
+      })
+    },
+    //进入页面之后判断跳转到哪个页面
+    gotoPanel () {
+      if (this.$route.query.status) {
+        this.selectTabs(parseInt(this.$route.query.status))
+      }
+    },
+
     selectTabs (index) {
       this.selected = index
     },
+    refresh (array) {
+      array.push(0)
+      array.pop()
+    } ,
     test (i) {
       console.log(i)
     }
@@ -326,7 +510,9 @@ export default {
               height: 118px;
               .order-title {
                 color: #333;
-                font-size: 0.89rem;
+                font-size: 12px;
+                height: 24px;
+                overflow: hidden;
                 margin-bottom: 20px;
                 width: 80%;
               }

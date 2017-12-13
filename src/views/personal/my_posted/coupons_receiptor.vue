@@ -27,7 +27,7 @@
               <a href="javascript:void(0);" >Electronics</a>
             </td>
             <td class="prcie">
-              <div>${{couponsDetails.product_price}}</div>
+              <div>{{currency}}{{couponsDetails.product_price}}</div>
             </td>
             <td class="discount">
               <div>{{couponsDetails.discount_rate}}%</div>
@@ -43,6 +43,9 @@
             <td class="coupon-code">
               <div>{{couponsDetails.coupon_code}}</div>
             </td>
+          </tr>
+          <tr v-if="trLists.length === 0">
+            <td colspan="10">No Data</td>
           </tr>
         </tbody>
       </table>
@@ -61,8 +64,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { mapGetters } from 'vuex'
-import { pickCoupons } from '@/api/login'
 import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 export default {
@@ -80,35 +81,7 @@ export default {
       ],
       trLists: [
         {
-          user_id: undefined, // 用户ID ， 是，
-          user_name: '', // 发布用户名称， 是
-          category_id: 1, // 所属分类 , 是   int
-          country: '美国', // 国家  是
-          website: '亚马逊2', // 平台   是
-
-          product_reason: 'This is a product I like very much', //产品描述  是
-          use_type: 'Unlimited',
-          reward_type: '1.5', //PerOrder:按每订单奖励,
-          product_price: '65', //商品价格
-          shipping_fee: '1.11', //运费   否
-          discount_rate: '12%', //折扣率    否
-          valid_date: new Date(), //到期时间  int
-
-          quantity_per_day: '10', // 每天上限数量 int
-          influencer_reward: '1.5', // 推荐费用/每个
-          platform_fee: '2.2', //支付平台费用/每个
-          influencer_reward_count: '66', //推荐总费用
-          platform_reward: '55', //  支付平台总费用， 否
-          total_fee: '123', //总费用
-
-          product_title: 'this is project', // 商品标题   是 ，
-          product_img: 'http://www.ghostxy.top/dealsbank/img/01.png', // 产品图片， string, 用逗号拼接 , 否
-          coupon_id: 1,
-          total_receiptor: 365,
-          username: 'Skyer', //领取人
-          coupon_code: 'QAKLWEFALWEKFJ', //优惠券
-          applied_date: new Date(), //领取时间
-          status: 1
+        
         }
       ],
       allpage: undefined,
@@ -136,46 +109,36 @@ export default {
     pagination
   },
   computed: {
-    ...mapGetters(['token', 'user_id'])
+    currency () {
+      return getStore('currency') || '$'
+    }
   },
   mounted () {
-    this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
-    console.log(this.requestdata)
-    var couponsDetails = JSON.parse(getStore('couponDetails'))
-    for (var i in this.couponsDetails) {
-      this.couponsDetails[i] = couponsDetails[i]
-    }
-    pickCoupons(this.requestdata)
-      .then(res => {
-        this.trLists = res.data.data
-        this.allpage = res.data.last_page
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    this.init()
   },
   //组件销毁前执行的回调
   beforeDestroy () {
     removeStore('couponDetails')
   },
   methods: {
-    //分页跳转
-    gotoPage (i) {
-      this.requestdata.page = i
-      pickCoupons(this.requestdata).then(res => {
-        this.trLists = res.data.data
-        this.allpage = res.data.last_page
-      })
+    //初始化
+    init () {
+      this.initData()
+      this.getPickCoupons()
+    },
+    initData () {
+      this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
+      var couponsDetails = JSON.parse(getStore('couponDetails'))
+      console.log(couponsDetails)
+      for (var i in this.couponsDetails) {
+        this.couponsDetails[i] = couponsDetails[i]
+      }
+      this.couponsDetails.coupon_code = `****${this.couponsDetails.coupon_code.slice(-4)}`
     },
 
-    //发布的优惠券查询
-    postedCouponsSearch () {
-      if (this.daterange.length) {
-        this.requestdata.start_time = this.daterange[0]
-        this.requestdata.end_time = this.daterange[1]
-      }
-      console.log(this.requestdata)
-      pickCoupons(this.requestdata)
+    //获取领取人列表信息
+    getPickCoupons () {
+      this.$api.pickCoupons(this.requestdata)
         .then(res => {
           console.log(res)
           this.trLists = res.data.data
@@ -184,6 +147,26 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    //分页跳转
+    gotoPage (i) {
+      this.requestdata.page = i
+      this.requestdata.start_time = ''
+      this.requestdata.end_time = ''
+      this.getPickCoupons()
+    },
+
+    //发布的优惠券查询
+    postedCouponsSearch () {
+      if (!this.daterange[0]) {
+        this.requestdata.start_time = ''
+        this.requestdata.end_time = ''
+        //对日期做处理，加上八个小时
+      } else {
+        this.requestdata.start_time = new Date(this.daterange[0].getTime() + 8 * 3600 * 1000) 
+        this.requestdata.end_time = new Date(this.daterange[1].getTime() + 8 * 3600 * 1000) 
+      }
+      this.getPickCoupons()
     },
 
     //跳转到优惠券详情页面

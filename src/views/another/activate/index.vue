@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { userActivate, updateLogin } from '@/api/login'
 import { setToken, setUserId, setEmail } from '@/utils/auth'
 export default {
   name: 'activate',
@@ -16,10 +15,10 @@ export default {
     }
   },
   mounted () {
-    userActivate({'email': this.$route.params.email}).then(res => {
+    this.$api.userActivate({'email': this.$route.params.email}).then(res => {
       var timer = null
       if (res.code === 200) {
-        updateLogin({'api_token': res.data.api_token,'user_id': res.data.id}).then(() => {
+        this.$api.updateLogin({'api_token': res.data.api_token,'user_id': res.data.id}).then(() => {
         }).catch(error => {
           console.log('登录记录更新失败' + error)
         })
@@ -36,7 +35,6 @@ export default {
             })
           }
         }, 1000)
-         
       }
     })
   }

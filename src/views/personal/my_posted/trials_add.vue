@@ -43,10 +43,14 @@
           </el-select>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-          <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')"></el-input>
+          <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')">
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-          <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')"></el-input>
+          <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" placeholder="Default free freight">
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="Image" prop="product_img_s" >
           <el-upload 
@@ -114,18 +118,18 @@
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-        <el-input v-model.number="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
+        <el-input v-model="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
       </el-form-item>
     
       <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
-        <el-input v-model.number="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
+        <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
       <el-form-item label="Is Full Return: " class="item-inline1" >
         <el-radio class="radio" v-model="trialsForm.full_refund" label="1" >yes</el-radio>
         <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >no</el-radio>
       </el-form-item>
       <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
-        <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('return_fee')"></el-input>
+        <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('refund_price')"></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
@@ -137,7 +141,7 @@
     </div>
     
     <el-form-item class="footer-btn" >
-      <button type="button" class="save" @click="trialsSave">Save</button>
+      <button type="button" class="save" @click="Submit($event)">Save</button>
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -146,7 +150,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getPlatformCate, uploadImg, trialsAdd, getHeadCateList, trialsStore, trialEditDetail, editTrial } from '@/api/login'
 import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
@@ -171,7 +174,7 @@ export default {
       isEditorData: true,
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
-        product_url: 'https://www.amazon.com/Braun-MGK3040-Trimming-Grooming-Precision/dp/B01M5FRLLS/ref=lp_17474487011_1_2_s_it?s=beauty&ie=UTF8&qid=1512548077&sr=1-2&th=1',
+        product_url: '',
         product_title: 'this is titie of trials',
         product_reason: 'this is reason of trials',
         specifications: 'this is specifications of trials',
@@ -179,15 +182,15 @@ export default {
         menu_id: '',     // 所属分类 , 是   int
         user_store_id: '',        // int
         product_price: '88.00',      //产品价格
-        shipping_fee: '1.2',                       //运费
+        shipping_fee: '',                       //运费
         product_img: [],                        //产品图片
         product_img_s: [{url: 'https://images-na.ssl-images-amazon.com/images/I/5194nZpL9ZL._SL160_.jpg'}],
-        product_details: '<div></div>',
+        product_details: 'details',
         active_date: [],
         start_time: '',
         end_time: '',
-        quantity_per_day: 10,                //每天上限数量 int
-        total_quantity: 1000 ,                 //发行总量
+        quantity_per_day: '',                //每天上限数量 int
+        total_quantity: '' ,                 //发行总量
         full_refund: '1',
         
         return_fee: '',
@@ -214,9 +217,6 @@ export default {
         product_price: [
           {required: true ,message: 'product price is required, Must be Numbers', trigger: 'blur'}
         ],
-        shipping_fee: [
-          {required: true ,message: 'shipping fee is required , Must be Numbers', trigger: 'blur'}
-        ],
         product_img_s: [
           {
             type: 'array',
@@ -241,10 +241,10 @@ export default {
           {type: 'array',required: true ,message: 'active date is required', trigger: 'change'}
         ],
         quantity_per_day: [
-          {type: 'number', required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
+          { required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
         ],
         total_quantity: [
-          {type: 'number', required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
+          { required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
         ]
       },
       fileList2: [
@@ -267,9 +267,7 @@ export default {
 
     }
   },
-  mounted () {
-    this.init()
-  },
+
   computed : {
     ...mapGetters([
       'token',
@@ -327,6 +325,9 @@ export default {
       return NumAdd(this.refund, this.platform_fee)
     }
   },  
+  mounted () {
+    this.init()
+  },
   methods: {
 
     // 初始化操作
@@ -347,7 +348,7 @@ export default {
     },
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.optionsCategory = res.data
       }).catch(error => {
         console.log(error)
@@ -355,7 +356,7 @@ export default {
     },
     //获取店铺列表
     getTrialsStore () {
-      trialsStore(this.requestStoreData).then(res => {
+      this.$api.trialsStore(this.requestStoreData).then(res => {
         this.optionsStore = res.data
       }).catch(error => {
         console.log(error)
@@ -412,7 +413,7 @@ export default {
     //获取平台品类信息
     getPlatformCateInfo () {
       this.optionsWebsite = []
-      getPlatformCate(this.requestData)
+      this.$api.getPlatformCate(this.requestData)
         .then(res => {
           console.log(res.data) 
           if(res.data.length <= 0) {return}
@@ -486,7 +487,7 @@ export default {
         formData.append('api_token', getToken())
         formData.append('user_id', getUserId())
         formData.append('file', file)
-        uploadImg(formData)
+        this.$api.uploadImg(formData)
           .then(res => {
             console.log(res)
             this.trialsForm.product_img_s.push({ url: res.data })
@@ -505,7 +506,7 @@ export default {
     issueCoupon (data) {
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
-        editTrial(data).then(res => {
+        this.$api.editTrial(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
             this.$router.push({ path: '/posted/trials' })
@@ -514,7 +515,7 @@ export default {
           console.log(error)
         })
       } else {
-        trialsAdd (data)
+        this.$api.trialsAdd (data)
           .then(res => {
             if (res.code === 200) {
               this.$notify.success('issue coupon success')
@@ -526,11 +527,12 @@ export default {
           })
       } 
     },
-    Submit () {
+    Submit (e) {
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['trialsForm'].validate(valid => {
         if (valid) {
+          e.target.disabled = true
           for (var i in this.trialsForm) {
             this.trialsFormSubmit[i] = this.trialsForm[i]
           }
@@ -546,8 +548,12 @@ export default {
           this.trialsFormSubmit.product_img = imgArr
           var markupStr = $('#summernote').summernote('code')
           this.trialsFormSubmit.product_details = markupStr
+          this.trialsForm.product_details = markupStr
+          if (!markupStr) {
+            return
+          }
           console.log(this.trialsFormSubmit)
-          // this.issueCoupon(this.trialsFormSubmit)
+          this.issueCoupon(this.trialsFormSubmit)
         } else {
           console.log('error submit!!')
           return false
@@ -558,13 +564,7 @@ export default {
     Cancel () {
       this.$router.go(-1)
     },
-    trialsSave () {
-      //获取内容
-      this.Submit()
-      //插入内容
-      //  $('#summernote').summernote('code', '<div>aefawe</div>')
-      console.log(this.trialsFormSubmit)
-    },
+  
 
     //限制输入
     filterMoney (value) {
@@ -580,7 +580,8 @@ export default {
       }
       this.isEditorData = false
       this.trialDetailsrequestData.id = this.$route.query.editor
-      trialEditDetail(this.trialDetailsrequestData).then(res => {
+      console.log(this.trialDetailsrequestData)
+      this.$api.trialEditDetail(this.trialDetailsrequestData).then(res => {
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
         let newArr = []
         newArr[0] = new Date(res.data.start_time * 1000)
@@ -590,6 +591,8 @@ export default {
         this.trialsForm.api_token = getToken()
         this.trialsForm.user_id = getUserId()
         this.trialsForm.user_name = this.username
+        this.trialsForm.total_quantity = String(res.data.total_quantity)
+        this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
         $('#summernote').summernote('code', res.data.product_details)
       })

@@ -34,8 +34,6 @@
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
-import { getAllTrial, getHeadCateList } from '@/api/login'
-import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
 export default {
@@ -50,10 +48,10 @@ export default {
         name: 'Top Coupons'
       }],
       requestData: {
+        country_id: parseInt(getStore('country_id')) || 1,
         page: 1,
         page_size: '',
         menu_id: 0,
-        country_id: parseInt(getStore('country_id')) || 1,
         keyword: '',
       }
     }
@@ -131,7 +129,7 @@ export default {
       } else {
         this.requestData.menu_id = 0
       }
-      getAllTrial(this.requestData).then(res => {
+      this.$api.getAllTrial(this.requestData).then(res => {
         this.arrcouponsDetails = res.data.data
       }).catch(error => {
         console.log(error)
@@ -170,7 +168,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
       }).catch(error => {

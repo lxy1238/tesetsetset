@@ -24,11 +24,11 @@ export const constantRouterMap = [
       component: _import('trials/index')
     },
     {
-      path: '/coupons/:couponsId',
+      path: '/coupons/:couponsId/:countryId?',
       component: _import('coupons/index')
     },
     {
-      path: '/trialsDetails/:trialId',
+      path: '/trialsDetails/:trialId/:countryId?',
       component: _import('trials_details/index')
     },
     {
@@ -36,7 +36,7 @@ export const constantRouterMap = [
       component: _import('merchant/index')
     },
     {
-      path: '/successTrials/index',
+      path: '/successTrials/:trialId',
       component: _import('trials_details/apply_success')
     },
      
@@ -113,22 +113,22 @@ export const aboutRouterMap = [
     text: 'FAQs / Common Issues',
     children: [
       {
-        path: '/about/login_sign',
+        path: '/about/login-sign',
         text: '用户登录与注册',
         component: _import('about/fqa/login_sign'),
       },
       {
-        path: '/about/pick_coupons',
+        path: '/about/pick-coupons',
         text: '折扣券领取流程',
         component: _import('about/fqa/pick_coupons'),
       },
       {
-        path: '/about/coupon_promo',
+        path: '/about/coupon-promo',
         text: '折扣券营销推广',
         component: _import('about/fqa/coupon_promo')
       },
       {
-        path: '/about/trials_apply',
+        path: '/about/trials-apply',
         text: '试用品申请规则',
         component: _import('about/fqa/trials_apply')
       },
@@ -138,7 +138,7 @@ export const aboutRouterMap = [
         component: _import('about/fqa/release')
       },
       {
-        path: '/about/member_level',
+        path: '/about/member-level',
         text: '会员等级与积分',
         component: _import('about/fqa/member_level')
       },
@@ -247,8 +247,8 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/personal/my_coupons',
-    redirect: '/personal/my_coupons/index',
+    path: '/personal/my-coupons',
+    redirect: '/personal/my-coupons/index',
     component: p_center,
     text: 'My Coupons',
     hasChilds: false,
@@ -258,8 +258,8 @@ export const asyncRouterMap = [
     }]
   },
   {
-    path: '/personal/my_trials',
-    redirect: '/personal/my_trials/index',
+    path: '/personal/my-trials',
+    redirect: '/personal/my-trials/index',
     component: p_center,
     text: 'My Trials',
     hasChilds: false,
@@ -299,7 +299,7 @@ export const asyncRouterMap = [
       }
     ]
   },
-  // { path: '*', redirect: '/404/index', hidden: true }
+  { path: '*', redirect: '/404/index', hidden: true }
 ]
 
 

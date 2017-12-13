@@ -83,6 +83,20 @@ export const postedUserInfo = data => fetch({
   data: qs.stringify(data)
 })
 
+//google 登录
+export const loginGoogle = data => fetch({
+  url: '/api/v1/user/loginGoogle',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//用户公开信息  发布优惠券的人的信息获取， 不用登录校验就可以获取
+export const loginFacebook = data => fetch({
+  url: '/api/v1/user/loginFacebook',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 /*
@@ -200,6 +214,14 @@ export const editTemplate = data => fetch({
   data: qs.stringify(data)
 })
 
+//添加,设置 pid 
+
+export const userAlliancePID = data => fetch({
+  url: '/api/v1/user/user-alliance-PID',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 
@@ -248,6 +270,13 @@ export const getAllTrial = data => fetch({
   data: qs.stringify(data)
 })
 
+//用户申请试用品
+export const trialApply = data => fetch({
+  url: '/api/v1/trial/trial-apply',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 //显示试用品店铺列表
 export const trialsAdd = data => fetch({
   url: '/api/v1/trial/add',
@@ -286,9 +315,22 @@ export const addStore = data => fetch({
 })
 
 //显示店铺列表
-
 export const showStore = data => fetch({
   url: '/api/v1/user/show-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//试用品申请成功跳转页面
+export const userApplySucced = data => fetch({
+  url: '/api/v1/trial/user-apply-succed  ',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//提交试用品订单
+export const userAddOrderNumber = data => fetch({
+  url: '/api/v1/trial/user-add-order-number',
   method: 'POST',
   data: qs.stringify(data)
 })
@@ -322,14 +364,14 @@ export const trialDetele = data => fetch({
   data: qs.stringify(data)
 })
 
-//编辑优惠券
+//编辑试用品
 export const editTrial = data => fetch({
   url: '/api/v1/trial/edit',
   method: 'POST',
   data: qs.stringify(data)
 })
 
-//获取需要编辑的优惠券详情
+//获取需要编辑的试用品详情
 
 export const trialEditDetail = data => fetch({
   url: '/api/v1/trial/edit-detail',

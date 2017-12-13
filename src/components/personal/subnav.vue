@@ -3,7 +3,7 @@
    <div class="pages-content clearfix">
      <div class="subnav-l">
        <div class="nav">
-          <div class="nav-items" v-for="(items, index_p) in routers" :class="{last: index_p == routers.length}">
+          <div class="nav-items" v-for="(items, index_p) in routers" :class="{last: index_p == routers.length}" v-if="!items.hidden">
             <div class="nav-header" @click="clickHeader(items, index_p)">
               <router-link :to="items.path"  v-if="!items.hasChilds"  :class="{active: items.redirect == currentRouter}">
                 {{items.text}}
@@ -37,7 +37,6 @@ export default {
   name: 'subnav',
   data () {
     return {
-      isToggle: 1,
     }
   },
   props: {
@@ -49,6 +48,10 @@ export default {
     }
   },
   mounted () {
+    setTimeout(() => {
+      this.init()
+      console.log(this.routers)
+    }, 100)
   },
   computed : {
     ...mapGetters([
@@ -57,6 +60,18 @@ export default {
   },
   watch: {
     currentRouter: function (value) {
+      this.changeToggle(value)
+    }
+  },
+  methods: {
+
+    //进入初始化
+    init () {
+      this.changeToggle(this.currentRouter)
+    },
+
+    //栏目自动展开
+    changeToggle (value) {
       this.routers.forEach((parent) => {
         if (parent.children) {
           parent.children.forEach((e) => {
@@ -66,9 +81,9 @@ export default {
           })
         }
       })
-    }
-  },
-  methods: {
+    },
+
+    //点击父节点的时候展开收起
     clickHeader (items) {
       if (items.children) {
         items.isToggle = !items.isToggle
@@ -143,8 +158,6 @@ export default {
   .subnav-r {
     float: left;
     width: 74%;
-    // border: 1px solid #0072bc;
-    // height: 1000px;
   }
 
 }

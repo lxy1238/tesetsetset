@@ -9,11 +9,11 @@
     <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
-          <el-input class="url-input" v-model="couponsForm.product_url"  ></el-input>
+          <el-input class="url-input" v-model="couponsForm.product_url"  @blu="getPlatformCateInfo" ></el-input>
           <button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)">get</button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline" >
-          <el-select v-model="couponsForm.website"  @change="websiteChange" >
+          <el-select v-model="couponsForm.website"  @change="websiteChange">
             <el-option
               v-for="item in optionsWebsite"
               :key="item.label"
@@ -107,7 +107,7 @@
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
       <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
-        <template slot="append">%</template>
+        <!-- <template slot="prepend">%</template> -->
       </el-input>
     </el-form-item>
     <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
@@ -123,7 +123,7 @@
       <el-input type="textarea" v-model="couponsForm.coupon_code" v-else ></el-input> 
     </el-form-item>
     <el-form-item class="footer-btn" >
-      <button type="button" class="save" @click="Submit">Save</button>
+      <button type="button" class="save" @click="Submit($event)">Save</button>
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -133,7 +133,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { addCoupon, editorCoupon, uploadImg, getPlatformCate, editDetail, getHeadCateList } from '@/api/login'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { toTimestamp } from '@/utils/date'
@@ -212,7 +211,9 @@ export default {
       },
       options: [],
       select: '',
-      isEditorData: true
+      isEditorData: true,
+      //国家与要发布的产品链接是否一直
+      countryUrlIsRight: false
     }
   },
   components: {
@@ -244,7 +245,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.optionsCategory = res.data
       }).catch(error => {
         console.log(error)
@@ -253,13 +254,17 @@ export default {
 
     //通过输入链接获取所有产品信息
     getProInfo (url) {
-      this.$message.info('For information on goods, please wait a moment')
+      // this.$message.info('For information on goods, please wait a moment')
       axios.get('http://23.91.2.69/productsm/index.php/api/asin', {
         params: {
           url: url,
         }
       })
         .then( (res) =>{
+          console.log(res)
+          if (!res.data.data) {
+            this.$message.info('获取商品信息失败, 请查看链接是否正确！')
+          }
           this.getPlatformCateInfo()
           setTimeout(() => {
             let data = res.data.data
@@ -287,7 +292,7 @@ export default {
     //获取平台品类信息
     getPlatformCateInfo () {
       this.optionsWebsite = []
-      getPlatformCate(this.requestData)
+      this.$api.getPlatformCate(this.requestData)
         .then(res => {
           if(res.data.length <= 0) {return}
           for (let i of res.data) {
@@ -300,6 +305,9 @@ export default {
             this.optionsWebsite.push(ObjWebsite)
             if (this.couponsForm.product_url.search(i.url) >= 0) {
               this.couponsForm.website = i.website
+              this.countryUrlIsRight = true
+            } else {
+              this.$message.error('Only the products of the present country can be released')
             }
           }
         })
@@ -341,7 +349,7 @@ export default {
         formData.append('api_token', getToken())
         formData.append('user_id', getUserId())
         formData.append('file', file)
-        uploadImg(formData)
+        this.$api.uploadImg(formData)
           .then(res => {
             this.couponsForm.product_img_s.push({ url: res.data })
           })
@@ -358,7 +366,7 @@ export default {
     issueCoupon (data) {
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
-        editorCoupon(data).then(res => {
+        this.$api.editorCoupon(data).then(res => {
           if (res.code === 200) {
             this.$notify.success('issue coupon success')
             this.$router.push({ path: '/posted/coupons' })
@@ -367,7 +375,7 @@ export default {
           console.log(error)
         })
       } else {
-        addCoupon(data)
+        this.$api.addCoupon(data)
           .then(res => {
             if (res.code === 200) {
               this.$notify.success('issue coupon success')
@@ -379,11 +387,12 @@ export default {
           })
       }
     },
-    Submit () {
+    Submit (e) {
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['couponsForm'].validate(valid => {
         if (valid) {
+          e.target.disabled = true
           for (var i in this.couponsForm) {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }
@@ -393,6 +402,10 @@ export default {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
           console.log(this.couponsFormSubmit)
+          if (!this.countryUrlIsRight) {
+            this.$message.error('Only the products of the present country can be released')
+            return
+          }
           this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')
@@ -427,7 +440,7 @@ export default {
       }
       this.isEditorData = false
       this.couponDetailsrequestData.id = this.$route.query.editor
-      editDetail(this.couponDetailsrequestData).then(res => {
+      this.$api.editDetail(this.couponDetailsrequestData).then(res => {
         res.data.valid_date = new Date(res.data.valid_date * 1000)
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
         this.couponsForm = res.data

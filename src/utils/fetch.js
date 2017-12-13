@@ -32,27 +32,19 @@ service.interceptors.response.use(
     //请求响应之前可以对数据进行操作
     if (response.data.code !== 200 ) {
       console.log(response.data)
-      if (response.data.code !== 500) {
-        Message({
-          message: response.data.message,
-          type: 'error',
-          duration: 3 * 1000
-        })
-      }
       if (response.data.code === 500) {
-        MessageBox.confirm('You have logged in elsewhere, please log in again', 'log out', {
+        MessageBox.alert('You have logged in elsewhere, please log in again', 'log out', {
           confirmButtonText: 'confirm',
-          cancelButtonText: 'cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('LogOut').then(() => {
-            console.log('log out success！！')
-          })
+          callback: () => {
+            store.dispatch('LogOut').then(() => {
+              console.log('log out success！！')
+            })
+          }
         })
         console.log(response)
       }
       NProgress.done()
-      return Promise.reject('error')
+      return Promise.reject(response.data)
     } else {
       NProgress.done()
       return response.data

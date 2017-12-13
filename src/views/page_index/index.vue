@@ -14,10 +14,9 @@
             <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
           </p>
           <p class="price content">
-            <span class="price-left"><i>coupon</i> {{currency}}{{couponsDetails.discount_price}}</span>
-            <span class="price-right-bottom"> 35% <i>off</i></span>
+            <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>
+            <span class="price-right-bottom"> {{couponsDetails.discount_rate}}% <i>off</i></span>
           </p>
-          
           <!-- <el-tooltip  :visible-arrow="false" placement="top" effect="light">
              <div slot="content">Expected Commissions {{currency}} {{couponsDetails.commission_amount}}</div>
             <p class="coupons content" ><span>Commissions</span> <span class="com-right">{{couponsDetails.commission_ratio}}%</span></p>
@@ -41,8 +40,7 @@
 <script>
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { getAllCoupons, getInfo, getHeadCateList } from '@/api/login'
-import { getToken, getUserId } from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
 export default {
@@ -76,9 +74,9 @@ export default {
   beforeDestroy () {
     window.onresize = null
     this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
-    // this.$root.eventHub.$off('changeCountryId')
   },
   computed: {
+
     //导航条变化的时候触发查询需要展示商品的信息
     menu_name () {
       if (this.$route.params.menuId) {
@@ -108,6 +106,7 @@ export default {
     }
   },
   methods: {
+
     //初始化
     init () {
       this.requestData.keyword = this.$route.query.search
@@ -140,12 +139,12 @@ export default {
     //获取用户信息 ，判断首页的coupon是否加入推广
     getUserInfo () {
       if (getToken()) {
-        getInfo({ api_token: getToken(), user_id: getUserId() }).then(res => {
-          var newArr = []
+        this.$store.dispatch('GetInfo').then(res => {
+          var promotions = []
           for (var i of res.data.promotions) {
-            newArr.push(i.coupon_id)
+            promotions.push(i.coupon_id)
           }
-          this.userPromotions = newArr
+          this.userPromotions = promotions
         })
       }
     },
@@ -154,19 +153,18 @@ export default {
     getAllCouponsInfo () {
       this.arrcouponsDetails = []
       if (this.$route.params.menuId) {
+        this.requestData.menu_id = 0
         for (var i of this.classifyList) {
           if (i.name === this.$route.params.menuId) {
             this.selectedC = i.id
             this.requestData.menu_id = i.id
-            this.$router.push({path:'/' + i.name})
           }
         }
       } else {
         this.requestData.menu_id = 0
       }
-      getAllCoupons(this.requestData)
+      this.$api.getAllCoupons(this.requestData)
         .then(res => {
-          console.log(res.data.data)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
           this.getUserInfo()
@@ -203,7 +201,7 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      getHeadCateList().then(res => {
+      this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
         // this.getAllCouponsInfo()
@@ -216,18 +214,18 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.page-index {
-  background: #e4e4e4;
-}
-.blank-s {
-  height: 1rem;
-}
-.icon-tuite1 {
-  font-size: 34px;
-  color: white;
-  cursor: pointer;
-}
-.pages-content {
-  min-height: 1000px;
-}
+  .page-index {
+    background: #e4e4e4;
+  }
+  .blank-s {
+    height: 1rem;
+  }
+  .icon-tuite1 {
+    font-size: 34px;
+    color: white;
+    cursor: pointer;
+  }
+  .pages-content {
+    min-height: 1000px;
+  }
 </style>
