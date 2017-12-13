@@ -69,36 +69,36 @@
               <div>{{item.valid_date}}</div>
             </td>
             <td class="status">
-              <div class="blue" v-if="item.status === 0 ">Pending</div>
-              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
-              <div class="red" v-if="item.status === 2  ">Decline</div>
+              <div class="blue" v-if="item.status === 0 && !item.isExpired ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.isExpired">Active </div>
+              <div class="red" v-if="item.status === 2  && !item.isExpired ">Decline</div>
               
-              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] && !item.isExpired">Stop</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired">Close</div>
+              <div class="red" v-if="item.status === 1 && (item.run_status ==  all_run_status[5] || item.isExpired) ">Expired</div>
             </td>
             <td class="operation">
-              <template v-if="item.status === 0">
+              <template v-if="item.status === 0 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
+              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired  ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
                 <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
               </template>
-              <template  v-if="item.status === 2 ">
+              <template  v-if="item.status === 2 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1]  && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">
+              <template v-if="item.status === 1 && (item.run_status ==  all_run_status[5] || item.isExpired) ">
                 <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
               </template>
             </td>
@@ -242,9 +242,13 @@ export default {
       this.$api.userPickCoupons(this.requestdata)
         .then(res => {
           console.log(res)
-          for (var i in res.data.data) {
-            res.data.data[i].valid_date = parseTime(
-              res.data.data[i].valid_date,
+          for (var i of res.data.data) {
+            let now = parseInt(new Date().getTime() / 1000)
+            if (i.valid_date < now) {
+              i.isExpired = true
+            }
+            i.valid_date = parseTime(
+              i.valid_date,
               '{y}-{m}-{d}'
             )
           }
