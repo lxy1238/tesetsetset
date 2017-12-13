@@ -14,6 +14,7 @@
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
                 <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
               </div>
+              
             <template v-if="!isLogin">
               <button class="inline-b btn-h login" @click="ShowLoginDialog">Login</button>
               <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign up</button>
@@ -51,8 +52,9 @@
                  </ul>
                </div>
              </div>
-            </template><div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
-               <span>
+            </template>
+            <div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
+               <span class="country-span">
                  <i>{{selectedCountryShop}}</i> 
                  <template>
                  <i v-if="!showDropdownC" class="iconfont icon-xiangxia"></i>
@@ -64,36 +66,19 @@
                    <li v-for="item in countryLists" @click="filterCountry(item)">{{item.name}} </li>
                  </ul>
                </div>
-            </div><div class="inline-b login-y language" :class="{active: showDropdownL}"   @click.stop="showDropdownLanguage($event)">
-               <span>Language 
+            </div>
+            <div class="inline-b login-y language" :class="{active: showDropdownL}"  @click.stop="showDropdownLanguage($event)"  >
+               <span class="language-span" >Language 
                 <i v-if="!showDropdownL" class="iconfont icon-xiangxia"></i>
                  <i v-else class="iconfont icon-icon-"></i>
               </span>
-              <div v-if="showDropdownL" class="dropdown" style="position: absolute">
-                 <ul class="items" >
-                   <li> <router-link to="/personal">coup0ons</router-link></li>
-                   <li> <router-link to="/combine">combine</router-link></li>
-                   <li> <router-link to="/successTrials">successTrials</router-link></li>
-                    <li @click.stop="showAllLanguage">
-                      <input class="language-input" type="text" readonly  v-model="selectedCountry" >
-                      <img class="google" src="../../assets/language-google.png" />
-                      <i class="iconfont icon-xiangxia"></i>
-                      <div class="all-language" v-if="isShowAllLanguage" >
-                        <tbody>
-                          <tr>
-                            <template >
-                            <td>
-                              <div>aefawef</div>
-                            </td>
-                            <td class="line"></td>
-                            </template>
-                          </tr>
-                        </tbody>
-                      </div>
-                    </li>
+              <div v-show="showDropdownL" class="dropdown" style="position: absolute">
+                 <ul class="items" style="text-align:center" >
+                     <div id="google_translate_element"  @click.stop="showDropdownLanguage1($event)">加载google翻译插件</div>
                  </ul>
                </div>
             </div>
+          
            </div>
          </div>
        </div>
@@ -233,6 +218,8 @@
           </div>
         </div>
      </el-dialog>
+
+    
    </div>
 </template>
 
@@ -342,18 +329,6 @@ export default {
       default: true
     }
   },
-  mounted () {
-    if(this.$route.query.search) {
-      this.keyword = this.$route.query.search
-    }
-    this.init()
-  },
-  //组件销毁时，关闭来自其他组件的事件接收
-  beforeDestroy () {
-    this.$root.eventHub.$off('initClassify')
-    this.$root.eventHub.$off('selectClassify1')
-    this.$root.eventHub.$off('isLoginInfo')
-  },  
   computed: {
     isLogin () {
       return getToken()
@@ -382,9 +357,23 @@ export default {
       }
     },
   },
+  mounted () {
+    if(this.$route.query.search) {
+      this.keyword = this.$route.query.search
+    }
+    this.init()
+  },
+  //组件销毁时，关闭来自其他组件的事件接收
+  beforeDestroy () {
+    this.$root.eventHub.$off('initClassify')
+    this.$root.eventHub.$off('selectClassify1')
+    this.$root.eventHub.$off('isLoginInfo')
+  },  
+
   methods: {
     //初始化 
     init () {
+      this.initLanguage()
       this.docuemntAddEvent()
       this.enterSubmitForm()
       this.getHeadCateListInfo()
@@ -546,11 +535,19 @@ export default {
       })
     },
     showDropdownLanguage () {
-      return
       setTimeout( () => {
         this.showDropdownL = !this.showDropdownL
         this.showDropdownC = false
         this.showDropdownU = false
+        this.initLanguage()
+      })
+    },
+    showDropdownLanguage1 () {
+      setTimeout( () => {
+        this.showDropdownL = true
+        this.showDropdownC = false
+        this.showDropdownU = false
+        this.initLanguage()
       })
     },
     showAllLanguage () {
@@ -772,6 +769,26 @@ export default {
           }
         })         
       }
+    },
+
+    //语言翻译
+    initLanguage () {
+      // Load the SDK asynchronously
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s) 
+        js.id = id
+        js.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
+        fjs.parentNode.insertBefore(js, fjs)
+      }(document, 'script', 'google-translate'))
+
+      window.googleTranslateElementInit = function  () {
+        new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element')
+      }
+
+     
+
     }
   }
 }
@@ -814,13 +831,14 @@ export default {
           height: inherit;
         }
         .inline-b {
-          display: inline-block;
+          float: left;
           margin-right: 1rem;
         }
         .login-y {
           position: relative;
           margin-right: 1px;
           top: -1px;
+          width: 15%;
           text-align: center;
           cursor: pointer;
           min-width: 10px;
@@ -841,6 +859,7 @@ export default {
                   padding-left: 10px;
                   height: 32px;
                   line-height: 32px;
+                  overflow: hidden;
                   &:hover {
                     background: #3a4853;
                   }
@@ -904,18 +923,25 @@ export default {
           }
           &.country {
             top: -2px;
-            width: 6.27rem;
+            width: 10%;
             font-size: 0.833rem;
+            .country-span {
+              width: 100%;
+              overflow: hidden;
+            }
             .dropdown {
               width: 130%;
               left: -30%;
-             
             }
           }
           &.language {
             top: -2px;
-            width: 7.27rem;
+            width: 12%;
             font-size:  0.833rem;
+            .language-span {
+              width: 100%;
+              overflow: hidden;
+            }
             .dropdown {
               width: 130%;
               left: -30%;
@@ -994,6 +1020,10 @@ export default {
         .coupons {
           font-weight: bold;
           color: #c1c1c1;
+          text-align: center;
+          overflow: hidden;
+          width: 10%;
+          height: 70px;
           &:hover {
             color: white;
           }
@@ -1006,8 +1036,9 @@ export default {
         }
         .search {
           .p(r);
-          width: 32rem;
+          width: 35%;
           height: 36px;
+          top: 17px;
           margin-right: 0.90rem;
           input {
             .el-input-self;
@@ -1020,7 +1051,7 @@ export default {
           .icon-search {
             .p(a);
             right: 10px;
-            top: 0;
+            top: -15px;
             color: #999;
             font-size: 16px;
             cursor: pointer;
@@ -1040,6 +1071,8 @@ export default {
           font-size: 0.78rem;
           font-weight: bold;
           text-align: center;
+          position: relative;
+          top: 17px;
         }
         .login {
           // font-family: Arial, Helvetica, sans-serif;
@@ -1047,6 +1080,7 @@ export default {
           border-color: white;
           color: black;
           margin-left: 0;
+          margin-right: 1rem;
           &:hover {
             background: darken(white, 10%);
             border-color: darken(white, 10%);
