@@ -1,12 +1,13 @@
 <template>
   <div class="affiliate-pid">
     <div class="title-bottom">Affiliate PID</div>
+     <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
     <el-form :model="pidForm"  ref="pidForm" label-width="150px" v-if="platformArr.length != 0" >
       <el-form-item v-for="item in platformArr" :key="1" :label="item.website + ': '">  
         <el-input v-model="item.pid"></el-input>
       </el-form-item>
 
-      <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
+     
     </el-form>
     <div class="pid-footer">
       <button type="button" @click="submit">Save</button>
@@ -81,13 +82,14 @@ export default {
 <style lang="less" >
 @import url('../../../styles/mixin.less');
 .affiliate-pid {
+  position: relative;
   .el-input {
     width: 40%;
   }
   .goto-getpid {
     position: absolute;
-    top: 220px;
-    left: 1200px;
+    top: 34%;
+    right: 30%;
   }
   .pid-footer {
     text-align: center;

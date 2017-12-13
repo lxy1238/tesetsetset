@@ -196,7 +196,6 @@ export default {
       let timer = null
       timer = setInterval(() => {
         let expiry_time1 = getTimeDetail(this.trialDetail.countDown)
-        console.log(expiry_time1)
         this.countDownData = expiry_time1
         if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
           clearInterval(timer)
@@ -213,7 +212,6 @@ export default {
         return
       }
       this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
-        console.log(res)
         if (res.code === 200) {
           this.$router.push({path: '/personal/my-trials/index', query: { status: 1 }})
         }
@@ -235,7 +233,7 @@ export default {
     },
     //提交问题
     addProblemSubmit () {
-      if (base64Decode(this.$route.params.couponsId)) {
+      if (base64Decode(this.$route.params.trialId)) {
         this.addProblemData.menu = 'trials'
         this.addProblemData.product_id = base64Decode(this.$route.params.trialId)
       }
@@ -424,6 +422,7 @@ export default {
    .question {
           float: right;
           text-align: right;
+          margin-right: 5px;
           .wrong {
             margin-bottom: 0.3rem;
             font-size: 1rem;

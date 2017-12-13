@@ -148,6 +148,9 @@
                 </template>
               </td>
             </tr>
+            <tr v-if="trLists.length === 0">
+              <td colspan="13">No Data</td>
+            </tr>
           </tbody>
         </table>
       </div>
