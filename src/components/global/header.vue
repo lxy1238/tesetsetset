@@ -229,7 +229,7 @@ import { validateEmail } from '@/utils/validate.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
-import { getEmail, setEmail, getToken,getPass, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
+import { getEmail, getToken,getPass, setToken, setUserId ,setPass} from '@/utils/auth'
 import '../../utils/google'
 export default {
   name: 'header',
@@ -490,9 +490,10 @@ export default {
     ShowLoginDialog () {
       this.googleLogin()
       this.loginform.email = getEmail()
-      // if (getPass()) {
-      //   this.loginform.password = base64Decode(getPass())
-      // }
+      if (getPass()) {
+        this.loginform.password = base64Decode(getPass())
+      }
+      console.log(base64Decode(getPass()))
       this.signDialog = false 
       this.loginDialog = true
      

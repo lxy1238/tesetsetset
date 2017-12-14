@@ -50,7 +50,6 @@ export default {
   mounted () {
     setTimeout(() => {
       this.init()
-      console.log(this.routers)
     }, 100)
   },
   computed : {

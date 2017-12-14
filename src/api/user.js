@@ -84,6 +84,14 @@ export const postedUserInfo = data => fetch({
 })
 
 
+//用户PID 信息获取
+export const postUserPid = data => fetch({
+  url: '/api/v1/user/user-PID',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 
 /**
  * @param  第三方登录接口

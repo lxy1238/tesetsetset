@@ -151,6 +151,7 @@ export default {
         content: ''
 
       },
+      timer: null,
     }
   },
   components: {
@@ -165,6 +166,9 @@ export default {
   },
   mounted () {
     this.init()
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   },
   methods: {
     init () {
@@ -193,12 +197,11 @@ export default {
 
     //定时器，时间倒计时
     countDown () {
-      let timer = null
-      timer = setInterval(() => {
+      this.timer = setInterval(() => {
         let expiry_time1 = getTimeDetail(this.trialDetail.countDown)
         this.countDownData = expiry_time1
         if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
-          clearInterval(timer)
+          clearInterval(this.timer)
           this.isExpired = true
         }
       }, 1000)

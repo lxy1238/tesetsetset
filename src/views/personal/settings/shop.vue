@@ -22,16 +22,16 @@
           </td>
           <td class="oprate">
             <template v-if="item.status == 0">
-            <a href="javascript:void(0);">edit</a>
-            <a href="javascript:void(0);">delete</a>
+            <a href="javascript:void(0);" @click="editShop(item)">edit</a>
+            <a href="javascript:void(0);" @click="deleteShop(item)">delete</a>
             </template>
             <template v-if="item.status == 1">
-            <a href="javascript:void(0);">delete</a>
+            <!-- <a href="javascript:void(0);">delete</a> -->
             </template>
             <template  v-if="item.status == 2">
-            <a href="javascript:void(0);">edit</a>
-            <a href="javascript:void(0);">details</a>
-            <a href="javascript:void(0);">delete</a>
+            <a href="javascript:void(0);" @click="editShop(item)">edit</a>
+            <a href="javascript:void(0);" @click="getDetails(item)">details</a>
+            <a href="javascript:void(0);" @click="deleteShop(item)">delete</a>
             </template>
           </td>
         </tr>
@@ -78,6 +78,14 @@
          
         </div>
      </el-dialog>
+
+
+
+  <!-- 不通过详情 -->
+     <el-dialog :visible.sync = "declineDialog" title="result" class="deline-dialog" >
+          <h3 class="red text-center"> Decline </h3>
+          <p class="text-center">{{declineMsg}}</p>
+     </el-dialog>
   </div>
 </template>
 
@@ -102,14 +110,28 @@ export default {
         }
       ],
       addStoreDialog: false,
+      declineDialog: false,
       allpage: undefined,
       showItem: 7,
+      optionsWebsite:[],
+      isEdit: false,
+      declineMsg: '',
       addStoreForm: {
         api_token: getToken(),
         user_id: getUserId(),
         platform_id: '',
+        store_id: '',
+        store_name: '',
+        store_url: '',
       },
-      optionsWebsite:[],
+      editStoreData: {
+
+      },
+      deleteStoreData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        id: ''
+      },  
       reqPlatformData: {
         api_token: getToken(),
         user_id: getUserId()
@@ -141,7 +163,6 @@ export default {
     //平台初始化
     getPlatformCateInfo () {
       this.$api.getPlatformCate(this.reqPlatformData).then(res => {
-        console.log(res)
         this.optionsWebsite = res.data
       })
     },
@@ -149,7 +170,6 @@ export default {
       for (let i of this.optionsWebsite) {
         if (i.id == id) {
           this.addStoreForm.country_id = i.country_id
-
         }
       } 
     },
@@ -163,21 +183,65 @@ export default {
 
     //列表数据显示
     addStore () {
+      this.isEdit = false
       this.addStoreDialog = true
     },
 
     //新增店铺提交 数据获取
     addStoreSubmit (data) {
-      this.$api.addStore(data).then(res => {
-        if (res.code === 200) {
-          this.$notify.success('add store success!')
+      if (!this.isEdit) {
+        this.$api.addStore(data).then(res => {
+          if (res.code === 200) {
+            this.$notify.success('add store success!')
+            this.addStoreDialog = false
+            this.getStoreList()
+          }
+        }).catch(error => {
+          console.log(error)
           this.addStoreDialog = false
+        })
+      } else {
+        this.$api.editStore(data).then(res => {
+          if (res.code === 200) {
+            this.$notify.success('edit store success!')
+            this.addStoreDialog = false
+            this.getStoreList()
+          }
+        }).catch(error => {
+          console.log(error)
+          this.addStoreDialog = false
+        })
+      }
+      
+    },
+
+    //编辑店铺
+    editShop (item) {
+      this.addStoreForm.platform_id = item.platform_id
+      this.addStoreForm.country_id = item.country_id
+      this.addStoreForm.store_id = item.store_id
+      this.addStoreForm.store_name = item.store_name
+      this.addStoreForm.store_url = item.store_url
+      this.addStoreForm.id = item.id
+      this.isEdit = true
+      this.addStoreDialog = true
+
+    },
+
+    //删除店铺
+    deleteShop (item) {
+      this.deleteStoreData.id = item.id
+      this.$api.deleteStore(this.deleteStoreData).then(res => {
+        if (res.code === 200) {
           this.getStoreList()
         }
-      }).catch(error => {
-        console.log(error)
-        this.addStoreDialog = false
       })
+
+    },
+    //获取审核不通过详情
+    getDetails (item) {
+      this.declineMsg = item.store_censor[item.store_censor.length - 1].content
+      this.declineDialog = true
     },
 
     //新增店铺提交

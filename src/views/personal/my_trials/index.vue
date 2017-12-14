@@ -15,9 +15,9 @@
           <div v-if="selected == 0" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails0" :class="{last: index == 2}" v-if="!item.isExpried">
-                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt="">
+                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt=""  @click="gotoSuccessDetail(item)">
                 <div class="center-content">
-                  <div class="order-title">{{item.trials.product_title}} </div>
+                  <div class="order-title" @click="gotoSuccessDetail(item)">{{item.trials.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
@@ -57,9 +57,9 @@
           <div v-if="selected == 1" class="content">
             <div class="wait-order">
              <div class="order" v-for="(item, index) in orderDetails1" :class="{last: index == 2}">
-               <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
+               <img class="order-img" :src="item.product_img.split(',')[0]" alt="" >
                 <div class="center-content">
-                  <div class="order-title">{{item.product_title}} </div>
+                  <div class="order-title" >{{item.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
@@ -235,6 +235,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import { getToken, getUserId } from '@/utils/auth'
 import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString.js'
 export default {
   name: 'my_trials',
   components: {
@@ -250,6 +251,7 @@ export default {
       showItem: 7,
       value5: 3.6,
       isExpried: false,
+      timer: null,
       countDownData: {},
       orderDetails0: [],
       orderDetails1: [],
@@ -284,6 +286,9 @@ export default {
   mounted () {
     this.init()
   },
+  beforeDestroy () {
+    clearInterval(this.timer)
+  },
   methods: {
     init () {
       this.gotoPanel()
@@ -295,7 +300,6 @@ export default {
     initData () {
       
     },
-
     //获取第一个列表信息
     getWaitingData () {
       this.$api.userApplySucced(this.reqSuccedDetailsData).then(res => {
@@ -313,13 +317,12 @@ export default {
     },
     //定时器，时间倒计时
     countDown (i) {
-      let timer = null
-      timer = setInterval(() => {
+      this.timer = setInterval(() => {
         let expiry_time1 = getTimeDetail(i.countDown)
         i.countDownData = expiry_time1
         this.refresh(this.orderDetails0)
         if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
-          clearInterval(timer)
+          clearInterval(this.timer)
           i.isExpried = true
         }
       }, 1000)
@@ -335,6 +338,7 @@ export default {
       this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
         if (res.code === 200) {
           this.selected = 1
+          this.init()
         }
         e.target.disabled = false
       }).catch(() => {
@@ -423,7 +427,6 @@ export default {
     //userApplyFinish  订单过期信息展示
     getExpiredInfo () {
       this.$api.userApplyExpired(this.reqSuccedDetailsData).then(res => {
-        console.log(res)
         this.orderDetails3 = res.data.data
       })
     },
@@ -443,6 +446,10 @@ export default {
     } ,
     test (i) {
       console.log(i)
+    },
+    gotoSuccessDetail (item) {
+      this.$router.push({ path: '/successTrials/' + base64Encode(item.trial_id) })
+      console.log(item)
     }
   }
 }

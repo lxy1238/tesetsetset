@@ -867,7 +867,7 @@ export default {
         }
         .promo-head-r {
           display: inline-block;
-          width: 10rem;
+          width: 13rem;
           text-align: center;
           cursor: pointer;
           &:hover {

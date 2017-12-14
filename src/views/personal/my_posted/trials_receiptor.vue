@@ -398,8 +398,8 @@ export default {
     line-height: 4rem;
     margin-bottom: 1rem;
     .form-control-bootstrap {
-      margin-right: 4%;
-      min-width: 10%;
+      margin-right: 3%;
+      width: 16%;
     }
     .search {
       .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);

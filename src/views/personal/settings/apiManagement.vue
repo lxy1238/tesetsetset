@@ -6,8 +6,6 @@
       <el-form-item v-for="item in platformArr" :key="1" :label="item.website + ': '">  
         <el-input v-model="item.pid"></el-input>
       </el-form-item>
-
-     
     </el-form>
     <div class="pid-footer">
       <button type="button" @click="submit">Save</button>
@@ -30,6 +28,7 @@ export default {
       pid:[],
       rules: [],
       platformArr: [],
+      platformPid: [],
       requestPlatData: {
         api_token: getToken(),
         user_id: getUserId(),
@@ -49,7 +48,25 @@ export default {
     //获取该国家下的平台
     getPlatformCateInfo () {
       this.$api.getPlatformCate(this.requestPlatData).then(res => {
+        console.log(res)
         this.platformArr = res.data
+        this.getUserPid()
+      })
+    },
+
+    //获取用户pid 详情
+    getUserPid () {
+      this.$api.postUserPid(this.requestPlatData).then(res => {
+        this.platformPid = res.data
+        for (let i of this.platformArr) {
+          for (let j of this.platformPid) {
+            if (i.id === j.platform_id) {
+              i.pid = j.PID
+            }
+          }
+        }
+        this.platformArr.push(1)
+        this.platformArr.pop()
       })
     },
 
