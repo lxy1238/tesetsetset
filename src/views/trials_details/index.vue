@@ -212,6 +212,11 @@ export default {
     },
     initData () {
       this.reqData.id = base64Decode(this.$route.params.trialId)
+
+
+      //通过路由中的国家id 修改头部的国家id
+      let country_id = base64Decode(this.$route.params.countryId)
+      this.$root.eventHub.$emit('changeCountryId', country_id)
     },
 
     //获取试用品详情
@@ -276,7 +281,7 @@ export default {
         if (res.code === 200) {
           this.isApply = true
           if (res.data === 1) {
-            this.$router.push({ path: '/successTrials/' + this.$route.params.trialId })
+            this.$router.push({ path: '/successTrials/' + this.$route.params.trialId + '/' + this.$route.params.countryId})
           } else {
             this.notGetTrialsDialog = true
           }

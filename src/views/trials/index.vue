@@ -41,6 +41,7 @@ export default {
   data () {
     return {
       showItem: 7,
+      country_id: parseInt(getStore('country_id')) || 1,
       allpage: undefined,
       arrcouponsDetails: [],
       classifyList: [{
@@ -139,7 +140,7 @@ export default {
 
     //跳转到trials详情页面
     gotodetails (id) {
-      this.$router.push({ path: '/trialsDetails/' + base64Encode(id) })
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(id) + '/' + base64Encode(this.country_id) })
     },
 
     //根据页面尺寸宽度判断首页展示的商品数量

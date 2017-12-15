@@ -354,6 +354,9 @@ export default {
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
 
+      let country_id = base64Decode(this.$route.params.countryId)
+      this.$root.eventHub.$emit('changeCountryId', country_id)
+
     },
     
     //获取优惠券详情

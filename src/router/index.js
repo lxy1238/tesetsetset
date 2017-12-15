@@ -24,11 +24,11 @@ export const constantRouterMap = [
       component: _import('trials/index')
     },
     {
-      path: '/coupons/:couponsId/:countryId?',
+      path: '/coupons/:couponsId/:countryId',
       component: _import('coupons/index')
     },
     {
-      path: '/trialsDetails/:trialId/:countryId?',
+      path: '/trialsDetails/:trialId/:countryId',
       component: _import('trials_details/index')
     },
     {
@@ -36,7 +36,7 @@ export const constantRouterMap = [
       component: _import('merchant/index')
     },
     {
-      path: '/successTrials/:trialId',
+      path: '/successTrials/:trialId/:countryId',
       component: _import('trials_details/apply_success')
     },
      

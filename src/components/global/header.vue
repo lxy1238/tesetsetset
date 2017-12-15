@@ -442,6 +442,17 @@ export default {
       this.$root.eventHub.$on('isLoginInfo', () => {
         this.ShowLoginDialog()
       })
+
+      this.$root.eventHub.$on('changeCountryId', data => {
+        this.selectedCountryShop = parseInt(data)
+        for (let i of this.countryLists) {
+          if (i.id == data) {
+            setStore('country_id',i.id)
+            setStore('currency',i.currency)
+          }
+        }
+      })
+
     },
 
     //通过国家过滤首页的优惠券信息

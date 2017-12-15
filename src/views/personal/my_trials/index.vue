@@ -243,6 +243,7 @@ export default {
   },
   data () {
     return {
+      country_id: getStore('country_id') || 1,
       tabsHead: [
         'Waiting for Order', 'Waiting for Review', 'Completed', 'Expired'
       ],
@@ -447,7 +448,9 @@ export default {
       console.log(i)
     },
     gotoSuccessDetail (item) {
-      this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) })
+      
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) })
+
       console.log(item)
     }
   }

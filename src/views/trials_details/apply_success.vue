@@ -177,6 +177,9 @@ export default {
     },
     initData () {
       this.reqSuccedDetailsData.trial_id = base64Decode(this.$route.params.trialId)
+
+      let country_id = base64Decode(this.$route.params.countryId)
+      this.$root.eventHub.$emit('changeCountryId', country_id)
     },
     
     gotoAmazon (url) {
