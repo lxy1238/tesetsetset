@@ -23,7 +23,7 @@
             <img class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
             <div class="content-line">coupons {{currency}} {{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</div>
-            <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
+            <div class="content-line">coupon address: {{dealsbankUrl}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>
           <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
@@ -44,6 +44,7 @@
 <script>
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString'
 import Clip from '@/utils/clipboard.js'
 export default {
   name: 'image_product',
@@ -51,6 +52,7 @@ export default {
     return {
       loading: false,
       isAddPromo: 0,
+      country_id: parseInt(getStore('country_id')) || 1,
       addPromoRequestData: {
         api_token: getToken(),
         country_id: getStore('country_id') || 1,
@@ -83,6 +85,9 @@ export default {
     },
     currency () {
       return getStore('currency') || '$'
+    },
+    dealsbankUrl () {
+      return location.href + '/coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '?promoter=' + (getUserId() ? getUserId() : '')
     }
   },
   mounted () {

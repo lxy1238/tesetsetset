@@ -53,7 +53,7 @@
                 <div class="inline-b question" v-if="selected !== 'Choose reason' && isFlagCoupon">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
-                    <input type="text" v-model="addProblemData.content">
+                    <input type="text" v-model="addProblemData.content" @keyup="enter($event)">
                     <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
                     <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                   </div>
@@ -304,7 +304,7 @@ export default {
       classifyList: [
         {
           id: 0,
-          name: 'Top Coupons'
+          name: 'Top'
         }
       ],
 
@@ -320,10 +320,15 @@ export default {
       promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
       promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
       templateText: '',
+      promoterPid: '123456789',
+      requestPlatData: {
+        api_token: getToken(),
+        country_id: parseInt(getStore('country_id') || 1),
+        user_id: '',
+      },
     }
   },
   computed: {
-    ...mapGetters(['username', 'user_id']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
@@ -354,9 +359,31 @@ export default {
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
 
+
+      //获取国家id ,传递给头部组件
       let country_id = base64Decode(this.$route.params.countryId)
       this.$root.eventHub.$emit('changeCountryId', country_id)
 
+
+    },
+
+    //判断链接中携带哪个pid , 如果有分享人的id 那就携带分享人的pid， 如果没有分享人，则携带公司的pid
+    hasPromoter () {
+      if (this.$route.query.promoter) {
+        let promoterUserId = parseInt(this.$route.query.promoter)
+        this.requestPlatData.user_id = promoterUserId
+        this.$api.postUserPid(this.requestPlatData).then(res => {
+          for (let i of res.data) {
+            if (i.platform_id === this.couponDetail.platform_id) {
+              if (i.PID) {
+                this.promoterPid = i.PID
+              } 
+            }
+          }
+        })
+      } else {
+        this.promoterPid = '12345678'
+      }
     },
     
     //获取优惠券详情
@@ -364,7 +391,6 @@ export default {
       this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       this.$api.couponDetails(this.requestCouponDetails)
         .then(res => {
-          console.log(res)
           if (res.data.coupon_user_template) {
             this.promotionTemplate = res.data.coupon_user_template.content
           }
@@ -376,6 +402,7 @@ export default {
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
           this.test()
+          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -613,6 +640,12 @@ export default {
       })
     },
 
+    enter (e) {
+      if (e.keyCode === 13) {
+        this.addProblemSubmit()
+      }  
+    },
+
     //获取头部品类列表
     getHeadCateListInfo () {
       this.$api.getHeadCateList().then(res => {
@@ -624,7 +657,8 @@ export default {
    
     //跳转到相应 商品链接
     gotoPlatform (url) {
-      window.open(url)
+      let endUrl = `${url}&tag=${this.promoterPid}`
+      window.open(endUrl)
     },
 
     //facebook 分享

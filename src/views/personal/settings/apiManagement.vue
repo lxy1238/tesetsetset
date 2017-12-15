@@ -48,7 +48,6 @@ export default {
     //获取该国家下的平台
     getPlatformCateInfo () {
       this.$api.getPlatformCate(this.requestPlatData).then(res => {
-        console.log(res)
         this.platformArr = res.data
         this.getUserPid()
       })

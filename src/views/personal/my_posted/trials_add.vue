@@ -83,7 +83,7 @@
          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-          <el-input class="url-input" v-model="trialsForm.product_price"  disabled></el-input>
+          <el-input class="url-input" v-model="trialsForm.product_price"  ></el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
           <el-input class="url-input" v-model="trialsForm.shipping_fee"  disabled></el-input>
@@ -114,6 +114,7 @@
           <el-date-picker
             v-model="trialsForm.active_date"
             type="daterange"
+            :picker-options="pickerOptions1"
             placeholder="选择日期范围">
           </el-date-picker>
       </el-form-item>
@@ -160,6 +161,11 @@ export default {
   name: 'trials_add',
   data () {
     return {
+      pickerOptions1: {
+        disabledDate (time) {
+          return time.getTime() < Date.now() - 86400000
+        },
+      },
       country_id: parseInt(getStore('country_id')) || 1,
       optionsWebsite: [
       ],

@@ -77,7 +77,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="List price: " class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" disabled >
+          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -103,7 +103,7 @@
        Coupon Information
     </div>
     <el-form-item label="Valid date: " class="item-inline"  prop="valid_date" >
-      <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date"></el-date-picker>
+      <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date" :picker-options="pickerOptions1"></el-date-picker>
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
       <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
@@ -143,6 +143,11 @@ export default {
   name: 'coupoons-add',
   data () {
     return {
+      pickerOptions1: {
+        disabledDate (time) {
+          return time.getTime() < Date.now() - 86400000
+        },
+      },
       rules: {
         product_url: [{ required: true, trigger: 'blur' }],
         product_price: [{ required: true, trigger: 'blur' }],

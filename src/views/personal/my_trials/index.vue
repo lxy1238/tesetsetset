@@ -34,8 +34,8 @@
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <el-input class="footer-input" v-model="item.order_number"></el-input>
-                    <button type="button" @click="submitOrderNumber(item, $event)">Save</button>
+                    <input class="footer-input" v-model="item.order_number" ></input>
+                    <button type="button" @click="submitOrderNumber(item, $event)" >Save</button>
                   </div>
                 </div>
                 <div class="right-content">
@@ -345,7 +345,6 @@ export default {
         e.target.disabled = false
       })
     },
-
     //review
     getReviewInfo () {
       this.$api.userTrialOrder(this.reqReviewData).then(res => {

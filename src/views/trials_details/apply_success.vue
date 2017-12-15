@@ -45,7 +45,7 @@
           <div class="submit">
             <span>Order number: </span>
             <input class="input" type="text" v-model="reqAddOrderData.order_number" />
-            <button class="submit-btn" @click="submitOrderNumber($event)">Confirm</button>
+            <button class="submit-btn" @click="submitOrderNumber($event)" ref="submitBtn">Confirm</button>
           </div>
           <div>Please confirm that the order number is valid and the transaction is successful, 
             otherwise your trial qualification will be canceled.</div>
@@ -213,7 +213,6 @@ export default {
     //提交订单 号码
     submitOrderNumber (e) {
       e.target.disabled = true
-      console.log(this.reqAddOrderData)
       if (!this.reqAddOrderData.order_number) {
         return
       }
@@ -222,11 +221,17 @@ export default {
           this.$router.push({path: '/personal/my-trials/index', query: { status: 1 }})
         }
         e.target.disabled = false
-      }).catch(err => {
-        console.log(err)
+      }).catch(() => {
         e.target.disabled = false
       })
 
+    },
+    
+    //enter 按键提交
+    enter (e) {
+      if (e.keyCode === 13) {
+        this.submitOrderNumber()
+      }
     },
 
     //选择问题, 提交问题反馈

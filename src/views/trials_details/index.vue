@@ -447,7 +447,7 @@ export default {
     }
  
     .promotion-template {
-      min-height: 1000px;
+      // min-height: 1000px;
       background: white;
       border-radius: 5px;
       overflow: hidden;
