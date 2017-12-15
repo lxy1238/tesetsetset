@@ -1,5 +1,5 @@
 <template>
-  <div class="page-index ">
+  <div class="page-index " v-title="titleMsg">
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
@@ -61,7 +61,8 @@ export default {
         page_size: '',
         menu_id: 0,
         keyword: '',
-      }
+      },
+      titleMsg: 'coupons'
     }
   },
   components: {

@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index" >
-    <div class="pages-content" v-if="couponDetail.valid_date">
+  <div class="page-index" v-title="couponDetail.product_title" v-if="couponDetail.valid_date" >
+    <div class="pages-content" >
       <div class="head-crumbs">
         <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
@@ -92,10 +92,11 @@
                </div>
                <div class="share-to-p">
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
+                 <!-- <button  data-clipboard-target="#proCard" @click="shareFaceBook">share</button> -->
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent('https://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
@@ -140,7 +141,7 @@
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
             <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
+            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
               <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
@@ -332,7 +333,7 @@ export default {
     },
     currency () {
       return getStore('currency') || '$'
-    }
+    },
   },
   mounted () {
     this.init()
@@ -352,6 +353,7 @@ export default {
       this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
+
     },
     
     //获取优惠券详情
@@ -522,14 +524,18 @@ export default {
  
 
     //领取优惠券
-    getCouponCode () {
+    getCouponCode (e) {
       if (this.isLogin()) {
         if (this.isStop()) {
           this.$message.info('该活动已经结束,或者该优惠卷已经领取完了')
           return
         }
+        e.target.disabled = true
         this.$api.userGetCoupon(this.reqGetCodeData).then(() => {
+          e.target.disabled = false
           this.getCodeSuccess = true
+        }).catch(() => {
+          e.target.disabled = false
         })
       }
     },
@@ -617,6 +623,28 @@ export default {
     gotoPlatform (url) {
       window.open(url)
     },
+
+    //facebook 分享
+    shareFaceBook () {
+      FB.ui(
+        {
+          method: 'share_open_graph',
+          action_type: 'og.likes',
+          action_properties: JSON.stringify({
+            object:'http://www.baidu.com',
+          })
+        },
+        
+        // callback
+        function (response) {
+          if (response && !response.error_message) {
+            alert('Posting completed.')
+          } else {
+            alert('Error while posting.')
+          }
+        }
+      )
+    }
 
   }
 }

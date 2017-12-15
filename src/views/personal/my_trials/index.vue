@@ -307,7 +307,6 @@ export default {
         for (let i of this.orderDetails0) {
           let expiry_time = getTimeDetail(i.expiry_time)
           i.countDownData = expiry_time
-          i.countDownData = expiry_time
           i.countDown = i.expiry_time
           this.countDown(i)
         }
@@ -321,7 +320,7 @@ export default {
         let expiry_time1 = getTimeDetail(i.countDown)
         i.countDownData = expiry_time1
         this.refresh(this.orderDetails0)
-        if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
           clearInterval(this.timer)
           i.isExpried = true
         }
@@ -448,7 +447,7 @@ export default {
       console.log(i)
     },
     gotoSuccessDetail (item) {
-      this.$router.push({ path: '/successTrials/' + base64Encode(item.trial_id) })
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) })
       console.log(item)
     }
   }

@@ -1,8 +1,8 @@
 <template>
-  <div class="page-index ">
+  <div class="page-index " v-if="trialDetail.product_price" v-title="trialDetail.product_title">
     <div class="pages-content clearfix">
       <explain :is-active="2"></explain>
-      <div class="home-content" v-if="trialDetail.product_price">
+      <div class="home-content" >
         <div class="details" v-if="trialDetail.product_price">
           <div class="pro-img">
             <img class="img" :src="trialDetail.product_img.split(',')[0]" alt="">
@@ -200,7 +200,7 @@ export default {
       this.timer = setInterval(() => {
         let expiry_time1 = getTimeDetail(this.trialDetail.countDown)
         this.countDownData = expiry_time1
-        if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
           clearInterval(this.timer)
           this.isExpired = true
         }

@@ -7,7 +7,8 @@ import 'babel-polyfill'
 require('es6-promise').polyfill()
 import router from './router'  // 路由配置文件
 import store from './store'    // 全局状态管理
-import api from './api/index'
+import api from './api/index'  //所有的接口
+import './directive/title/index'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
@@ -31,6 +32,8 @@ import './permission'
 
 Vue.prototype.$api = api
 Vue.config.productionTip = false
+
+
 
 /* eslint-disable no-new */
 new Vue({

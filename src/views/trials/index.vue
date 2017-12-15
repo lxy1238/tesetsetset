@@ -1,5 +1,5 @@
 <template>
-  <div class="page-index ">
+  <div class="page-index " v-title="titleMsg">
     <div class="pages-content clearfix">
       <explain ></explain>
       <coupons-pro  v-for="couponsDetails in arrcouponsDetails"  
@@ -53,7 +53,8 @@ export default {
         page_size: '',
         menu_id: 0,
         keyword: '',
-      }
+      },
+      titleMsg: 'trials'
     }
   },
   components: {

@@ -556,6 +556,7 @@ export default {
           this.issueCoupon(this.trialsFormSubmit)
         } else {
           console.log('error submit!!')
+          e.target.disabled = false
           return false
         }
       })

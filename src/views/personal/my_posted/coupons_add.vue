@@ -409,6 +409,7 @@ export default {
           this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')
+          e.target.disabled = false
           return false
         }
       })

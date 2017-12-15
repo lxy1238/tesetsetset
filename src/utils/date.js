@@ -2,9 +2,9 @@
 
 //时间戳转化成需求中需要的格式
 export  function timestampFormat (timestamp) {
-  var date = new Date() 
+  let date = new Date() 
   date.setTime(timestamp * 1000)
-  var dateString = date.toDateString()
+  let dateString = date.toDateString()
   return dateString.slice(4, 7) +' '+ dateString.slice(-4)
 }
 
@@ -19,10 +19,13 @@ export function getTimeDetail (timestamp) {
   let now = toTimestamp(new Date())
   let leftTime = timestamp - now
   let result = {
-    day: '',
-    hours: '',
-    minutes: '',
-    seconds: '',
+    day: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  }
+  if (leftTime <= 0 ) {
+    return result
   }
   result.day = parseInt( leftTime / 86400 )
   result.hours = parseInt((leftTime - result.day * 86400) / 3600)

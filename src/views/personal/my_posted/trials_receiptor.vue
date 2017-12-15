@@ -51,8 +51,8 @@
               </td>
               <!-- user -->
               <td>
-                <div v-if="item.user">
-                  {{item.user.username}}
+                <div v-if="item.apply">
+                  {{item.apply.username}}
                 </div>
               </td>
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index">
-    <div class="pages-content" v-if="trialDetailData.id">
+  <div class="page-index" v-if="trialDetailData.id" v-title="trialDetailData.product_title">
+    <div class="pages-content" >
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
@@ -24,7 +24,11 @@
             </div>
             <div class="describe">
               <div class="time" v-if="leftTime"> <i class="iconfont icon-icon-test">
-                </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes</div>
+                </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes
+              </div>
+              <div class="time" v-else >
+                expried
+              </div>
             </div>
             <div class="price-details">
                 <div class="price">Price: {{currency}}{{trialDetailData.product_price}} </div>
@@ -47,9 +51,9 @@
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
-                   <a class="share-a" href="#"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-tuite_twitter"></i></a>
+                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
             </div>
           </div>
@@ -186,14 +190,20 @@ export default {
     },
     leftTime () {
       if (this.trialDetailData.end_time) {
-        return getTimeDetail(this.trialDetailData.end_time)
+        let time = getTimeDetail(this.trialDetailData.end_time)
+        if (time.day == 0 && time.hours == 0 && time.minutes == 0) {
+          return false
+        } else {
+          return getTimeDetail(this.trialDetailData.end_time)
+        }
       } else {
-        return ''
+        return false
       }
     }
   },
   mounted () {
     this.init()
+
   },
   methods: {
     init () {
@@ -206,12 +216,12 @@ export default {
 
     //获取试用品详情
     getTrialDetail () {
-      console.log(this.reqData)
       this.$api.trialDetail(this.reqData).then(res => {
         this.trialApplyData.trial_id = res.data.id
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
+        console.log(this.trialDetailData)
         this.getPostUserInfo(res.data.user_id)
       }).catch(error => {
         console.log(error)
@@ -255,6 +265,10 @@ export default {
     },
     trialsApplyBtn (e) {
       if (!this.isLogin()) {
+        return
+      }
+      if (this.trialDetailData.run_status === 'stop') {
+        this.$message.info('今天试用品已经发放完毕,请明天过来申请')
         return
       }
       e.target.disabled = true
@@ -543,5 +557,26 @@ export default {
   top: 9rem;
   margin-top: 6.2rem !important
 }
+.iconfont {
+    font-size: 2rem;
+    &.icon-facebook1 {
+      &:hover {
+        color: #39579C;
+      }
+    }
+      &.icon-tuite_twitter {
+      &:hover {
+        color: #26ABE1;
+      }
+    }
+    &:hover {
+      color: red; //TODO 这里后续不要，可以删除
+    }
+  }
+  .icon-pinterest {
+    &:hover {
+      color: red;
+    }
+  }
 </style>
 

@@ -709,6 +709,20 @@ export default {
           xfbml      : true,  // parse social plugins on this page
           version    : 'v2.11' // use graph api version 2.8
         })
+        // FB.ui(
+        //   {
+        //     method: 'share',
+        //     href: 'https://developers.facebook.com/docs/',
+        //   },
+        //   // callback
+        //   function (response) {
+        //     if (response && !response.error_message) {
+        //       alert('Posting completed.')
+        //     } else {
+        //       alert('Error while posting.')
+        //     }
+        //   }
+        // )
       }
     
   
@@ -751,6 +765,7 @@ export default {
       FB.login((response) => { 
         this.statusChangeCallback(response)  //登录回调函数
       },{scope: 'email'})  //需要获取的信息scope
+      
     },
 
     //第三方登录回调

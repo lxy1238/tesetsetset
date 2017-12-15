@@ -72,7 +72,7 @@
               <!-- applied -->
               <td>
                  <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
-                   {{item.apply_numbers}}
+                   {{item.order_numbers}}
                 </a>
                
               </td>
@@ -134,7 +134,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
-                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
@@ -292,7 +292,7 @@ export default {
 
     //跳转到 领取优惠券的用户页面
     gotoTrailsreceiptor (item) {
-      if (item.apply_numbers === 0) {
+      if (item.order_numbers === 0) {
         return false
       }
       this.$router.push({ path: '/posted/trials/receiptor' })

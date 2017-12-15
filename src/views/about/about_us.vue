@@ -1,22 +1,17 @@
 <template>
-  <div class="about-center">
+  <div class="about-center" v-title="titleMsg">
     help center
-    <section-vue></section-vue>
   </div>
 </template>
 
 <script>
 import { base64Encode, base64Decode } from '@/utils/randomString'
-import sectionVue from '@/components/sectionVue/section_vue'
 export default {
   name: 'about',
   data () {
     return {
-
+      titleMsg: 'About Us'
     }
-  },
-  components: {
-    sectionVue
   },
   mounted () {
     console.log(base64Encode(1))

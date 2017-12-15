@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-title="titleMsg">
     <router-view/>
   </div>
 </template>
@@ -7,6 +7,11 @@
 <script>
 import { getToken, getUserId } from '@/utils/auth.js'
 export default {
+  data () {
+    return {
+      titleMsg:'dealbank'
+    }
+  },
   name: 'app',
   mounted () {
     // if (getToken()) {
@@ -15,6 +20,7 @@ export default {
     //     console.log('登录记录更新失败' + error)
     //   })
     // }
+    
   },
   beforeDestroy () {
     // removeStore('userInfo')
