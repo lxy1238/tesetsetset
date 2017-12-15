@@ -329,6 +329,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['username']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
