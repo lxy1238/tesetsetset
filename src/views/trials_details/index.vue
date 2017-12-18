@@ -1,12 +1,12 @@
 <template>
-  <div class="page-index" v-if="trialDetailData.id" v-title="trialDetailData.product_title">
+  <div class="page-index" >
     <div class="pages-content" >
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
     <div class="blank explain"></div>
       <explain :is-active="0" class="trials-explain"></explain>
-      <div class="details-content clearfix">
+      <div class="details-content clearfix " v-if="trialDetailData.id"  v-title="trialDetailData.product_title">
         <div class="left inline clearfix">
           <details-left :isTop="isTop" 
                         :imgList="imgList" 

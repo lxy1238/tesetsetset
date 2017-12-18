@@ -1,10 +1,10 @@
 <template>
-  <div class="page-index" v-title="couponDetail.product_title" v-if="couponDetail.valid_date" >
+  <div class="page-index" >
     <div class="pages-content" >
       <div class="head-crumbs">
         <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
-      <div class="details-content clearfix">
+      <div class="details-content clearfix"  v-if="couponDetail.valid_date"  v-title="couponDetail.product_title">
         <div class="left inline">
           <details-left :isTop="isTop" 
                         :imgList="imgList" 

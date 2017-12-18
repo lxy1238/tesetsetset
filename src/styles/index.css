@@ -45,7 +45,7 @@
 .page-index {
   background: #e4e4e4;
   min-width: 83.333rem;
-  min-height: 500px;
+  min-height: 1000px;
 }
 .fixed {
   position: fixed !important;
