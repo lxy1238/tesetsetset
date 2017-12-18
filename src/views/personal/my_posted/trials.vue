@@ -72,7 +72,7 @@
               <!-- applied -->
               <td>
                  <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
-                   {{item.apply_numbers}}
+                   {{item.order_numbers}}
                 </a>
                
               </td>
@@ -115,11 +115,12 @@
               </td>
                 <!-- Status -->
                <td class="status">
-              <div class="blue" v-if="item.status === 0 ">Pending</div>
-              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">Active </div>
+              <div class="blue" v-if="item.status === 0  ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway ">Active </div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway ">Close </div>
               <div class="red" v-if="item.status === 2  ">Decline</div>
               
-              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3]">Stop</div>
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] ">Stop</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] ">Underbalance</div>
@@ -134,16 +135,19 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
-                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)" @click="showDetails(item.id)">Details</a></div>
+                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] ">
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
+              </template>
+               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway">
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
             </td>
             </tr>
@@ -190,6 +194,7 @@ export default {
       nonApproval: 'self closing',
       detailsDialog: false,
       all_run_status: ['pending','active', 'decline', 'stop', 'close', 'expired', 'underbalance' ],  // 待审核  暂停， 关闭 上线， 审核未通过  过期
+      putaway: false,  //是否到达上架时间， 默认未到达
       classifyList: [
 
       ],
@@ -263,8 +268,13 @@ export default {
     //获取商家发布的试用品的列表
     getPostTrialsList () {
       this.$api.userTrials(this.requestdata).then(res => {
-        console.log(res)
+        let now  = parseInt(Date.now() / 1000)
         for (let i of res.data.data) {
+          if (i.start_time > now ) {
+            i.putaway = false
+          } else {
+            i.putaway = true
+          }
           i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
           i.end_time = parseTime(i.end_time, '{y}-{m}-{d}')
         }
@@ -286,13 +296,13 @@ export default {
     //跳转到优惠券详情页面
     gotoDetails (item) {
       if (item.status == 1 && item.run_status == this.all_run_status[1]) {
-        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id)  })
+        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id) + '/' + base64Encode(item.country_id) })
       }
     },
 
     //跳转到 领取优惠券的用户页面
     gotoTrailsreceiptor (item) {
-      if (item.apply_numbers === 0) {
+      if (item.order_numbers === 0) {
         return false
       }
       this.$router.push({ path: '/posted/trials/receiptor' })
@@ -330,9 +340,13 @@ export default {
     },
 
     //显示详情弹窗
-    showDetails (id) {
-      this.detailsRequestData.trial_id = id
+    showDetails (item) {
+      this.detailsRequestData.trial_id = item.id
       this.detailsDialog = true
+      if (!item.putaway) {
+        this.nonApproval = ' It is not time to hit the shelves '
+        return
+      }
       this.$api.trialCensor(this.detailsRequestData).then(res => {
         console.log(res.data)
         if (res.data.content == '通过') {

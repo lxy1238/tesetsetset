@@ -59,6 +59,21 @@ export const addStore = data => fetch({
   method: 'POST',
   data: qs.stringify(data)
 })
+// 编辑店铺
+export const editStore = data => fetch({
+  url: '/api/v1/user/edit-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+// 删除店铺
+export const deleteStore = data => fetch({
+  url: '/api/v1/user/delete-store',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
 
 //显示店铺列表
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-index ">
+  <div class="page-index " v-title="titleMsg">
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
@@ -49,6 +49,7 @@ export default {
     return {
       showItem: 7,
       allpage: undefined,
+      country_id: parseInt(getStore('country_id')) || 1,
       arrcouponsDetails: [],
       userPromotions: [],
       classifyList: [{
@@ -61,7 +62,8 @@ export default {
         page_size: '',
         menu_id: 0,
         keyword: '',
-      }
+      },
+      titleMsg: 'coupons'
     }
   },
   components: {
@@ -133,7 +135,7 @@ export default {
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails (id) {
-      this.$router.push({ path: '/coupons/' + base64Encode(id) })
+      this.$router.push({ path: '/coupons/' + base64Encode(id) + '/' + base64Encode(this.country_id)})
     },
 
     //获取用户信息 ，判断首页的coupon是否加入推广

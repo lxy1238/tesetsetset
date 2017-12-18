@@ -77,7 +77,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="List price: " class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" disabled >
+          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -103,7 +103,7 @@
        Coupon Information
     </div>
     <el-form-item label="Valid date: " class="item-inline"  prop="valid_date" >
-      <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date"></el-date-picker>
+      <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date" :picker-options="pickerOptions1"></el-date-picker>
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
       <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
@@ -143,6 +143,11 @@ export default {
   name: 'coupoons-add',
   data () {
     return {
+      pickerOptions1: {
+        disabledDate (time) {
+          return time.getTime() < Date.now() - 86400000
+        },
+      },
       rules: {
         product_url: [{ required: true, trigger: 'blur' }],
         product_price: [{ required: true, trigger: 'blur' }],
@@ -252,6 +257,121 @@ export default {
       })
     },
 
+
+    //图片拖动位置实现 
+
+    change (x, y) {
+      let arr = this.couponsForm.product_img_s
+      arr.splice(x - 1, 1, ...arr.splice(y - 1, 1, arr[x - 1]))
+      this.couponsForm.product_img_s = arr 
+    },
+
+    imgChange () {
+      $('.el-upload-list__item').unbind()
+      setTimeout(() => {
+        $('.el-upload-list__item').unbind()
+        $('.el-upload-list__item').mousedown((e) => {
+          e.stopPropagation()
+          let width = $(e.currentTarget).outerWidth()
+          let height = $(e.currentTarget).outerHeight()
+          let newArr = []
+          let x, y
+          $('.el-upload-list__item').each(function (){
+            this.ondragstart = function (event) {
+              event.preventDefault()
+            }
+            newArr.push($(this).offset())
+          })
+          let left = $(e.currentTarget).offset().left
+          let top = $(e.currentTarget).offset().top
+          
+          newArr.forEach((e, i) => {
+            if (parseInt(left) == parseInt(e.left) && parseInt(top) == parseInt(e.top)) {
+              x = i + 1
+              y = i + 1
+            }
+          })  
+          let clientX = e.clientX
+          let clientY = e.clientY
+          $('#app').append($('<div id="boxOfMove"></div>').css({
+            position: 'absolute',
+            zIndex: '1',
+            width: width,
+            height: height,
+            left: left,
+            top: top,
+            border: '1px solid #00ff00',
+            borderRadius: '5px',
+            color: 'transparent'
+          }))
+         
+          document.onmousemove = function (event) {
+            let clientNowX = event.clientX
+            let clientNowY = event.clientY
+            let disX = clientNowX - clientX
+            let disY = clientNowY - clientY
+            let boxLeft = left + disX
+            let boxTop = top + disY
+            $('#boxOfMove').css({
+              left: boxLeft,
+              top: boxTop
+            })
+            newArr.forEach((e) => {
+              if ( 
+                ( parseInt(e.left) <= (boxLeft + width) && (boxLeft + width) <= (parseInt(e.left) + width) ) && 
+                ( parseInt(e.top) <= (boxTop + height) && (boxTop + height) <= (parseInt(e.top) + height) ) 
+              ) {
+                e.area = ((boxLeft + width) - e.left) * ((boxTop + height) - e.top)
+                e.isChange = true
+              } else if (
+                (parseInt(e.left) <= (boxLeft) && (boxLeft) <= (parseInt(e.left) + width)) && 
+                (parseInt(e.top) <= (boxTop + height) && (boxTop + height) <= (parseInt(e.top) + height))
+              ) {
+                e.area = ((e.left + width) - boxLeft) * ((boxTop + height) - e.top)
+                e.isChange = true
+              } else if (
+                (parseInt(e.left) <= (boxLeft + width) && (boxLeft + width) <= (parseInt(e.left) + width)) && 
+                (parseInt(e.top) <= (boxTop) && (boxTop) <= (parseInt(e.top) + height))
+              ) {
+                e.area = ((boxLeft + width) - e.left) * ((e.top + height) - boxTop)
+                e.isChange = true
+              } else if (
+                (parseInt(e.left) <= (boxLeft) && (boxLeft) <= (parseInt(e.left) + width)) && 
+                (parseInt(e.top) <= (boxTop) && (boxTop) <= (parseInt(e.top) + height))
+              ) {
+                e.area = ((e.left + width) - boxLeft) * ((e.top + height) - boxTop)
+                e.isChange = true
+              } else {
+                e.isChange = false
+              }
+            })
+          } 
+          document.onmouseup =  () => {
+            let maxArea = 0
+            let result = newArr.some((e) => {
+              return e.isChange
+            })
+            if (result) {
+              newArr.forEach((e, i) => {
+                if (i === x - 1) {
+                  return
+                }
+                if (e.area > maxArea) {
+                  maxArea = e.area
+                  y = i + 1
+                }
+              })
+              this.change(x, y)
+            }
+            document.onmousemove = null
+            document.onmouseup = null
+            $('#boxOfMove').remove()
+          }
+        })
+      }, 500)
+    },
+
+
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       // this.$message.info('For information on goods, please wait a moment')
@@ -275,7 +395,8 @@ export default {
               }
             })
             this.couponsForm.product_img_s = newArr
-            this.couponsForm.product_price = data.product_price.slice(1)
+            this.imgChange()
+            this.couponsForm.product_price = data.product_price.slice(1).replace(',', '')
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$notify.error('please enter a right url')
@@ -352,6 +473,7 @@ export default {
         this.$api.uploadImg(formData)
           .then(res => {
             this.couponsForm.product_img_s.push({ url: res.data })
+            this.imgChange()
           })
           .catch(error => {
             console.log(error)
@@ -409,6 +531,7 @@ export default {
           this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')
+          e.target.disabled = false
           return false
         }
       })
@@ -525,5 +648,14 @@ export default {
       height: 80px;
     }
   }
+}
+.coupons-form .el-upload-list__item {
+  cursor: move;
+  img {
+    cursor: move;
+  }
+}
+.el-icon-close {
+  z-index: 2;
 }
 </style>

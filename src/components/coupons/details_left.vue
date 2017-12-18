@@ -27,7 +27,7 @@
                 </p>
                 <p class="join">
                   <span><i class="iconfont icon-date"></i> Joined {{userInfo.joined_date}}</span>
-                  <span><i class="iconfont icon-huiyuandengji0101"> </i> Level{{userInfo.level}}</span>
+                  <span class="level"><i class="iconfont icon-huiyuandengji0101"> </i> Level{{userInfo.level}}</span>
                 </p>
                 <p class="coupons-posted">
                   <span ><i class="iconfont icon-youhuiquan1"></i> {{userInfo.coupon_posteds}} Coupons Posted</span>
@@ -41,11 +41,13 @@
 
 <script>
 import { base64Encode } from '@/utils/randomString'
+import { getStore }  from '@/utils/utils'
 export default {
   name: 'detailsLeft',
   data () {
     return {
       activeNum: 0,
+      country_id: parseInt(getStore('country_id')) || 1
     }
   },
   props: {
@@ -117,16 +119,16 @@ export default {
   // position: fixed;
   float: left;
   width: 26.9rem;
-  height: 44.44rem;
+  // height: 44.44rem;
   .img {
-    height: 22rem;
+    height: 20rem;
     background: white;
     border-radius: 5px;
     margin-bottom: 1rem;
     .img-big {
       text-align: center;
       padding-top: 2rem;
-      height: 15rem;
+      height: 14rem;
       img {
         width: 16rem;
         height: 14rem;
@@ -169,7 +171,7 @@ export default {
   }
   .user {
     position: relative;
-    height: 140px;
+    height: 7rem;
     background: white;
     margin-top: 0.4rem;
     border-radius: 5px;
@@ -218,9 +220,12 @@ export default {
         span {
            font-size: 12px;
            float: left;
-           margin-bottom: .5rem;
+           margin-bottom: 5px;
            margin-top: .5rem;
-           width: 8rem;
+           width: 12rem;
+        }
+        .level {
+          width: 6rem;
         }
       }
       .coupons-posted {
@@ -228,7 +233,7 @@ export default {
         span {
           font-size: 12px;
           float: left;
-          width: 10rem;
+          width: 15rem;
         }
         
       }

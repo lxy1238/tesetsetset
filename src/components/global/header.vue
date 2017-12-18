@@ -229,7 +229,7 @@ import { validateEmail } from '@/utils/validate.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
-import { getEmail, setEmail, getToken,getPass, setToken, removeToken, setUserId, getUserId ,removeUserId} from '@/utils/auth'
+import { getEmail, getToken,getPass, setToken, setUserId ,setPass} from '@/utils/auth'
 import '../../utils/google'
 export default {
   name: 'header',
@@ -442,6 +442,17 @@ export default {
       this.$root.eventHub.$on('isLoginInfo', () => {
         this.ShowLoginDialog()
       })
+
+      this.$root.eventHub.$on('changeCountryId', data => {
+        this.selectedCountryShop = parseInt(data)
+        for (let i of this.countryLists) {
+          if (i.id == data) {
+            setStore('country_id',i.id)
+            setStore('currency',i.currency)
+          }
+        }
+      })
+
     },
 
     //通过国家过滤首页的优惠券信息
@@ -490,9 +501,10 @@ export default {
     ShowLoginDialog () {
       this.googleLogin()
       this.loginform.email = getEmail()
-      // if (getPass()) {
-      //   this.loginform.password = base64Decode(getPass())
-      // }
+      if (getPass()) {
+        this.loginform.password = base64Decode(getPass())
+      }
+      console.log(base64Decode(getPass()))
       this.signDialog = false 
       this.loginDialog = true
      
@@ -708,6 +720,20 @@ export default {
           xfbml      : true,  // parse social plugins on this page
           version    : 'v2.11' // use graph api version 2.8
         })
+        // FB.ui(
+        //   {
+        //     method: 'share',
+        //     href: 'https://developers.facebook.com/docs/',
+        //   },
+        //   // callback
+        //   function (response) {
+        //     if (response && !response.error_message) {
+        //       alert('Posting completed.')
+        //     } else {
+        //       alert('Error while posting.')
+        //     }
+        //   }
+        // )
       }
     
   
@@ -750,6 +776,7 @@ export default {
       FB.login((response) => { 
         this.statusChangeCallback(response)  //登录回调函数
       },{scope: 'email'})  //需要获取的信息scope
+      
     },
 
     //第三方登录回调

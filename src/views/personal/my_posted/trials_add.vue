@@ -83,7 +83,7 @@
          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-          <el-input class="url-input" v-model="trialsForm.product_price"  disabled></el-input>
+          <el-input class="url-input" v-model="trialsForm.product_price"  ></el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
           <el-input class="url-input" v-model="trialsForm.shipping_fee"  disabled></el-input>
@@ -114,6 +114,7 @@
           <el-date-picker
             v-model="trialsForm.active_date"
             type="daterange"
+            :picker-options="pickerOptions1"
             placeholder="选择日期范围">
           </el-date-picker>
       </el-form-item>
@@ -160,6 +161,11 @@ export default {
   name: 'trials_add',
   data () {
     return {
+      pickerOptions1: {
+        disabledDate (time) {
+          return time.getTime() < Date.now() - 86400000
+        },
+      },
       country_id: parseInt(getStore('country_id')) || 1,
       optionsWebsite: [
       ],
@@ -363,13 +369,115 @@ export default {
       })
     },
 
-    //图片拖动位置 
+    //图片拖动位置实现 
+
+    change (x, y) {
+      let arr = this.trialsForm.product_img_s
+      arr.splice(x - 1, 1, ...arr.splice(y - 1, 1, arr[x - 1]))
+      this.trialsForm.product_img_s = arr 
+    },
 
     imgChange () {
+      $('.el-upload-list__item').unbind()
       setTimeout(() => {
+        $('.el-upload-list__item').unbind()
         $('.el-upload-list__item').mousedown((e) => {
           e.stopPropagation()
-          console.log(e)
+          let width = $(e.currentTarget).outerWidth()
+          let height = $(e.currentTarget).outerHeight()
+          let newArr = []
+          let x, y
+          $('.el-upload-list__item').each(function (){
+            this.ondragstart = function (event) {
+              event.preventDefault()
+            }
+            newArr.push($(this).offset())
+          })
+          let left = $(e.currentTarget).offset().left
+          let top = $(e.currentTarget).offset().top
+          
+          newArr.forEach((e, i) => {
+            if (parseInt(left) == parseInt(e.left) && parseInt(top) == parseInt(e.top)) {
+              x = i + 1
+              y = i + 1
+            }
+          })  
+          let clientX = e.clientX
+          let clientY = e.clientY
+          $('#app').append($('<div id="boxOfMove"></div>').css({
+            position: 'absolute',
+            zIndex: '1',
+            width: width,
+            height: height,
+            left: left,
+            top: top,
+            border: '1px solid #00ff00',
+            borderRadius: '5px',
+            color: 'transparent'
+          }))
+         
+          document.onmousemove = function (event) {
+            let clientNowX = event.clientX
+            let clientNowY = event.clientY
+            let disX = clientNowX - clientX
+            let disY = clientNowY - clientY
+            let boxLeft = left + disX
+            let boxTop = top + disY
+            $('#boxOfMove').css({
+              left: boxLeft,
+              top: boxTop
+            })
+            newArr.forEach((e) => {
+              if ( 
+                ( parseInt(e.left) <= (boxLeft + width) && (boxLeft + width) <= (parseInt(e.left) + width) ) && 
+                ( parseInt(e.top) <= (boxTop + height) && (boxTop + height) <= (parseInt(e.top) + height) ) 
+              ) {
+                e.area = ((boxLeft + width) - e.left) * ((boxTop + height) - e.top)
+                e.isChange = true
+              } else if (
+                (parseInt(e.left) <= (boxLeft) && (boxLeft) <= (parseInt(e.left) + width)) && 
+                (parseInt(e.top) <= (boxTop + height) && (boxTop + height) <= (parseInt(e.top) + height))
+              ) {
+                e.area = ((e.left + width) - boxLeft) * ((boxTop + height) - e.top)
+                e.isChange = true
+              } else if (
+                (parseInt(e.left) <= (boxLeft + width) && (boxLeft + width) <= (parseInt(e.left) + width)) && 
+                (parseInt(e.top) <= (boxTop) && (boxTop) <= (parseInt(e.top) + height))
+              ) {
+                e.area = ((boxLeft + width) - e.left) * ((e.top + height) - boxTop)
+                e.isChange = true
+              } else if (
+                (parseInt(e.left) <= (boxLeft) && (boxLeft) <= (parseInt(e.left) + width)) && 
+                (parseInt(e.top) <= (boxTop) && (boxTop) <= (parseInt(e.top) + height))
+              ) {
+                e.area = ((e.left + width) - boxLeft) * ((e.top + height) - boxTop)
+                e.isChange = true
+              } else {
+                e.isChange = false
+              }
+            })
+          } 
+          document.onmouseup =  () => {
+            let maxArea = 0
+            let result = newArr.some((e) => {
+              return e.isChange
+            })
+            if (result) {
+              newArr.forEach((e, i) => {
+                if (i === x - 1) {
+                  return
+                }
+                if (e.area > maxArea) {
+                  maxArea = e.area
+                  y = i + 1
+                }
+              })
+              this.change(x, y)
+            }
+            document.onmousemove = null
+            document.onmouseup = null
+            $('#boxOfMove').remove()
+          }
         })
       }, 500)
     },
@@ -393,10 +501,10 @@ export default {
                 newArr.push({url: e})
               }
             })
-
             this.trialsForm.product_img_s = newArr
             this.imgChange()
-            this.trialsForm.product_price = data.product_price.slice(1)
+            this.trialsForm.product_price = data.product_price.slice(1).replace(',', '')
+            console.log(this.trialsForm)
             // this.trialsForm.product_reason  = data.product_reason.replace(/<br\s*\/?>/gi,'\r\n').replace(/<b>/gi, '').replace(/<\/b>/gi, '')
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
@@ -556,6 +664,7 @@ export default {
           this.issueCoupon(this.trialsFormSubmit)
         } else {
           console.log('error submit!!')
+          e.target.disabled = false
           return false
         }
       })
@@ -695,5 +804,8 @@ export default {
   img {
     cursor: move;
   }
+}
+.el-icon-close {
+  z-index: 2;
 }
 </style>

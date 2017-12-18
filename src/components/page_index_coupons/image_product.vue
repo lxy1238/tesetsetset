@@ -8,8 +8,14 @@
     <slot name="white"></slot>
     <div class="promo-copy-parent"  v-if="addpromo">
      <div class="promo-copy">
-        <div class="span-btn" @click="addPromo(couponsDetails.id)">
-          <span>{{addPromoMsg}}</span>
+        <div class="span-btn" @click="addPromotion(couponsDetails.id)" v-if="isAddPromo === 0">
+          <span>Add Promo</span>
+        </div>
+         <!-- <div class="span-btn" v-else-if="isAddPromo === 1">
+          <span>Running ...</span>
+        </div> -->
+         <div class="span-btn" @click="removePromo(couponsDetails.id)" v-else>
+          <span>Cancel Promo  <i class="el-icon-check"></i></span>
         </div>
         <div class="line"></div>
         <el-tooltip placement="right">
@@ -17,7 +23,7 @@
             <img class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line">{{couponsDetails.product_title}}</div>
             <div class="content-line">coupons {{currency}} {{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</div>
-            <div class="content-line">Place the order with the address: {{couponsDetails.product_url}}</div>
+            <div class="content-line">coupon address: {{dealsbankUrl}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>
           <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
@@ -36,17 +42,17 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString'
 import Clip from '@/utils/clipboard.js'
 export default {
   name: 'image_product',
   data () {
     return {
       loading: false,
-      addPromoMsg: 'Add Promo',
-      runningMsg: 'Running . . .',
+      isAddPromo: 0,
+      country_id: parseInt(getStore('country_id')) || 1,
       addPromoRequestData: {
         api_token: getToken(),
         country_id: getStore('country_id') || 1,
@@ -70,17 +76,35 @@ export default {
       }
     }
   },
+  computed: {
+    productDetails () {
+      return 'productDetails' + this.couponsDetails.id
+    },
+    productDetails1 () {
+      return '#' + this.productDetails 
+    },
+    currency () {
+      return getStore('currency') || '$'
+    },
+    dealsbankUrl () {
+      return location.href + '/coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '?promoter=' + (getUserId() ? getUserId() : '')
+    }
+  },
   mounted () {
     this.init()
   },
   methods: {
     init () {
+      this.initData()
+    },
+    initData () {
+      this.addPromoRequestData.coupon_id = this.couponsDetails.id
       //判断是否加入推广
       setTimeout(() => {
         if (this.promotions.includes(this.couponsDetails.id)) {
-          this.addPromoMsg = 'Cancel Promo'
+          this.isAddPromo = 2
         }
-      }, 150)
+      }, 250)
     },
     //跳转到详情也，携带coupon_id ,user_id
     goToCouponsPage (id) {
@@ -92,50 +116,37 @@ export default {
     },
 
     //加入 移除  推广
-    addPromo (coupon_id) {
-      this.addPromoRequestData.coupon_id = coupon_id
-      if (this.addPromoMsg == 'Add Promo') {
-        this.addPromoMsg = this.runningMsg
-        if (!getToken()) {
-          setTimeout( () => {
-            this.addPromoMsg = 'Add Promo'
-          }, 100)
-          return
-        }
-        this.$api.promotionAddCoupon(this.addPromoRequestData)
-          .then(() => {
-            this.addPromoMsg = 'Cancel Promo'
-          })
-          .catch(error => {
-            console.log(error + 'promotionaddcoupon')
-          })
-      } else if (this.addPromoMsg == 'Cancel Promo'){
-        this.addPromoMsg = this.runningMsg
-        this.$api.promotionUserRemove(this.addPromoRequestData)
-          .then(() => {
-            this.addPromoMsg = 'Add Promo'
-          })
-          .catch(error => {
-            console.log(error + 'promotionaddcoupon')
-          })
+    addPromotion () {
+      // this.isAddPromo = 1
+      if (!getToken()) {
+        setTimeout( () => {
+          this.isAddPromo = 0
+        }, 100)
+        return
       }
+      this.$api.promotionAddCoupon(this.addPromoRequestData)
+        .then(() => {
+          this.isAddPromo = 2
+        })
+        .catch(error => {
+          console.log(error + 'promotionaddcoupon')
+        })
+    },
+    removePromo () {
+      // this.isAddPromo = 1
+      this.$api.promotionUserRemove(this.addPromoRequestData)
+        .then(() => {
+          this.isAddPromo = 0
+        })
+        .catch(error => {
+          console.log(error + 'promotionaddcoupon')
+        })
     },
     copy (e) {
       Clip(e)
     }
   },
-  computed: {
-    ...mapGetters(['token', 'user_id']),
-    productDetails () {
-      return 'productDetails' + this.couponsDetails.id
-    },
-    productDetails1 () {
-      return '#' + this.productDetails 
-    },
-    currency () {
-      return getStore('currency') || '$'
-    }
-  },
+ 
  
 }
 </script>

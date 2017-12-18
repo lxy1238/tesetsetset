@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index">
-    <div class="pages-content" v-if="trialDetailData.id">
+  <div class="page-index" v-if="trialDetailData.id" v-title="trialDetailData.product_title">
+    <div class="pages-content" >
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
@@ -24,7 +24,11 @@
             </div>
             <div class="describe">
               <div class="time" v-if="leftTime"> <i class="iconfont icon-icon-test">
-                </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes</div>
+                </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes
+              </div>
+              <div class="time" v-else >
+                expried
+              </div>
             </div>
             <div class="price-details">
                 <div class="price">Price: {{currency}}{{trialDetailData.product_price}} </div>
@@ -47,12 +51,13 @@
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
-                   <a class="share-a" href="#"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" href="#"><i class="iconfont icon-tuite_twitter"></i></a>
+                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
             </div>
           </div>
+        </div>
           <div class="promotion-template">
             <div class="tabs">
               <div class="head-s clearfix">
@@ -85,7 +90,6 @@
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
 
@@ -186,14 +190,20 @@ export default {
     },
     leftTime () {
       if (this.trialDetailData.end_time) {
-        return getTimeDetail(this.trialDetailData.end_time)
+        let time = getTimeDetail(this.trialDetailData.end_time)
+        if (time.day == 0 && time.hours == 0 && time.minutes == 0) {
+          return false
+        } else {
+          return getTimeDetail(this.trialDetailData.end_time)
+        }
       } else {
-        return ''
+        return false
       }
     }
   },
   mounted () {
     this.init()
+
   },
   methods: {
     init () {
@@ -202,16 +212,21 @@ export default {
     },
     initData () {
       this.reqData.id = base64Decode(this.$route.params.trialId)
+
+
+      //通过路由中的国家id 修改头部的国家id
+      let country_id = base64Decode(this.$route.params.countryId)
+      this.$root.eventHub.$emit('changeCountryId', country_id)
     },
 
     //获取试用品详情
     getTrialDetail () {
-      console.log(this.reqData)
       this.$api.trialDetail(this.reqData).then(res => {
         this.trialApplyData.trial_id = res.data.id
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
+        console.log(this.trialDetailData)
         this.getPostUserInfo(res.data.user_id)
       }).catch(error => {
         console.log(error)
@@ -257,12 +272,16 @@ export default {
       if (!this.isLogin()) {
         return
       }
+      if (this.trialDetailData.run_status === 'stop') {
+        this.$message.info('今天试用品已经发放完毕,请明天过来申请')
+        return
+      }
       e.target.disabled = true
       this.$api.trialApply(this.trialApplyData).then(res => {
         if (res.code === 200) {
           this.isApply = true
           if (res.data === 1) {
-            this.$router.push({ path: '/successTrials/' + this.$route.params.trialId })
+            this.$router.push({ path: '/successTrials/' + this.$route.params.trialId + '/' + this.$route.params.countryId})
           } else {
             this.notGetTrialsDialog = true
           }
@@ -314,6 +333,7 @@ export default {
       background: white;
       border-radius: 5px;
       margin-bottom: 1rem;
+      min-height: 28rem;
       .img {
         position: absolute;
         right: 1.5rem;
@@ -334,7 +354,7 @@ export default {
       }
       .price-details {
         padding: 1rem 0 1rem .5rem;
-        height: 10rem;
+        height: 13rem;
         background: #fafafa;
         color: #808080;
         span {
@@ -427,12 +447,18 @@ export default {
       }
     }
  
-    .promotion-template {
-      min-height: 1000px;
+  
+  }
+}
+
+  .promotion-template {
+      // min-height: 1000px;
       background: white;
       border-radius: 5px;
       overflow: hidden;
-      margin-bottom: 5rem;
+      // margin-bottom: 5rem;
+      padding-bottom: 5rem;
+      width: 100%;
       .tabs {
         .head-s {
           font-size: 1.33rem;
@@ -461,7 +487,10 @@ export default {
           }
         }
         .tabs-body {
-          padding: 0 10px 0 10px;
+          padding: 0 30px 0 30px;
+          text-align: center;
+          min-width: 1000px;
+          margin: 0 auto;
           margin-top: 1rem;
           .content {
             padding: 0 3rem;
@@ -472,20 +501,26 @@ export default {
               }
               .process {
                 position: relative;
-                height: 13.66rem;
-                margin-bottom: 2rem;
+                height: 245px;
+                margin-bottom: 36px;
                 img {
                   position: absolute;
                   top: 0;
                 }
+                .img-l {
+                  left: 0;
+                }
                 .img-r {
                   right: 0;
-                  width: 20rem;
-                  height: 13rem;
+                  width: 360px;
+                  height: 234px;
                 }
                 .text {
-                  width: 18rem;
-                  margin-left: 7rem;
+                  position: relative;
+                  margin: 0 auto;
+                  width: 324px;
+                  // margin-left: 125px;
+                  left: -130px;
 
                 }
                 .title {
@@ -504,8 +539,6 @@ export default {
         }
       }
     }
-  }
-}
   // trials申请失败
 .not-trials-dialog {
     p {
@@ -539,9 +572,30 @@ export default {
   width: 83.333rem !important;
 }
 .trials-details-left {
-  position: fixed;
-  top: 9rem;
-  margin-top: 6.2rem !important
+  // position: fixed;
+  height: 28rem;
+  margin-top: 3.1rem !important
 }
+.iconfont {
+    font-size: 2rem;
+    &.icon-facebook1 {
+      &:hover {
+        color: #39579C;
+      }
+    }
+      &.icon-tuite_twitter {
+      &:hover {
+        color: #26ABE1;
+      }
+    }
+    &:hover {
+      color: red; //TODO 这里后续不要，可以删除
+    }
+  }
+  .icon-pinterest {
+    &:hover {
+      color: red;
+    }
+  }
 </style>
 

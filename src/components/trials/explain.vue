@@ -49,7 +49,7 @@ export default {
 <style lang="less" scoped>
 .trials-explain {
   width: 99.05%;
-  height: 5.5rem;
+  height: 5rem;
   // border: 1px solid #e1e1e1;
   background: white;
   margin: 1rem 0 1.3rem 0;

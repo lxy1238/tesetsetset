@@ -195,10 +195,6 @@ table tbody tr td {
   }
   .trials-details-left {
     top: 10.3rem !important;
-    display: none;
-  }
-  .trials-right-content.right {
-    width: 100% !important;
   }
 }
 @media screen and (max-width: 1389px) {

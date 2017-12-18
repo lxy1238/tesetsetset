@@ -15,17 +15,20 @@
           <div v-if="selected == 0" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails0" :class="{last: index == 2}" v-if="!item.isExpried">
-                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt="">
+                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt=""  @click="gotoSuccessDetail(item)">
                 <div class="center-content">
-                  <div class="order-title">{{item.trials.product_title}} </div>
+                  <div class="order-title" @click="gotoSuccessDetail(item)">{{item.trials.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
                       <i>{{currency}}{{item.trials.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
                       <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -34,8 +37,8 @@
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <el-input class="footer-input" v-model="item.order_number"></el-input>
-                    <button type="button" @click="submitOrderNumber(item, $event)">Save</button>
+                    <input class="footer-input" v-model="item.order_number" ></input>
+                    <button type="button" @click="submitOrderNumber(item, $event)" >Save</button>
                   </div>
                 </div>
                 <div class="right-content">
@@ -57,17 +60,20 @@
           <div v-if="selected == 1" class="content">
             <div class="wait-order">
              <div class="order" v-for="(item, index) in orderDetails1" :class="{last: index == 2}">
-               <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
+               <img class="order-img" :src="item.product_img.split(',')[0]" alt="" >
                 <div class="center-content">
-                  <div class="order-title">{{item.product_title}} </div>
+                  <div class="order-title" >{{item.product_title}} </div>
                   <div class="info">
                     <span>
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -142,9 +148,12 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -197,9 +206,12 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -235,6 +247,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import { getToken, getUserId } from '@/utils/auth'
 import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString.js'
 export default {
   name: 'my_trials',
   components: {
@@ -242,6 +255,7 @@ export default {
   },
   data () {
     return {
+      country_id: getStore('country_id') || 1,
       tabsHead: [
         'Waiting for Order', 'Waiting for Review', 'Completed', 'Expired'
       ],
@@ -250,6 +264,7 @@ export default {
       showItem: 7,
       value5: 3.6,
       isExpried: false,
+      timer: null,
       countDownData: {},
       orderDetails0: [],
       orderDetails1: [],
@@ -284,6 +299,9 @@ export default {
   mounted () {
     this.init()
   },
+  beforeDestroy () {
+    clearInterval(this.timer)
+  },
   methods: {
     init () {
       this.gotoPanel()
@@ -295,14 +313,12 @@ export default {
     initData () {
       
     },
-
     //获取第一个列表信息
     getWaitingData () {
       this.$api.userApplySucced(this.reqSuccedDetailsData).then(res => {
         this.orderDetails0 = res.data
         for (let i of this.orderDetails0) {
           let expiry_time = getTimeDetail(i.expiry_time)
-          i.countDownData = expiry_time
           i.countDownData = expiry_time
           i.countDown = i.expiry_time
           this.countDown(i)
@@ -313,13 +329,12 @@ export default {
     },
     //定时器，时间倒计时
     countDown (i) {
-      let timer = null
-      timer = setInterval(() => {
+      this.timer = setInterval(() => {
         let expiry_time1 = getTimeDetail(i.countDown)
         i.countDownData = expiry_time1
         this.refresh(this.orderDetails0)
-        if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
-          clearInterval(timer)
+        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+          clearInterval(this.timer)
           i.isExpried = true
         }
       }, 1000)
@@ -335,13 +350,13 @@ export default {
       this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
         if (res.code === 200) {
           this.selected = 1
+          this.init()
         }
         e.target.disabled = false
       }).catch(() => {
         e.target.disabled = false
       })
     },
-
     //review
     getReviewInfo () {
       this.$api.userTrialOrder(this.reqReviewData).then(res => {
@@ -423,7 +438,6 @@ export default {
     //userApplyFinish  订单过期信息展示
     getExpiredInfo () {
       this.$api.userApplyExpired(this.reqSuccedDetailsData).then(res => {
-        console.log(res)
         this.orderDetails3 = res.data.data
       })
     },
@@ -443,6 +457,12 @@ export default {
     } ,
     test (i) {
       console.log(i)
+    },
+    gotoSuccessDetail (item) {
+      
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) })
+
+      console.log(item)
     }
   }
 }

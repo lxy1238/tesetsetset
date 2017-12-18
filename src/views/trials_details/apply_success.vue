@@ -1,8 +1,8 @@
 <template>
-  <div class="page-index ">
+  <div class="page-index " v-if="trialDetail.product_price" v-title="trialDetail.product_title">
     <div class="pages-content clearfix">
       <explain :is-active="2"></explain>
-      <div class="home-content" v-if="trialDetail.product_price">
+      <div class="home-content" >
         <div class="details" v-if="trialDetail.product_price">
           <div class="pro-img">
             <img class="img" :src="trialDetail.product_img.split(',')[0]" alt="">
@@ -45,7 +45,7 @@
           <div class="submit">
             <span>Order number: </span>
             <input class="input" type="text" v-model="reqAddOrderData.order_number" />
-            <button class="submit-btn" @click="submitOrderNumber($event)">Confirm</button>
+            <button class="submit-btn" @click="submitOrderNumber($event)" ref="submitBtn">Confirm</button>
           </div>
           <div>Please confirm that the order number is valid and the transaction is successful, 
             otherwise your trial qualification will be canceled.</div>
@@ -151,6 +151,7 @@ export default {
         content: ''
 
       },
+      timer: null,
     }
   },
   components: {
@@ -166,6 +167,9 @@ export default {
   mounted () {
     this.init()
   },
+  beforeDestroy () {
+    clearInterval(this.timer)
+  },
   methods: {
     init () {
       this.initData()
@@ -173,6 +177,9 @@ export default {
     },
     initData () {
       this.reqSuccedDetailsData.trial_id = base64Decode(this.$route.params.trialId)
+
+      let country_id = base64Decode(this.$route.params.countryId)
+      this.$root.eventHub.$emit('changeCountryId', country_id)
     },
     
     gotoAmazon (url) {
@@ -193,12 +200,11 @@ export default {
 
     //定时器，时间倒计时
     countDown () {
-      let timer = null
-      timer = setInterval(() => {
+      this.timer = setInterval(() => {
         let expiry_time1 = getTimeDetail(this.trialDetail.countDown)
         this.countDownData = expiry_time1
-        if (expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
-          clearInterval(timer)
+        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+          clearInterval(this.timer)
           this.isExpired = true
         }
       }, 1000)
@@ -207,7 +213,6 @@ export default {
     //提交订单 号码
     submitOrderNumber (e) {
       e.target.disabled = true
-      console.log(this.reqAddOrderData)
       if (!this.reqAddOrderData.order_number) {
         return
       }
@@ -216,11 +221,17 @@ export default {
           this.$router.push({path: '/personal/my-trials/index', query: { status: 1 }})
         }
         e.target.disabled = false
-      }).catch(err => {
-        console.log(err)
+      }).catch(() => {
         e.target.disabled = false
       })
 
+    },
+    
+    //enter 按键提交
+    enter (e) {
+      if (e.keyCode === 13) {
+        this.submitOrderNumber()
+      }
     },
 
     //选择问题, 提交问题反馈

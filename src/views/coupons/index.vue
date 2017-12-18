@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index" >
-    <div class="pages-content" v-if="couponDetail.valid_date">
+  <div class="page-index" v-title="couponDetail.product_title" v-if="couponDetail.valid_date" >
+    <div class="pages-content" >
       <div class="head-crumbs">
         <span class=" gray-s">Coupons > {{menu_name}}</span> 
       </div>
@@ -53,7 +53,7 @@
                 <div class="inline-b question" v-if="selected !== 'Choose reason' && isFlagCoupon">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
-                    <input type="text" v-model="addProblemData.content">
+                    <input type="text" v-model="addProblemData.content" @keyup="enter($event)">
                     <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
                     <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                   </div>
@@ -92,10 +92,11 @@
                </div>
                <div class="share-to-p">
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
+                 <!-- <button  data-clipboard-target="#proCard" @click="shareFaceBook">share</button> -->
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent('https://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
@@ -140,7 +141,7 @@
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
             <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
+            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
               <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
@@ -303,7 +304,7 @@ export default {
       classifyList: [
         {
           id: 0,
-          name: 'Top Coupons'
+          name: 'Top'
         }
       ],
 
@@ -319,10 +320,16 @@ export default {
       promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
       promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
       templateText: '',
+      promoterPid: '123456789',
+      requestPlatData: {
+        api_token: getToken(),
+        country_id: parseInt(getStore('country_id') || 1),
+        user_id: '',
+      },
     }
   },
   computed: {
-    ...mapGetters(['username', 'user_id']),
+    ...mapGetters(['username']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
@@ -332,7 +339,7 @@ export default {
     },
     currency () {
       return getStore('currency') || '$'
-    }
+    },
   },
   mounted () {
     this.init()
@@ -352,6 +359,32 @@ export default {
       this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
+
+
+      //获取国家id ,传递给头部组件
+      let country_id = base64Decode(this.$route.params.countryId)
+      this.$root.eventHub.$emit('changeCountryId', country_id)
+
+
+    },
+
+    //判断链接中携带哪个pid , 如果有分享人的id 那就携带分享人的pid， 如果没有分享人，则携带公司的pid
+    hasPromoter () {
+      if (this.$route.query.promoter) {
+        let promoterUserId = parseInt(this.$route.query.promoter)
+        this.requestPlatData.user_id = promoterUserId
+        this.$api.postUserPid(this.requestPlatData).then(res => {
+          for (let i of res.data) {
+            if (i.platform_id === this.couponDetail.platform_id) {
+              if (i.PID) {
+                this.promoterPid = i.PID
+              } 
+            }
+          }
+        })
+      } else {
+        this.promoterPid = '12345678'
+      }
     },
     
     //获取优惠券详情
@@ -359,7 +392,6 @@ export default {
       this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
       this.$api.couponDetails(this.requestCouponDetails)
         .then(res => {
-          console.log(res)
           if (res.data.coupon_user_template) {
             this.promotionTemplate = res.data.coupon_user_template.content
           }
@@ -371,6 +403,7 @@ export default {
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
           this.test()
+          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -522,14 +555,18 @@ export default {
  
 
     //领取优惠券
-    getCouponCode () {
+    getCouponCode (e) {
       if (this.isLogin()) {
         if (this.isStop()) {
           this.$message.info('该活动已经结束,或者该优惠卷已经领取完了')
           return
         }
+        e.target.disabled = true
         this.$api.userGetCoupon(this.reqGetCodeData).then(() => {
+          e.target.disabled = false
           this.getCodeSuccess = true
+        }).catch(() => {
+          e.target.disabled = false
         })
       }
     },
@@ -604,6 +641,12 @@ export default {
       })
     },
 
+    enter (e) {
+      if (e.keyCode === 13) {
+        this.addProblemSubmit()
+      }  
+    },
+
     //获取头部品类列表
     getHeadCateListInfo () {
       this.$api.getHeadCateList().then(res => {
@@ -615,8 +658,31 @@ export default {
    
     //跳转到相应 商品链接
     gotoPlatform (url) {
-      window.open(url)
+      let endUrl = `${url}&tag=${this.promoterPid}`
+      window.open(endUrl)
     },
+
+    //facebook 分享
+    shareFaceBook () {
+      FB.ui(
+        {
+          method: 'share_open_graph',
+          action_type: 'og.likes',
+          action_properties: JSON.stringify({
+            object:'http://www.baidu.com',
+          })
+        },
+        
+        // callback
+        function (response) {
+          if (response && !response.error_message) {
+            alert('Posting completed.')
+          } else {
+            alert('Error while posting.')
+          }
+        }
+      )
+    }
 
   }
 }
@@ -867,7 +933,7 @@ export default {
         }
         .promo-head-r {
           display: inline-block;
-          width: 10rem;
+          width: 13rem;
           text-align: center;
           cursor: pointer;
           &:hover {

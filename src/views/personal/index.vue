@@ -1,5 +1,5 @@
 <template>
-  <div class="personal">
+  <div class="personal" v-title="titleMsg">
     <header-self :need-classify="false"></header-self>
     <subnav :routers="routers"></subnav>
     <broad-side></broad-side>
@@ -22,7 +22,7 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to dealsbank',
+      titleMsg: 'member center',
       routers: []
     }
   },

@@ -51,6 +51,7 @@ export default {
   name: 'promotion',
   data () {
     return {
+      country_id: getStore('country_id') || 1,
       arrcouponsDetails: [],
       allpage: undefined,
       showItem: 7,
@@ -135,7 +136,7 @@ export default {
 
     //跳转到详情页面
     gotodetails (id) {
-      this.$router.push({ path: '/coupons/' + base64Encode(id) })
+      this.$router.push({ path: '/coupons/' + base64Encode(id) + '/' + base64Encode(this.country_id) })
     },
 
     //翻页功能
