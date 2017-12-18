@@ -649,4 +649,13 @@ export default {
     }
   }
 }
+.coupons-form .el-upload-list__item {
+  cursor: move;
+  img {
+    cursor: move;
+  }
+}
+.el-icon-close {
+  z-index: 2;
+}
 </style>
