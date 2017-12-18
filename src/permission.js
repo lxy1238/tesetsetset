@@ -9,6 +9,7 @@ var whiteList = ['/']
 router.beforeEach((to, from, next) => {
   store.dispatch('setCurrentRouter', to.path)  //存储当前路由path
   NProgress.start()
+
   if (getToken()) {
     if (store.getters.roles.length === 0) {
       store.dispatch('GetInfo').then(res => {
@@ -22,6 +23,10 @@ router.beforeEach((to, from, next) => {
       next()
     }
   } else {
+    store.dispatch('GenerateRoutes', {roles: ['member'] }).then(() => {
+      router.addRoutes([store.getters.addRouters[store.getters.addRouters.length - 1]])
+      next({ ...to })
+    })
     if (whiteList.indexOf(to.path) !== -1) {
       next()
     } else {
