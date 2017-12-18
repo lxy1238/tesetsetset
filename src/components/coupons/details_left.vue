@@ -41,11 +41,13 @@
 
 <script>
 import { base64Encode } from '@/utils/randomString'
+import { getStore }  from '@/utils/utils'
 export default {
   name: 'detailsLeft',
   data () {
     return {
       activeNum: 0,
+      country_id: parseInt(getStore('country_id')) || 1
     }
   },
   props: {

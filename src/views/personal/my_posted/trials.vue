@@ -296,7 +296,7 @@ export default {
     //跳转到优惠券详情页面
     gotoDetails (item) {
       if (item.status == 1 && item.run_status == this.all_run_status[1]) {
-        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id)  })
+        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id) + '/' + base64Encode(item.country_id) })
       }
     },
 
