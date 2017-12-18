@@ -40,3 +40,11 @@ export const getUserCountry = () => fetch({
   url: '/api/v1/platform/country',
   method: 'POST',
 })
+
+
+//支付
+
+export const payWX = () => fetch({
+  url: '/api/v1/pay/wx-pay',
+  method: 'POST',
+})

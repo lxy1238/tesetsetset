@@ -239,6 +239,12 @@ export const asyncRouterMap = [
         component: _import('personal/wallet/withdraw')
       },
       {
+        path: '/wallet/recharge/pay-wx',
+        text: 'Withdraw',
+        hidden: true,
+        component: _import('personal/wallet/pay/wx')
+      },
+      {
         path: '/wallet/recharge',
         text: 'Recharge',
         component: _import('personal/wallet/recharge'),

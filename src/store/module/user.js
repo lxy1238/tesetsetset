@@ -12,7 +12,7 @@ const user = {
     email: getEmail(),
     promotions: [],
     avatar: '',
-    joinedDate: '',
+    amount: '',
     memberLever: '',
     couponsPosted: '',
     lastPostedDate: '',
@@ -25,8 +25,8 @@ const user = {
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
     },
-    SET_JOINED_DATE: (state, joinedDate) => {
-      state.joinedDate = joinedDate
+    SET_AMOUNT: (state, amount) => {
+      state.amount = amount
     },
     SET_MEMBER_LEVEL: (state, memberLever) => {
       state.memberLever = memberLever
@@ -73,6 +73,7 @@ const user = {
             setEmail(data.email)
             commit('SET_ROLES', [data.type])
             commit('SET_USERNAME', data.username)
+            commit('SET_AMOUNT', data.account.amount)
             commit('SET_EMAIL',data.email)   
             commit('SET_USERID',data.id)   
             commit('SET_AVATAR',data.base.avatar_img)   

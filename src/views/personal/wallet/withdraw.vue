@@ -8,13 +8,13 @@
           Balance:
         </label>
         <span class="balance-money">
-          $123.90
+          {{currency}}{{amount}}
         </span>
       </div>
       <div class="withdrawals">
         <label class="left-label">Withdrawals:</label>
         <el-form-item>
-          <el-input ></el-input>
+          <el-input v-model="withdrawCount" @change="change"></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
@@ -30,17 +30,42 @@
       </div>
     </el-form>
     <div class="submit">
-        <button>Submit</button>
+        <button @click="submit">Submit</button>
       </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { getStore  } from '@/utils/utils'
 export default {
   name: 'withdraw',
   data () {
     return {
-      radio: '1'
+      radio: '1',
+      withdrawCount: '',
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'amount'
+    ]),
+    currency () {
+      return getStore('currency') || '$'
+    },
+  },
+  mounted () {
+
+  },
+  methods: {
+    submit () {
+      if (this.radio == '3') {
+        this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
+      }
+    },
+    change () {
+      console.log(this.withdrawCount)
+      this.withdrawCount = this.withdrawCount.replace(/\D/g, '')
     }
   }
 }
