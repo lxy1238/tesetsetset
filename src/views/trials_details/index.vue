@@ -57,6 +57,7 @@
                  </span>
             </div>
           </div>
+        </div>
           <div class="promotion-template">
             <div class="tabs">
               <div class="head-s clearfix">
@@ -89,7 +90,6 @@
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
 
@@ -333,6 +333,7 @@ export default {
       background: white;
       border-radius: 5px;
       margin-bottom: 1rem;
+      min-height: 28rem;
       .img {
         position: absolute;
         right: 1.5rem;
@@ -353,7 +354,7 @@ export default {
       }
       .price-details {
         padding: 1rem 0 1rem .5rem;
-        height: 10rem;
+        height: 13rem;
         background: #fafafa;
         color: #808080;
         span {
@@ -446,12 +447,18 @@ export default {
       }
     }
  
-    .promotion-template {
+  
+  }
+}
+
+  .promotion-template {
       // min-height: 1000px;
       background: white;
       border-radius: 5px;
       overflow: hidden;
-      margin-bottom: 5rem;
+      // margin-bottom: 5rem;
+      padding-bottom: 5rem;
+      width: 100%;
       .tabs {
         .head-s {
           font-size: 1.33rem;
@@ -480,7 +487,10 @@ export default {
           }
         }
         .tabs-body {
-          padding: 0 10px 0 10px;
+          padding: 0 30px 0 30px;
+          text-align: center;
+          min-width: 1000px;
+          margin: 0 auto;
           margin-top: 1rem;
           .content {
             padding: 0 3rem;
@@ -491,20 +501,26 @@ export default {
               }
               .process {
                 position: relative;
-                height: 13.66rem;
-                margin-bottom: 2rem;
+                height: 245px;
+                margin-bottom: 36px;
                 img {
                   position: absolute;
                   top: 0;
                 }
+                .img-l {
+                  left: 0;
+                }
                 .img-r {
                   right: 0;
-                  width: 20rem;
-                  height: 13rem;
+                  width: 360px;
+                  height: 234px;
                 }
                 .text {
-                  width: 18rem;
-                  margin-left: 7rem;
+                  position: relative;
+                  margin: 0 auto;
+                  width: 324px;
+                  // margin-left: 125px;
+                  left: -130px;
 
                 }
                 .title {
@@ -523,8 +539,6 @@ export default {
         }
       }
     }
-  }
-}
   // trials申请失败
 .not-trials-dialog {
     p {
@@ -558,9 +572,9 @@ export default {
   width: 83.333rem !important;
 }
 .trials-details-left {
-  position: fixed;
-  top: 9rem;
-  margin-top: 6.2rem !important
+  // position: fixed;
+  height: 28rem;
+  margin-top: 3.1rem !important
 }
 .iconfont {
     font-size: 2rem;
