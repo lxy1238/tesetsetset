@@ -23,9 +23,12 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.trials.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
                       <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -65,9 +68,12 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -142,9 +148,12 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
@@ -197,9 +206,12 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span>
+                    <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                    </span>
+                    <span v-else>
+                       <label for="">Free shopping</label>
                     </span>
                     <span>
                       <label>Refund: </label>
