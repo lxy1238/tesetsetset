@@ -23,8 +23,8 @@ router.beforeEach((to, from, next) => {
       next()
     }
   } else {
-    store.dispatch('GenerateRoutes', {roles: ['member'] }).then(() => {
-      router.addRoutes([store.getters.addRouters[store.getters.addRouters.length - 1]])
+    store.dispatch('NotFoundRoutes').then(() => {
+      router.addRoutes(store.getters.addRouters)
       next({ ...to })
     })
     if (whiteList.indexOf(to.path) !== -1) {
