@@ -2,7 +2,7 @@
   <div class="withdraw">
     <div class="title">My Wallet</div>
     <div class="title-s">Recharge</div>
-    <el-form >
+    <el-form :model="rechangeForm" :rules="rules"  ref="rechangeForm"   >
       <div class="balance">
         <label class="left-label">
           Balance:
@@ -14,19 +14,19 @@
       <div class="withdrawals">
         <label class="left-label">recharges:</label>
         <el-form-item prop="withdrawCount">
-          <el-input v-model="withdrawCount" @blur="blur" class="input-money"></el-input>
+          <el-input v-model="rechangeForm.withdrawCount" @blur="blur" class="input-money"></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
-        <el-radio class="pay-radio" v-model="radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="2"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
       </div>
      
     </el-form>
     <div class="submit">
         <button @click="submit">Submit</button>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -37,8 +37,15 @@ export default {
   name: 'rechange',
   data () {
     return {
-      radio: '1',
-      withdrawCount: '',
+      rules: {
+        withdrawCount: [
+          { required: true, message: 'Please enter the recharge amount', trigger: 'blur' },
+        ]
+      },
+      rechangeForm: {
+        radio: '1',
+        withdrawCount: '',
+      }
     }
   },
   computed: {
@@ -57,13 +64,23 @@ export default {
     })
   },
   methods: {
-    submit () {
-      if (this.radio == '3') {
-        if (!this.withdrawCount) {
-          return
+    withdrawSubmit (formName, callback) {
+      //element-ui 的表单验证
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          callback()
+        } else {
+          console.log('error submit!!')
+          return false
         }
-        this.$router.push({path: '/wallet/recharge/pay-wx', query: {withdrawCount: this.withdrawCount}})
-      }
+      })
+    },
+    submit () {
+      this.withdrawSubmit('rechangeForm', () => {
+        if (this.rechangeForm.radio == '3') {
+          this.$router.push({path: '/wallet/recharge/pay-wx', query: {withdrawCount: this.rechangeForm.withdrawCount}})
+        }
+      })
     },
     blur () {
       let reg = /^\d+(\.\d{1,2})?$/
@@ -110,6 +127,10 @@ export default {
       .pay-radio {
         display: inline-block;
         width: 35%;
+        img {
+          width: 180px;
+          height: 50px;
+        }
       }
       .el-radio+.el-radio {
         margin-left: 0;

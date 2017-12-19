@@ -11,7 +11,7 @@ import 'nprogress/nprogress.css'// Progress 进度条样式
 
 const service = axios.create({
   baseURL: process.env.BASE_API,
-  timeout: 20000
+  timeout: 30000
 })
 
 

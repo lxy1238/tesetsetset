@@ -2,7 +2,7 @@
   <div class="withdraw">
     <div class="title">My Wallet</div>
     <div class="title-s">Withdraw</div>
-    <el-form>
+    <el-form  :model="withdrawForm" :rules="rules"  ref="withdrawForm" >
       <div class="balance">
         <label class="left-label">
           Balance:
@@ -13,19 +13,20 @@
       </div>
       <div class="withdrawals">
         <label class="left-label">Withdrawals:</label>
-        <el-form-item>
-          <el-input v-model="withdrawCount" @change="change"></el-input>
+        <el-form-item prop="withdrawCount">
+          <el-input v-model="withdrawForm.withdrawCount" @change="change"></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
-        <el-radio class="pay-radio" v-model="radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
+        <el-radio class="pay-radio"v-model="withdrawForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="4"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
       </div>
       <div class="withdrawals">
         <label class="left-label">Acount:</label>
-        <el-form-item>
-          <el-input ></el-input>
+        <el-form-item prop="account">
+          <el-input v-model="withdrawForm.account"></el-input>
         </el-form-item>
       </div>
     </el-form>
@@ -42,8 +43,18 @@ export default {
   name: 'withdraw',
   data () {
     return {
-      radio: '1',
-      withdrawCount: '',
+      rules: {
+        withdrawCount: [
+          { required: true, message: 'Please enter the withdrawal amount', trigger: 'blur' },
+        ],
+        account: [
+          { required: true, message: 'Please enter the withdrawal account', trigger: 'blur' },
+        ]
+      },
+      withdrawForm: {
+        radio: '1',
+        withdrawCount: '',
+      }
     }
   },
   computed: {
@@ -58,6 +69,17 @@ export default {
 
   },
   methods: {
+    withdrawSubmit (formName, callback) {
+      //element-ui 的表单验证
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          callback()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
     submit () {
       if (this.radio == '3') {
         this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
@@ -106,6 +128,10 @@ export default {
       .pay-radio {
         display: inline-block;
         width: 35%;
+        img {
+          width: 180px;
+          height: 50px;
+        }
       }
       .el-radio+.el-radio {
         margin-left: 0;
