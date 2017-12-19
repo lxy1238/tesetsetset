@@ -1,11 +1,12 @@
 <template>
   <div class="about-center" v-title="titleMsg">
     help center
+    <div id="code"></div>
   </div>
 </template>
 
 <script>
-import { base64Encode, base64Decode } from '@/utils/randomString'
+import QRCode from 'qrcodejs2'
 export default {
   name: 'about',
   data () {
@@ -13,9 +14,22 @@ export default {
       titleMsg: 'About Us'
     }
   },
-  mounted () {
-    console.log(base64Encode(1))
-    console.log(base64Decode(undefined))
+  mounted () {    //钩子函数，等于vue1.0中的ready
+    this.$nextTick(function () {
+      this.qrcode()
+    })
+  },
+  methods: {
+    qrcode () {
+      var qrcode = new QRCode(document.getElementById('code'), {
+        width : 100,
+        height : 100
+      })
+      this.$api.payWX().then(res => {
+        console.log(res)
+        qrcode.makeCode(res.data)
+      })
+    }
   }
 }
 </script>

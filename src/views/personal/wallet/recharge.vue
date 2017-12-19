@@ -2,45 +2,111 @@
   <div class="withdraw">
     <div class="title">My Wallet</div>
     <div class="title-s">Recharge</div>
-    <el-form>
+    <el-form :model="rechangeForm" :rules="rules"  ref="rechangeForm"   >
       <div class="balance">
         <label class="left-label">
           Balance:
         </label>
         <span class="balance-money">
-          $123.90
+          {{currency}}{{amount}}
         </span>
       </div>
       <div class="withdrawals">
         <label class="left-label">recharges:</label>
-        <el-form-item>
-          <el-input ></el-input>
+        <el-form-item prop="withdrawCount">
+          <el-input v-model="rechangeForm.withdrawCount" @blur="blur" class="input-money"></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
-        <el-radio class="pay-radio" v-model="radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="2"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
       </div>
-      <div class="withdrawals">
-        <label class="left-label">Acount:</label>
-        <el-form-item>
-          <el-input ></el-input>
-        </el-form-item>
-      </div>
+     
     </el-form>
     <div class="submit">
-        <button>Submit</button>
-      </div>
+        <button @click="submit">Submit</button>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { getStore  } from '@/utils/utils'
 export default {
-  name: 'withdraw',
+  name: 'rechange',
   data () {
+    const validateMoney =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter the withdraw amount'))
+      } else if(parseFloat(value) == 0 ){
+        callback(new Error ('Please enter the correct amount'))
+      } else {
+        callback()
+      }
+    }
     return {
-      radio: '1'
+      rules: {
+        withdrawCount: [
+          {validator: validateMoney, trigger: 'blur' },
+        ]
+      },
+      rechangeForm: {
+        radio: '1',
+        withdrawCount: '',
+      }
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'amount'
+    ]),
+    currency () {
+      return getStore('currency') || '$'
+    },
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    init () {
+      this.filterInput()
+    },
+    //限制只能输入数字和.
+    filterInput () {
+      $('.input-money .el-input__inner').eq(0).keypress((e) => {
+        if (!(e.keyCode === 46 || (e.keyCode <= 57 && e.keyCode >= 48))) {
+          return false
+        }
+      })
+    },
+    withdrawSubmit (formName, callback) {
+      //element-ui 的表单验证
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          callback()
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    submit () {
+      this.withdrawSubmit('rechangeForm', () => {
+        if (this.rechangeForm.radio == '3') {
+          this.$router.push({path: '/wallet/recharge/pay-wx', query: {withdrawCount: this.rechangeForm.withdrawCount}})
+        } else if (this.rechangeForm.radio == '2') {
+          this.$router.push({path: '/wallet/recharge/alipay', query: {withdrawCount: this.rechangeForm.withdrawCount}})
+        } else if (this.rechangeForm.radio == '1') {
+          console.log('this is paypal')
+        }
+      })
+    },
+    blur () {
+      let reg = /^\d+(\.\d{1,2})?$/
+      if (!reg.test(this.withdrawCount)) {
+        this.withdrawCount = ''
+      }
     }
   }
 }
@@ -81,6 +147,10 @@ export default {
       .pay-radio {
         display: inline-block;
         width: 35%;
+        img {
+          width: 180px;
+          height: 50px;
+        }
       }
       .el-radio+.el-radio {
         margin-left: 0;

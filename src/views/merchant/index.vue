@@ -175,6 +175,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.pages-content {
+  padding: 0;
+}
 .page-index {
   background: #e4e4e4;
 }
@@ -189,7 +192,7 @@ export default {
 .merchant {
   width: 99%;
   height: 194px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   background: white;
   padding-top: 27px;
   .user {

@@ -55,6 +55,13 @@ const permission = {
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })
+    },
+    NotFoundRoutes ({ commit }) {
+      return new Promise(resolve => {
+        let notFound = [asyncRouterMap.pop()]
+        commit('SET_ROUTERS', notFound)
+        resolve()
+      })
     }
   }
 }

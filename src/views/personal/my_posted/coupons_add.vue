@@ -8,7 +8,7 @@
     </div>
     <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
-        <el-form-item label="Product URL: " prop="product_url" >
+        <el-form-item label="Product URL: " prop="product_url" class="item-url" >
           <el-input class="url-input" v-model="couponsForm.product_url"  @blu="getPlatformCateInfo" ></el-input>
           <button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)">get</button>
         </el-form-item>

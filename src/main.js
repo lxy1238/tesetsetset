@@ -29,6 +29,8 @@ import 'element-ui/lib/theme-default/index.css'
 
 //验证权限
 import './permission'
+import '../node_modules/jquery'
+import './utils/qrcode/qrcode.min.js'
 
 Vue.prototype.$api = api
 Vue.config.productionTip = false
