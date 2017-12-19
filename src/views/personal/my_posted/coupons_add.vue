@@ -56,16 +56,16 @@
               <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.</div>
           </el-upload>
         </el-form-item>
-        <el-form-item label="Title: " prop="product_title" >
+        <el-form-item label="Title: " prop="product_title" class="item-large" >
           <el-input v-model="couponsForm.product_title">
           </el-input>
         </el-form-item>
-        <el-form-item label="Reason: " prop="product_reason" >
+        <el-form-item label="Reason: " prop="product_reason"  class="item-large">
           <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea"></el-input>
         </el-form-item>
       </template> 
       <template v-if="couponsForm.menu">
-         <el-form-item label="Product URL: " >
+         <el-form-item label="Product URL: "  class="item-url">
           <el-input class="url-input" v-model="couponsForm.product_url" disabled></el-input>
         </el-form-item>
         <el-form-item label="Wedsite: " class="item-inline" >
@@ -91,11 +91,11 @@
             <li v-for="item in couponsForm.product_img_s"><img :src="item.url" alt="" ></li>
           </ul>
         </el-form-item>
-        <el-form-item label="Title: "  >
+        <el-form-item label="Title: "  class="item-large" >
           <el-input v-model="couponsForm.product_title" disabled>
           </el-input>
         </el-form-item>
-        <el-form-item label="Reason: "  >
+        <el-form-item label="Reason: " class="item-large" >
           <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea" disabled></el-input>
         </el-form-item>
       </template>
@@ -580,16 +580,26 @@ export default {
 <style lang="less"  >
 @import url("../../../styles/mixin.less");
 .coupons-form {
-  .input-price-fee {
+  .input-price-fee,.el-select,.el-date-editor.el-input {
     width: 198px;
   }
   .item-inline {
-    width: 42.9%;
+    width: 44%;
     display: inline-block;
   }
   .item-inline1 {
     width: 43%;
     display: inline-block;
+  }
+  .item-url {
+    .el-input {
+      width: 88%;
+    }
+  }
+  .item-large {
+    .el-input,.el-textarea {
+      width: 88%;
+    }
   }
   .textarea {
     textarea {
@@ -598,18 +608,13 @@ export default {
     }
   }
   .get-pro-info {
-    .btn-h(80px, 36px, #3399ff, #3399ff, #fff);
+    .btn-h(60px, 36px, #3399ff, #3399ff, #fff);
     &:active {
       background: darken(#3399ff, 10%);
       border-color: darken(#3399ff, 10%);
     }
   }
-  .el-input {
-    &.url-input {
-      width: 75%;
-      margin-right: 5%;
-    }
-  }
+ 
   .el-upload-list__item {
     width: 100px;
     float: left;

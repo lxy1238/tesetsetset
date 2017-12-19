@@ -816,9 +816,6 @@ export default {
       window.googleTranslateElementInit = function  () {
         new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element')
       }
-
-     
-
     }
   }
 }
@@ -937,12 +934,12 @@ export default {
                   white-space: nowrap;
                 }
                 &.tag {
-                  // display: inline-block;
                   height: 1rem;
                   top: 10px;
-                  left: 3.5rem;
+                  width: 5.0rem;
+                  text-align: center;
+                  left: 2.8rem;
                   span {
-                    // background: #ec5d1c;
                     font-size: 11px;
                     padding:0px 5px;
                     border-radius: 4px;

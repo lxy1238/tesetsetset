@@ -191,7 +191,7 @@ export default {
         api_token: getToken(),
         country_id: getStore('country_id') || 1,
         page: 1,
-        page_size: 6,
+        page_size: 5,
         product_title: '',
         menu_id: '',
         run_status: '',

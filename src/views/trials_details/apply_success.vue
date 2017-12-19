@@ -396,7 +396,7 @@ export default {
     .submit {
       margin-bottom: 1rem;
       button {
-        .btn-h(110px, 30px);
+        .btn-h(6rem, 1.7rem);
         background: #84bb3a;
         border-color: #84bb3a;
         color: white;

@@ -743,8 +743,8 @@ export default {
       width: 198px;
     }
     &.url-input {
-      width: 68%;
-      margin-right: 5%;
+      width: 85%;
+      // margin-right: 5%;
     }
   }
   .el-upload-list__item {
