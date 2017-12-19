@@ -24,15 +24,15 @@
             </div>
             <div class="describe">
               <div class="time" v-if="leftTime"> <i class="iconfont icon-icon-test">
-                </i> Ends in <strong>{{leftTime.day}}</strong>  days <strong>{{leftTime.hours}}</strong> hours <strong>{{leftTime.minutes}}</strong> minutes
+                </i> Ends in <span>{{leftTime.day}}</span>  days <span>{{leftTime.hours}}</span> hours <span>{{leftTime.minutes}}</span> minutes
               </div>
               <div class="time" v-else >
                 expried
               </div>
             </div>
             <div class="price-details">
-                <div class="price">Price: {{currency}}{{trialDetailData.product_price}} </div>
-                <div class="price" v-if="trialDetailData.shipping_fee != '0.00'">Shipping fee: {{currency}}{{trialDetailData.shipping_fee}} </div>
+                <div class="price">Price: <del>{{currency}}{{trialDetailData.product_price}} </del></div>
+                <div class="price" v-if="trialDetailData.shipping_fee != '0.00'">Shipping fee: <del>{{currency}}{{trialDetailData.shipping_fee}}</del> </div>
                 <div class="price" v-else >Free Shipping</div>
               <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
               <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
@@ -340,8 +340,11 @@ export default {
         top: 2rem;
       }
       .title {
-        width: 70%;
-        font-size: 1.33rem;
+        width: 90%;
+        font-size: 24px;
+        line-height: 1;
+        height: 48px;
+        overflow: hidden;
         color: #1a1a1a;
         font-weight: bold;
         margin-bottom: 1rem;
@@ -351,6 +354,14 @@ export default {
         font-size: 0.9rem;
         color: #808080;
         margin-bottom: 1rem;
+        .icon-icon-test {
+          font-size: 20px;
+        }
+        .time {
+          span {
+            color: #1a1a1a;
+          }
+        }
       }
       .price-details {
         padding: 1rem 0 1rem .5rem;
@@ -577,6 +588,8 @@ export default {
   margin-top: 3.1rem !important
 }
 .iconfont {
+    position: relative;
+    top: 6px;
     font-size: 2rem;
     &.icon-facebook1 {
       &:hover {
@@ -588,9 +601,7 @@ export default {
         color: #26ABE1;
       }
     }
-    &:hover {
-      color: red; //TODO 这里后续不要，可以删除
-    }
+   
   }
   .icon-pinterest {
     &:hover {

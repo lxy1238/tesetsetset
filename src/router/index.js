@@ -240,9 +240,15 @@ export const asyncRouterMap = [
       },
       {
         path: '/wallet/recharge/pay-wx',
-        text: 'Withdraw',
+        text: 'pay-wx',
         hidden: true,
         component: _import('personal/wallet/pay/wx')
+      },
+      {
+        path: '/wallet/recharge/alipay',
+        text: 'alipay',
+        hidden: true,
+        component: _import('personal/wallet/pay/alipay')
       },
       {
         path: '/wallet/recharge',

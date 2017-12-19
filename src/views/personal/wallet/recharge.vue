@@ -36,10 +36,19 @@ import { getStore  } from '@/utils/utils'
 export default {
   name: 'rechange',
   data () {
+    const validateMoney =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter the withdraw amount'))
+      } else if(parseFloat(value) == 0 ){
+        callback(new Error ('Please enter the correct amount'))
+      } else {
+        callback()
+      }
+    }
     return {
       rules: {
         withdrawCount: [
-          { required: true, message: 'Please enter the recharge amount', trigger: 'blur' },
+          {validator: validateMoney, trigger: 'blur' },
         ]
       },
       rechangeForm: {
@@ -57,13 +66,20 @@ export default {
     },
   },
   mounted () {
-    $('.input-money .el-input__inner').eq(0).keypress((e) => {
-      if (!(e.keyCode === 46 || (e.keyCode <= 57 && e.keyCode >= 48))) {
-        return false
-      }
-    })
+    this.init()
   },
   methods: {
+    init () {
+      this.filterInput()
+    },
+    //限制只能输入数字和.
+    filterInput () {
+      $('.input-money .el-input__inner').eq(0).keypress((e) => {
+        if (!(e.keyCode === 46 || (e.keyCode <= 57 && e.keyCode >= 48))) {
+          return false
+        }
+      })
+    },
     withdrawSubmit (formName, callback) {
       //element-ui 的表单验证
       this.$refs[formName].validate((valid) => {
@@ -79,6 +95,10 @@ export default {
       this.withdrawSubmit('rechangeForm', () => {
         if (this.rechangeForm.radio == '3') {
           this.$router.push({path: '/wallet/recharge/pay-wx', query: {withdrawCount: this.rechangeForm.withdrawCount}})
+        } else if (this.rechangeForm.radio == '2') {
+          this.$router.push({path: '/wallet/recharge/alipay', query: {withdrawCount: this.rechangeForm.withdrawCount}})
+        } else if (this.rechangeForm.radio == '1') {
+          console.log('this is paypal')
         }
       })
     },

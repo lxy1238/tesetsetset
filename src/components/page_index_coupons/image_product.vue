@@ -14,7 +14,7 @@
          <!-- <div class="span-btn" v-else-if="isAddPromo === 1">
           <span>Running ...</span>
         </div> -->
-         <div class="span-btn" @click="removePromo(couponsDetails.id)" v-else>
+         <div class="span-btn active" @click="removePromo(couponsDetails.id)" v-else>
           <span>Cancel Promo  <i class="el-icon-check"></i></span>
         </div>
         <div class="line"></div>
@@ -183,6 +183,7 @@ export default {
   }
   .content {
     margin-left: 10px;
+    margin-right: 10px;
     margin-bottom: 0;
     margin-top: 2px;
     color: rgb(137, 137, 137);
@@ -197,8 +198,7 @@ export default {
     .price-left {
       margin-right: 10px;
       font-size: 12px;
-      
-      // text-decoration: line-through;
+      float: left;
       color: #1a1a1a;
       i {
         color: rgb(137, 137, 137);
@@ -258,13 +258,16 @@ export default {
     transition: all 0.2s ease 0.2s;
     .span-btn {
       float: left;
-      font-size: 13px;
+      font-size: 10px;
       width: 50%;
       text-align: center;
       background: #bfbfbf;
       color: rgb(255, 255, 255);
       cursor: pointer;
       &:hover {
+        background: darken(#bfbfbf, 10%);
+      }
+      &.active {
         background: darken(#bfbfbf, 10%);
       }
     }

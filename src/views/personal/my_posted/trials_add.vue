@@ -181,16 +181,16 @@ export default {
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
         product_url: '',
-        product_title: 'this is titie of trials',
-        product_reason: 'this is reason of trials',
-        specifications: 'this is specifications of trials',
+        product_title: '',
+        product_reason: '',
+        specifications: '',
         website: '',
         menu_id: '',     // 所属分类 , 是   int
         user_store_id: '',        // int
-        product_price: '88.00',      //产品价格
+        product_price: '',      //产品价格
         shipping_fee: '',                       //运费
         product_img: [],                        //产品图片
-        product_img_s: [{url: 'https://images-na.ssl-images-amazon.com/images/I/5194nZpL9ZL._SL160_.jpg'}],
+        product_img_s: [],
         product_details: 'details',
         active_date: [],
         start_time: '',

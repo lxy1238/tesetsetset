@@ -14,7 +14,7 @@
       <div class="withdrawals">
         <label class="left-label">Withdrawals:</label>
         <el-form-item prop="withdrawCount">
-          <el-input v-model="withdrawForm.withdrawCount" @change="change"></el-input>
+          <el-input v-model="withdrawForm.withdrawCount" class="input-money" ></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
@@ -31,8 +31,14 @@
       </div>
     </el-form>
     <div class="submit">
-        <button @click="submit">Submit</button>
-      </div>
+        <el-button @click="submit" >Submit</el-button>
+    </div>
+    
+    <el-dialog  :visible.sync="withdrawDialog" title="result" class="withdraw-dialog" size="tiny">
+          <p class="info">
+            The withdrawal is successful and we will deal with it within three working days.
+          </p>
+      </el-dialog>
   </div>
 </template>
 
@@ -54,7 +60,9 @@ export default {
       withdrawForm: {
         radio: '1',
         withdrawCount: '',
-      }
+        account: '',
+      },
+      withdrawDialog: false
     }
   },
   computed: {
@@ -66,9 +74,19 @@ export default {
     },
   },
   mounted () {
-
+    this.init()
   },
   methods: {
+    init () {
+
+    },
+    filterInput () {
+      $('.input-money .el-input__inner').eq(0).keypress((e) => {
+        if (!(e.keyCode === 46 || (e.keyCode <= 57 && e.keyCode >= 48))) {
+          return false
+        }
+      })
+    },
     withdrawSubmit (formName, callback) {
       //element-ui 的表单验证
       this.$refs[formName].validate((valid) => {
@@ -85,10 +103,6 @@ export default {
         this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
       }
     },
-    change () {
-      console.log(this.withdrawCount)
-      this.withdrawCount = this.withdrawCount.replace(/\D/g, '')
-    }
   }
 }
 </script>
@@ -119,9 +133,6 @@ export default {
     }
     .withdrawals {
       margin-bottom: 1.5rem;
-      // .el-input {
-      //   width: 50%;
-      // }
     }
     .pay-mode {
       margin-bottom: 1rem;
@@ -151,6 +162,14 @@ export default {
           background: darken(#84ba3a, 10%);
           border-color: darken(#84ba3a, 10%);
         }
+      }
+    }
+    .withdraw-dialog {
+      .info {
+        height: 80px;
+        font-size: 18px;
+        text-align: center;
+        color: #1a1a1a;
       }
     }
   }

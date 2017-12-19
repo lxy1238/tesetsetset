@@ -28,7 +28,7 @@
             <div class="price-details" v-if="couponDetail.discount_price">
               <span class="inline-b n-price">{{currency}}{{couponDetail.discount_price}}</span>
               <span class="inline-b o-price">{{currency}}{{couponDetail.product_price}}</span>
-              <span class="inline-b c-price">Coupons {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
+              <span class="inline-b c-price">Coupon {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
               <span class="inline-b ratio">{{couponDetail.discount_rate}}%off</span>
             </div>
             <div class="data-info">
@@ -44,7 +44,7 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="userPromotions.indexOf(couponDetail.id) >= 0 " @click="removePromotion"><span>Added</span> <i class=" el-icon-check"></i></button>
+                  <button v-if="userPromotions.indexOf(couponDetail.id) >= 0 " @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
                   <button v-else  @click="addPromotion"><span>Add Promo</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
@@ -767,7 +767,7 @@ export default {
         .o-price {
           text-decoration: line-through;
           font-weight: bold;
-          margin-right: 25rem;
+          margin-right: 32rem;
         }
         .c-price {
           margin-right: 1rem;
@@ -785,11 +785,12 @@ export default {
         }
         .expried {
           margin-right: 2rem;
-          margin-left: 1rem;
+          margin-left: 0rem;
         }
       }
       .select {
-        position: relative;
+        position: absolute;
+        right: 10px;
         font-weight: normal;
         height: 2rem;
 
@@ -806,12 +807,12 @@ export default {
         }
       }
       .btn-promotion {
-        margin-top: 1rem;
+        margin-top: 2rem;
         .add-promo {
-          margin-right: 4rem;
+          margin-right: 2rem;
           button {
             .btn-h;
-            width: 12rem;
+            width: 10rem;
             height: 3rem;
             color: white;
             line-height: 3rem;
@@ -820,7 +821,7 @@ export default {
             text-align: center;
             line-height: 0.8;
             span {
-              font-size: 1.5rem;
+              font-size: 1rem;
             }
             &:hover {
               background: darken(#85bb3b, 5%);
@@ -837,7 +838,7 @@ export default {
             background: #c6f389;
             border-color: #c6f389;
             span {
-              font-size: 1.5rem;
+              font-size: 1rem;
             }
             &:hover {
               background: darken(#c6f389, 10%);
@@ -928,12 +929,12 @@ export default {
           font-size: 1.22rem;
           font-weight: bold;
           color: #1a1a1a;
-          width: 40rem;
+          width: 44rem;
           border-right: 1px solid #e1e1e1;
         }
         .promo-head-r {
           display: inline-block;
-          width: 13rem;
+          width: 9rem;
           text-align: center;
           cursor: pointer;
           &:hover {
@@ -976,6 +977,8 @@ export default {
               margin-right: 0.5rem;
             }
             .iconfont {
+              position: relative;
+              top: 6px;
               font-size: 2rem;
               &.icon-facebook1 {
                 &:hover {
@@ -986,9 +989,6 @@ export default {
                 &:hover {
                   color: #26ABE1;
                 }
-              }
-              &:hover {
-                color: red; //TODO 这里后续不要，可以删除
               }
             }
             .icon-pinterest {
@@ -1018,7 +1018,6 @@ export default {
           }
         }
         .use-it {
-          color: blue;
           &:hover {
             text-decoration: underline;
           }
@@ -1052,7 +1051,7 @@ export default {
       }
       .coupons-product {
         width: 16.1rem;
-        height: 370px;
+        height: 360px;
         margin: 0.5rem 1rem 0.5rem 0.35rem;
       }
     }

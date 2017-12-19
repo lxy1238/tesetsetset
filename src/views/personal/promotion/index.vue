@@ -15,14 +15,16 @@
                      :addpromo="false"
                      @gotodetails="gotodetails">
           <template slot="price" v-if="couponsDetails.coupons">
-          <p class="price content" >
-            <span class="price-left">{{currency}}{{couponsDetails.coupons.product_price}}</span>
-            <span class="price-right">{{currency}}{{couponsDetails.coupons.discount_price}}</span>
+           <p class="price content">
+            <span class="price-right">{{currency}}{{couponsDetails.coupons.product_price}}</span>
             <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
               <i class="el-icon-delete"></i>
             </span>
           </p>
-          <p class="coupons content"><span>discount</span> <span class="com-right">{{couponsDetails.coupons.discount_rate}}%</span></p>
+          <p class="price content clearfix">
+            <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.coupons.product_price - couponsDetails.coupons.discount_price).toFixed(2)}}</span>
+            <span class="price-right-bottom"> {{couponsDetails.coupons.discount_rate}}% <i>off</i></span>
+          </p>
           </template>
           <template slot="btn">
             View Coupons

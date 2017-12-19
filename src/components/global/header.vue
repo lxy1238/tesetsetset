@@ -7,8 +7,8 @@
              <a href="javascript:void(0);"  @click="coupons"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
-             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons">Coupons</a>
-             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials">Trials</a>
+             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >COUPONS</a>
+             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">TRIALS</a>
               <!-- <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a> -->
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
@@ -320,7 +320,8 @@ export default {
       resetLoading: false,
       keyword: '',     //搜索用的关键字
       country_id: parseInt(getStore('country_id')) || 1,
-      app_id: '894275327387425'
+      app_id: '894275327387425',
+      selectedCoupon: 1,
     }
   },
   props: {
@@ -491,11 +492,13 @@ export default {
     coupons () {
       this.keyword = ''
       this.selectedC = 0
+      this.selectedCoupon = 1
       this.$router.push({ path: '/'})
     },
     trials () {
       this.keyword = ''
       this.selectedC = 0
+      this.selectedCoupon = 2      
       this.$router.push({ path: '/trials/index' })
     },
     ShowLoginDialog () {
@@ -1049,9 +1052,14 @@ export default {
           color: #c1c1c1;
           text-align: center;
           overflow: hidden;
+          font-weight: normal;
+          font-size: 1rem;
           width: 10%;
           height: 70px;
           &:hover {
+            color: white;
+          }
+          &.active {
             color: white;
           }
         }

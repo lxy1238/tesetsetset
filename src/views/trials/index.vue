@@ -17,7 +17,7 @@
           <span class="coupon-right"><strong> {{currency}}{{couponsDetails.refund_price}}</strong>  </span>
          </p>
          </template>
-         <template slot="btn" >View trials</template>
+         <template slot="btn" >View Trials</template>
       </coupons-pro>
     </div>
     <pagination 
