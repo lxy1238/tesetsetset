@@ -102,7 +102,7 @@ export default {
       //判断是否加入推广
       setTimeout(() => {
         if (this.promotions.includes(this.couponsDetails.id)) {
-          this.isAddPromo = 2
+          this.isAddPromo = 1
         }
       }, 250)
     },

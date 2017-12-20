@@ -77,7 +77,6 @@ export default {
         }, 1000)
       }).catch(err => {
         console.log(err)
-        this.qrcode()
       })
     },
     refresh () {

@@ -10,6 +10,8 @@ import store from './store'    // 全局状态管理
 import api from './api/index'  //所有的接口
 import './directive/title/index'
 
+
+//富文本编辑器需要用到的插件
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
 import 'summernote/dist/summernote.css'
@@ -29,8 +31,6 @@ import 'element-ui/lib/theme-default/index.css'
 
 //验证权限
 import './permission'
-import '../node_modules/jquery'
-import './utils/qrcode/qrcode.min.js'
 
 Vue.prototype.$api = api
 Vue.config.productionTip = false

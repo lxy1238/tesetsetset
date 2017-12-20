@@ -34,16 +34,14 @@ export default {
     clearInterval(this.timer)
   },
   mounted () {
-    let data
     if (this.$route.query.withdrawCount) {
       this.reqData.amount = this.$route.query.withdrawCount
-      data = qs.stringify(this.reqData)
     } else {
       this.$router.push({path: '/404/index'})
     }
-    axios.post('http://dealsbank.com/api/v1/pay/ali-pay', data).then(res => {
-      let num = res.data.data.search('</form>')
-      this.resForm = res.data.data.slice(0, num + 7)
+    this.$api.alipay(this.reqData).then(res => {
+      let num = res.data.search('</form>')
+      this.resForm = res.data.slice(0, num + 7)
       this.timer = setInterval(() => {
         if (document.forms['alipaysubmit']) {
           document.forms['alipaysubmit'].submit()

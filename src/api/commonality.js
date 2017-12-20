@@ -48,3 +48,9 @@ export const payWX = () => fetch({
   url: '/api/v1/pay/wx-pay',
   method: 'POST',
 })
+
+export const alipay = data => fetch({
+  url: '/api/v1/pay/ali-pay',
+  method: 'POST',
+  data: qs.stringify(data)
+})

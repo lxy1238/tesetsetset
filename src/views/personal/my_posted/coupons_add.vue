@@ -9,8 +9,8 @@
     <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" class="item-url" >
-          <el-input class="url-input" v-model="couponsForm.product_url"  @blu="getPlatformCateInfo" ></el-input>
-          <button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)">get</button>
+          <el-input class="url-input" v-model="couponsForm.product_url"  @blur="getPlatformCateInfo" ></el-input>
+          <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">get</el-button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline" >
           <el-select v-model="couponsForm.website"  @change="websiteChange">
@@ -218,7 +218,8 @@ export default {
       select: '',
       isEditorData: true,
       //国家与要发布的产品链接是否一直
-      countryUrlIsRight: false
+      countryUrlIsRight: false,
+      getinfoBtn: false
     }
   },
   components: {
@@ -374,18 +375,21 @@ export default {
 
     //通过输入链接获取所有产品信息
     getProInfo (url) {
+      this.getPlatformCateInfo()
+      this.getinfoBtn = true
       // this.$message.info('For information on goods, please wait a moment')
-      axios.get('http://23.91.2.69/productsm/index.php/api/asin', {
+      axios.get('http://chanpin25.com/index.php/api/asin', {
         params: {
           url: url,
         }
       })
         .then( (res) =>{
           console.log(res)
+          this.getinfoBtn = false
           if (!res.data.data) {
-            this.$message.info('获取商品信息失败, 请查看链接是否正确！')
+            this.$message.info('Failed to obtain commodity information!!!')
           }
-          this.getPlatformCateInfo()
+          
           setTimeout(() => {
             let data = res.data.data
             let newArr = []
@@ -405,6 +409,7 @@ export default {
         })
         .catch(function (err){
           console.log(err)
+          this.getinfoBtn = false
         })
      
     },
@@ -421,15 +426,12 @@ export default {
               label: '',
               id: ''
             }
-            ObjWebsite.label = i.website
+            ObjWebsite.label = i.provider
             ObjWebsite.id = i.id
             this.optionsWebsite.push(ObjWebsite)
             if (this.couponsForm.product_url.search(i.url) >= 0) {
-              this.couponsForm.website = i.website
-              this.countryUrlIsRight = true
-            } else {
-              this.$message.error('Only the products of the present country can be released')
-            }
+              this.couponsForm.website = i.provider
+            } 
           }
         })
         .catch(error => {
@@ -461,7 +463,7 @@ export default {
       if (!isLt500K) {
         this.$message.error('上传图片文件大小 不能超过 500kb!')
       }
-      if (this.couponsForm.length >= 6) {
+      if (this.couponsForm.product_img_s.length >= 6) {
         this.$message.error('最多只能上传6张图片！')
         limitF = false
       }
@@ -523,11 +525,11 @@ export default {
           if (this.$route.query.editor) {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
-          console.log(this.couponsFormSubmit)
-          if (!this.countryUrlIsRight) {
-            this.$message.error('Only the products of the present country can be released')
-            return
-          }
+          // console.log(this.couponsFormSubmit)
+          // if (!this.countryUrlIsRight) {
+          //   this.$message.error('Only the products of the present country can be released')
+          //   return
+          // }
           this.issueCoupon(this.couponsFormSubmit)
         } else {
           console.log('error submit!!')

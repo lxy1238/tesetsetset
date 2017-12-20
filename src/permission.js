@@ -16,7 +16,6 @@ router.beforeEach((to, from, next) => {
         const roles =[ res.data.type ]
         store.dispatch('GenerateRoutes', { roles }).then(() => {
           router.addRoutes(store.getters.addRouters)
-          console.log(router)
           next({ ...to })
         })
       })
@@ -35,17 +34,14 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next()
-      NProgress.start(100)
       NProgress.done()
     }
   }
-  NProgress.start(100)
   NProgress.done()
   next()
 })
 
 router.afterEach(() => {
-  NProgress.start(100)
   NProgress.done() // 结束Progress
 })
 
