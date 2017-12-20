@@ -58,7 +58,7 @@ const permission = {
     },
     NotFoundRoutes ({ commit }) {
       return new Promise(resolve => {
-        let notFound = [asyncRouterMap.pop()]
+        let notFound = [{ path: '*', redirect: '/404/index', hidden: true }]
         commit('SET_ROUTERS', notFound)
         resolve()
       })

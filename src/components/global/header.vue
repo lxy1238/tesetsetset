@@ -503,11 +503,12 @@ export default {
     },
     ShowLoginDialog () {
       this.googleLogin()
-      this.loginform.email = getEmail()
+      if (getEmail()) {
+        this.loginform.email = getEmail()
+      }
       if (getPass()) {
         this.loginform.password = base64Decode(getPass())
       }
-      console.log(base64Decode(getPass()))
       this.signDialog = false 
       this.loginDialog = true
      
@@ -656,7 +657,7 @@ export default {
         gapi.load('auth2', function (){
           // Retrieve the singleton for the GoogleAuth library and set up the client.
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-kdhc3eecdh9v035qs7uodpuldfksmdmr.apps.googleusercontent.com',
+            client_id: '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             // Request scopes in addition to 'profile' and 'email'
             // scope: 'additional_scope'
