@@ -44,10 +44,20 @@ export const getUserCountry = () => fetch({
 
 //支付
 
-export const payWX = () => fetch({
+export const payWX = data => fetch({
   url: '/api/v1/pay/wx-pay',
   method: 'POST',
+  data: qs.stringify(data)
 })
+
+//微信支付回调
+export const WXcheckPayNotify = data => fetch({
+  url: '/api/v1/pay/wx-check-pay-notify',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
 
 export const alipay = data => fetch({
   url: '/api/v1/pay/ali-pay',

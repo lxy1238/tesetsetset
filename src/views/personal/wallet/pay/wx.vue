@@ -11,13 +11,13 @@
       <div id="codeWx" >
 
       </div>
-      <div class="pay-img">
+      <div class="pay-img"  v-show="resData != ''" >
         <img src="../../../../assets/pay-wx.png" />
       </div>
-      <div class="scan-text">
+      <div class="scan-text"   v-show="resData != ''">
         Please use WeChat scan scan qr code to pay
       </div>
-      <div class="footer">
+      <div class="footer"  v-show="resData != ''">
         <a href="javasctipt:void(0);" @click="goback">
           <i class="iconfont icon-down-trangle1"></i>  选择其他支付接口
         </a>
@@ -28,16 +28,30 @@
 
 <script>
 import QRCode from 'qrcodejs2'
+import { getUserId, getToken } from '@/utils/auth'
+import { getStore } from '@/utils/utils'
+import { RandomPayNumber } from '@/utils/randomString'
 export default {
   name: 'pay-wx',
   data () {
     return {
       acount: 0,
-      countDown: 40,
+      countDown: 60,
       timer: null,
+      timerPay: null,
       resData: '',
       reqData: {
+        country_id: parseInt(getStore('country_id')) || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
         amount: '',
+        pay_order_number: '',
+      },
+      reqDataPayInfo: {
+        country_id: parseInt(getStore('country_id')) || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
+        pay_order_number: '',
       }
     }
   },
@@ -49,11 +63,13 @@ export default {
   },
   beforeDestroy () {
     clearInterval(this.timer)
+    clearInterval(this.timerPay)
   },
   methods: {
     init () {
       if (this.$route.query.withdrawCount) {
         this.reqData.amount = this.$route.query.withdrawCount
+        this.reqData.pay_order_number = RandomPayNumber()
       } else {
         this.$router.push({path: '/404/index'})
       }
@@ -66,15 +82,33 @@ export default {
         width : 300,
         height : 300
       })
-      this.$api.payWX().then(res => {
+      this.$api.payWX(this.reqData).then(res => {
         this.resData = res.data
         qrcode.makeCode(res.data)
         this.timer = setInterval(() => {
           this.countDown-- 
           if (this.countDown === 0) {
             clearInterval(this.timer)
+            clearInterval(this.timerPay)
           }
         }, 1000)
+        this.timerPay = setInterval( () => {
+          this.getWXPayInfo()
+        }, 3000)
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    getWXPayInfo () {
+      this.reqDataPayInfo.pay_order_number = this.reqData.pay_order_number
+      this.$api.WXcheckPayNotify(this.reqDataPayInfo).then(res => {
+        if (!res.data) {
+          return
+        }
+        if (res.data.result_code == 'SUCCESS') {
+          clearInterval(this.timerPay)
+          this.$router.push({path: '/wallet/financial'})
+        }
       }).catch(err => {
         console.log(err)
       })

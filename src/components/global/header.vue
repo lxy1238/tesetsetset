@@ -42,9 +42,6 @@
                </div>
                <div v-if="showDropdownU" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <!-- <li class="items-li"> <router-link to="/personal">coup0ons</router-link></li>
-                   <li> <router-link to="/combine">combine</router-link></li>
-                   <li> <router-link to="/successTrials">successTrials</router-link></li> -->
                    <li v-for="syncRouter in addRouters" v-if="!syncRouter.hidden">
                      <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
                    </li>
@@ -144,10 +141,10 @@
         <div class="dialog-body">
           <div class="top">
             <div class="facebook">
-              <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
+              <button class="facebook"  @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google"><i class="iconfont icon-googleplus"></i> Join with Google</button>
+              <button class="google" id="customBtn1"><i class="iconfont icon-googleplus"></i> Join with Google</button>
             </div>
           </div>
           <div class="bottom">
@@ -502,7 +499,9 @@ export default {
       this.$router.push({ path: '/trials/index' })
     },
     ShowLoginDialog () {
-      this.googleLogin()
+      setTimeout(() => {
+        this.googleLogin()
+      }, 500)
       if (getEmail()) {
         this.loginform.email = getEmail()
       }
@@ -514,6 +513,9 @@ export default {
      
     },
     ShowSignDialog () {
+      setTimeout(() => {
+        this.googleLogin()
+      }, 500)
       this.resetPassword = false
       this.loginDialog = false
       this.signDialog = true
@@ -664,6 +666,7 @@ export default {
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
           auth2.attachClickHandler('customBtn', {}, onSuccess, onFailure)
+          auth2.attachClickHandler('customBtn1', {}, onSuccess, onFailure)
         })
       }
       /**
@@ -683,7 +686,7 @@ export default {
     
         // The ID token you need to pass to your backend:
         let data = {
-          client_id : '308959858897-kdhc3eecdh9v035qs7uodpuldfksmdmr.apps.googleusercontent.com',
+          client_id : '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token

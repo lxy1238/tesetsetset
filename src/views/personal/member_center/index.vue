@@ -72,7 +72,7 @@
             <button  @click="gotoAnotherRouter('/wallet/withdraw')"><i class="iconfont icon-quqian"></i> Withdraw</button>
           </div>
         </div>
-        <div class="recharge wallet">
+        <div class="recharge wallet" v-if="roles[0] == 'merchant'">
           <div class="wallet-child">
             <span class="money">${{userData.account.frozen_amount}}</span>
             <p>Security deposit</p>

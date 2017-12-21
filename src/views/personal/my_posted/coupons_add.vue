@@ -145,7 +145,7 @@ export default {
     return {
       pickerOptions1: {
         disabledDate (time) {
-          return time.getTime() < Date.now() - 86400000
+          return time.getTime() < Date.now()
         },
       },
       rules: {
@@ -502,7 +502,7 @@ export default {
         this.$api.addCoupon(data)
           .then(res => {
             if (res.code === 200) {
-              this.$notify.success('issue coupon success')
+              // this.$notify.success('issue coupon success')
               this.$router.push({ path: '/posted/coupons' })
             }
           })

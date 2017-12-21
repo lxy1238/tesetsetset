@@ -3,7 +3,7 @@
     <div class="title-bottom">Affiliate PID</div>
      <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
     <el-form :model="pidForm"  ref="pidForm" label-width="150px" v-if="platformArr.length != 0" >
-      <el-form-item v-for="item in platformArr" :key="1" :label="item.website + ': '">  
+      <el-form-item v-for="item in platformArr" :key="1" :label="item.provider + ': '">  
         <el-input v-model="item.pid"></el-input>
       </el-form-item>
     </el-form>
@@ -105,7 +105,7 @@ export default {
   .goto-getpid {
     position: absolute;
     top: 34%;
-    right: 30%;
+    right: 26%;
   }
   .pid-footer {
     text-align: center;

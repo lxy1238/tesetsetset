@@ -163,23 +163,20 @@ export default {
     return {
       pickerOptions1: {
         disabledDate (time) {
-          return time.getTime() < Date.now() - 86400000
+          return time.getTime() < Date.now()
         },
       },
       country_id: parseInt(getStore('country_id')) || 1,
-      optionsWebsite: [
-      ],
-      optionsStore: [
-        {
-          'value': '1',
-          'label': 'amazon'
-        }
-      ],
-      optionsCategory: [
-      ],
+      optionsWebsite: [],
+      optionsStore: [],
+      optionsCategory: [],
       isEditorData: true,
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
+        user_id: getUserId(),  // 用户ID ， 是，
+        user_name: '',       // 发布用户名称， 是
+        api_token: getToken(),
+
         product_url: '',
         product_title: '',
         product_reason: '',
@@ -203,13 +200,9 @@ export default {
         refund: '',
         platform_fee: '',
 
-        user_id: getUserId(),  // 用户ID ， 是，
-        user_name: '',       // 发布用户名称， 是
-        api_token: getToken()
+        
       },
-      trialsFormSubmit: {
-
-      },
+      trialsFormSubmit: {},
       rules: {
         product_url: [
           {required: true ,message: 'product url is required', trigger: 'blur'}

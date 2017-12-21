@@ -39,7 +39,7 @@ export default {
   name: 'posted_trials',
   data () {
     return {
-      thLists: ['时间', '流水号', '业务名称', '业务ID', '类型', '原因', '金额'],
+      thLists: ['Date', 'Serial Number', 'Issue', 'Issue ID', 'Type', 'Desctiption', 'Amount'],
       trLists: [1, 2, 3],
       allpage: undefined,
       showItem: 7,
