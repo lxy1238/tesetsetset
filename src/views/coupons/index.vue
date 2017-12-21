@@ -416,7 +416,7 @@ export default {
       if (location.href.indexOf('?promoter') >= 0) {
         promoLink = location.href
       } else {
-        promoLink = `${location.href}?promoter=${getUserId() ? getUserId() : ''}`
+        promoLink = `${location.href}${getUserId() ? '?promoter=' + getUserId() : ''}`
       }
       this.templateText = template
         .replace(/\n/g, '<br>')

@@ -163,7 +163,7 @@ export default {
     return {
       pickerOptions1: {
         disabledDate (time) {
-          return time.getTime() < Date.now()
+          return time.getTime() < Date.now() - 86400000
         },
       },
       country_id: parseInt(getStore('country_id')) || 1,

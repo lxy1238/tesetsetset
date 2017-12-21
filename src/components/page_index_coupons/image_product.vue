@@ -87,7 +87,7 @@ export default {
       return getStore('currency') || '$'
     },
     dealsbankUrl () {
-      return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '?promoter=' + (getUserId() ? getUserId() : '')
+      return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  + (getUserId() ? '?promoter=' + getUserId() : '')
     }
   },
   mounted () {
