@@ -115,38 +115,38 @@
               </td>
                 <!-- Status -->
                <td class="status">
-              <div class="blue" v-if="item.status === 0  ">Pending</div>
-              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway ">Active </div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway ">Close </div>
-              <div class="red" v-if="item.status === 2  ">Decline</div>
+              <div class="blue" v-if="item.status === 0 && !item.isExpired ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway && !item.isExpired">Active </div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway && !item.isExpired">Close </div>
+              <div class="red" v-if="item.status === 2  && !item.isExpired ">Decline</div>
               
-              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] ">Stop</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] ">Underbalance</div>
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] && !item.isExpired ">Stop</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired">Close</div>
+              <div class="red" v-if=" item.isExpired ">Expired</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired">Underbalance</div>
             </td>
             <td class="operation">
-              <template v-if="item.status === 0">
+              <template v-if="item.status === 0 && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
+              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired"> 
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
-              <template  v-if="item.status === 2 ">
+              <template  v-if="item.status === 2 && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway">
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
-               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway">
+               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway && !item.isExpired">
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
             </td>
@@ -274,6 +274,9 @@ export default {
             i.putaway = false
           } else {
             i.putaway = true
+          }
+          if (i.end_time + 86400 < now) {
+            i.isExpired = true
           }
           i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
           i.end_time = parseTime(i.end_time, '{y}-{m}-{d}')
