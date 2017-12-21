@@ -95,7 +95,7 @@
                  <!-- <button  data-clipboard-target="#proCard" @click="shareFaceBook">share</button> -->
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
@@ -237,7 +237,8 @@ export default {
         type: '',
         level: '',
         joined_date: '',
-        coupon_posteds: ''
+        coupon_posteds: '',
+        pid: '',
       },
       imgList: [],
       html: 'hello',
@@ -261,18 +262,18 @@ export default {
       getCodeSuccess: false, //是否领取优惠券成功
       userPromotions: [],
       requestData: {
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         menu_id: '',
         page: 1,
         page_size: 9
       },
       requestCouponDetails: {
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         user_id: getUserId() ,
         id: '',
       },
       reqGetCodeData: {
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         api_token: getToken(),
         user_id: getUserId(),
         coupon_id: '',
@@ -288,7 +289,7 @@ export default {
       addPromotionData: {
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         coupon_id: '',
       },
       addProblemData: {
@@ -322,9 +323,10 @@ export default {
       templateText: '',
       promoterPid: '123456789',
       requestPlatData: {
-        country_id: parseInt(getStore('country_id') || 1),
+        country_id: '',
         user_id: '',
       },
+      currency: getStore('currency') || '$'
     }
   },
   computed: {
@@ -336,9 +338,7 @@ export default {
         }
       }
     },
-    currency () {
-      return getStore('currency') || '$'
-    },
+   
   },
   mounted () {
     this.init()
@@ -364,6 +364,10 @@ export default {
       let country_id = base64Decode(this.$route.params.countryId)
       this.$root.eventHub.$emit('changeCountryId', country_id)
 
+      this.$root.eventHub.$on('changeCurrency', data => {
+        this.currency = data
+      })
+
 
     },
 
@@ -372,17 +376,20 @@ export default {
       if (this.$route.query.promoter) {
         let promoterUserId = parseInt(this.$route.query.promoter)
         this.requestPlatData.user_id = promoterUserId
+        this.requestPlatData.country_id = base64Decode(this.$route.params.countryId)
         this.$api.postUserPid(this.requestPlatData).then(res => {
           for (let i of res.data) {
             if (i.platform_id === this.couponDetail.platform_id) {
               if (i.PID) {
                 this.promoterPid = i.PID
+                this.userInfo.pid = i.PID
               } 
             }
           }
         })
       } else {
         this.promoterPid = '12345678'
+        this.userInfo.pid = this.promoterPid
       }
     },
     
@@ -402,7 +409,6 @@ export default {
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
           this.test()
-          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -526,6 +532,7 @@ export default {
           this.userInfo = res.data
           this.userInfo.user_id = this.couponDetail.user_id
           this.userInfo.product_url = this.couponDetail.product_url
+          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + ' postedUserInfo')
@@ -662,6 +669,7 @@ export default {
    
     //跳转到相应 商品链接
     gotoPlatform (url) {
+      console.log(this.promoterPid)
       let endUrl = `${url}&tag=${this.promoterPid}`
       window.open(endUrl)
     },

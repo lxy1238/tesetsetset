@@ -443,12 +443,15 @@ export default {
 
       this.$root.eventHub.$on('changeCountryId', data => {
         this.selectedCountryShop = parseInt(data)
-        for (let i of this.countryLists) {
-          if (i.id == data) {
-            setStore('country_id',i.id)
-            setStore('currency',i.currency)
+        setTimeout(() => {
+          for (let i of this.countryLists) {
+            if (i.id == data) {
+              setStore('country_id',i.id)
+              setStore('currency',i.currency)
+              this.$root.eventHub.$emit('changeCurrency', i.currency)
+            }
           }
-        }
+        }, 500)
       })
 
     },

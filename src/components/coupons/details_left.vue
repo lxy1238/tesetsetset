@@ -3,7 +3,7 @@
       <div class="content" id="content">
         <div class="img">
           <div class="img-big">
-            <a :href="userInfo.product_url" target="_blank">
+            <a :href="amazonUrl" target="_blank">
               <img :src="imgList[activeNum]"  >
             </a>
           </div>
@@ -47,7 +47,9 @@ export default {
   data () {
     return {
       activeNum: 0,
-      country_id: parseInt(getStore('country_id')) || 1
+      country_id: parseInt(getStore('country_id')) || 1,
+      amazonUrl: '',
+      promoPid: '12345678'
     }
   },
   props: {
@@ -75,6 +77,17 @@ export default {
   computed: {
     imgLen () {
       return this.imgList.length
+    },
+  },
+  watch: {
+    userInfo () {
+      setTimeout(() => {
+        if (this.userInfo.pid) {
+          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.userInfo.pid
+        } else {
+          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.userInfo.pid
+        }
+      }, 500)
     }
   },
   methods: {

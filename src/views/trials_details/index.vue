@@ -51,7 +51,7 @@
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
-                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
@@ -179,15 +179,13 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         trial_id: '',
-        country_id: parseInt(getStore('country_id')) || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         platform_id: '',
-      }
+      },
+      currency:  getStore('currency') || '$'
     }
   },
   computed: {
-    currency () {
-      return getStore('currency') || '$'
-    },
     leftTime () {
       if (this.trialDetailData.end_time) {
         let time = getTimeDetail(this.trialDetailData.end_time)
@@ -217,6 +215,11 @@ export default {
       //通过路由中的国家id 修改头部的国家id
       let country_id = base64Decode(this.$route.params.countryId)
       this.$root.eventHub.$emit('changeCountryId', country_id)
+
+      
+      this.$root.eventHub.$on('changeCurrency', data => {
+        this.currency = data
+      })
     },
 
     //获取试用品详情
