@@ -531,6 +531,7 @@ export default {
           // }
           this.issueCoupon(this.couponsFormSubmit)
         } else {
+          document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')
           e.target.disabled = false
           return false
