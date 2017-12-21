@@ -294,8 +294,8 @@ export const asyncRouterMap = [
         component: _import('personal/settings/account'),
       },
       {
-        path: '/settings/shop',
-        text: 'Shop Settings',
+        path: '/settings/store',
+        text: 'Store Settings',
         component: _import('personal/settings/shop'),
         meta: {role: ['merchant']}
       },
@@ -317,7 +317,7 @@ export const asyncRouterMap = [
 
 
 export default new Router({
-  // mode: 'history',   // 开启此配置需要进行后端设置
+  mode: 'history',   // 开启此配置需要进行后端设置
   scrollBehavior: () => ({
     y: 0
   }),

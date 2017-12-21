@@ -6,10 +6,10 @@ import { getToken} from './utils/auth'
 // import { getInfo } from '@/api/login'
 
 var whiteList = ['/']
+let isNotFound = false
 router.beforeEach((to, from, next) => {
   store.dispatch('setCurrentRouter', to.path)  //存储当前路由path
   NProgress.start()
-
   if (getToken()) {
     if (store.getters.roles.length === 0) {
       store.dispatch('GetInfo').then(res => {
@@ -23,25 +23,25 @@ router.beforeEach((to, from, next) => {
       next()
     }
   } else {
-    store.dispatch('NotFoundRoutes').then(() => {
-      router.addRoutes(store.getters.addRouters)
-      next({ ...to })
-    })
+    if (!isNotFound) {
+      store.dispatch('NotFoundRoutes').then(() => {
+        router.addRoutes(store.getters.addRouters)
+        isNotFound = true
+        next({ ...to })
+      })
+    }
     if (whiteList.indexOf(to.path) !== -1) {
       next()
     } else {
       next()
-      NProgress.start(100)
       NProgress.done()
     }
   }
-  NProgress.start(100)
   NProgress.done()
   next()
 })
 
 router.afterEach(() => {
-  NProgress.start(100)
   NProgress.done() // 结束Progress
 })
 

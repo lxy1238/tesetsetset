@@ -509,6 +509,7 @@ export default {
                 margin: 3rem 0;
                 font-size: 0.78rem;
                 color: #808080;
+                text-align: left;
               }
               .process {
                 position: relative;

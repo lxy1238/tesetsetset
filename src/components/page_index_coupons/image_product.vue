@@ -87,11 +87,19 @@ export default {
       return getStore('currency') || '$'
     },
     dealsbankUrl () {
-      return location.href + '/coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '?promoter=' + (getUserId() ? getUserId() : '')
+      return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '?promoter=' + (getUserId() ? getUserId() : '')
     }
   },
   mounted () {
     this.init()
+  },
+  watch: {
+    //判断是否加入推广, 值从父组件传递过来的时候执行函数，否则会不执行
+    promotions () {
+      if (this.promotions.includes(this.couponsDetails.id)) {
+        this.isAddPromo = 1
+      }
+    }
   },
   methods: {
     init () {
@@ -99,12 +107,6 @@ export default {
     },
     initData () {
       this.addPromoRequestData.coupon_id = this.couponsDetails.id
-      //判断是否加入推广
-      setTimeout(() => {
-        if (this.promotions.includes(this.couponsDetails.id)) {
-          this.isAddPromo = 2
-        }
-      }, 250)
     },
     //跳转到详情也，携带coupon_id ,user_id
     goToCouponsPage (id) {
@@ -117,23 +119,18 @@ export default {
 
     //加入 移除  推广
     addPromotion () {
-      // this.isAddPromo = 1
       if (!getToken()) {
-        setTimeout( () => {
-          this.isAddPromo = 0
-        }, 100)
         return
       }
       this.$api.promotionAddCoupon(this.addPromoRequestData)
         .then(() => {
-          this.isAddPromo = 2
+          this.isAddPromo = 1
         })
         .catch(error => {
           console.log(error + 'promotionaddcoupon')
         })
     },
     removePromo () {
-      // this.isAddPromo = 1
       this.$api.promotionUserRemove(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 0

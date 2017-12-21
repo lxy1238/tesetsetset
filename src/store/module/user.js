@@ -13,9 +13,6 @@ const user = {
     promotions: [],
     avatar: '',
     amount: '',
-    memberLever: '',
-    couponsPosted: '',
-    lastPostedDate: '',
     token: getToken(),
   },
   mutations: {
@@ -27,15 +24,6 @@ const user = {
     },
     SET_AMOUNT: (state, amount) => {
       state.amount = amount
-    },
-    SET_MEMBER_LEVEL: (state, memberLever) => {
-      state.memberLever = memberLever
-    },
-    SET_COUPONS_POSTED: (state, couponsPosted) => {
-      state.couponsPosted = couponsPosted
-    },
-    SET_LAST_POSTED_DATE: (state, lastPostedDate) => {
-      state.lastPostedDate = lastPostedDate
     },
     SET_TOKEN: (state, token) => {
       state.token = token

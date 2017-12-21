@@ -36,7 +36,7 @@
           <p class="price content">
             <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
           </p>
-          <p class="price content">
+          <p class="price content clearfix">
             <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>
             <span class="price-right-bottom"> {{couponsDetails.discount_rate}}% <i>off</i></span>
           </p>

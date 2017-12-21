@@ -127,7 +127,7 @@ export default {
     margin-bottom: 1rem;
     .img-big {
       text-align: center;
-      padding-top: 2rem;
+      padding-top: 1rem;
       height: 14rem;
       img {
         width: 16rem;
@@ -220,7 +220,7 @@ export default {
         span {
            font-size: 12px;
            float: left;
-           margin-bottom: 5px;
+           margin-bottom: 1px;
            margin-top: .5rem;
            width: 12rem;
         }

@@ -11,6 +11,14 @@
           {{currency}}{{amount}}
         </span>
       </div>
+      <div class="balance">
+        <label class="left-label">
+          Security deposit:
+        </label>
+        <span class="balance-money">
+          {{currency}}{{amount}}
+        </span>
+      </div>
       <div class="withdrawals">
         <label class="left-label">recharges:</label>
         <el-form-item prop="withdrawCount">
@@ -25,7 +33,7 @@
      
     </el-form>
     <div class="submit">
-        <button @click="submit">Submit</button>
+        <el-button @click="submit" :loading="btnLoading">Submit</el-button>
     </div>
   </div>
 </template>
@@ -54,7 +62,8 @@ export default {
       rechangeForm: {
         radio: '1',
         withdrawCount: '',
-      }
+      },
+      btnLoading: false,
     }
   },
   computed: {
@@ -124,7 +133,7 @@ export default {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 90px;
+      width: 140px;
       color: #666;
       font-size: 16px;
     }

@@ -57,7 +57,7 @@
           <el-option 
             v-for="item in optionsWebsite"
             :key="item.id"
-            :label="item.website"
+            :label="item.url"
             :value="item.id">
           </el-option>
         </el-select>

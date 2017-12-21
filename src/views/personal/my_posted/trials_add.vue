@@ -163,23 +163,20 @@ export default {
     return {
       pickerOptions1: {
         disabledDate (time) {
-          return time.getTime() < Date.now() - 86400000
+          return time.getTime() < Date.now()
         },
       },
       country_id: parseInt(getStore('country_id')) || 1,
-      optionsWebsite: [
-      ],
-      optionsStore: [
-        {
-          'value': '1',
-          'label': 'amazon'
-        }
-      ],
-      optionsCategory: [
-      ],
+      optionsWebsite: [],
+      optionsStore: [],
+      optionsCategory: [],
       isEditorData: true,
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
+        user_id: getUserId(),  // 用户ID ， 是，
+        user_name: '',       // 发布用户名称， 是
+        api_token: getToken(),
+
         product_url: '',
         product_title: '',
         product_reason: '',
@@ -203,13 +200,9 @@ export default {
         refund: '',
         platform_fee: '',
 
-        user_id: getUserId(),  // 用户ID ， 是，
-        user_name: '',       // 发布用户名称， 是
-        api_token: getToken()
+        
       },
-      trialsFormSubmit: {
-
-      },
+      trialsFormSubmit: {},
       rules: {
         product_url: [
           {required: true ,message: 'product url is required', trigger: 'blur'}
@@ -484,16 +477,18 @@ export default {
 
     //通过输入链接获取所有产品信息
     getProInfo (url) {
-      this.$message.info('For information on goods, please wait a moment')
-      axios.get('http://23.91.2.69/productsm/index.php/api/asin', {
+      // this.$message.info('For information on goods, please wait a moment')
+      this.getPlatformCateInfo()
+      axios.get('http://chanpin25.com/index.php/api/asin', {
         params: {
           url: url,
         }
       })
         .then( (res) =>{
-          this.getPlatformCateInfo()
           setTimeout(() => {
-            console.log(res)
+            if (!res.data.data) {
+              this.$message.info('Failed to obtain commodity information!!!')
+            }
             let data = res.data.data
             let newArr = []
             data.product_img.forEach((e) => {
@@ -504,11 +499,9 @@ export default {
             this.trialsForm.product_img_s = newArr
             this.imgChange()
             this.trialsForm.product_price = data.product_price.slice(1).replace(',', '')
-            console.log(this.trialsForm)
-            // this.trialsForm.product_reason  = data.product_reason.replace(/<br\s*\/?>/gi,'\r\n').replace(/<b>/gi, '').replace(/<\/b>/gi, '')
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
-              this.$notify.error('please enter a right url')
+              this.$message.error('please enter a right url')
             }
           }, 50)
         })
@@ -523,19 +516,17 @@ export default {
       this.optionsWebsite = []
       this.$api.getPlatformCate(this.requestData)
         .then(res => {
-          console.log(res.data) 
           if(res.data.length <= 0) {return}
           for (let i of res.data) {
-            console.log(i)
             var ObjWebsite = {
               label: '',
               id: ''
             }
-            ObjWebsite.label = i.website
+            ObjWebsite.label = i.provider
             ObjWebsite.id = i.id
             this.optionsWebsite.push(ObjWebsite)
             if (this.trialsForm.product_url.search(i.url) >= 0) {
-              this.trialsForm.website = i.website
+              this.trialsForm.website = i.provider
             }
           }
         })
@@ -586,7 +577,7 @@ export default {
       if (!isLt500K) {
         this.$message.error('上传图片文件大小 不能超过 500kb!')
       }
-      if (this.trialsForm.length >= 6) {
+      if (this.trialsForm.product_img_s.length >= 6) {
         this.$message.error('最多只能上传6张图片！')
         limitF = false
       }
@@ -597,7 +588,6 @@ export default {
         formData.append('file', file)
         this.$api.uploadImg(formData)
           .then(res => {
-            console.log(res)
             this.trialsForm.product_img_s.push({ url: res.data })
             this.imgChange()
           })
@@ -743,8 +733,8 @@ export default {
       width: 198px;
     }
     &.url-input {
-      width: 68%;
-      margin-right: 5%;
+      width: 85%;
+      // margin-right: 5%;
     }
   }
   .el-upload-list__item {

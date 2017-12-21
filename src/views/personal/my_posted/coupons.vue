@@ -75,7 +75,7 @@
               
               <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] && !item.isExpired">Stop</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired">Close</div>
-              <div class="red" v-if="item.status === 1 && (item.run_status ==  all_run_status[5] || item.isExpired) ">Expired</div>
+              <div class="red" v-if=" item.isExpired ">Expired</div>
             </td>
             <td class="operation">
               <template v-if="item.status === 0 && !item.isExpired ">
@@ -191,7 +191,7 @@ export default {
         api_token: getToken(),
         country_id: getStore('country_id') || 1,
         page: 1,
-        page_size: 6,
+        page_size: 5,
         product_title: '',
         menu_id: '',
         run_status: '',

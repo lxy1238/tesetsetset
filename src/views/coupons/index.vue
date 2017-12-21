@@ -322,7 +322,6 @@ export default {
       templateText: '',
       promoterPid: '123456789',
       requestPlatData: {
-        api_token: getToken(),
         country_id: parseInt(getStore('country_id') || 1),
         user_id: '',
       },
@@ -413,7 +412,12 @@ export default {
     //模版替换
     test () {
       let template = this.promotionTemplate
-      let promoLink = `${location.href}?promoter=${getUserId() ? getUserId() : ''}`
+      let promoLink
+      if (location.href.indexOf('?promoter') >= 0) {
+        promoLink = location.href
+      } else {
+        promoLink = `${location.href}?promoter=${getUserId() ? getUserId() : ''}`
+      }
       this.templateText = template
         .replace(/\n/g, '<br>')
         .replace(/#Platform#/g, this.couponDetail.website)
