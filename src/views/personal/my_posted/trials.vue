@@ -332,7 +332,7 @@ export default {
             console.log(res)
             this.getPostTrialsList()
           })
-          this.$notify({
+          this.$message({
             type: 'success',
             message: 'delete success!'
           })

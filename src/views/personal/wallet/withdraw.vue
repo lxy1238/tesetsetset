@@ -22,7 +22,7 @@
         <el-radio class="pay-radio" v-model="withdrawForm.radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
         <el-radio class="pay-radio" v-model="withdrawForm.radio" label="3"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
       </div>
-      <div class="withdrawals">
+      <div class="withdrawals" v-if="withdrawForm.radio !== '2'">
         <label class="left-label">Acount:</label>
         <el-form-item prop="account">
           <el-input v-model="withdrawForm.account"></el-input>

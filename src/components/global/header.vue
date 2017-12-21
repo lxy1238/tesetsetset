@@ -582,7 +582,7 @@ export default {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
-            this.$notify.success('Please login to the mailbox for activation validation')
+            this.$message.success('Please login to the mailbox for activation validation')
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
@@ -601,7 +601,7 @@ export default {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
-            this.$notify.success('login success')
+            this.$message.success('login success')
             this.$refs['loginform'].resetFields()
           }
           this.$store.dispatch('GetInfo').then(() => {
@@ -623,7 +623,7 @@ export default {
           console.log(res)
           if (res.code === 200) {
             this.resetLoading = false
-            this.$notify.success('Please click the link to change the password')
+            this.$message.success('Please click the link to change the password')
           }
         }).catch(err => {
           this.resetLoading = false

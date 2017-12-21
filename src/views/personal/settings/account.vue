@@ -122,7 +122,7 @@ export default {
       this.$api.userInfoSet(this.accountForm)
         .then(res => {
           if (res.code === 200) {
-            this.$notify.success('reset info success')
+            this.$message.success('reset info success')
             this.$store.dispatch('GetInfo')
             document.body.scrollTop = document.documentElement.scrollTop = 0
           }

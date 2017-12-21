@@ -65,7 +65,7 @@
       <div class="center-wallet">
         <div class="withdraw wallet">
           <div class="wallet-child">
-            <span class="money">${{userData.account.amount}}</span>
+            <span class="money">{{currency}}{{userData.account.amount}}</span>
             <p>Balance</p>
           </div>
           <div class="money-btn">
@@ -74,7 +74,7 @@
         </div>
         <div class="recharge wallet" v-if="roles[0] == 'merchant'">
           <div class="wallet-child">
-            <span class="money">${{userData.account.frozen_amount}}</span>
+            <span class="money">{{currency}}{{userData.account.frozen_amount}}</span>
             <p>Security deposit</p>
           </div>
           <div class="money-btn">

@@ -89,10 +89,10 @@ export default {
         if (valid) {
           this.$api.resetPassword(this.pidForm).then(res => {
             if (res.code === 402) {
-              this.$notify.error(res.message)
+              this.$message.error(res.message)
               return false
             } else {
-              this.$notify.success('reset password success!!!')
+              this.$message.success('reset password success!!!')
               this.$router.push({path: '/personal/index'})
             }
           })

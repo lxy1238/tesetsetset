@@ -141,7 +141,7 @@
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
             <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
+            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{couponDetail.discount_price}}</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
               <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
@@ -343,6 +343,11 @@ export default {
   mounted () {
     this.init()
   },
+  watch: {
+    username () {
+      this.reqGetCodeData.username = this.$store.getters.username
+    }
+  },
   methods: {
     //初始化
     init () {
@@ -354,7 +359,6 @@ export default {
 
     //数据初始化
     initData () {
-      this.reqGetCodeData.username = this.username
       this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
@@ -638,7 +642,7 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$notify.error('You can only type 30 characters')
+        this.$message.error('You can only type 30 characters')
         return
       }
       this.$api.addProblem(this.addProblemData).then(res => {

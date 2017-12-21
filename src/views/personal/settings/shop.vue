@@ -192,7 +192,7 @@ export default {
       if (!this.isEdit) {
         this.$api.addStore(data).then(res => {
           if (res.code === 200) {
-            this.$notify.success('add store success!')
+            this.$message.success('add store success!')
             this.addStoreDialog = false
             this.getStoreList()
           }
@@ -203,7 +203,7 @@ export default {
       } else {
         this.$api.editStore(data).then(res => {
           if (res.code === 200) {
-            this.$notify.success('edit store success!')
+            this.$message.success('edit store success!')
             this.addStoreDialog = false
             this.getStoreList()
           }

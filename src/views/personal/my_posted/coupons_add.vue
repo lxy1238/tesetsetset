@@ -375,7 +375,6 @@ export default {
 
     //通过输入链接获取所有产品信息
     getProInfo (url) {
-      this.getPlatformCateInfo()
       this.getinfoBtn = true
       // this.$message.info('For information on goods, please wait a moment')
       axios.get('http://chanpin25.com/index.php/api/asin', {
@@ -400,10 +399,10 @@ export default {
             })
             this.couponsForm.product_img_s = newArr
             this.imgChange()
-            this.couponsForm.product_price = data.product_price.slice(1).replace(',', '')
+            this.couponsForm.product_price = data.product_price ? data.product_price.slice(1).replace(',', '') : '',
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
-              this.$notify.error('please enter a right url')
+              this.$message.error('please enter a right url')
             }
           }, 500)
         })
@@ -492,7 +491,7 @@ export default {
         data.id = this.$route.query.editor
         this.$api.editorCoupon(data).then(res => {
           if (res.code === 200) {
-            this.$notify.success('issue coupon success')
+            this.$message.success('issue coupon success')
             this.$router.push({ path: '/posted/coupons' })
           }
         }).catch(error => {

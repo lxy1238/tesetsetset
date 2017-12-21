@@ -1,7 +1,7 @@
 <template>
   <div class="trials-add">
      <div class="title">
-       Add Coupons
+       Add Trails
     </div>
     <div class="title-s">
       Product Information
@@ -606,7 +606,7 @@ export default {
         data.id = this.$route.query.editor
         this.$api.editTrial(data).then(res => {
           if (res.code === 200) {
-            this.$notify.success('issue coupon success')
+            this.$message.success('issue coupon success')
             this.$router.push({ path: '/posted/trials' })
           }
         }).catch(error => {
@@ -616,7 +616,7 @@ export default {
         this.$api.trialsAdd (data)
           .then(res => {
             if (res.code === 200) {
-              this.$notify.success('issue coupon success')
+              this.$message.success('issue coupon success')
               this.$router.push({ path: '/posted/trials' })
             }
           })

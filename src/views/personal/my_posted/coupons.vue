@@ -87,7 +87,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
-                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
@@ -312,7 +312,7 @@ export default {
           this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
-            this.$notify({
+            this.$message({
               type: 'success',
               message: 'delete success!'
             })
