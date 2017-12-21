@@ -32,8 +32,10 @@ export default {
         country_id: parseInt(getStore('country_id')) || 1,
         api_token: getToken(),
         user_id: getUserId(),
-        amount: '',
         pay_order_number: '',
+        amount: '',
+        subject: 'recharge on Alipay',
+        body: 'recharge on Alipay',
       }
     }
   },
@@ -48,27 +50,27 @@ export default {
     } else {
       this.$router.push({path: '/404/index'})
     }
-    // this.$api.alipay(this.reqData).then(res => {
-    //   let num = res.data.search('</form>')
-    //   this.resForm = res.data.slice(0, num + 7)
-    //   this.timer = setInterval(() => {
-    //     if (document.forms['alipaysubmit']) {
-    //       document.forms['alipaysubmit'].submit()
-    //     }
-    //   },1000)
-    // })
-
-    let data = qs.stringify(this.reqData)
-    axios.post('http://dealsbank.com/api/v1/pay/ali-pay', data).then(res => {
-      console.log(res)
-      let num = res.data.data.search('</form>')
-      this.resForm = res.data.data.slice(0, num + 7)
-      this.timer = setInterval(() => {
+    this.$api.alipay(this.reqData).then(res => {
+      let num = res.data.search('</form>')
+      this.resForm = res.data.slice(0, num + 7)
+      setTimeout(() => {
         if (document.forms['alipaysubmit']) {
           document.forms['alipaysubmit'].submit()
         }
-      },1000)
+      })
     })
+
+    // let data = qs.stringify(this.reqData)
+    // axios.post('http://dealsbank.com/api/v1/pay/ali-pay', data).then(res => {
+    //   console.log(res)
+    //   let num = res.data.data.search('</form>')
+    //   this.resForm = res.data.data.slice(0, num + 7)
+    //   this.timer = setTimeout(() => {
+    //     if (document.forms['alipaysubmit']) {
+    //       document.forms['alipaysubmit'].submit()
+    //     }
+    //   })
+    // })
   },
   
   methods: {

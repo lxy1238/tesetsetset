@@ -771,7 +771,7 @@ export default {
         .o-price {
           text-decoration: line-through;
           font-weight: bold;
-          margin-right: 32rem;
+          margin-right: 28rem;
         }
         .c-price {
           margin-right: 1rem;

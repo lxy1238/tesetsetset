@@ -22,7 +22,7 @@
       <div class="withdrawals">
         <label class="left-label">recharges:</label>
         <el-form-item prop="withdrawCount">
-          <el-input v-model="rechangeForm.withdrawCount" @blur="blur" class="input-money"></el-input>
+          <el-input v-model="rechangeForm.withdrawCount" class="input-money"></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
@@ -44,11 +44,14 @@ import { getStore  } from '@/utils/utils'
 export default {
   name: 'rechange',
   data () {
+    let reg =  /^\d+(\.\d{1,2})?$/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the withdraw amount'))
+        return callback(new Error('Please enter the recharge amount'))
       } else if(parseFloat(value) == 0 ){
         callback(new Error ('Please enter the correct amount'))
+      } else if(!reg.test(value)){
+        callback(new Error ('The amount can only enter two decimal places'))
       } else {
         callback()
       }
@@ -84,7 +87,8 @@ export default {
     //限制只能输入数字和.
     filterInput () {
       $('.input-money .el-input__inner').eq(0).keypress((e) => {
-        if (!(e.keyCode === 46 || (e.keyCode <= 57 && e.keyCode >= 48))) {
+        let code = e.keyCode || e.which || e.charCode
+        if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
           return false
         }
       })
@@ -111,12 +115,6 @@ export default {
         }
       })
     },
-    blur () {
-      let reg = /^\d+(\.\d{1,2})?$/
-      if (!reg.test(this.withdrawCount)) {
-        this.withdrawCount = ''
-      }
-    }
   }
 }
 </script>

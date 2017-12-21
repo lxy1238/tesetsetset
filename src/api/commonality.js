@@ -57,6 +57,13 @@ export const WXcheckPayNotify = data => fetch({
   data: qs.stringify(data)
 })
 
+//支付流水
+export const tradeRecord = data => fetch({
+  url: '/api/v1/pay/trade-record',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 
 export const alipay = data => fetch({
