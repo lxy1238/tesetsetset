@@ -68,9 +68,9 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span v-if="item.trials.shipping_fee != 0">
+                    <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
@@ -148,9 +148,9 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span v-if="item.trials.shipping_fee != 0">
+                    <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
@@ -206,9 +206,9 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span v-if="item.trials.shipping_fee != 0">
+                    <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
@@ -327,6 +327,36 @@ export default {
         console.log(err)
       })
     },
+
+    //review
+    getReviewInfo () {
+      this.$api.userTrialOrder(this.reqReviewData).then(res => {
+        this.orderDetails1 = res.data.data
+        for (let i of this.orderDetails1) {
+          i.Modify = true
+          if (i.appraise_url) {
+            i.modifyUrl = true
+            i.appraise_url_input = i.appraise_url
+          }
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+
+    //userApplyFinish  完成详情展示
+    getCompleteInfo () {
+      this.$api.userApplyFinish(this.reqSuccedDetailsData).then(res => {
+        this.orderDetails2 = res.data.data
+      })
+    },
+
+    //userApplyFinish  订单过期信息展示
+    getExpiredInfo () {
+      this.$api.userApplyExpired(this.reqSuccedDetailsData).then(res => {
+        this.orderDetails3 = res.data.data
+      })
+    },
     //定时器，时间倒计时
     countDown (i) {
       this.timer = setInterval(() => {
@@ -357,21 +387,7 @@ export default {
         e.target.disabled = false
       })
     },
-    //review
-    getReviewInfo () {
-      this.$api.userTrialOrder(this.reqReviewData).then(res => {
-        this.orderDetails1 = res.data.data
-        for (let i of this.orderDetails1) {
-          i.Modify = true
-          if (i.appraise_url) {
-            i.modifyUrl = true
-            i.appraise_url_input = i.appraise_url
-          }
-        }
-      }).catch(err => {
-        console.log(err)
-      })
-    },
+ 
 
     //修改按钮变成save 按钮
     modifyOrderBtn (item) {
@@ -428,19 +444,7 @@ export default {
       window.open(url)
     },
     
-    //userApplyFinish  完成详情展示
-    getCompleteInfo () {
-      this.$api.userApplyFinish(this.reqSuccedDetailsData).then(res => {
-        this.orderDetails2 = res.data.data
-      })
-    },
-
-    //userApplyFinish  订单过期信息展示
-    getExpiredInfo () {
-      this.$api.userApplyExpired(this.reqSuccedDetailsData).then(res => {
-        this.orderDetails3 = res.data.data
-      })
-    },
+   
     //进入页面之后判断跳转到哪个页面
     gotoPanel () {
       if (this.$route.query.status) {

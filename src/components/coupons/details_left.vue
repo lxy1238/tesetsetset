@@ -85,7 +85,7 @@ export default {
         if (this.userInfo.pid) {
           this.amazonUrl = this.userInfo.product_url + '&tag=' + this.userInfo.pid
         } else {
-          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.userInfo.pid
+          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.promoPid
         }
       }, 500)
     }
@@ -116,6 +116,7 @@ export default {
       }
       // this.emitdata(this.activeNum)
     },
+    
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
       if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {

@@ -226,7 +226,6 @@ import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 import { getEmail, getToken,getPass, setToken, setUserId ,setPass} from '@/utils/auth'
-// import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -317,10 +316,8 @@ export default {
     }
   },
   computed: {
-    
     ...mapGetters([
       'username',
-      'token',
       'roles',
       'addRouters',
       'avatar',
@@ -343,9 +340,6 @@ export default {
     },
   },
   mounted () {
-    if(this.$route.query.search) {
-      this.keyword = this.$route.query.search
-    }
     this.init()
   },
   //组件销毁时，关闭来自其他组件的事件接收
@@ -363,11 +357,16 @@ export default {
       this.docuemntAddEvent()
       this.enterSubmitForm()
       this.getHeadCateListInfo()
-      this.getOtherEvent()
       this.getUserCountryInfo()
+      this.getOtherEvent()
     },
     //数据初始化
     initData () {
+      //获取查询字段
+      if(this.$route.query.search) {
+        this.keyword = this.$route.query.search
+      }
+      //获取品类ID
       for (var i of this.classifyList) {
         if (i.name === this.$route.params.menuId) {
           this.selectedC = i.id

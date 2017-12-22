@@ -66,7 +66,7 @@
               <!-- quantity -->
               <td>
                 <div>
-                  {{item.quantity_per_day}}
+                  {{item.total_quantity}}
                 </div>
               </td>
               <!-- applied -->

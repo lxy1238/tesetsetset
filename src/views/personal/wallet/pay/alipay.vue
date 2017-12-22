@@ -34,6 +34,7 @@ export default {
         user_id: getUserId(),
         pay_order_number: '',
         amount: '',
+        bank_conversion_pri: '',
         subject: 'recharge on Alipay',
         body: 'recharge on Alipay',
       }
@@ -50,15 +51,7 @@ export default {
     } else {
       this.$router.push({path: '/404/index'})
     }
-    this.$api.alipay(this.reqData).then(res => {
-      let num = res.data.search('</form>')
-      this.resForm = res.data.slice(0, num + 7)
-      setTimeout(() => {
-        if (document.forms['alipaysubmit']) {
-          document.forms['alipaysubmit'].submit()
-        }
-      })
-    })
+ 
 
     // let data = qs.stringify(this.reqData)
     // axios.post('http://dealsbank.com/api/v1/pay/ali-pay', data).then(res => {
@@ -74,7 +67,34 @@ export default {
   },
   
   methods: {
-    
+
+    //获取国家列表，携带货币符号，
+    getUserCountryInfo () {
+      this.$api.getUserCountry().then(res => {
+        this.countryLists = res.data
+        for (let i of this.countryLists) {
+          if (i.id === this.country_id) {
+            this.reqData.bank_conversion_pri = i.bank_conversion_pri
+          }
+        }
+        console.log(this.reqData)
+        this.aliPay()
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    alipay () {
+      this.$api.alipay(this.reqData).then(res => {
+        let num = res.data.search('</form>')
+        this.resForm = res.data.slice(0, num + 7)
+        setTimeout(() => {
+          if (document.forms['alipaysubmit']) {
+            document.forms['alipaysubmit'].submit()
+          }
+        })
+      })
+    }
   }
 }
 </script>
