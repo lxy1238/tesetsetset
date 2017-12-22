@@ -74,7 +74,6 @@ export default {
     getUserCoupons () {
       this.$api.userCoupons(this.requestData).then(res => {
         if (res.data.total !== 0) {
-          console.log(res.data)    // 少了一个product_url 字段
           this.couponLists = res.data.data
           this.allpage = res.data.last_page
         }

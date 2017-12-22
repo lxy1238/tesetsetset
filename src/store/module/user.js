@@ -65,15 +65,7 @@ const user = {
             commit('SET_EMAIL',data.email)   
             commit('SET_USERID',data.id)   
             commit('SET_AVATAR',data.base.avatar_img)   
-          } else if (res.code === 500) {
-            removeToken()
-            removeUserId()
-            removeEmail()
-            removePass()
-            commit('SET_EMAIL', '')
-            commit('SET_TOKEN', '')
-            router.push({path: '/'})
-          }
+          } 
           resolve(res)
         }).catch(err => {
           reject(err)
@@ -83,16 +75,16 @@ const user = {
 
     //前端登出
     LogOut ({ commit }) {
+      router.push({path: '/'})
       removeToken()
       removeUserId()
       removeEmail()
       removePass()
       commit('SET_TOKEN', '')
       commit('SET_USERID', '') 
-      router.push({path: '/'})
       setTimeout(() => {
         window.location.reload()
-      }, 100)
+      }, 500)
     }
   }
 }

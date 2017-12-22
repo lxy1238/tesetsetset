@@ -40,12 +40,15 @@ export default {
       timer: null,
       timerPay: null,
       resData: '',
+      countryLists: [],
+      country_id: parseInt(getStore('country_id')) || 1,
       reqData: {
         country_id: parseInt(getStore('country_id')) || 1,
         api_token: getToken(),
         user_id: getUserId(),
         amount: '',
         pay_order_number: '',
+        bank_conversion_pri: '',
       },
       reqDataPayInfo: {
         country_id: parseInt(getStore('country_id')) || 1,
@@ -67,22 +70,30 @@ export default {
   },
   methods: {
     init () {
+      this.initData()
+      this.getUserCountryInfo()
+    },
+
+    //获取需要充值的金额
+    initData () {
       if (this.$route.query.withdrawCount) {
         this.reqData.amount = this.$route.query.withdrawCount
         this.reqData.pay_order_number = RandomPayNumber()
       } else {
         this.$router.push({path: '/404/index'})
       }
-      this.$nextTick(function () {
-        this.qrcode()
-      })
     },
+
+    //绘制二维码
     qrcode () {
-      var qrcode = new QRCode(document.getElementById('codeWx'), {
-        width : 300,
-        height : 300
+      let qrcode = new QRCode(document.getElementById('codeWx'), {
+        width : 240,
+        height : 240
       })
       this.$api.payWX(this.reqData).then(res => {
+        if (!res.data) {
+          this.init()
+        }
         this.resData = res.data
         qrcode.makeCode(res.data)
         this.timer = setInterval(() => {
@@ -99,6 +110,7 @@ export default {
         console.log(err)
       })
     },
+    //定时器获取支付结果
     getWXPayInfo () {
       this.reqDataPayInfo.pay_order_number = this.reqData.pay_order_number
       this.$api.WXcheckPayNotify(this.reqDataPayInfo).then(res => {
@@ -113,12 +125,28 @@ export default {
         console.log(err)
       })
     },
+   
+    //获取国家列表，携带货币符号，
+    getUserCountryInfo () {
+      this.$api.getUserCountry().then(res => {
+        this.countryLists = res.data
+        for (let i of this.countryLists) {
+          if (i.id === this.country_id) {
+            this.reqData.bank_conversion_pri = i.bank_conversion_pri
+          }
+        }
+        this.qrcode()
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
     refresh () {
       window.location.reload()
     },
     goback () {
       window.history.back()
-    }
+    },
   }
 
 }
@@ -140,7 +168,7 @@ export default {
         }
       }
       .scan-text {
-        width: 300px;
+        width: 240px;
         height: 60px;
         color: white;
         font-size: 18px;

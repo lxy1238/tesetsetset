@@ -359,6 +359,7 @@ export default {
 
     //数据初始化
     initData () {
+      this.reqGetCodeData.username = this.username
       this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
@@ -634,6 +635,9 @@ export default {
     },
     //提交问题
     addProblemSubmit () {
+      if (!this.isLogin()) {
+        return
+      }
       if (base64Decode(this.$route.params.couponsId)) {
         this.addProblemData.menu = 'coupons'
         this.addProblemData.product_id = base64Decode(this.$route.params.couponsId)

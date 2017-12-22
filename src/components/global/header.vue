@@ -221,13 +221,12 @@
 </template>
 
 <script>
-// import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 import { getEmail, getToken,getPass, setToken, setUserId ,setPass} from '@/utils/auth'
-import '../../utils/google'
+// import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -270,7 +269,7 @@ export default {
       },
       rulesLogin: {
         email: [
-          { required: true, message: 'Please enter your email', trigger: 'blur' },
+          { validator:validateEmailRule, trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
@@ -294,15 +293,6 @@ export default {
       //国家列表
       countryLists: [
       ],
-      allLanguage: [
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-      ],
       selectedC: 0,
       loginDialog: false,
       signDialog: false,
@@ -310,8 +300,6 @@ export default {
       showDropdownC: false,
       showDropdownL: false,
       showDropdownU: false,
-      selectedCountry: '中文(简体)',
-      isShowAllLanguage: false,
       loginLoading: false,
       signloading: false,
       resetLoading: false,
@@ -319,6 +307,7 @@ export default {
       country_id: parseInt(getStore('country_id')) || 1,
       app_id: '894275327387425',
       selectedCoupon: 1,
+      isLogin: getToken() 
     }
   },
   props: {
@@ -328,9 +317,7 @@ export default {
     }
   },
   computed: {
-    isLogin () {
-      return getToken()
-    },
+    
     ...mapGetters([
       'username',
       'token',
@@ -366,6 +353,7 @@ export default {
     this.$root.eventHub.$off('initClassify')
     this.$root.eventHub.$off('selectClassify1')
     this.$root.eventHub.$off('isLoginInfo')
+    this.$root.eventHub.$off('changeCountryId')
   },  
 
   methods: {
@@ -385,7 +373,6 @@ export default {
           this.selectedC = i.id
         }
       }
-      this.initGoogle()
     },
 
     //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
@@ -462,10 +449,6 @@ export default {
       setStore('currency',item.currency)
       this.$router.push({path: '/'})
       window.location.reload()
-      // this.selectedCountryShop  = item.id
-      // this.keyword = ''
-      // this.$root.eventHub.$emit('changeCountryId', item.id)
-      // this.selectClassify(this.classifyList[0])
     },
 
     //通过关键字查询过滤首页商品
@@ -504,6 +487,7 @@ export default {
     ShowLoginDialog () {
       setTimeout(() => {
         this.googleLogin()
+        this.initFacebook()
       }, 500)
       if (getEmail()) {
         this.loginform.email = getEmail()
@@ -518,6 +502,7 @@ export default {
     ShowSignDialog () {
       setTimeout(() => {
         this.googleLogin()
+        this.initFacebook()
       }, 500)
       this.resetPassword = false
       this.loginDialog = false
@@ -577,7 +562,7 @@ export default {
     signUp () {
       this.signSubmit('signform', () => {
         this.signloading = true
-        this.signform.activate_url = location.protocol + '//' + location.host + '/#/activate/' + this.signform.email
+        this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email
         this.$api.sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
@@ -604,9 +589,14 @@ export default {
             this.$message.success('login success')
             this.$refs['loginform'].resetFields()
           }
-          this.$store.dispatch('GetInfo').then(() => {
+          this.$store.dispatch('GetInfo').then(res => {
+            const roles =[ res.data.type ]
             this.loginLoading = false
-            window.location.reload()
+            // window.location.reload()
+            this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
+              this.$router.addRoutes(this.$store.getters.addRouters)
+              this.isLogin = getToken()
+            })
           })
         }).catch(err => {
           this.$message.error(err.message)
@@ -618,7 +608,7 @@ export default {
     resetPasswordBtn () {
       this.signSubmit('resetform', () => {
         this.resetLoading = true
-        this.resetform.url = location.protocol + '//' + location.host + '/#/resetpass/' + this.resetform.email + '/'
+        this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + this.resetform.email + '/'
         this.$api.retrievePassword(this.resetform).then(res => {
           console.log(res)
           if (res.code === 200) {
@@ -657,15 +647,13 @@ export default {
 
     //google 登录
     googleLogin () {
+      require('../../utils/google') 
       var _this = this
       var startApp = function () {
         gapi.load('auth2', function (){
-          // Retrieve the singleton for the GoogleAuth library and set up the client.
           let auth2 = gapi.auth2.init({
             client_id: '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
-            // Request scopes in addition to 'profile' and 'email'
-            // scope: 'additional_scope'
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
           auth2.attachClickHandler('customBtn', {}, onSuccess, onFailure)
@@ -677,17 +665,9 @@ export default {
      */
       //google登录回调
       var onSuccess = function (user) {
-        console.log(this)
         var profile = user.getBasicProfile()
         console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
         console.log('Full Name: ' + profile.getName())
-        console.log('Given Name: ' + profile.getGivenName())
-        console.log('Family Name: ' + profile.getFamilyName())
-        console.log('Image URL: ' + profile.getImageUrl())
-        console.log('Email: ' + profile.getEmail())
-        // document.getElementById('name').innerText = 'Signed in: ' + profile.getName()
-    
-        // The ID token you need to pass to your backend:
         let data = {
           client_id : '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
           user_id : profile.getId(),
@@ -712,7 +692,7 @@ export default {
 
 
     //facebook 登录初始化
-    initGoogle () {
+    initFacebook () {
       // Load the SDK asynchronously
       (function (d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0]
@@ -721,40 +701,20 @@ export default {
         js.src = 'https://connect.facebook.net/en_US/sdk.js'
         fjs.parentNode.insertBefore(js, fjs)
       }(document, 'script', 'facebook-jssdk'))
-
       window.fbAsyncInit = function () {
         FB.init({
           appId      : '908467375968806',
           cookie     : true,  // enable cookies to allow the server to access
-          // the session
           xfbml      : true,  // parse social plugins on this page
           version    : 'v2.11' // use graph api version 2.8
         })
-        // FB.ui(
-        //   {
-        //     method: 'share',
-        //     href: 'https://developers.facebook.com/docs/',
-        //   },
-        //   // callback
-        //   function (response) {
-        //     if (response && !response.error_message) {
-        //       alert('Posting completed.')
-        //     } else {
-        //       alert('Error while posting.')
-        //     }
-        //   }
-        // )
       }
-    
-  
     },
 
     //facebook 登录回调函数
     statusChangeCallback (response) {
-      console.log(this)
       if (response.status === 'connected') {
         // Logged into your app and Facebook.
-        console.log('Welcome!  Fetching your information.... ')
         var user_id = response.authResponse.userID
         var accessToken = response.authResponse.accessToken
 
@@ -791,16 +751,13 @@ export default {
 
     //第三方登录回调
     loginCallback (res) {
-      console.log(res)
       if(res.code == 200){
-        console.log(res)  
         let api_token = res.data.api_token
         let user_id = res.data.user_id
         setToken(api_token)
         setUserId(user_id )
         this.$api.updateLogin({'api_token': api_token, 'user_id': user_id})
         this.$store.dispatch('GetInfo').then(res => {
-          console.log(res)
           if (res.code === 200) {
             window.location.reload()
           }

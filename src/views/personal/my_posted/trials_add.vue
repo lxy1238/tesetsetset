@@ -108,7 +108,7 @@
         <div class="red" v-if="!trialsForm.product_details">product details is required</div>
       </el-form-item>
       <div class="title-s">
-        Coupon Information
+        Trial Information
       </div>
       <el-form-item label="Active date: " class="" prop="active_date"  >
           <el-date-picker
