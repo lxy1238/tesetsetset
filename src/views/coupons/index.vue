@@ -493,9 +493,7 @@ export default {
       this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.$api.isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
-        if (!res.data) {
-          console.log('no res data')
-        } else {
+        if (res.data) {
           this.getCodeSuccess = true
         }
       })
@@ -574,7 +572,7 @@ export default {
     getCouponCode (e) {
       if (this.isLogin()) {
         if (this.isStop()) {
-          this.$message.info('该活动已经结束,或者该优惠卷已经领取完了')
+          this.$message.info('The activity is over, or the coupon has been received')
           return
         }
         e.target.disabled = true

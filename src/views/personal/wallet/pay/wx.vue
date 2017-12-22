@@ -118,8 +118,10 @@ export default {
           return
         }
         if (res.data.result_code == 'SUCCESS') {
+          this.$store.dispatch('GetInfo').then(() => {
+            this.$router.push({path: '/wallet/financial'})
+          })
           clearInterval(this.timerPay)
-          this.$router.push({path: '/wallet/financial'})
         }
       }).catch(err => {
         console.log(err)

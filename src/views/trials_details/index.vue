@@ -69,7 +69,7 @@
                 </div>
               </div>
               <div class="tabs-body">
-                <div v-if="selected == 0" class="content1" v-html="trialDetailData.product_details">
+                <div v-if="selected == 0" class="content1" id="productDetails">
                   
                 </div>
                 <div v-if="selected == 1" class="content">
@@ -91,6 +91,7 @@
             </div>
           </div>
       </div>
+      <img v-if="false" :src="imgTest" />
     </div>
 
       <!-- not get trials -->
@@ -124,6 +125,7 @@ export default {
       selected: 0,
       added: true,
       isApply: false,
+      imgTest: require('../../assets/app-logo.png'),
       processData: [
         {
           'title':'Register users, apply for products',
@@ -229,7 +231,9 @@ export default {
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
-        console.log(this.trialDetailData)
+        setTimeout(() => {
+          document.getElementById('productDetails').innerHTML = this.trialDetailData.product_details
+        })
         this.getPostUserInfo(res.data.user_id)
       }).catch(error => {
         console.log(error)

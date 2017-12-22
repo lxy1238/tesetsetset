@@ -17,10 +17,13 @@
           <tbody>
             <tr v-for="item in trLists" v-if="trLists.length !== 0">
               <td>{{item.updated_at}}</td>
-              <td>{{item.pay_order_number}}</td>
-              <td>{{item.trade_type}}</td>
-              <td>{{item.amount}}</td>
-              <td>{{item.run_status}}</td>
+              <td>{{item.business_number}}</td>
+              <td>{{item.business_name}}</td>
+              <td>{{item.business_ID}}</td>
+              <td>{{item.business_type}}</td>
+              <td>{{item.detail}}</td>
+              <td>{{item.trade_amount}}</td>
+              <!-- <td>{{item.run_status}}</td> -->
             </tr>
             <tr v-if="trLists.length === 0" >
               <td colspan="10">
@@ -48,8 +51,8 @@ export default {
   name: 'posted_trials',
   data () {
     return {
-      thLists: ['Date', 'Serial Number', 'Type', 'Amount', 'result'],
-      // thLists: ['Date', 'Serial Number', 'Issue', 'Issue ID', 'Type', 'Desctiption', 'Amount', 'result'],
+      // thLists: ['Date', 'Serial Number', 'Type', 'Amount', 'result'],
+      thLists: ['Date', 'Serial Number', 'Issue', 'Issue ID', 'Type', 'Desctiption', 'Amount'],
       trLists: [],
       allpage: undefined,
       showItem: 7,

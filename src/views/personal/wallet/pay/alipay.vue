@@ -17,8 +17,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-import qs from 'qs'
 import { getUserId, getToken } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { RandomPayNumber } from '@/utils/randomString'
@@ -28,6 +26,8 @@ export default {
     return {
       resForm: '',
       timer: null,
+      country_id:  parseInt(getStore('country_id')) || 1,
+      countryLists: [],
       reqData: {
         country_id: parseInt(getStore('country_id')) || 1,
         api_token: getToken(),
@@ -44,29 +44,21 @@ export default {
     clearInterval(this.timer)
   },
   mounted () {
-    clearInterval(this.timer)
-    if (this.$route.query.withdrawCount) {
-      this.reqData.amount = this.$route.query.withdrawCount
-      this.reqData.pay_order_number = RandomPayNumber()
-    } else {
-      this.$router.push({path: '/404/index'})
-    }
- 
-
-    // let data = qs.stringify(this.reqData)
-    // axios.post('http://dealsbank.com/api/v1/pay/ali-pay', data).then(res => {
-    //   console.log(res)
-    //   let num = res.data.data.search('</form>')
-    //   this.resForm = res.data.data.slice(0, num + 7)
-    //   this.timer = setTimeout(() => {
-    //     if (document.forms['alipaysubmit']) {
-    //       document.forms['alipaysubmit'].submit()
-    //     }
-    //   })
-    // })
+    this.init()
   },
-  
   methods: {
+    init () {
+      this.initData()
+      this.getUserCountryInfo()
+    },
+    initData () {
+      if (this.$route.query.withdrawCount) {
+        this.reqData.amount = this.$route.query.withdrawCount
+        this.reqData.pay_order_number = RandomPayNumber()
+      } else {
+        this.$router.push({path: '/404/index'})
+      }
+    },
 
     //获取国家列表，携带货币符号，
     getUserCountryInfo () {
@@ -77,8 +69,7 @@ export default {
             this.reqData.bank_conversion_pri = i.bank_conversion_pri
           }
         }
-        console.log(this.reqData)
-        this.aliPay()
+        this.alipay()
       }).catch(error => {
         console.log(error)
       })

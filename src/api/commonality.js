@@ -59,7 +59,7 @@ export const WXcheckPayNotify = data => fetch({
 
 //支付流水
 export const tradeRecord = data => fetch({
-  url: '/api/v1/pay/trade-record',
+  url: '/api/v1/pay/business-log',
   method: 'POST',
   data: qs.stringify(data)
 })
