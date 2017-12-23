@@ -532,7 +532,7 @@ export default {
             })
             this.trialsForm.product_img_s = newArr
             this.imgChange()
-            this.trialsForm.product_price = data.product_price.slice(1).replace(',', '')
+            this.trialsForm.product_price = data.product_price ? data.product_price : '' 
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$message.error('please enter a right url')

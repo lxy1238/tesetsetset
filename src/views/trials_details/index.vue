@@ -47,7 +47,7 @@
                   <button @click="trialsApplyBtn($event)">Apply</button>
                 </div>
                 <div class="inline-b add-promo" v-else>
-                  您已经申请过了或者您不符合申请资格
+                You have applied or you are not eligible
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
@@ -523,7 +523,7 @@ export default {
               }
               .process {
                 position: relative;
-                height: 245px;
+                min-height: 245px;
                 margin-bottom: 36px;
                 img {
                   position: absolute;

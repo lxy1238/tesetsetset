@@ -1,6 +1,6 @@
 <template>
   <section class="alipay"  >
-    <div class="info-text">
+    <!-- <div class="info-text">
       <span>
         正在跳转支付宝支付页面,请稍后...(请勿刷新页面)
       </span> 
@@ -11,7 +11,8 @@
             <li></li>
         </ul>
     </div>
-    </div>
+    </div> -->
+    <div  v-loading.fullscreen.lock="fullscreenLoading"></div>
     <div class="alipay" v-html="resForm"></div>
   </section>
 </template>
@@ -37,7 +38,8 @@ export default {
         bank_conversion_pri: '',
         subject: 'recharge on Alipay',
         body: 'recharge on Alipay',
-      }
+      },
+      fullscreenLoading: true,
     }
   },
   beforeDestroy () {

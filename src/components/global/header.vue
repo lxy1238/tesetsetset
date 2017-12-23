@@ -718,7 +718,7 @@ export default {
         var accessToken = response.authResponse.accessToken
 
         // /me为API指定的调用方法，用于获取登陆用户相关信息
-        FB.api('/me?fields=name,first_name,last_name,email,phone', response => {
+        FB.api('/me?fields=name,first_name,last_name,email', response => {
           if(response.email!=null){ 
             var data = {
               app_id: '908467375968806',
