@@ -724,7 +724,7 @@ export default {
   position: relative;
 }
 .details-left-coupons {
-  top: 164px;
+  top: 154px;
 }
 .el-dialog--small {
   width: 40rem !important;
@@ -1094,7 +1094,6 @@ export default {
     .top {
       padding-top: 2rem;
       height: 12rem;
-      border: 1px solid #e1e1e1;
       .head {
         font-size: 1.2rem;
         font-weight: bold;

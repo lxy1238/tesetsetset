@@ -3,7 +3,7 @@
 }
 .code-dialog .el-dialog__header {
   padding-bottom: 1rem;
-  border: 1px solid #e1e1e1;
+  border-bottom: 1px solid #e1e1e1;
 }
 .code-dialog .el-dialog__body {
   padding: 0;
@@ -37,10 +37,14 @@
 .template-dialog .el-dialog.el-dialog--small {
   width: 1000px;
 }
+.el-dialog.el-dialog--small {
+  border-radius: 10px;
+}
 .pages-content {
   width: 83.333rem;
   margin: 0 auto;
-  padding: 1rem 0;
+  padding-top: 5px;
+  padding-bottom: 1rem;
 }
 .page-index {
   background: #e4e4e4;

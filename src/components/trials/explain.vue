@@ -52,7 +52,7 @@ export default {
   height: 5rem;
   // border: 1px solid #e1e1e1;
   background: white;
-  margin: 1rem 0 1.3rem 0;
+  margin: 15px 0 15px 0;
   text-align: left;
   border-radius: 5px;
 }

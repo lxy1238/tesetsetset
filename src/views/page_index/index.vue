@@ -72,9 +72,11 @@ export default {
   },
   mounted () {
     this.init()
+   
   },
   beforeDestroy () {
     window.onresize = null
+    window.onscroll = null
     this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
   },
   computed: {
@@ -175,6 +177,8 @@ export default {
           console.log(error)
         })
     },
+
+ 
 
     //根据页面尺寸宽度判断首页展示的商品数量
     widthToNum () {

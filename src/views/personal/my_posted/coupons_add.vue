@@ -34,12 +34,12 @@
           <!-- <select-self  :list="options"  @child="getSelectValue" v-model="couponsForm.menu_name"></select-self>    -->
         </el-form-item>
         <el-form-item label="List price: " prop="product_price" class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price" >
+          <el-input class="input-price-fee input-money " v-model="couponsForm.product_price" >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: "  class="item-inline" prop="shipping_fee">
-          <el-input class="input-price-fee" @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee" >
+          <el-input class="input-price-fee input-money " @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee" >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -69,20 +69,20 @@
           <el-input class="url-input" v-model="couponsForm.product_url" disabled></el-input>
         </el-form-item>
         <el-form-item label="Wedsite: " class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.website" disabled >
+          <el-input class="input-price-fee"  v-model="couponsForm.website" disabled >
           </el-input>
         </el-form-item>
         <el-form-item label="Category: " class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.menu.name" disabled >
+          <el-input class="input-price-fee"  v-model="couponsForm.menu.name" disabled >
           </el-input>
         </el-form-item>
-        <el-form-item label="List price: " class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('product_price')" v-model="couponsForm.product_price"  >
+        <el-form-item label="List price: " class="item-inline"  prop="product_price"  >
+          <el-input class="input-price-fee input-money "  v-model="couponsForm.product_price"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: "  class="item-inline" >
-          <el-input class="input-price-fee" @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee"  disabled>
+          <el-input class="input-price-fee"  v-model="couponsForm.shipping_fee"  disabled>
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -123,7 +123,7 @@
       <el-input type="textarea" v-model="couponsForm.coupon_code" v-else ></el-input> 
     </el-form-item>
     <el-form-item class="footer-btn" >
-      <button type="button" class="save" @click="Submit($event)">Save</button>
+      <el-button type="button" class="save" @click="Submit($event)" :loading="saveLoading">Save</el-button>
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -142,7 +142,18 @@ import axios from 'axios'
 export default {
   name: 'coupoons-add',
   data () {
+    let reg =  /^\d+(\.\d{1,2})?$/
+    const validateMoney =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter the product price'))
+      } else if(!reg.test(value)){
+        callback(new Error ('Please enter the correct format amount'))
+      } else {
+        callback()
+      }
+    }
     return {
+      country_id: parseInt(getStore('country_id')) || 1,
       pickerOptions1: {
         disabledDate (time) {
           return time.getTime() < Date.now() - 86400000
@@ -150,7 +161,7 @@ export default {
       },
       rules: {
         product_url: [{ required: true, trigger: 'blur' }],
-        product_price: [{ required: true, trigger: 'blur' }],
+        product_price: [{ validator: validateMoney, trigger: 'blur' }],
         website: [{ required: true, message: 'website is required', trigger: 'blur' }],
         menu_id: [{type:'number', required: true, message: 'category is required' ,trigger: 'blur' }],
         menu_name: [{required: true, message: 'category is required' ,trigger: 'blur' }],
@@ -219,7 +230,8 @@ export default {
       isEditorData: true,
       //国家与要发布的产品链接是否一直
       countryUrlIsRight: false,
-      getinfoBtn: false
+      getinfoBtn: false,
+      saveLoading: false,
     }
   },
   components: {
@@ -242,13 +254,31 @@ export default {
       this.initData()
       this.isEditor()
       this.getHeadCateListInfo()
+      this.filterInput()
     },
 
     //数据初始化
     initData () {
       this.couponsForm.user_name = this.username
     },
-
+    //限制只能输入数字和.
+    filterInput () {
+      if (this.country_id === 4) {
+        $('.input-money .el-input__inner').keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!((code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      } else {
+        $('.input-money .el-input__inner').keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      }
+    },
     //获取头部品类列表
     getHeadCateListInfo () {
       this.$api.getHeadCateList().then(res => {
@@ -377,13 +407,12 @@ export default {
     getProInfo (url) {
       this.getinfoBtn = true
       // this.$message.info('For information on goods, please wait a moment')
-      axios.get('http://chanpin25.com/index.php/api/asin', {
+      axios.get('http://192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,
         }
       })
         .then( (res) =>{
-          console.log(res)
           this.getinfoBtn = false
           if (!res.data.data) {
             this.$message.info('Failed to obtain commodity information!!!')
@@ -399,14 +428,14 @@ export default {
             })
             this.couponsForm.product_img_s = newArr
             this.imgChange()
-            this.couponsForm.product_price = data.product_price ? data.product_price.slice(1).replace(',', '') : '',
+            this.couponsForm.product_price = data.product_price ? data.product_price : '',
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$message.error('please enter a right url')
             }
           }, 500)
         })
-        .catch(function (err){
+        .catch((err) => {
           console.log(err)
           this.getinfoBtn = false
         })
@@ -487,25 +516,30 @@ export default {
       this.couponsForm.product_img_s = fileList
     },
     issueCoupon (data) {
+      this.saveLoading = true
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
         this.$api.editorCoupon(data).then(res => {
+          this.saveLoading = false
           if (res.code === 200) {
             this.$message.success('issue coupon success')
             this.$router.push({ path: '/posted/coupons' })
           }
         }).catch(error => {
+          this.saveLoading  = false
           console.log(error)
         })
       } else {
         this.$api.addCoupon(data)
           .then(res => {
+            this.saveLoading = false
             if (res.code === 200) {
               // this.$notify.success('issue coupon success')
               this.$router.push({ path: '/posted/coupons' })
             }
           })
           .catch(error => {
+            this.saveLoading = false
             console.log(error)
           })
       }
@@ -515,7 +549,6 @@ export default {
       // this.$refs.upload.submit();
       this.$refs['couponsForm'].validate(valid => {
         if (valid) {
-          e.target.disabled = true
           for (var i in this.couponsForm) {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }
@@ -524,16 +557,10 @@ export default {
           if (this.$route.query.editor) {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
-          // console.log(this.couponsFormSubmit)
-          // if (!this.countryUrlIsRight) {
-          //   this.$message.error('Only the products of the present country can be released')
-          //   return
-          // }
-          this.issueCoupon(this.couponsFormSubmit)
+          this.issueCoupon(this.couponsFormSubmit, e.target)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')
-          e.target.disabled = false
           return false
         }
       })
@@ -573,6 +600,9 @@ export default {
         this.couponsForm.user_id = getUserId()
         this.couponsForm.user_name = this.username
         this.couponsForm.country_id = parseInt(getStore('country_id')) || 1
+        setTimeout(() => {
+          this.filterInput()
+        }, 10)
       })
     }
   }

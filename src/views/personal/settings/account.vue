@@ -44,7 +44,7 @@
       </div>
 
       <div class="footer-account">
-        <button @click="changeUserInfo">Save Setting</button>
+        <el-button @click="changeUserInfo" :loading="saveLoading">Save Setting</el-button>
       </div>
     </div>
   </div>
@@ -52,7 +52,6 @@
 
 <script>
 import { getToken, getUserId } from '@/utils/auth'
-import { toTimestamp } from '@/utils/date.js'
 export default {
   name: 'settings-account',
   data () {
@@ -66,7 +65,8 @@ export default {
         avatar_img: require('../../../assets/user.png')
       },
       imageUrl: require('../../../assets/user.png'),
-      userInfo: {}
+      userInfo: {},
+      saveLoading: false,
     }
   },
   computed: {
@@ -119,8 +119,10 @@ export default {
 
     //改变用户信息接口
     changeUserInfo () {
+      this.saveLoading = true
       this.$api.userInfoSet(this.accountForm)
         .then(res => {
+          this.saveLoading = false
           if (res.code === 200) {
             this.$message.success('reset info success')
             this.$store.dispatch('GetInfo')
@@ -128,6 +130,7 @@ export default {
           }
         })
         .catch(error => {
+          this.saveLoading = false
           console.log(error)
         })
     }

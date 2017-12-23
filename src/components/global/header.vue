@@ -651,7 +651,7 @@ export default {
       var startApp = function () {
         gapi.load('auth2', function (){
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
+            client_id: '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
@@ -668,7 +668,7 @@ export default {
         console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
         console.log('Full Name: ' + profile.getName())
         let data = {
-          client_id : '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
+          client_id : '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token
@@ -718,8 +718,8 @@ export default {
         var accessToken = response.authResponse.accessToken
 
         // /me为API指定的调用方法，用于获取登陆用户相关信息
-        FB.api('/me?fields=name,first_name,last_name,email', response => {
-          if(response.email!=null){
+        FB.api('/me?fields=name,first_name,last_name,email,phone', response => {
+          if(response.email!=null){ 
             var data = {
               app_id: '908467375968806',
               user_id: user_id,
@@ -787,7 +787,7 @@ export default {
 <style lang="less" scoped>
 @import url("../../styles/mixin.less");
 .header-all {
-  height: 110px;
+  height: 95px;
 }
 .header {
   .p(f);
@@ -795,28 +795,28 @@ export default {
   z-index: 999;
   width: 100%;
   color: white;
-  height: 70px;
+  height: 65px;
   .header-top {
     background: #31393f;
     width: 100%;
     min-width: @Width_content;
-    height: 70px;
+    height: 65px;
     vertical-align: middle;
     .header-top-content {
-      height: 70px;
+      height: 65px;
       .pct(@Width_content);
       border: 1px solid #31393f;
       .content {
         .p(r);
-        height: 70px;
-        line-height: 70px;
+        height: 65px;
+        line-height: 65px;
         // margin-top: 1rem;
         padding-left: 15rem;
         // border: 1px solid yellow;
         .logo {
           .p(a);
           left: 0;
-          top: 12px;
+          top: 8px;
           width: 180px;
           height: inherit;
         }
@@ -838,7 +838,7 @@ export default {
           .dropdown {
               position: absolute;
               text-align: left;
-              top: 70px;
+              top: 65px;
               z-index: 999;
               background: #4d6170;
               line-height: 1;
@@ -1015,7 +1015,7 @@ export default {
           font-weight: normal;
           font-size: 1rem;
           width: 10%;
-          height: 70px;
+          height: 65px;
           &:hover {
             color: white;
           }
@@ -1033,7 +1033,7 @@ export default {
           .p(r);
           width: 35%;
           height: 36px;
-          top: 17px;
+          top: 15px;
           margin-right: 0.90rem;
           input {
             .el-input-self;
@@ -1067,7 +1067,7 @@ export default {
           font-weight: bold;
           text-align: center;
           position: relative;
-          top: 17px;
+          top: 15px;
         }
         .login {
           // font-family: Arial, Helvetica, sans-serif;
@@ -1105,13 +1105,13 @@ export default {
   .header-bottom {
     .classify-items {
       .pct(@Width_content);
-      line-height: 40px;
-      height: 40px;
+      line-height: 30px;
+      height: 30px;
       overflow: hidden;
       text-align: center;
       li {
         font-size: 12px;
-        font: HelveticaNeueLT  bold 12px;
+        font: HelveticaNeueLT  bold;
         display: inline-block;
         color: rgb(34, 24, 21);
         cursor: pointer;
@@ -1123,8 +1123,9 @@ export default {
         }
       }
     }
-    height: 40px;
+    height: 35px;
     background: white;
+    box-shadow: 0px 2px 10px rgba(100, 100, 100, .15);
   }
 }
 

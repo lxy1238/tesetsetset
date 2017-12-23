@@ -1,8 +1,8 @@
 <template>
-  <div  class="coupons-product" >
+  <div  class="coupons-product" ref="imgLoad" >
     <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
-      <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
+      <img class="product-img" v-show="loading"  :data-img="couponsDetails.product_img.split(',')[0]" @load="loadImg"  alt="img">
       <img v-if="!loading" src="../../assets/timg.gif"   alt="img">
     </div>
     <slot name="white"></slot>
@@ -93,6 +93,9 @@ export default {
   mounted () {
     this.init()
   },
+  beforeDestroy () {
+    window.onscroll = null
+  },
   watch: {
     //判断是否加入推广, 值从父组件传递过来的时候执行函数，否则会不执行
     promotions () {
@@ -104,18 +107,43 @@ export default {
   methods: {
     init () {
       this.initData()
+      this.imgLoad()
     },
     initData () {
       this.addPromoRequestData.coupon_id = this.couponsDetails.id
+    },
+    loadImg () {
+      this.loading = true
+    },
+    //首页图片懒加载
+    imgLoad () {
+      setTimeout(() => {
+        let card = this.$refs.imgLoad
+        let img = card.getElementsByClassName('product-img')[0]
+        let cardTop = card.offsetTop
+        if (cardTop < 800) {
+          img.src = img.getAttribute('data-img')
+        } 
+        window.onscroll = () => {
+          let cards = document.getElementsByClassName('coupons-product')
+          let arr = Array.prototype.slice.call(cards)
+          let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+          arr.forEach(element => {
+            let cardTop = element.offsetTop - scrollTop
+            let img = element.getElementsByClassName('product-img')[0]
+            if (cardTop < 800) {
+              img.src = img.getAttribute('data-img')
+            }
+          })
+        }
+      })
     },
     //跳转到详情也，携带coupon_id ,user_id
     goToCouponsPage (id) {
       this.$emit('gotodetails', id)
     },
 
-    loadImg () {
-      this.loading = true
-    },
+   
 
     //加入 移除  推广
     addPromotion () {
@@ -159,7 +187,7 @@ export default {
   background: white;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
-  margin: 0 0.5rem 20px 0;
+  margin: 0 0.5rem 10px 0;
   z-index: 1;
   &:hover {
     .promo-copy {

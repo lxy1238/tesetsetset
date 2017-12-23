@@ -68,8 +68,8 @@
                   {{item}}
                 </div>
               </div>
-              <div class="tabs-body">
-                <div v-if="selected == 0" class="content1" id="productDetails">
+              <div class="tabs-body" id="productDetails">
+                <div v-if="selected == 0" class="content1" >
                   
                 </div>
                 <div v-if="selected == 1" class="content">
@@ -91,7 +91,6 @@
             </div>
           </div>
       </div>
-      <img v-if="false" :src="imgTest" />
     </div>
 
       <!-- not get trials -->
@@ -125,7 +124,6 @@ export default {
       selected: 0,
       added: true,
       isApply: false,
-      imgTest: require('../../assets/app-logo.png'),
       processData: [
         {
           'title':'Register users, apply for products',
@@ -265,6 +263,11 @@ export default {
     },
     selectTabs (index) {
       this.selected = index
+      if (index === 0) {
+        document.getElementById('productDetails').innerHTML = this.trialDetailData.product_details
+      } else {
+        document.getElementById('productDetails').innerHTML = ''
+      }
     },
     //判断是否登录，否则提醒请登录
     isLogin () {

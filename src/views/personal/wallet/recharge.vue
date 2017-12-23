@@ -76,6 +76,9 @@ export default {
     currency () {
       return getStore('currency') || '$'
     },
+    country_id () {
+      return parseInt(getStore('country_id')) || 1
+    }
   },
   mounted () {
     this.init()
@@ -86,12 +89,22 @@ export default {
     },
     //限制只能输入数字和.
     filterInput () {
-      $('.input-money .el-input__inner').eq(0).keypress((e) => {
-        let code = e.keyCode || e.which || e.charCode
-        if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
-          return false
-        }
-      })
+      if (this.country_id === 4) {
+        $('.input-money .el-input__inner').eq(0).keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!((code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      } else {
+        $('.input-money .el-input__inner').eq(0).keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      }
+      
     },
     withdrawSubmit (formName, callback) {
       //element-ui 的表单验证
@@ -145,9 +158,6 @@ export default {
     }
     .withdrawals {
       margin-bottom: 1.5rem;
-      // .el-input {
-      //   width: 50%;
-      // }
     }
     .pay-mode {
       margin-bottom: 1rem;
