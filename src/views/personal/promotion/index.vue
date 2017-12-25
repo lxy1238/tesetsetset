@@ -93,7 +93,6 @@ export default {
     getPromotionDetails () {
       this.$api.promotionUserCoupon(this.requestData)
         .then(res => {
-          console.log(res)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
         })

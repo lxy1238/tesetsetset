@@ -1,5 +1,5 @@
 <template>
-  <div class="withdraw">
+  <div class="withdraw"  v-loading.fullscreen.lock="fullscreenLoading">
     <div class="title">My Wallet</div>
     <div class="title-s">Recharge</div>
     <el-form :model="rechangeForm" :rules="rules"  ref="rechangeForm"   >
@@ -8,7 +8,7 @@
           Balance:
         </label>
         <span class="balance-money">
-          {{currency}}{{amount}}
+          {{currency}}{{userAccount.amount}}
         </span>
       </div>
       <div class="balance">
@@ -16,7 +16,7 @@
           Security deposit:
         </label>
         <span class="balance-money">
-          {{currency}}{{amount}}
+          {{currency}}{{userAccount.amount}}
         </span>
       </div>
       <div class="withdrawals">
@@ -41,6 +41,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getStore  } from '@/utils/utils'
+import { getToken, getUserId } from '@/utils/auth'
 export default {
   name: 'rechange',
   data () {
@@ -57,6 +58,7 @@ export default {
       }
     }
     return {
+      fullscreenLoading: false,
       rules: {
         withdrawCount: [
           {validator: validateMoney, trigger: 'blur' },
@@ -67,17 +69,28 @@ export default {
         withdrawCount: '',
       },
       btnLoading: false,
+      countryLists: [],
+      reqData: {
+        country_id: parseInt(getStore('country_id')) || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
+        amount: '',
+        pay_currency: '',
+      },
     }
   },
   computed: {
     ...mapGetters([
-      'amount'
+      'userAccount'
     ]),
     currency () {
       return getStore('currency') || '$'
     },
     country_id () {
       return parseInt(getStore('country_id')) || 1
+    },
+    pay_currency () {
+      return getStore('pay_currency') || 'USD'
     }
   },
   mounted () {
@@ -124,7 +137,19 @@ export default {
         } else if (this.rechangeForm.radio == '2') {
           this.$router.push({path: '/wallet/recharge/alipay', query: {withdrawCount: this.rechangeForm.withdrawCount}})
         } else if (this.rechangeForm.radio == '1') {
-          console.log('this is paypal')
+          this.fullscreenLoading = true
+          this.reqData.amount = this.rechangeForm.withdrawCount
+          this.reqData.pay_currency = this.pay_currency
+          this.$api.paypal(this.reqData).then(res => {
+            if (!res.data) {
+              this.fullscreenLoading = false
+              this.$message.info('Payment interface error, please refresh the page or other payment method')
+              return
+            }
+            location.href = res.data
+          }).catch(err => {
+            console.log(err)
+          })
         }
       })
     },

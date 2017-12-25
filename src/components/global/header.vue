@@ -320,11 +320,11 @@ export default {
       'username',
       'roles',
       'addRouters',
-      'avatar',
+      'userBase',
       'currentRouter'
     ]),
     avatar_img () {
-      return this.avatar
+      return this.userBase.avatar_img
     },
     selectedCountryShop : {
       get () {
@@ -427,6 +427,11 @@ export default {
         this.ShowLoginDialog()
       })
 
+      //头部接受进入试用品页面触发的修改selectedCoupon 字段的信号
+      this.$root.eventHub.$on('changeSelectCoupon', () => {
+        this.selectedCoupon = 2
+      })
+
       this.$root.eventHub.$on('changeCountryId', data => {
         this.selectedCountryShop = parseInt(data)
         setTimeout(() => {
@@ -446,6 +451,7 @@ export default {
     filterCountry (item) {
       setStore('country_id',item.id)
       setStore('currency',item.currency)
+      setStore('pay_currency', item.pay_currency)
       this.$router.push({path: '/'})
       window.location.reload()
     },

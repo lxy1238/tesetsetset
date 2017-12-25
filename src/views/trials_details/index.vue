@@ -69,7 +69,7 @@
                 </div>
               </div>
               <div class="tabs-body" id="productDetails">
-                <div v-if="selected == 0" class="content1" >
+                <div v-if="selected == 0 && trialDetailData.product_details" class="content1" v-html="trialDetailData.product_details">
                   
                 </div>
                 <div v-if="selected == 1" class="content">
@@ -229,9 +229,6 @@ export default {
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
-        setTimeout(() => {
-          document.getElementById('productDetails').innerHTML = this.trialDetailData.product_details
-        })
         this.getPostUserInfo(res.data.user_id)
       }).catch(error => {
         console.log(error)
@@ -263,11 +260,6 @@ export default {
     },
     selectTabs (index) {
       this.selected = index
-      if (index === 0) {
-        document.getElementById('productDetails').innerHTML = this.trialDetailData.product_details
-      } else {
-        document.getElementById('productDetails').innerHTML = ''
-      }
     },
     //判断是否登录，否则提醒请登录
     isLogin () {
@@ -283,7 +275,7 @@ export default {
         return
       }
       if (this.trialDetailData.run_status === 'stop') {
-        this.$message.info('今天试用品已经发放完毕,请明天过来申请')
+        this.$message.info('The test supplies have been distributed today. Please come and apply tomorrow')
         return
       }
       e.target.disabled = true
@@ -299,7 +291,7 @@ export default {
       }).catch(error => {
         if (error.code === 402) {
           this.$router.push({path: '/personal/my-trials/index'})
-          this.$message.info('您已经申请成功一款产品了，根据规则您这个月暂时不能申请了')
+          this.$message.info('You have already applied for a successful product. According to the rules, you can not apply for this month')
         }
       })
     }
@@ -504,11 +496,9 @@ export default {
               border-left: 1px solid #e1e1e1;
               border-right: 1px solid #e1e1e1;
             }
-            
           }
         }
         .tabs-body {
-          padding: 0 30px 0 30px;
           text-align: center;
           min-width: 1000px;
           margin: 0 auto;

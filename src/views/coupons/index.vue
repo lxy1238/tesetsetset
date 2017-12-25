@@ -724,7 +724,7 @@ export default {
   position: relative;
 }
 .details-left-coupons {
-  top: 154px;
+  top: 149px;
 }
 .el-dialog--small {
   width: 40rem !important;

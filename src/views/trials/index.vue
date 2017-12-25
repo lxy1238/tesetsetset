@@ -103,11 +103,17 @@ export default {
   methods: {
     init () {
       this.initData()
+      this.emitEvent()
       this.getHeadCateListInfo()
       window.onresize = this.widthToNum
     },
     initData () {
       this.requestData.keyword = this.$route.query.search
+    },
+
+    //非父子组件之间传递事件
+    emitEvent () {
+      this.$root.eventHub.$emit('changeSelectCoupon')
     },
 
     //翻页功能实现

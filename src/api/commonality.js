@@ -65,9 +65,17 @@ export const tradeRecord = data => fetch({
 })
 
 
-
+//支付宝支付
 export const alipay = data => fetch({
   url: '/api/v1/pay/ali-pay',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//paypal
+
+export const paypal = data => fetch({
+  url: '/api/v1/pay/pay-pal',
   method: 'POST',
   data: qs.stringify(data)
 })

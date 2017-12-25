@@ -5,10 +5,10 @@
     <div class="form-content" v-if="userInfo">
       <el-form :model="accountForm" class="account-form" label-width="100px">
         <el-form-item label="Username: " prop="username" class="account-item" >
-          <el-input disabled  v-model="userInfo.username"></el-input>
+          <el-input disabled  v-model="username"></el-input>
         </el-form-item>
         <el-form-item label="Email: " prop="" class="account-item" >
-          <el-input disabled v-model="userInfo.email"></el-input>
+          <el-input disabled v-model="email"></el-input>
         </el-form-item>
         <el-form-item label="Avatar: " prop="" class="account-item" >
           <el-upload class="avatar-uploader" 
@@ -33,7 +33,7 @@
           <el-input type="textarea" v-model="accountForm.introduce" :rows="6" ></el-input>
         </el-form-item>
       </el-form>
-      <div class="title-s">Linked Accounts</div>
+      <!-- <div class="title-s">Linked Accounts</div>
       <div class="facebook-text">
         <img src="../../../assets/setting-account_face.png" alt="">
         <span>Successfully linked to 100466700@qq.com ( <a href="#">Unlink</a>  )</span>
@@ -41,7 +41,7 @@
       <div class="google-text">
         <img src="../../../assets/setting-account_google.png" alt="">
         <span>Link your Google account</span>
-      </div>
+      </div> -->
 
       <div class="footer-account">
         <el-button @click="changeUserInfo" :loading="saveLoading">Save Setting</el-button>
@@ -52,6 +52,7 @@
 
 <script>
 import { getToken, getUserId } from '@/utils/auth'
+import { mapGetters } from 'vuex'
 export default {
   name: 'settings-account',
   data () {
@@ -70,14 +71,20 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'userBase',
+      'username',
+      'email',
+
+    ])
   },
   mounted () {
-    this.$store.dispatch('GetInfo').then(res => {
-      this.userInfo = res.data
-      this.accountForm.sex = this.userInfo.base.sex
-      this.accountForm.birthday = this.userInfo.base.birthday
-      this.accountForm.introduce = this.userInfo.base.introduce
-      this.accountForm.avatar_img = this.userInfo.base.avatar_img
+    setTimeout(() => {
+      this.userInfo = this.userBase
+      this.accountForm.sex = this.userInfo.sex
+      this.accountForm.birthday = this.userInfo.birthday
+      this.accountForm.introduce = this.userInfo.introduce
+      this.accountForm.avatar_img = this.userInfo.avatar_img
       this.imageUrl = this.accountForm.avatar_img
     })
   },
@@ -102,7 +109,6 @@ export default {
         formData.append('file', file)
         this.$api.uploadImg(formData)
           .then(res => {
-            console.log(res)
             this.accountForm.avatar_img = res.data
             this.imageUrl = this.accountForm.avatar_img
           })
@@ -114,7 +120,6 @@ export default {
       }
     },
 
-    
 
 
     //改变用户信息接口

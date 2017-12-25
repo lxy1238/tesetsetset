@@ -92,7 +92,10 @@ export default {
       })
       this.$api.payWX(this.reqData).then(res => {
         if (!res.data) {
-          this.init()
+          clearInterval(this.timer)
+          clearInterval(this.timerPay)
+          this.$message.info('The WeChat payment interface is wrong, please reload the page or use other payment methods')
+          return
         }
         this.resData = res.data
         qrcode.makeCode(res.data)

@@ -43,6 +43,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import { getToken } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
+import { mapGetters } from 'vuex'
 export default {
   name: 'page_index',
   data () {
@@ -72,7 +73,6 @@ export default {
   },
   mounted () {
     this.init()
-   
   },
   beforeDestroy () {
     window.onresize = null
@@ -80,7 +80,9 @@ export default {
     this.$root.eventHub.$emit('initClassify')    //进入其他页面时，头部品类导航高亮消失
   },
   computed: {
-
+    ...mapGetters([
+      'promotions'
+    ]),
     //导航条变化的时候触发查询需要展示商品的信息
     menu_name () {
       if (this.$route.params.menuId) {
@@ -116,7 +118,6 @@ export default {
       this.requestData.keyword = this.$route.query.search
       this.getHeadCateListInfo()
       window.onresize = this.widthToNum
-      // this.getheadData()
     },
     //翻页功能实现
     gotoPage (index) {
@@ -140,19 +141,6 @@ export default {
       this.$router.push({ path: '/coupons/' + base64Encode(id) + '/' + base64Encode(this.country_id)})
     },
 
-    //获取用户信息 ，判断首页的coupon是否加入推广
-    getUserInfo () {
-      if (getToken()) {
-        this.$store.dispatch('GetInfo').then(res => {
-          var promotions = []
-          for (var i of res.data.promotions) {
-            promotions.push(i.coupon_id)
-          }
-          this.userPromotions = promotions
-        })
-      }
-    },
-
     //获取首页所有优惠券的信息
     getAllCouponsInfo () {
       this.arrcouponsDetails = []
@@ -171,7 +159,8 @@ export default {
         .then(res => {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
-          this.getUserInfo()
+
+          this.userPromotions = this.promotions.map((e) => { return e.coupon_id })
         })
         .catch(error => {
           console.log(error)
@@ -210,7 +199,6 @@ export default {
       this.$api.getHeadCateList().then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.widthToNum()
-        // this.getAllCouponsInfo()
       }).catch(error => {
         console.log(error)
       })

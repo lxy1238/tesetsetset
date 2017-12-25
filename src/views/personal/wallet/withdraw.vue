@@ -8,7 +8,7 @@
           Balance:
         </label>
         <span class="balance-money">
-          {{currency}}{{amount}}
+          {{currency}}{{userAccount.amount}}
         </span>
       </div>
       <div class="withdrawals">
@@ -78,7 +78,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'amount'
+      'userAccount'
     ]),
     currency () {
       return getStore('currency') || '$'

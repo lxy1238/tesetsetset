@@ -111,6 +111,9 @@ export default {
     },
     initData () {
       this.addPromoRequestData.coupon_id = this.couponsDetails.id
+      if (this.promotions.includes(this.couponsDetails.id)) {
+        this.isAddPromo = 1
+      }
     },
     loadImg () {
       this.loading = true

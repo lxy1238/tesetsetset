@@ -108,7 +108,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'token', 'roles', 'user_id']),
+    ...mapGetters(['username', 'token', 'roles', 'user_id', 'userAccount', 'userBase', 'joined_date']),
     currency () {
       return getStore('currency') || '$'
     }
@@ -118,10 +118,10 @@ export default {
   },
   methods: {
     init () {
-      this.$store.dispatch('GetInfo').then(res => {
-        this.userData.account = res.data.account
-        this.userData.base = res.data.base
-        this.userData.joined_date = timestampFormat(res.data.joined_date)
+      setTimeout(() => {
+        this.userData.account = this.userAccount
+        this.userData.base = this.userBase
+        this.userData.joined_date = timestampFormat(this.joined_date)
       })
     },
     //路由跳转
