@@ -52,8 +52,8 @@
                v-if="allpage && allpage != 1"
               :allpage="allpage"
               :show-item="showItem"
-              :current="requestdata.page"
-              @handlecurrent="test">
+              :current="reqSuccedDetailsData0.page"
+              @handlecurrent="gotoPage0">
               </pagination>
             </div>
           </div>
@@ -68,9 +68,9 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span v-if="item.trials.shipping_fee != 0">
+                    <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
@@ -133,7 +133,8 @@
               v-if="allpage && allpage != 1"
               :allpage="allpage"
               :show-item="showItem"
-              @handlecurrent="test">
+              :current="reqReviewData.page"
+              @handlecurrent="gotoPage1">
               </pagination>
             </div>
           </div>
@@ -148,9 +149,9 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span v-if="item.trials.shipping_fee != 0">
+                    <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
@@ -191,7 +192,8 @@
                 v-if="allpage && allpage != 1"
                 :allpage="allpage"
                 :show-item="showItem"
-                @handlecurrent="test">
+                :current="reqSuccedDetailsData2.page"
+                @handlecurrent="gotoPage2">
               </pagination>
             </div>
           </div>
@@ -206,9 +208,9 @@
                       <label>Price: </label>
                       <i>{{currency}}{{item.product_price}}</i>
                     </span>
-                    <span v-if="item.trials.shipping_fee != 0">
+                    <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
@@ -233,7 +235,8 @@ you will exceed the time limit of task.</p>
                v-if="allpage && allpage != 1"
               :allpage="allpage"
               :show-item="showItem"
-              @handlecurrent="test">
+              :current="reqSuccedDetailsData3.page"
+              @handlecurrent="gotoPage3">
               </pagination>
             </div>
           </div>
@@ -270,10 +273,26 @@ export default {
       orderDetails1: [],
       orderDetails2: [],
       orderDetails3: [],
-      reqSuccedDetailsData: {
+      reqSuccedDetailsData0: {
+        country_id: getStore('country_id') || 1,
         api_token: getToken(),
         user_id: getUserId(),
+        page: 1,
+        page_size: 3
+      },
+      reqSuccedDetailsData2: {
         country_id: getStore('country_id') || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
+        page: 1,
+        page_size: 3
+      },
+      reqSuccedDetailsData3: {
+        country_id: getStore('country_id') || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
+        page: 1,
+        page_size: 3
       },
       reqAddOrderData: {
         api_token: getToken(),
@@ -282,9 +301,9 @@ export default {
         order_number: ''
       },
       reqReviewData: {
+        country_id: getStore('country_id') || 1,
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 3
       }
@@ -315,7 +334,7 @@ export default {
     },
     //获取第一个列表信息
     getWaitingData () {
-      this.$api.userApplySucced(this.reqSuccedDetailsData).then(res => {
+      this.$api.userApplySucced(this.reqSuccedDetailsData0).then(res => {
         this.orderDetails0 = res.data
         for (let i of this.orderDetails0) {
           let expiry_time = getTimeDetail(i.expiry_time)
@@ -325,6 +344,36 @@ export default {
         }
       }).catch(err => { 
         console.log(err)
+      })
+    },
+
+    //review
+    getReviewInfo () {
+      this.$api.userTrialOrder(this.reqReviewData).then(res => {
+        this.orderDetails1 = res.data.data
+        for (let i of this.orderDetails1) {
+          i.Modify = true
+          if (i.appraise_url) {
+            i.modifyUrl = true
+            i.appraise_url_input = i.appraise_url
+          }
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+
+    //userApplyFinish  完成详情展示
+    getCompleteInfo () {
+      this.$api.userApplyFinish(this.reqSuccedDetailsData2).then(res => {
+        this.orderDetails2 = res.data.data
+      })
+    },
+
+    //userApplyFinish  订单过期信息展示
+    getExpiredInfo () {
+      this.$api.userApplyExpired(this.reqSuccedDetailsData3).then(res => {
+        this.orderDetails3 = res.data.data
       })
     },
     //定时器，时间倒计时
@@ -357,21 +406,7 @@ export default {
         e.target.disabled = false
       })
     },
-    //review
-    getReviewInfo () {
-      this.$api.userTrialOrder(this.reqReviewData).then(res => {
-        this.orderDetails1 = res.data.data
-        for (let i of this.orderDetails1) {
-          i.Modify = true
-          if (i.appraise_url) {
-            i.modifyUrl = true
-            i.appraise_url_input = i.appraise_url
-          }
-        }
-      }).catch(err => {
-        console.log(err)
-      })
-    },
+ 
 
     //修改按钮变成save 按钮
     modifyOrderBtn (item) {
@@ -428,19 +463,7 @@ export default {
       window.open(url)
     },
     
-    //userApplyFinish  完成详情展示
-    getCompleteInfo () {
-      this.$api.userApplyFinish(this.reqSuccedDetailsData).then(res => {
-        this.orderDetails2 = res.data.data
-      })
-    },
-
-    //userApplyFinish  订单过期信息展示
-    getExpiredInfo () {
-      this.$api.userApplyExpired(this.reqSuccedDetailsData).then(res => {
-        this.orderDetails3 = res.data.data
-      })
-    },
+   
     //进入页面之后判断跳转到哪个页面
     gotoPanel () {
       if (this.$route.query.status) {
@@ -455,6 +478,22 @@ export default {
       array.push(0)
       array.pop()
     } ,
+    gotoPage0 (i) {
+      this.reqSuccedDetailsData0.page = i
+      this.getWaitingData()
+    },
+    gotoPage1 (i) {
+      this.reqReviewData.page = i
+      this.getReviewInfo()
+    },
+    gotoPage2 (i) {
+      this.reqSuccedDetailsData2.page = i
+      this.getCompleteInfo()
+    },
+    gotoPage3 (i) {
+      this.reqSuccedDetailsData3.page = i
+      this.getExpiredInfo()
+    },
     test (i) {
       console.log(i)
     },

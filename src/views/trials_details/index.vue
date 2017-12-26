@@ -47,11 +47,11 @@
                   <button @click="trialsApplyBtn($event)">Apply</button>
                 </div>
                 <div class="inline-b add-promo" v-else>
-                  您已经申请过了或者您不符合申请资格
+                You have applied or you are not eligible
                 </div>
                  <span class="share">
                    <i class="text">Share on:</i> 
-                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
@@ -68,8 +68,8 @@
                   {{item}}
                 </div>
               </div>
-              <div class="tabs-body">
-                <div v-if="selected == 0" class="content1" v-html="trialDetailData.product_details">
+              <div class="tabs-body" id="productDetails">
+                <div v-if="selected == 0 && trialDetailData.product_details" class="content1" v-html="trialDetailData.product_details">
                   
                 </div>
                 <div v-if="selected == 1" class="content">
@@ -179,15 +179,13 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         trial_id: '',
-        country_id: parseInt(getStore('country_id')) || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         platform_id: '',
-      }
+      },
+      currency:  getStore('currency') || '$'
     }
   },
   computed: {
-    currency () {
-      return getStore('currency') || '$'
-    },
     leftTime () {
       if (this.trialDetailData.end_time) {
         let time = getTimeDetail(this.trialDetailData.end_time)
@@ -217,6 +215,11 @@ export default {
       //通过路由中的国家id 修改头部的国家id
       let country_id = base64Decode(this.$route.params.countryId)
       this.$root.eventHub.$emit('changeCountryId', country_id)
+
+      
+      this.$root.eventHub.$on('changeCurrency', data => {
+        this.currency = data
+      })
     },
 
     //获取试用品详情
@@ -226,7 +229,6 @@ export default {
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
         this.trialDetailData = res.data
-        console.log(this.trialDetailData)
         this.getPostUserInfo(res.data.user_id)
       }).catch(error => {
         console.log(error)
@@ -273,7 +275,7 @@ export default {
         return
       }
       if (this.trialDetailData.run_status === 'stop') {
-        this.$message.info('今天试用品已经发放完毕,请明天过来申请')
+        this.$message.info('The test supplies have been distributed today. Please come and apply tomorrow')
         return
       }
       e.target.disabled = true
@@ -289,7 +291,7 @@ export default {
       }).catch(error => {
         if (error.code === 402) {
           this.$router.push({path: '/personal/my-trials/index'})
-          this.$message.info('您已经申请成功一款产品了，根据规则您这个月暂时不能申请了')
+          this.$message.info('You have already applied for a successful product. According to the rules, you can not apply for this month')
         }
       })
     }
@@ -494,11 +496,9 @@ export default {
               border-left: 1px solid #e1e1e1;
               border-right: 1px solid #e1e1e1;
             }
-            
           }
         }
         .tabs-body {
-          padding: 0 30px 0 30px;
           text-align: center;
           min-width: 1000px;
           margin: 0 auto;
@@ -513,7 +513,7 @@ export default {
               }
               .process {
                 position: relative;
-                height: 245px;
+                min-height: 245px;
                 margin-bottom: 36px;
                 img {
                   position: absolute;

@@ -1,8 +1,8 @@
 <template>
-  <div  class="coupons-product" >
-    <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
+  <div  class="coupons-product" ref="imgLoad" >
+    <div class="expried" v-if="couponsDetails.run_status === 'expired'">EXPRIED</div>
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
-      <img v-show="loading" :src="couponsDetails.product_img.split(',')[0]" @load="loadImg"   alt="img">
+      <img class="product-img" v-show="loading"  :data-img="couponsDetails.product_img.split(',')[0]" @load="loadImg"  alt="img">
       <img v-if="!loading" src="../../assets/timg.gif"   alt="img">
     </div>
     <slot name="white"></slot>
@@ -45,6 +45,7 @@
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
+import { mapGetters } from 'vuex'
 import Clip from '@/utils/clipboard.js'
 export default {
   name: 'image_product',
@@ -69,14 +70,11 @@ export default {
       type: Boolean,
       default: true
     },
-    promotions: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    }
   },
   computed: {
+    ...mapGetters([
+      'promotions'
+    ]),
     productDetails () {
       return 'productDetails' + this.couponsDetails.id
     },
@@ -87,35 +85,68 @@ export default {
       return getStore('currency') || '$'
     },
     dealsbankUrl () {
-      return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '?promoter=' + (getUserId() ? getUserId() : '')
-    }
+      return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  + (getUserId() ? '?promoter=' + getUserId() : '')
+    },
   },
   mounted () {
     this.init()
+  },
+  beforeDestroy () {
+    window.onscroll = null
   },
   watch: {
     //判断是否加入推广, 值从父组件传递过来的时候执行函数，否则会不执行
     promotions () {
       if (this.promotions.includes(this.couponsDetails.id)) {
         this.isAddPromo = 1
-      }
+        return
+      } 
+      this.isAddPromo = 0
     }
   },
   methods: {
     init () {
       this.initData()
+      this.imgLoad()
     },
     initData () {
       this.addPromoRequestData.coupon_id = this.couponsDetails.id
+      if (this.promotions.includes(this.couponsDetails.id)) {
+        this.isAddPromo = 1
+      }
+    },
+    loadImg () {
+      this.loading = true
+    },
+    //首页图片懒加载
+    imgLoad () {
+      setTimeout(() => {
+        let card = this.$refs.imgLoad
+        let img = card.getElementsByClassName('product-img')[0]
+        let cardTop = card.offsetTop
+        if (cardTop < 800) {
+          img.src = img.getAttribute('data-img')
+        } 
+        window.onscroll = () => {
+          let cards = document.getElementsByClassName('coupons-product')
+          let arr = Array.prototype.slice.call(cards)
+          let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
+          arr.forEach(element => {
+            let cardTop = element.offsetTop - scrollTop
+            let img = element.getElementsByClassName('product-img')[0]
+            if (cardTop < 800) {
+              img.src = img.getAttribute('data-img')
+            }
+          })
+        }
+      })
     },
     //跳转到详情也，携带coupon_id ,user_id
     goToCouponsPage (id) {
       this.$emit('gotodetails', id)
     },
 
-    loadImg () {
-      this.loading = true
-    },
+   
 
     //加入 移除  推广
     addPromotion () {
@@ -125,6 +156,8 @@ export default {
       this.$api.promotionAddCoupon(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 1
+          this.promotions.push(this.couponsDetails.id)
+          this.$store.commit('SET_PROMOTIONS', this.promotions)
         })
         .catch(error => {
           console.log(error + 'promotionaddcoupon')
@@ -134,10 +167,19 @@ export default {
       this.$api.promotionUserRemove(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 0
+          this.ArrayRemove(this.promotions, this.couponsDetails.id)
+          this.$store.commit('SET_PROMOTIONS', this.promotions)
         })
         .catch(error => {
           console.log(error + 'promotionaddcoupon')
         })
+    },
+    //数组移除元素
+    ArrayRemove (arr, val) {
+      let index = arr.indexOf(val)
+      if (index > -1) {
+        arr.splice(index, 1)
+      }
     },
     copy (e) {
       Clip(e)
@@ -159,7 +201,7 @@ export default {
   background: white;
   border: 1px solid #e1e1e1;
   border-radius: 4px;
-  margin: 0 0.5rem 20px 0;
+  margin: 0 0.5rem 10px 0;
   z-index: 1;
   &:hover {
     .promo-copy {

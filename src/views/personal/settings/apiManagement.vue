@@ -2,13 +2,12 @@
   <div class="affiliate-pid">
     <div class="title-bottom">Affiliate PID</div>
      <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
-    <el-form :model="pidForm"  ref="pidForm" label-width="150px" v-if="platformArr.length != 0" >
-      <el-form-item v-for="item in platformArr" :key="1" :label="item.provider + ': '">  
-        <el-input v-model="item.pid"></el-input>
-      </el-form-item>
-    </el-form>
+      <div v-for="item in platformArr" class="item-pid">  
+        <label>{{item.provider}} :</label>
+        <el-input  v-model="item.pid"></el-input>
+      </div>
     <div class="pid-footer">
-      <button type="button" @click="submit">Save</button>
+      <el-button @click="submit" :loading="saveLoading">Save</el-button>
     </div>
   </div>
 </template>
@@ -34,16 +33,29 @@ export default {
         user_id: getUserId(),
         country_id: parseInt(getStore('country_id') || 1) 
       },
+      isApiPage: true,
+      saveLoading: false,
     }
   },
   mounted () {
-
     this.init()
-   
+  },
+  beforeDestory () {
+    this.isApiPage = false
   },
   methods: {
     init () {
       this.getPlatformCateInfo()
+      this.enterEvent()
+    },
+    enterEvent () {
+      window.addEventListener('keyup', (e) => {
+        if (e.keyCode === 13 && this.isApiPage === true) {
+          this.submit()
+        } else {
+          return false
+        }
+      })
     },
     //获取该国家下的平台
     getPlatformCateInfo () {
@@ -70,6 +82,7 @@ export default {
     },
 
     submit () {
+      this.saveLoading = true
       for (let i of this.platformArr) {
         let requestData = {
           api_token: getToken(),
@@ -81,15 +94,15 @@ export default {
         requestData.platform_id = i.id
         requestData.PID = i.pid
         this.$api.userAlliancePID(requestData).then(res => {
+          this.saveLoading = false
           if (res.code === 200) {
             this.$message.success('save success')
           }
+        }).catch(err => {
+          console.log(err)
+          this.saveLoading = false
         })
       }
-      
-      
-
-      
     }
   }
 }
@@ -101,6 +114,9 @@ export default {
   position: relative;
   .el-input {
     width: 40%;
+  }
+  .item-pid {
+    margin-bottom: 1rem;
   }
   .goto-getpid {
     position: absolute;

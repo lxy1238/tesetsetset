@@ -8,7 +8,7 @@
           Balance:
         </label>
         <span class="balance-money">
-          {{currency}}{{amount}}
+          {{currency}}{{userAccount.amount}}
         </span>
       </div>
       <div class="withdrawals">
@@ -20,10 +20,9 @@
       <div class="pay-mode">
         <el-radio class="pay-radio"v-model="withdrawForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
         <el-radio class="pay-radio" v-model="withdrawForm.radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="4"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="3"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
       </div>
-      <div class="withdrawals">
+      <div class="withdrawals" v-if="withdrawForm.radio !== '2'">
         <label class="left-label">Acount:</label>
         <el-form-item prop="account">
           <el-input v-model="withdrawForm.account"></el-input>
@@ -48,10 +47,22 @@ import { getStore  } from '@/utils/utils'
 export default {
   name: 'withdraw',
   data () {
+    let reg =  /^\d+(\.\d{1,2})?$/
+    const validateMoney =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter the withdraw amount'))
+      } else if(parseFloat(value) == 0 ){
+        callback(new Error ('Please enter the correct amount'))
+      } else if(!reg.test(value)){
+        callback(new Error ('The amount can only enter two decimal places'))
+      } else {
+        callback()
+      }
+    }
     return {
       rules: {
         withdrawCount: [
-          { required: true, message: 'Please enter the withdrawal amount', trigger: 'blur' },
+          {validator: validateMoney, trigger: 'blur' },
         ],
         account: [
           { required: true, message: 'Please enter the withdrawal account', trigger: 'blur' },
@@ -67,7 +78,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'amount'
+      'userAccount'
     ]),
     currency () {
       return getStore('currency') || '$'
@@ -80,9 +91,11 @@ export default {
     init () {
 
     },
+    //限制只能输入数字和.  e.keyCode 不兼容 火狐浏览器，需要调整
     filterInput () {
       $('.input-money .el-input__inner').eq(0).keypress((e) => {
-        if (!(e.keyCode === 46 || (e.keyCode <= 57 && e.keyCode >= 48))) {
+        let code = e.keyCode || e.which || e.charCode
+        if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
           return false
         }
       })
@@ -100,7 +113,7 @@ export default {
     },
     submit () {
       if (this.radio == '3') {
-        this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
+        // this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
       }
     },
   }

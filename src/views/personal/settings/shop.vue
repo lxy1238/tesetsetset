@@ -72,7 +72,7 @@
             <el-input v-model="addStoreForm.store_url"></el-input>
           </el-form-item>
           <div class="add-store-footer">
-            <button type="button" @click="submit">Save</button>
+            <el-button type="button" @click="submit" :loading="saveLoading">Save</el-button>
           </div>
         </el-form>
          
@@ -115,6 +115,7 @@ export default {
       showItem: 7,
       optionsWebsite:[],
       isEdit: false,
+      saveLoading: false,
       declineMsg: '',
       addStoreForm: {
         api_token: getToken(),
@@ -150,14 +151,22 @@ export default {
   mounted () {
     this.init()
   },
+  
   methods: {
     init () {
       this.initData()
+      this.getPlatformCateInfo()
+      this.getStoreList()
     },
 
     initData () {
-      this.getPlatformCateInfo()
-      this.getStoreList()
+      window.addEventListener('keyup', (e) => {
+        if (e.keyCode === 13 && this.addStoreDialog === true) {
+          this.submit()
+        } else {
+          return false
+        }
+      })
     },
 
     //平台初始化
@@ -176,7 +185,6 @@ export default {
     //显示列表
     getStoreList () {
       this.$api.showStore(this.reqStoreData).then(res => {
-        console.log(res)
         this.trLists = res.data.data
       })
     },
@@ -189,31 +197,37 @@ export default {
 
     //新增店铺提交 数据获取
     addStoreSubmit (data) {
+      this.saveLoading = true
       if (!this.isEdit) {
         this.$api.addStore(data).then(res => {
+          this.saveLoading = false
           if (res.code === 200) {
-            this.$notify.success('add store success!')
+            this.$message.success('add store success!')
             this.addStoreDialog = false
             this.getStoreList()
           }
         }).catch(error => {
-          console.log(error)
+          this.saveLoading = false
+          this.$message.error(error.message)
           this.addStoreDialog = false
         })
       } else {
         this.$api.editStore(data).then(res => {
+          this.saveLoading = false
           if (res.code === 200) {
-            this.$notify.success('edit store success!')
+            this.$message.success('edit store success!')
             this.addStoreDialog = false
             this.getStoreList()
           }
         }).catch(error => {
-          console.log(error)
+          this.saveLoading = false
+          this.$message.error(error.message)
           this.addStoreDialog = false
         })
       }
-      
     },
+
+    //
 
     //编辑店铺
     editShop (item) {

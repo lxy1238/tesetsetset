@@ -86,10 +86,10 @@ export default {
       }
       .footer-details {
         //ie9 不兼容
-        // display: flex;
-        // justify-content: space-between;
+        display: flex;
+        justify-content: space-between;
         margin-top: -8px;
-        width: 54rem;
+        width: 56rem;
         color: white;
         dl {
           font-family: Arial, Helvetica, sans-serif;
@@ -98,10 +98,7 @@ export default {
           width: 12.5rem;
           margin-right: 1.4rem;
           float: left;
-          &.last {
-            width: 11rem;
-            margin-right: 0rem;
-          }
+         
           dt {
             margin: 1.5rem 0 1.5rem;
           }

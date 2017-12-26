@@ -1,6 +1,6 @@
 <template>
   <section class="alipay"  >
-    <div class="info-text">
+    <!-- <div class="info-text">
       <span>
         正在跳转支付宝支付页面,请稍后...(请勿刷新页面)
       </span> 
@@ -11,14 +11,13 @@
             <li></li>
         </ul>
     </div>
-    </div>
+    </div> -->
+    <div  v-loading.fullscreen.lock="fullscreenLoading"></div>
     <div class="alipay" v-html="resForm"></div>
   </section>
 </template>
 
 <script>
-import axios from 'axios'
-import qs from 'qs'
 import { getUserId, getToken } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { RandomPayNumber } from '@/utils/randomString'
@@ -28,51 +27,72 @@ export default {
     return {
       resForm: '',
       timer: null,
+      country_id:  parseInt(getStore('country_id')) || 1,
+      countryLists: [],
       reqData: {
         country_id: parseInt(getStore('country_id')) || 1,
         api_token: getToken(),
         user_id: getUserId(),
-        amount: '',
         pay_order_number: '',
-      }
+        amount: '',
+        bank_conversion_pri: '',
+        subject: 'recharge on Alipay',
+        body: 'recharge on Alipay',
+      },
+      fullscreenLoading: true,
     }
   },
   beforeDestroy () {
     clearInterval(this.timer)
   },
   mounted () {
-    clearInterval(this.timer)
-    if (this.$route.query.withdrawCount) {
-      this.reqData.amount = this.$route.query.withdrawCount
-      this.reqData.pay_order_number = RandomPayNumber()
-    } else {
-      this.$router.push({path: '/404/index'})
-    }
-    // this.$api.alipay(this.reqData).then(res => {
-    //   let num = res.data.search('</form>')
-    //   this.resForm = res.data.slice(0, num + 7)
-    //   this.timer = setInterval(() => {
-    //     if (document.forms['alipaysubmit']) {
-    //       document.forms['alipaysubmit'].submit()
-    //     }
-    //   },1000)
-    // })
-
-    let data = qs.stringify(this.reqData)
-    axios.post('http://dealsbank.com/api/v1/pay/ali-pay', data).then(res => {
-      console.log(res)
-      let num = res.data.data.search('</form>')
-      this.resForm = res.data.data.slice(0, num + 7)
-      this.timer = setInterval(() => {
-        if (document.forms['alipaysubmit']) {
-          document.forms['alipaysubmit'].submit()
-        }
-      },1000)
-    })
+    this.init()
   },
-  
   methods: {
-    
+    init () {
+      this.initData()
+      this.getUserCountryInfo()
+    },
+    initData () {
+      if (this.$route.query.withdrawCount) {
+        this.reqData.amount = this.$route.query.withdrawCount
+        this.reqData.pay_order_number = RandomPayNumber()
+      } else {
+        this.$router.push({path: '/404/index'})
+      }
+    },
+
+    //获取国家列表，携带货币符号，
+    getUserCountryInfo () {
+      this.$api.getUserCountry().then(res => {
+        this.countryLists = res.data
+        for (let i of this.countryLists) {
+          if (i.id === this.country_id) {
+            this.reqData.bank_conversion_pri = i.bank_conversion_pri
+          }
+        }
+        this.alipay()
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    alipay () {
+      this.$api.alipay(this.reqData).then(res => {
+        if (!res.data) {
+          this.fullscreenLoading = false
+          this.$message.info('Payment interface error, please refresh the page or other payment method')
+          return
+        }
+        let num = res.data.search('</form>')
+        this.resForm = res.data.slice(0, num + 7)
+        setTimeout(() => {
+          if (document.forms['alipaysubmit']) {
+            document.forms['alipaysubmit'].submit()
+          }
+        })
+      })
+    }
   }
 }
 </script>

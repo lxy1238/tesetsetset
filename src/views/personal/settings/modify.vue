@@ -13,7 +13,7 @@
       </el-form-item>
     </el-form>
     <div class="pid-footer">
-      <button type="button" @click="changePassword">Save</button>
+      <el-button type="button" @click="changePassword" :loading="saveLoading">Save</el-button>
     </div>
   </div>
 </template>
@@ -66,7 +66,8 @@ export default {
         password_confirmation: [
           {validator: validateConfirmPass, trigger: 'blur'}
         ],
-      }
+      },
+      saveLoading: false,
     }
   },
   computed: {
@@ -87,16 +88,19 @@ export default {
     changePassword () {
       this.$refs['pidForm'].validate((valid) => {
         if (valid) {
+          this.saveLoading = true
           this.$api.resetPassword(this.pidForm).then(res => {
+            this.saveLoading = false
             if (res.code === 402) {
-              this.$notify.error(res.message)
+              this.$message.error(res.message)
               return false
             } else {
-              this.$notify.success('reset password success!!!')
-              this.$router.push({path: '/personal/index'})
+              this.$message.success('reset password success!!!')
+              this.$router.push({path: '/personal/member/index'})
             }
           })
         } else {
+          this.saveLoading = false
           console.log('error submit!!')
           return false
         }

@@ -44,7 +44,7 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="userPromotions.indexOf(couponDetail.id) >= 0 " @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
+                  <button v-if="added" @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
                   <button v-else  @click="addPromotion"><span>Add Promo</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
@@ -95,8 +95,8 @@
                  <!-- <button  data-clipboard-target="#proCard" @click="shareFaceBook">share</button> -->
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent('http://www.baidu.com')+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
@@ -141,7 +141,7 @@
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
             <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth $ 15</button></div>
+            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{couponDetail.discount_price}}</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
               <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
@@ -237,7 +237,8 @@ export default {
         type: '',
         level: '',
         joined_date: '',
-        coupon_posteds: ''
+        coupon_posteds: '',
+        pid: '',
       },
       imgList: [],
       html: 'hello',
@@ -252,7 +253,7 @@ export default {
         'Alive again'
       ],
       selected: 'Choose reason',
-      added: true,
+      added: false,
       imgUrl: '',
       arrcouponsDetails: [],
       couponDetail: {},
@@ -261,18 +262,18 @@ export default {
       getCodeSuccess: false, //是否领取优惠券成功
       userPromotions: [],
       requestData: {
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         menu_id: '',
         page: 1,
         page_size: 9
       },
       requestCouponDetails: {
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         user_id: getUserId() ,
         id: '',
       },
       reqGetCodeData: {
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         api_token: getToken(),
         user_id: getUserId(),
         coupon_id: '',
@@ -288,7 +289,7 @@ export default {
       addPromotionData: {
         api_token: getToken(),
         user_id: getUserId(),
-        country_id: getStore('country_id') || 1,
+        country_id: base64Decode(this.$route.params.countryId),
         coupon_id: '',
       },
       addProblemData: {
@@ -322,13 +323,14 @@ export default {
       templateText: '',
       promoterPid: '123456789',
       requestPlatData: {
-        country_id: parseInt(getStore('country_id') || 1),
+        country_id: '',
         user_id: '',
       },
+      currency: getStore('currency') || '$'
     }
   },
   computed: {
-    ...mapGetters(['username']),
+    ...mapGetters(['username', 'promotions']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
@@ -336,12 +338,19 @@ export default {
         }
       }
     },
-    currency () {
-      return getStore('currency') || '$'
-    },
+   
   },
   mounted () {
     this.init()
+  },
+  watch: {
+    username () {
+      this.reqGetCodeData.username = this.$store.getters.username
+    },
+    promotions () {
+      console.log(this.promotions)
+      this.couponsGetInfo()
+    }
   },
   methods: {
     //初始化
@@ -349,7 +358,6 @@ export default {
       this.initData()
       this.getHeadCateListInfo()
       this.getCouponsDetails()
-      this.couponsGetInfo()
     },
 
     //数据初始化
@@ -364,6 +372,10 @@ export default {
       let country_id = base64Decode(this.$route.params.countryId)
       this.$root.eventHub.$emit('changeCountryId', country_id)
 
+      this.$root.eventHub.$on('changeCurrency', data => {
+        this.currency = data
+      })
+
 
     },
 
@@ -372,17 +384,20 @@ export default {
       if (this.$route.query.promoter) {
         let promoterUserId = parseInt(this.$route.query.promoter)
         this.requestPlatData.user_id = promoterUserId
+        this.requestPlatData.country_id = base64Decode(this.$route.params.countryId)
         this.$api.postUserPid(this.requestPlatData).then(res => {
           for (let i of res.data) {
             if (i.platform_id === this.couponDetail.platform_id) {
               if (i.PID) {
                 this.promoterPid = i.PID
+                this.userInfo.pid = i.PID
               } 
             }
           }
         })
       } else {
         this.promoterPid = '12345678'
+        this.userInfo.pid = this.promoterPid
       }
     },
     
@@ -401,8 +416,9 @@ export default {
           this.requestData.menu_id = res.data.menu_id
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
-          this.test()
-          this.hasPromoter()
+          this.changeTemplate()
+          this.couponsGetInfo()
+          
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -410,13 +426,13 @@ export default {
     },
 
     //模版替换
-    test () {
+    changeTemplate () {
       let template = this.promotionTemplate
       let promoLink
       if (location.href.indexOf('?promoter') >= 0) {
         promoLink = location.href
       } else {
-        promoLink = `${location.href}?promoter=${getUserId() ? getUserId() : ''}`
+        promoLink = `${location.href}${getUserId() ? '?promoter=' + getUserId() : ''}`
       }
       this.templateText = template
         .replace(/\n/g, '<br>')
@@ -482,9 +498,7 @@ export default {
       this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.$api.isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
-        if (!res.data) {
-          console.log('no res data')
-        } else {
+        if (res.data) {
           this.getCodeSuccess = true
         }
       })
@@ -526,6 +540,7 @@ export default {
           this.userInfo = res.data
           this.userInfo.user_id = this.couponDetail.user_id
           this.userInfo.product_url = this.couponDetail.product_url
+          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + ' postedUserInfo')
@@ -537,8 +552,9 @@ export default {
       if (this.isLogin()) {
         this.$api.promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.added = false
-            this.couponsGetInfo()
+            this.added = true
+            this.promotions.push(this.couponDetail.id)
+            this.$store.commit('SET_PROMOTIONS', this.promotions)
           }
         })
       }
@@ -549,20 +565,28 @@ export default {
       if (this.isLogin()) {
         this.$api.promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.added = true
-            this.couponsGetInfo()
+            this.added = false
+            this.ArrayRemove(this.promotions, this.couponDetail.id)
+            this.$store.commit('SET_PROMOTIONS', this.promotions)
           }
         })
       }
     },
 
+    //数组移除元素
+    ArrayRemove (arr, val) {
+      let index = arr.indexOf(val)
+      if (index > -1) {
+        arr.splice(index, 1)
+      }
+    },
  
 
     //领取优惠券
     getCouponCode (e) {
       if (this.isLogin()) {
         if (this.isStop()) {
-          this.$message.info('该活动已经结束,或者该优惠卷已经领取完了')
+          this.$message.info('The activity is over, or the coupon has been received')
           return
         }
         e.target.disabled = true
@@ -598,13 +622,11 @@ export default {
     //获取用户信息
     couponsGetInfo () {
       if (getToken()) {
-        this.$store.dispatch('GetInfo').then(res => {
-          var promotions = []
-          for (var i of res.data.promotions) {
-            promotions.push(i.coupon_id)
-          }
-          this.userPromotions = promotions
-        })
+        if (this.promotions.includes(this.couponDetail.id)) {
+          this.added = true
+          return
+        } 
+        this.added = false
       }
     },
 
@@ -623,6 +645,9 @@ export default {
     },
     //提交问题
     addProblemSubmit () {
+      if (!this.isLogin()) {
+        return
+      }
       if (base64Decode(this.$route.params.couponsId)) {
         this.addProblemData.menu = 'coupons'
         this.addProblemData.product_id = base64Decode(this.$route.params.couponsId)
@@ -631,7 +656,7 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$notify.error('You can only type 30 characters')
+        this.$message.error('You can only type 30 characters')
         return
       }
       this.$api.addProblem(this.addProblemData).then(res => {
@@ -662,6 +687,7 @@ export default {
    
     //跳转到相应 商品链接
     gotoPlatform (url) {
+      console.log(this.promoterPid)
       let endUrl = `${url}&tag=${this.promoterPid}`
       window.open(endUrl)
     },
@@ -673,7 +699,7 @@ export default {
           method: 'share_open_graph',
           action_type: 'og.likes',
           action_properties: JSON.stringify({
-            object:'http://www.baidu.com',
+            object: location.href,
           })
         },
         
@@ -710,7 +736,7 @@ export default {
   position: relative;
 }
 .details-left-coupons {
-  top: 164px;
+  top: 149px;
 }
 .el-dialog--small {
   width: 40rem !important;
@@ -771,7 +797,7 @@ export default {
         .o-price {
           text-decoration: line-through;
           font-weight: bold;
-          margin-right: 32rem;
+          margin-right: 28rem;
         }
         .c-price {
           margin-right: 1rem;
@@ -1080,7 +1106,6 @@ export default {
     .top {
       padding-top: 2rem;
       height: 12rem;
-      border: 1px solid #e1e1e1;
       .head {
         font-size: 1.2rem;
         font-weight: bold;

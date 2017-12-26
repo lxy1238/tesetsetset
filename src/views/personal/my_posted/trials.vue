@@ -66,7 +66,7 @@
               <!-- quantity -->
               <td>
                 <div>
-                  {{item.quantity_per_day}}
+                  {{item.total_quantity}}
                 </div>
               </td>
               <!-- applied -->
@@ -115,39 +115,43 @@
               </td>
                 <!-- Status -->
                <td class="status">
-              <div class="blue" v-if="item.status === 0  ">Pending</div>
-              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway ">Active </div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway ">Close </div>
-              <div class="red" v-if="item.status === 2  ">Decline</div>
+              <div class="blue" v-if="item.status === 0 && !item.isExpired ">Pending</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway && !item.isExpired">Active </div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway && !item.isExpired">Close </div>
+              <div class="red" v-if="item.status === 2  && !item.isExpired ">Decline</div>
               
-              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] ">Stop</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] ">Close</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[5] ">Expired</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] ">Underbalance</div>
+              <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] && !item.isExpired ">Stop</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired">Close</div>
+              <div class="red" v-if=" item.isExpired ">Expired</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && !item.moneyIsEnough">Underbalance</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && item.moneyIsEnough">钱够了</div>
             </td>
             <td class="operation">
-              <template v-if="item.status === 0">
+              <template v-if="item.status === 0 && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] ">
+              <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
-              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4]"> 
+              <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired"> 
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
-              <template  v-if="item.status === 2 ">
+              <template  v-if="item.status === 2 && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
-              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway">
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
-               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway">
+               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway && !item.isExpired">
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+              </template>
+               <template v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && item.moneyIsEnough">
+                <div> <a href="javascript:void(0)"  @click="payTrialsActive(item)">online</a></div>
               </template>
             </td>
             </tr>
@@ -180,6 +184,7 @@ import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
 import { base64Encode } from '@/utils/randomString'
+import { mapGetters } from 'vuex'
 export default {
   name: 'posted_trials',
   data () {
@@ -195,9 +200,7 @@ export default {
       detailsDialog: false,
       all_run_status: ['pending','active', 'decline', 'stop', 'close', 'expired', 'underbalance' ],  // 待审核  暂停， 关闭 上线， 审核未通过  过期
       putaway: false,  //是否到达上架时间， 默认未到达
-      classifyList: [
-
-      ],
+      classifyList: [],
       requestdata: {
         user_id: getUserId(),
         api_token: getToken(),
@@ -224,6 +227,14 @@ export default {
         user_id: getUserId(),
         country_id: getStore('country_id') || 1,
         trial_id: ''
+      },
+
+      //商户手动上线请求接口数据
+      payTrialsActiveData: {
+        country_id: getStore('country_id') || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
+        trial_id: ''
       }
      
    
@@ -233,6 +244,9 @@ export default {
     pagination
   },
   computed: {
+    ...mapGetters([
+      'userAccount'
+    ]),
     currency () {
       return getStore('currency') || '$'
     }
@@ -242,16 +256,21 @@ export default {
   },
   methods: {
     init () {
+      this.initData()
       this.getPostTrialsList()
       this.getHeadCateListInfo()
     },
     initData () {
-
+      if (this.$route.query.id) {
+        this.requestdata.trial_id = this.$route.query.id
+      }
     },
 
     //页面跳转
     gotoPage (i) {
       this.requestdata.page = i
+      this.$router.push({path: '/posted/trials'})
+      this.requestdata.trial_id = ''
       this.getPostTrialsList()
     },
     
@@ -275,6 +294,14 @@ export default {
           } else {
             i.putaway = true
           }
+          if (i.end_time + 86400 < now) {
+            i.isExpired = true
+          }
+          if (parseFloat(i.total_fee) <= parseFloat(this.userAccount.amount)) {
+            i.moneyIsEnough = true
+          } else {
+            i.moneyIsEnough = false
+          }
           i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
           i.end_time = parseTime(i.end_time, '{y}-{m}-{d}')
         }
@@ -286,7 +313,6 @@ export default {
     //获取头部品类列表
     getHeadCateListInfo () {
       this.$api.getHeadCateList().then(res => {
-        console.log(res)
         this.classifyList = res.data
       }).catch(error => {
         console.log(error)
@@ -311,7 +337,6 @@ export default {
 
     //编辑待审核状态下和审核未通过的优惠券   
     EditCoupon (id) {
-      console.log(id)
       //携带id 查询需要修改的数据，然后进行修改
       this.$router.push({ path: '/posted/trials/add', query: { editor: id } })
     },
@@ -329,7 +354,7 @@ export default {
             console.log(res)
             this.getPostTrialsList()
           })
-          this.$notify({
+          this.$message({
             type: 'success',
             message: 'delete success!'
           })
@@ -348,7 +373,6 @@ export default {
         return
       }
       this.$api.trialCensor(this.detailsRequestData).then(res => {
-        console.log(res.data)
         if (res.data.content == '通过') {
           this.nonApproval = 'self closing'
           return
@@ -386,6 +410,27 @@ export default {
         }
       }).catch(error => {
         console.log(error)
+      })
+    },
+
+    //充值之后商户自己触发按钮手动上线
+    payTrialsActive (item) {
+      this.$confirm('Determine deleting trial?', 'reminder', {
+        confirmButtonText: 'confirm',
+        cancelButtonText: 'cancel',
+        type: 'warning'
+      }).then(() => {
+        this.payTrialsActiveData.trial_id = item.id
+        this.$api.payTrialActive(this.payTrialsActiveData).then(res => {
+          if (res.code === 200) {
+            this.getPostTrialsList()
+          }
+        }).catch(err => {
+          this.$message.error(err)
+          console.log(err)
+        })
+      }).catch(() => {
+        console.log('cancel')
       })
     }
 

@@ -5,7 +5,6 @@
       <div class="remove-all" @click="removeAllPromotion">
         <i class="el-icon-delete"></i>
         <span> Remove All</span>
-        
       </div>
     </div>
     <div class="promotion-coupons">
@@ -32,11 +31,11 @@
         </coupons-pro>
       </div>
       <pagination 
-        v-if="allpage && allpage != 1"
+        v-if="allpage && allpage != 1 && arrcouponsDetails.length != 0"
         class="coupons-pagination"
         :allpage="allpage"
         :show-item="showItem"
-        :current="requestdata.page"
+        :current="requestData.page"
         @handlecurrent="gotoPage">
       </pagination>
   </div>
@@ -91,11 +90,14 @@ export default {
     },
     //获取用户加入推广（收藏）的优惠券信息
     getPromotionDetails () {
+      this.arrcouponsDetails = []
       this.$api.promotionUserCoupon(this.requestData)
         .then(res => {
-          console.log(res)
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
+          if (res.data.data.length === 0 && this.requestData.page !== 1) {
+            this.gotoPage(1)
+          }
         })
         .catch(error => {
           console.log(error)

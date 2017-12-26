@@ -252,7 +252,7 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$notify.error('You can only type 30 characters')
+        this.$message.error('You can only type 30 characters')
         return
       }
       this.$api.addProblem(this.addProblemData).then(res => {

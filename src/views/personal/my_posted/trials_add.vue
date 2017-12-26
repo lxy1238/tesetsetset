@@ -1,7 +1,7 @@
 <template>
   <div class="trials-add">
      <div class="title">
-       Add Coupons
+       Add Trails
     </div>
     <div class="title-s">
       Product Information
@@ -10,7 +10,7 @@
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
           <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
-          <button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)">get</button>
+          <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">get</el-button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
           <el-select v-model="trialsForm.website"  @change="websiteChange">
@@ -43,12 +43,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-          <el-input class="url-input input-price-fee" v-model="trialsForm.product_price" @blur="filterMoney('product_price')">
+          <el-input class="url-input input-price-fee input-money " v-model="trialsForm.product_price" >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-          <el-input class="url-input input-price-fee" v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" placeholder="Default free freight">
+          <el-input class="url-input input-price-fee input-money " v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" placeholder="Default free freight">
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -83,7 +83,7 @@
          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
-          <el-input class="url-input" v-model="trialsForm.product_price"  ></el-input>
+          <el-input class="url-input input-money " v-model="trialsForm.product_price"  ></el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
           <el-input class="url-input" v-model="trialsForm.shipping_fee"  disabled></el-input>
@@ -108,14 +108,14 @@
         <div class="red" v-if="!trialsForm.product_details">product details is required</div>
       </el-form-item>
       <div class="title-s">
-        Coupon Information
+        Trial Information
       </div>
       <el-form-item label="Active date: " class="" prop="active_date"  >
           <el-date-picker
             v-model="trialsForm.active_date"
             type="daterange"
             :picker-options="pickerOptions1"
-            placeholder="选择日期范围">
+            placeholder="Select date range">
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
@@ -142,7 +142,7 @@
     </div>
     
     <el-form-item class="footer-btn" >
-      <button type="button" class="save" @click="Submit($event)">Save</button>
+      <el-button type="button" class="save" @click="Submit($event)" :loading="saveLoading">Save</el-button>
       <button type="button" class="cancel" @click="Cancel">Cancel</button>
     </el-form-item>
     </el-form>
@@ -160,10 +160,20 @@ import { NumAdd } from '@/utils/calculate'
 export default {
   name: 'trials_add',
   data () {
+    let reg =  /^\d+(\.\d{1,2})?$/
+    const validateMoney =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter the product price'))
+      } else if(!reg.test(value)){
+        callback(new Error ('Please enter the correct format amount'))
+      } else {
+        callback()
+      }
+    }
     return {
       pickerOptions1: {
         disabledDate (time) {
-          return time.getTime() < Date.now()
+          return time.getTime() < Date.now() - 86400000
         },
       },
       country_id: parseInt(getStore('country_id')) || 1,
@@ -171,6 +181,8 @@ export default {
       optionsStore: [],
       optionsCategory: [],
       isEditorData: true,
+      saveLoading:false,
+      getInfoLoading: false,
       trialsForm: {
         country_id: parseInt(getStore('country_id')) || 1,
         user_id: getUserId(),  // 用户ID ， 是，
@@ -214,7 +226,7 @@ export default {
           {type:'number',required: true, message: 'category is required', trigger: 'change'}
         ],
         product_price: [
-          {required: true ,message: 'product price is required, Must be Numbers', trigger: 'blur'}
+          {validator: validateMoney, trigger: 'blur'}
         ],
         product_img_s: [
           {
@@ -336,9 +348,29 @@ export default {
       this.getHeadCateListInfo()
       this.getTrialsStore()
       this.isEditor()
+      this.filterInput()
     },
     initData () {
       this.trialsForm.user_name = this.username
+    },
+
+    //限制只能输入数字和.
+    filterInput () {
+      if (this.country_id === 4) {
+        $('.input-money .el-input__inner').keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!((code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      } else {
+        $('.input-money .el-input__inner').keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      }
     },
 
     //blur 时请求信息
@@ -478,13 +510,14 @@ export default {
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       // this.$message.info('For information on goods, please wait a moment')
-      this.getPlatformCateInfo()
-      axios.get('http://chanpin25.com/index.php/api/asin', {
+      this.getInfoLoading = true
+      axios.get('http://192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,
         }
       })
         .then( (res) =>{
+          this.getInfoLoading = false
           setTimeout(() => {
             if (!res.data.data) {
               this.$message.info('Failed to obtain commodity information!!!')
@@ -498,7 +531,7 @@ export default {
             })
             this.trialsForm.product_img_s = newArr
             this.imgChange()
-            this.trialsForm.product_price = data.product_price.slice(1).replace(',', '')
+            this.trialsForm.product_price = data.product_price ? data.product_price : '' 
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$message.error('please enter a right url')
@@ -506,6 +539,7 @@ export default {
           }, 50)
         })
         .catch(function (err){
+          this.getInfoLoading = false
           console.log(err)
         })
      
@@ -524,9 +558,11 @@ export default {
             }
             ObjWebsite.label = i.provider
             ObjWebsite.id = i.id
-            this.optionsWebsite.push(ObjWebsite)
             if (this.trialsForm.product_url.search(i.url) >= 0) {
               this.trialsForm.website = i.provider
+              this.optionsWebsite.push(ObjWebsite)
+            } else {
+              this.$message.error('The country can only issue products under the platform')
             }
           }
         })
@@ -602,25 +638,30 @@ export default {
       this.trialsForm.product_img_s = fileList
     },
     issueCoupon (data) {
+      this.saveLoading = true
       if (this.$route.query.editor) {
         data.id = this.$route.query.editor
         this.$api.editTrial(data).then(res => {
+          this.saveLoading = false
           if (res.code === 200) {
-            this.$notify.success('issue coupon success')
+            this.$message.success('issue coupon success')
             this.$router.push({ path: '/posted/trials' })
           }
         }).catch(error => {
+          this.saveLoading = false
           console.log(error)
         })
       } else {
         this.$api.trialsAdd (data)
           .then(res => {
+            this.saveLoading = false
             if (res.code === 200) {
-              this.$notify.success('issue coupon success')
+              this.$message.success('issue coupon success')
               this.$router.push({ path: '/posted/trials' })
             }
           })
           .catch(error => {
+            this.saveLoading = false
             console.log(error)
           })
       } 
@@ -653,6 +694,7 @@ export default {
           console.log(this.trialsFormSubmit)
           this.issueCoupon(this.trialsFormSubmit)
         } else {
+          document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')
           e.target.disabled = false
           return false
@@ -694,6 +736,9 @@ export default {
         this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
         $('#summernote').summernote('code', res.data.product_details)
+        setTimeout(() => {
+          this.filterInput()
+        }, 10)
       })
     },
   }

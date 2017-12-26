@@ -81,10 +81,10 @@ export default {
       arrcouponsDetails: [],
       requestCouponData: {
         country_id: getStore('country_id') || 1,
+        page: 1,
+        page_size: 48,
         user_id: '',
         menu_id: '',
-        page: 1,
-        page_size: 48
       },
       requestUserData: {
         user_id: ''
@@ -131,7 +131,6 @@ export default {
     //获取发布人的信息
     getPostUserInfo () {
       this.$api.postedUserInfo (this.requestCouponData).then(res => {
-        console.log(res)
         res.data.joined_date = timestampFormat(res.data.joined_date)
         this.userInfo = res.data
       }).catch(error => {
@@ -145,6 +144,10 @@ export default {
         if (res.code === 200) {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
+
+          if (res.data.data.length === 0 && this.requestCouponData.page !== 1) {
+            this.gotoPage(1)
+          }
         }
       }).catch(error => {
         console.log(error + ' getAllCoupons ')

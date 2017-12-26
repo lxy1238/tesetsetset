@@ -203,10 +203,10 @@
                 <div class="line"></div>
             </div>
              <div class="facebook">
-              <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
+              <button class="facebook"   @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google"><i class="iconfont icon-googleplus"></i> Join with Google</button>
+              <button class="google" id="customBtn2"><i class="iconfont icon-googleplus"></i> Join with Google</button>
             </div>
           </div>
              <div class="footer">
@@ -221,13 +221,11 @@
 </template>
 
 <script>
-// import { getEmail, getPass, getToken, setPass } from '@/utils/auth.js'
 import { validateEmail } from '@/utils/validate.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 import { getEmail, getToken,getPass, setToken, setUserId ,setPass} from '@/utils/auth'
-import '../../utils/google'
 export default {
   name: 'header',
   data () {
@@ -270,7 +268,7 @@ export default {
       },
       rulesLogin: {
         email: [
-          { required: true, message: 'Please enter your email', trigger: 'blur' },
+          { validator:validateEmailRule, trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
@@ -294,15 +292,6 @@ export default {
       //国家列表
       countryLists: [
       ],
-      allLanguage: [
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-        ['中文(简体)'],
-      ],
       selectedC: 0,
       loginDialog: false,
       signDialog: false,
@@ -310,8 +299,6 @@ export default {
       showDropdownC: false,
       showDropdownL: false,
       showDropdownU: false,
-      selectedCountry: '中文(简体)',
-      isShowAllLanguage: false,
       loginLoading: false,
       signloading: false,
       resetLoading: false,
@@ -319,6 +306,7 @@ export default {
       country_id: parseInt(getStore('country_id')) || 1,
       app_id: '894275327387425',
       selectedCoupon: 1,
+      isLogin: getToken() 
     }
   },
   props: {
@@ -328,19 +316,15 @@ export default {
     }
   },
   computed: {
-    isLogin () {
-      return getToken()
-    },
     ...mapGetters([
       'username',
-      'token',
       'roles',
       'addRouters',
-      'avatar',
+      'userBase',
       'currentRouter'
     ]),
     avatar_img () {
-      return this.avatar
+      return this.userBase.avatar_img
     },
     selectedCountryShop : {
       get () {
@@ -356,9 +340,6 @@ export default {
     },
   },
   mounted () {
-    if(this.$route.query.search) {
-      this.keyword = this.$route.query.search
-    }
     this.init()
   },
   //组件销毁时，关闭来自其他组件的事件接收
@@ -366,6 +347,7 @@ export default {
     this.$root.eventHub.$off('initClassify')
     this.$root.eventHub.$off('selectClassify1')
     this.$root.eventHub.$off('isLoginInfo')
+    this.$root.eventHub.$off('changeCountryId')
   },  
 
   methods: {
@@ -375,17 +357,21 @@ export default {
       this.docuemntAddEvent()
       this.enterSubmitForm()
       this.getHeadCateListInfo()
-      this.getOtherEvent()
       this.getUserCountryInfo()
+      this.getOtherEvent()
     },
     //数据初始化
     initData () {
+      //获取查询字段
+      if(this.$route.query.search) {
+        this.keyword = this.$route.query.search
+      }
+      //获取品类ID
       for (var i of this.classifyList) {
         if (i.name === this.$route.params.menuId) {
           this.selectedC = i.id
         }
       }
-      this.initGoogle()
     },
 
     //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
@@ -441,14 +427,23 @@ export default {
         this.ShowLoginDialog()
       })
 
+      //头部接受进入试用品页面触发的修改selectedCoupon 字段的信号
+      this.$root.eventHub.$on('changeSelectCoupon', () => {
+        this.selectedCoupon = 2
+      })
+
       this.$root.eventHub.$on('changeCountryId', data => {
         this.selectedCountryShop = parseInt(data)
-        for (let i of this.countryLists) {
-          if (i.id == data) {
-            setStore('country_id',i.id)
-            setStore('currency',i.currency)
+        setTimeout(() => {
+          for (let i of this.countryLists) {
+            if (i.id == data) {
+              setStore('country_id',i.id)
+              setStore('currency',i.currency)
+              setStore('pay_currency', i.pay_currency)
+              this.$root.eventHub.$emit('changeCurrency', i.currency)
+            }
           }
-        }
+        }, 500)
       })
 
     },
@@ -457,12 +452,9 @@ export default {
     filterCountry (item) {
       setStore('country_id',item.id)
       setStore('currency',item.currency)
+      setStore('pay_currency', item.pay_currency)
       this.$router.push({path: '/'})
       window.location.reload()
-      // this.selectedCountryShop  = item.id
-      // this.keyword = ''
-      // this.$root.eventHub.$emit('changeCountryId', item.id)
-      // this.selectClassify(this.classifyList[0])
     },
 
     //通过关键字查询过滤首页商品
@@ -501,6 +493,7 @@ export default {
     ShowLoginDialog () {
       setTimeout(() => {
         this.googleLogin()
+        this.initFacebook()
       }, 500)
       if (getEmail()) {
         this.loginform.email = getEmail()
@@ -508,22 +501,31 @@ export default {
       if (getPass()) {
         this.loginform.password = base64Decode(getPass())
       }
-      this.signDialog = false 
+      this.hideAllDialog()
       this.loginDialog = true
      
     },
     ShowSignDialog () {
       setTimeout(() => {
         this.googleLogin()
+        this.initFacebook()
       }, 500)
-      this.resetPassword = false
-      this.loginDialog = false
+      this.hideAllDialog()
       this.signDialog = true
     },
     //弹出忘记密码窗口
     forgetPass () {
-      this.loginDialog = false
+      setTimeout(() => {
+        this.googleLogin()
+        this.initFacebook()
+      }, 500)
+      this.hideAllDialog()
       this.resetPassword = true
+    },
+    hideAllDialog () {
+      this.resetPassword = false
+      this.loginDialog = false
+      this.signDialog = false
     },
     signSubmit (formName, callback) {
       //element-ui 的表单验证
@@ -574,12 +576,12 @@ export default {
     signUp () {
       this.signSubmit('signform', () => {
         this.signloading = true
-        this.signform.activate_url = location.protocol + '//' + location.host + '/#/activate/' + this.signform.email
+        this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email
         this.$api.sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
-            this.$notify.success('Please login to the mailbox for activation validation')
+            this.$message.success('Please login to the mailbox for activation validation')
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
@@ -598,12 +600,16 @@ export default {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
-            this.$notify.success('login success')
+            this.$message.success('login success')
             this.$refs['loginform'].resetFields()
           }
-          this.$store.dispatch('GetInfo').then(() => {
+          this.$store.dispatch('GetInfo').then(res => {
+            const roles =[ res.data.type ]
             this.loginLoading = false
-            window.location.reload()
+            this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
+              this.$router.addRoutes(this.$store.getters.addRouters)
+              this.isLogin = getToken()
+            })
           })
         }).catch(err => {
           this.$message.error(err.message)
@@ -615,12 +621,11 @@ export default {
     resetPasswordBtn () {
       this.signSubmit('resetform', () => {
         this.resetLoading = true
-        this.resetform.url = location.protocol + '//' + location.host + '/#/resetpass/' + this.resetform.email + '/'
+        this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + this.resetform.email + '/'
         this.$api.retrievePassword(this.resetform).then(res => {
-          console.log(res)
           if (res.code === 200) {
             this.resetLoading = false
-            this.$notify.success('Please click the link to change the password')
+            this.$message.success('Please click the link to change the password')
           }
         }).catch(err => {
           this.resetLoading = false
@@ -654,19 +659,18 @@ export default {
 
     //google 登录
     googleLogin () {
+      require('../../utils/google') 
       var _this = this
       var startApp = function () {
         gapi.load('auth2', function (){
-          // Retrieve the singleton for the GoogleAuth library and set up the client.
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
+            client_id: '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
-            // Request scopes in addition to 'profile' and 'email'
-            // scope: 'additional_scope'
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
           auth2.attachClickHandler('customBtn', {}, onSuccess, onFailure)
           auth2.attachClickHandler('customBtn1', {}, onSuccess, onFailure)
+          auth2.attachClickHandler('customBtn2', {}, onSuccess, onFailure)
         })
       }
       /**
@@ -674,19 +678,9 @@ export default {
      */
       //google登录回调
       var onSuccess = function (user) {
-        console.log(this)
         var profile = user.getBasicProfile()
-        console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName())
-        console.log('Given Name: ' + profile.getGivenName())
-        console.log('Family Name: ' + profile.getFamilyName())
-        console.log('Image URL: ' + profile.getImageUrl())
-        console.log('Email: ' + profile.getEmail())
-        // document.getElementById('name').innerText = 'Signed in: ' + profile.getName()
-    
-        // The ID token you need to pass to your backend:
         let data = {
-          client_id : '308959858897-75hptfm6ncfsnmqannk8dvbim4j6qobv.apps.googleusercontent.com',
+          client_id : '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token
@@ -703,13 +697,12 @@ export default {
       var onFailure = function (error) {
         console.log(error)
       }
-    
       startApp()
     },
 
 
     //facebook 登录初始化
-    initGoogle () {
+    initFacebook () {
       // Load the SDK asynchronously
       (function (d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0]
@@ -718,46 +711,26 @@ export default {
         js.src = 'https://connect.facebook.net/en_US/sdk.js'
         fjs.parentNode.insertBefore(js, fjs)
       }(document, 'script', 'facebook-jssdk'))
-
       window.fbAsyncInit = function () {
         FB.init({
           appId      : '908467375968806',
           cookie     : true,  // enable cookies to allow the server to access
-          // the session
           xfbml      : true,  // parse social plugins on this page
           version    : 'v2.11' // use graph api version 2.8
         })
-        // FB.ui(
-        //   {
-        //     method: 'share',
-        //     href: 'https://developers.facebook.com/docs/',
-        //   },
-        //   // callback
-        //   function (response) {
-        //     if (response && !response.error_message) {
-        //       alert('Posting completed.')
-        //     } else {
-        //       alert('Error while posting.')
-        //     }
-        //   }
-        // )
       }
-    
-  
     },
 
     //facebook 登录回调函数
     statusChangeCallback (response) {
-      console.log(this)
       if (response.status === 'connected') {
         // Logged into your app and Facebook.
-        console.log('Welcome!  Fetching your information.... ')
         var user_id = response.authResponse.userID
         var accessToken = response.authResponse.accessToken
 
         // /me为API指定的调用方法，用于获取登陆用户相关信息
         FB.api('/me?fields=name,first_name,last_name,email', response => {
-          if(response.email!=null){
+          if(response.email!=null){ 
             var data = {
               app_id: '908467375968806',
               user_id: user_id,
@@ -788,20 +761,29 @@ export default {
 
     //第三方登录回调
     loginCallback (res) {
-      console.log(res)
       if(res.code == 200){
-        console.log(res)  
         let api_token = res.data.api_token
         let user_id = res.data.user_id
         setToken(api_token)
         setUserId(user_id )
         this.$api.updateLogin({'api_token': api_token, 'user_id': user_id})
         this.$store.dispatch('GetInfo').then(res => {
-          console.log(res)
-          if (res.code === 200) {
-            window.location.reload()
-          }
-        })         
+          this.hideAllDialog()
+          const roles =[ res.data.type ]
+          this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
+            this.$router.addRoutes(this.$store.getters.addRouters)
+            this.isLogin = getToken()
+          })
+        }) 
+        if (res.data.email) {
+          this.resetform.email = res.data.email
+          this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + res.data.email + '/'
+          this.$api.retrievePassword(this.resetform).then(res => {
+            console.log(res)
+          }).catch(err => {
+            console.log(err.message)
+          })       
+        }
       }
     },
 
@@ -828,7 +810,7 @@ export default {
 <style lang="less" scoped>
 @import url("../../styles/mixin.less");
 .header-all {
-  height: 110px;
+  height: 95px;
 }
 .header {
   .p(f);
@@ -836,28 +818,28 @@ export default {
   z-index: 999;
   width: 100%;
   color: white;
-  height: 70px;
+  height: 65px;
   .header-top {
     background: #31393f;
     width: 100%;
     min-width: @Width_content;
-    height: 70px;
+    height: 65px;
     vertical-align: middle;
     .header-top-content {
-      height: 70px;
+      height: 65px;
       .pct(@Width_content);
       border: 1px solid #31393f;
       .content {
         .p(r);
-        height: 70px;
-        line-height: 70px;
+        height: 65px;
+        line-height: 65px;
         // margin-top: 1rem;
         padding-left: 15rem;
         // border: 1px solid yellow;
         .logo {
           .p(a);
           left: 0;
-          top: 12px;
+          top: 8px;
           width: 180px;
           height: inherit;
         }
@@ -879,7 +861,7 @@ export default {
           .dropdown {
               position: absolute;
               text-align: left;
-              top: 70px;
+              top: 65px;
               z-index: 999;
               background: #4d6170;
               line-height: 1;
@@ -1056,7 +1038,7 @@ export default {
           font-weight: normal;
           font-size: 1rem;
           width: 10%;
-          height: 70px;
+          height: 65px;
           &:hover {
             color: white;
           }
@@ -1074,7 +1056,7 @@ export default {
           .p(r);
           width: 35%;
           height: 36px;
-          top: 17px;
+          top: 15px;
           margin-right: 0.90rem;
           input {
             .el-input-self;
@@ -1108,7 +1090,7 @@ export default {
           font-weight: bold;
           text-align: center;
           position: relative;
-          top: 17px;
+          top: 15px;
         }
         .login {
           // font-family: Arial, Helvetica, sans-serif;
@@ -1146,13 +1128,13 @@ export default {
   .header-bottom {
     .classify-items {
       .pct(@Width_content);
-      line-height: 40px;
-      height: 40px;
+      line-height: 30px;
+      height: 30px;
       overflow: hidden;
       text-align: center;
       li {
         font-size: 12px;
-        font: HelveticaNeueLT  bold 12px;
+        font: HelveticaNeueLT  bold;
         display: inline-block;
         color: rgb(34, 24, 21);
         cursor: pointer;
@@ -1164,8 +1146,9 @@ export default {
         }
       }
     }
-    height: 40px;
+    height: 35px;
     background: white;
+    box-shadow: 0px 2px 10px rgba(100, 100, 100, .15);
   }
 }
 

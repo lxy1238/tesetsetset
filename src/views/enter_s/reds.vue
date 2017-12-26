@@ -274,7 +274,7 @@ export default {
         }
       })
       if (this.redsForm.channels.length === 0){
-        this.$notify.error('至少填写一个推广通道')
+        this.$message.error('至少填写一个推广通道')
       }
     },
     submit () {

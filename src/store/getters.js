@@ -3,9 +3,11 @@ const getters = {
   email: state => state.user.email,
   token: state => state.user.token,
   roles: state => state.user.roles,
-  avatar: state => state.user.avatar, 
+  promotions: state => state.user.promotions,
+  userBase: state => state.user.userBase, 
+  userAccount: state => state.user.userAccount, 
+  joined_date: state => state.user.joined_date, 
   user_id: state => state.user.user_id,
-  amount: state => state.user.amount, 
   currentRouter: state => state.personal.currentRouter,
   addRouters: state => state.permisstion.addRouters
 }

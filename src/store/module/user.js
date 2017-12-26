@@ -6,24 +6,20 @@ import { getStore } from '../../utils/utils'
 
 const user = {
   state: {
+    token: getToken(),
+    email: getEmail(),
+    user_id: '',
     username: '',
     roles: [],
-    user_id: '',
-    email: getEmail(),
     promotions: [],
-    avatar: '',
-    amount: '',
-    token: getToken(),
+    joined_date: '',
+    userAccount: {},
+    userBase: {},
+
   },
   mutations: {
     SET_USERNAME: (state, username) => {
       state.username = username
-    },
-    SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
-    },
-    SET_AMOUNT: (state, amount) => {
-      state.amount = amount
     },
     SET_TOKEN: (state, token) => {
       state.token = token
@@ -34,9 +30,22 @@ const user = {
     SET_ROLES: (state, roles) => {
       state.roles = roles
     },
+    SET_PROMOTIONS: (state, promotions) => {
+      state.promotions = promotions
+    },
     SET_USERID: (state, user_id) => {
       state.user_id = user_id
     },
+    SET_USERBASE: (state, userBase) => {
+      state.userBase = userBase
+    },
+    SET_USERACCOUNT: (state, userAccount) => {
+      state.userAccount = userAccount
+    },
+    SET_JOINEDDATE: (state, joined_date) => {
+      state.joined_date = joined_date
+    },
+    
   },
   actions: {
     Login ({ commit }, userInfo) {
@@ -57,23 +66,18 @@ const user = {
       return new Promise((resolve, reject) => {
         api.getInfo({'api_token': getToken(), 'user_id': getUserId(), 'country_id': getStore('country_id') || 1}).then(res => {
           const data = res.data
+          let promotions = data.promotions.map(e => e.coupon_id)
           if (res.code === 200) {
             setEmail(data.email)
             commit('SET_ROLES', [data.type])
+            commit('SET_PROMOTIONS', promotions)
             commit('SET_USERNAME', data.username)
-            commit('SET_AMOUNT', data.account.amount)
             commit('SET_EMAIL',data.email)   
             commit('SET_USERID',data.id)   
-            commit('SET_AVATAR',data.base.avatar_img)   
-          } else if (res.code === 500) {
-            removeToken()
-            removeUserId()
-            removeEmail()
-            removePass()
-            commit('SET_EMAIL', '')
-            commit('SET_TOKEN', '')
-            router.push({path: '/'})
-          }
+            commit('SET_USERACCOUNT', data.account)
+            commit('SET_USERBASE',data.base)   
+            commit('SET_JOINEDDATE', data.joined_date)
+          } 
           resolve(res)
         }).catch(err => {
           reject(err)
@@ -83,16 +87,16 @@ const user = {
 
     //前端登出
     LogOut ({ commit }) {
+      router.push({path: '/'})
       removeToken()
       removeUserId()
       removeEmail()
       removePass()
       commit('SET_TOKEN', '')
       commit('SET_USERID', '') 
-      router.push({path: '/'})
       setTimeout(() => {
         window.location.reload()
-      }, 100)
+      }, 500)
     }
   }
 }

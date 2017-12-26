@@ -77,10 +77,10 @@ export default {
           this.pidForm.email = this.$route.params.email
           this.$api.checkRetrievePassword(this.pidForm).then(res => {
             if (res.code === 402) {
-              this.$notify.error(res.message)
+              this.$message.error(res.message)
               return false
             } else {
-              this.$notify.success('reset password success!!!')
+              this.$message.success('reset password success!!!')
               setTimeout( () => {
                 this.$router.push({path: '/'})
               }, 1000)

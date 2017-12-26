@@ -50,16 +50,13 @@ export default {
 .trials-explain {
   width: 99.05%;
   height: 5rem;
-  // border: 1px solid #e1e1e1;
   background: white;
-  margin: 1rem 0 1.3rem 0;
   text-align: left;
   border-radius: 5px;
 }
 .inline {
   position: relative;
   float: left;
-  // height: inherit;
   background: transparent;
   padding: 1rem 0 1rem 1rem;
   width: 16.3rem;

@@ -87,7 +87,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
-                <!-- <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div> -->
+                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
@@ -98,7 +98,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
                 <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
-              <template v-if="item.status === 1 && (item.run_status ==  all_run_status[5] || item.isExpired) ">
+              <template v-if="item.isExpired">
                 <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
               </template>
             </td>
@@ -127,7 +127,6 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { mapGetters } from 'vuex'
 import { setStore , getStore} from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
@@ -172,8 +171,8 @@ export default {
           platform_reward: '55', //  支付平台总费用， 否
           total_fee: '123', //总费用
 
-          product_title: 'this is project', // 商品标题   是 ，
-          product_img: 'http://www.ghostxy.top/dealsbank/img/01.png', // 产品图片， string, 用逗号拼接 , 否
+          product_title: '', // 商品标题   是 ，
+          product_img: '', // 产品图片， string, 用逗号拼接 , 否
           coupon_id: 1,
           total_quantity: 1000, // 总数量   int
           total_receiptor: 365,
@@ -221,7 +220,6 @@ export default {
     this.init()
   },
   computed: {
-    ...mapGetters(['user_id', 'token']),
     currency () {
       return getStore('currency') || '$'
     }
@@ -241,10 +239,9 @@ export default {
     getUserPickCoupons () {
       this.$api.userPickCoupons(this.requestdata)
         .then(res => {
-          console.log(res)
           for (var i of res.data.data) {
             let now = parseInt(new Date().getTime() / 1000)
-            if (i.valid_date < now) {
+            if (i.valid_date + 86400 < now) {
               i.isExpired = true
             }
             i.valid_date = parseTime(
@@ -315,7 +312,7 @@ export default {
           this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
-            this.$notify({
+            this.$message({
               type: 'success',
               message: 'delete success!'
             })
