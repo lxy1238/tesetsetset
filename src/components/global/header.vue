@@ -203,10 +203,10 @@
                 <div class="line"></div>
             </div>
              <div class="facebook">
-              <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
+              <button class="facebook"   @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
             </div>
             <div class="google">
-              <button class="google"><i class="iconfont icon-googleplus"></i> Join with Google</button>
+              <button class="google" id="customBtn2"><i class="iconfont icon-googleplus"></i> Join with Google</button>
             </div>
           </div>
              <div class="footer">
@@ -439,6 +439,7 @@ export default {
             if (i.id == data) {
               setStore('country_id',i.id)
               setStore('currency',i.currency)
+              setStore('pay_currency', i.pay_currency)
               this.$root.eventHub.$emit('changeCurrency', i.currency)
             }
           }
@@ -500,7 +501,7 @@ export default {
       if (getPass()) {
         this.loginform.password = base64Decode(getPass())
       }
-      this.signDialog = false 
+      this.hideAllDialog()
       this.loginDialog = true
      
     },
@@ -509,14 +510,22 @@ export default {
         this.googleLogin()
         this.initFacebook()
       }, 500)
-      this.resetPassword = false
-      this.loginDialog = false
+      this.hideAllDialog()
       this.signDialog = true
     },
     //弹出忘记密码窗口
     forgetPass () {
-      this.loginDialog = false
+      setTimeout(() => {
+        this.googleLogin()
+        this.initFacebook()
+      }, 500)
+      this.hideAllDialog()
       this.resetPassword = true
+    },
+    hideAllDialog () {
+      this.resetPassword = false
+      this.loginDialog = false
+      this.signDialog = false
     },
     signSubmit (formName, callback) {
       //element-ui 的表单验证
@@ -597,7 +606,6 @@ export default {
           this.$store.dispatch('GetInfo').then(res => {
             const roles =[ res.data.type ]
             this.loginLoading = false
-            // window.location.reload()
             this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
               this.$router.addRoutes(this.$store.getters.addRouters)
               this.isLogin = getToken()
@@ -615,7 +623,6 @@ export default {
         this.resetLoading = true
         this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + this.resetform.email + '/'
         this.$api.retrievePassword(this.resetform).then(res => {
-          console.log(res)
           if (res.code === 200) {
             this.resetLoading = false
             this.$message.success('Please click the link to change the password')
@@ -663,6 +670,7 @@ export default {
           })
           auth2.attachClickHandler('customBtn', {}, onSuccess, onFailure)
           auth2.attachClickHandler('customBtn1', {}, onSuccess, onFailure)
+          auth2.attachClickHandler('customBtn2', {}, onSuccess, onFailure)
         })
       }
       /**
@@ -671,8 +679,6 @@ export default {
       //google登录回调
       var onSuccess = function (user) {
         var profile = user.getBasicProfile()
-        console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName())
         let data = {
           client_id : '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
           user_id : profile.getId(),
@@ -691,7 +697,6 @@ export default {
       var onFailure = function (error) {
         console.log(error)
       }
-    
       startApp()
     },
 
@@ -763,10 +768,22 @@ export default {
         setUserId(user_id )
         this.$api.updateLogin({'api_token': api_token, 'user_id': user_id})
         this.$store.dispatch('GetInfo').then(res => {
-          if (res.code === 200) {
-            window.location.reload()
-          }
-        })         
+          this.hideAllDialog()
+          const roles =[ res.data.type ]
+          this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
+            this.$router.addRoutes(this.$store.getters.addRouters)
+            this.isLogin = getToken()
+          })
+        }) 
+        if (res.data.email) {
+          this.resetform.email = res.data.email
+          this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + res.data.email + '/'
+          this.$api.retrievePassword(this.resetform).then(res => {
+            console.log(res)
+          }).catch(err => {
+            console.log(err.message)
+          })       
+        }
       }
     },
 

@@ -176,6 +176,13 @@ export const trialEditDetail = data => fetch({
   data: qs.stringify(data)
 })
 
+//试用品支付上线（充值之后，商户手动触发）
+export const payTrialActive = data => fetch({
+  url: '/api/v1/trial/pay-trial-active',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 /**
  * 
  * @param 试用品领取人列表

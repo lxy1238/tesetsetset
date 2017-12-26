@@ -44,7 +44,7 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="userPromotions.indexOf(couponDetail.id) >= 0 " @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
+                  <button v-if="added" @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
                   <button v-else  @click="addPromotion"><span>Add Promo</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
@@ -253,7 +253,7 @@ export default {
         'Alive again'
       ],
       selected: 'Choose reason',
-      added: true,
+      added: false,
       imgUrl: '',
       arrcouponsDetails: [],
       couponDetail: {},
@@ -330,7 +330,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username']),
+    ...mapGetters(['username', 'promotions']),
     menu_name () {
       for (var i of this.classifyList) {
         if (i.id === this.requestData.menu_id) {
@@ -346,6 +346,10 @@ export default {
   watch: {
     username () {
       this.reqGetCodeData.username = this.$store.getters.username
+    },
+    promotions () {
+      console.log(this.promotions)
+      this.couponsGetInfo()
     }
   },
   methods: {
@@ -354,7 +358,6 @@ export default {
       this.initData()
       this.getHeadCateListInfo()
       this.getCouponsDetails()
-      this.couponsGetInfo()
     },
 
     //数据初始化
@@ -413,7 +416,9 @@ export default {
           this.requestData.menu_id = res.data.menu_id
           this.getAllCouponsInfo()
           this.getPostUserInfo(res.data.user_id)
-          this.test()
+          this.changeTemplate()
+          this.couponsGetInfo()
+          
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -421,7 +426,7 @@ export default {
     },
 
     //模版替换
-    test () {
+    changeTemplate () {
       let template = this.promotionTemplate
       let promoLink
       if (location.href.indexOf('?promoter') >= 0) {
@@ -547,8 +552,9 @@ export default {
       if (this.isLogin()) {
         this.$api.promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.added = false
-            this.couponsGetInfo()
+            this.added = true
+            this.promotions.push(this.couponDetail.id)
+            this.$store.commit('SET_PROMOTIONS', this.promotions)
           }
         })
       }
@@ -559,13 +565,21 @@ export default {
       if (this.isLogin()) {
         this.$api.promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
-            this.added = true
-            this.couponsGetInfo()
+            this.added = false
+            this.ArrayRemove(this.promotions, this.couponDetail.id)
+            this.$store.commit('SET_PROMOTIONS', this.promotions)
           }
         })
       }
     },
 
+    //数组移除元素
+    ArrayRemove (arr, val) {
+      let index = arr.indexOf(val)
+      if (index > -1) {
+        arr.splice(index, 1)
+      }
+    },
  
 
     //领取优惠券
@@ -608,13 +622,11 @@ export default {
     //获取用户信息
     couponsGetInfo () {
       if (getToken()) {
-        this.$store.dispatch('GetInfo').then(res => {
-          var promotions = []
-          for (var i of res.data.promotions) {
-            promotions.push(i.coupon_id)
-          }
-          this.userPromotions = promotions
-        })
+        if (this.promotions.includes(this.couponDetail.id)) {
+          this.added = true
+          return
+        } 
+        this.added = false
       }
     },
 

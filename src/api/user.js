@@ -86,7 +86,7 @@ export const postedUserInfo = data => fetch({
 
 //用户PID 信息获取
 export const postUserPid = data => fetch({
-  url: '/api/v1/user/user-PID',
+  url: '/api/v1/user/user-pid',
   method: 'POST',
   data: qs.stringify(data)
 })
@@ -100,14 +100,14 @@ export const postUserPid = data => fetch({
 
 //google 登录
 export const loginGoogle = data => fetch({
-  url: '/api/v1/user/loginGoogle',
+  url: '/api/v1/user/login-google',
   method: 'POST',
   data: qs.stringify(data)
 })
 
 //用户公开信息  发布优惠券的人的信息获取， 不用登录校验就可以获取
 export const loginFacebook = data => fetch({
-  url: '/api/v1/user/loginFacebook',
+  url: '/api/v1/user/login-facebook',
   method: 'POST',
   data: qs.stringify(data)
 })

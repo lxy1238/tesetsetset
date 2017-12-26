@@ -137,6 +137,7 @@ export default {
         } else if (this.rechangeForm.radio == '2') {
           this.$router.push({path: '/wallet/recharge/alipay', query: {withdrawCount: this.rechangeForm.withdrawCount}})
         } else if (this.rechangeForm.radio == '1') {
+          console.log(1)
           this.fullscreenLoading = true
           this.reqData.amount = this.rechangeForm.withdrawCount
           this.reqData.pay_currency = this.pay_currency

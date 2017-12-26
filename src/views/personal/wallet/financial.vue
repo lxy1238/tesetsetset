@@ -19,10 +19,16 @@
               <td>{{item.updated_at}}</td>
               <td>{{item.business_number}}</td>
               <td>{{item.business_name}}</td>
-              <td>{{item.business_ID}}</td>
+              <td>
+                <a  v-if="item.business_name == 'trial'" href="javascript:void(0);" @click="gotoPostTrials(item)">
+                  {{item.business_ID}}
+                </a>
+                <div v-else>{{item.business_ID}}</div>
+
+              </td>
               <td>{{item.business_type}}</td>
               <td>{{item.detail}}</td>
-              <td>{{item.trade_amount}}</td>
+              <td>{{currency}}{{item.trade_amount}}</td>
               <!-- <td>{{item.run_status}}</td> -->
             </tr>
             <tr v-if="trLists.length === 0" >
@@ -68,6 +74,11 @@ export default {
   components: {
     pagination
   },
+  computed: {
+    currency () {
+      return getStore('currency') || '$'
+    }
+  },
   mounted () {
     this.init()
   },
@@ -87,6 +98,10 @@ export default {
       this.reqData.page = i
       this.getfinancialInfo()
     },
+    gotoPostTrials (item) {
+      let trial_id = item.business_name_id
+      this.$router.push({path: '/posted/trials', query: {id: trial_id}})
+    }
   }
 }
 </script>

@@ -6,7 +6,6 @@
         <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
                      :key="1" 
                      :couponsDetails="couponsDetails"
-                     :promotions="userPromotions"
                      :addpromo="true"
                      @gotodetails="gotodetails">
           <template slot="price">
@@ -40,7 +39,6 @@
 <script>
 import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
-import { getToken } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
 import { mapGetters } from 'vuex'
@@ -161,6 +159,9 @@ export default {
           this.allpage = res.data.last_page
 
           this.userPromotions = this.promotions.map((e) => { return e.coupon_id })
+          if (res.data.data.length === 0 && this.requestData.page !== 1) {
+            this.gotoPage(1)
+          }
         })
         .catch(error => {
           console.log(error)

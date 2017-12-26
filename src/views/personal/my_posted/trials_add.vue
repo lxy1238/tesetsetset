@@ -511,7 +511,6 @@ export default {
     getProInfo (url) {
       // this.$message.info('For information on goods, please wait a moment')
       this.getInfoLoading = true
-      this.getPlatformCateInfo()
       axios.get('http://192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,

@@ -24,7 +24,7 @@
       v-if="allpage && allpage != 1"
       :allpage="allpage"
       :show-item="showItem"
-      :current="requestdata.page"
+      :current="requestData.page"
       @handlecurrent="gotoPage">
     </pagination>
   </div>
@@ -139,6 +139,11 @@ export default {
       }
       this.$api.getAllTrial(this.requestData).then(res => {
         this.arrcouponsDetails = res.data.data
+        this.allpage = res.data.last_page
+
+        if (res.data.data.length === 0 && this.requestData.page !== 1) {
+          this.gotoPage(1)
+        }
       }).catch(error => {
         console.log(error)
       })

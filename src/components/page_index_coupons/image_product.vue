@@ -1,6 +1,6 @@
 <template>
   <div  class="coupons-product" ref="imgLoad" >
-    <div class="expried" v-if="couponsDetails.status === 0">EXPRIED</div>
+    <div class="expried" v-if="couponsDetails.run_status === 'expired'">EXPRIED</div>
     <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
       <img class="product-img" v-show="loading"  :data-img="couponsDetails.product_img.split(',')[0]" @load="loadImg"  alt="img">
       <img v-if="!loading" src="../../assets/timg.gif"   alt="img">
@@ -45,6 +45,7 @@
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
+import { mapGetters } from 'vuex'
 import Clip from '@/utils/clipboard.js'
 export default {
   name: 'image_product',
@@ -69,14 +70,11 @@ export default {
       type: Boolean,
       default: true
     },
-    promotions: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    }
   },
   computed: {
+    ...mapGetters([
+      'promotions'
+    ]),
     productDetails () {
       return 'productDetails' + this.couponsDetails.id
     },
@@ -88,7 +86,7 @@ export default {
     },
     dealsbankUrl () {
       return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  + (getUserId() ? '?promoter=' + getUserId() : '')
-    }
+    },
   },
   mounted () {
     this.init()
@@ -101,7 +99,9 @@ export default {
     promotions () {
       if (this.promotions.includes(this.couponsDetails.id)) {
         this.isAddPromo = 1
-      }
+        return
+      } 
+      this.isAddPromo = 0
     }
   },
   methods: {
@@ -156,6 +156,8 @@ export default {
       this.$api.promotionAddCoupon(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 1
+          this.promotions.push(this.couponsDetails.id)
+          this.$store.commit('SET_PROMOTIONS', this.promotions)
         })
         .catch(error => {
           console.log(error + 'promotionaddcoupon')
@@ -165,10 +167,19 @@ export default {
       this.$api.promotionUserRemove(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 0
+          this.ArrayRemove(this.promotions, this.couponsDetails.id)
+          this.$store.commit('SET_PROMOTIONS', this.promotions)
         })
         .catch(error => {
           console.log(error + 'promotionaddcoupon')
         })
+    },
+    //数组移除元素
+    ArrayRemove (arr, val) {
+      let index = arr.indexOf(val)
+      if (index > -1) {
+        arr.splice(index, 1)
+      }
     },
     copy (e) {
       Clip(e)

@@ -5,7 +5,7 @@
     </div>
     <div class="coupons-content" v-if="couponLists.length != 0">
       <div class="pro-card" v-for="item in couponLists" v-if="item.coupons">
-        <!-- <div class="expried">EXPRIED</div> -->
+        <div class="expried" v-if="item.coupons.run_status === 'expired'">expired</div>
         <div class="card-top">
           <img class="card-top-img" :src="item.coupons.product_img.split(',')[0]" alt="">
           <div class="pro-title">

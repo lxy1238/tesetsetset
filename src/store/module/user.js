@@ -66,10 +66,11 @@ const user = {
       return new Promise((resolve, reject) => {
         api.getInfo({'api_token': getToken(), 'user_id': getUserId(), 'country_id': getStore('country_id') || 1}).then(res => {
           const data = res.data
+          let promotions = data.promotions.map(e => e.coupon_id)
           if (res.code === 200) {
             setEmail(data.email)
             commit('SET_ROLES', [data.type])
-            commit('SET_PROMOTIONS', data.promotions)
+            commit('SET_PROMOTIONS', promotions)
             commit('SET_USERNAME', data.username)
             commit('SET_EMAIL',data.email)   
             commit('SET_USERID',data.id)   

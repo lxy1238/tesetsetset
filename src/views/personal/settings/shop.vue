@@ -208,7 +208,7 @@ export default {
           }
         }).catch(error => {
           this.saveLoading = false
-          console.log(error)
+          this.$message.error(error.message)
           this.addStoreDialog = false
         })
       } else {
@@ -221,7 +221,7 @@ export default {
           }
         }).catch(error => {
           this.saveLoading = false
-          console.log(error)
+          this.$message.error(error.message)
           this.addStoreDialog = false
         })
       }
