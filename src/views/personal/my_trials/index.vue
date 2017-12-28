@@ -37,8 +37,8 @@
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <input class="footer-input" v-model="item.order_number" ></input>
-                    <button class="order-number" type="button" @click="submitOrderNumber(item, $event)" >Save</button>
+                    <el-input class="footer-input" v-model="item.order_number" @keyup.enter.native="orderBtnSubmit(item)" ></el-input>
+                    <el-button class="order-number" type="button" @click="submitOrderNumber(item)" :loading="orderBtnLoading">Save</el-button>
                   </div>
                 </div>
                 <div class="right-content">
@@ -83,18 +83,18 @@
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
                     <span class="footer-span" v-if="item.Modify">{{item.order_number}}</span>
-                    <el-input v-else class="footer-input" v-model="item.order_number"></el-input>
+                    <el-input v-else class="footer-input" v-model="item.order_number" @keyup.enter.native="editOrderSubmit(item)"></el-input>
 
                     <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Modity</button>
-                    <button v-else type="button" class="order-number" @click="editOrderNumberBtn(item, $event)">Save</button>
+                    <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
                   </div>
                 </div>
                 <div class="right-content">
                   <template v-if="!item.modifyUrl">  
                     <div class="footer">
                       <span class="footer-span">Review URL:</span>
-                      <el-input class="footer-input" v-model="item.appraise_url_input"></el-input>
-                      <button type="button" class="save-btn" @click="submitAppraiseUrl(item)">Save</button>
+                      <el-input class="footer-input" v-model="item.appraise_url_input" @keyup.enter.native="urlSubmit(item)"></el-input>
+                      <el-button type="button" class="save-btn" @click="submitAppraiseUrl(item)" :loading="urlSaveLoading">Save</el-button>
                     </div>
                     <p>Please upload your review within 30 business days after 
                       ordering and submit the link address for the review, 
@@ -172,7 +172,7 @@
                       <div class="complete-refunded">Refunded to balance</div>
                   </div>
                   <div class="pending complete complete-right">
-                    <el-rate  class="rate"
+                    <!-- <el-rate  class="rate"
                       v-model="value5"
                       disabled
                       text-color="#ff9900"
@@ -181,9 +181,9 @@
                     <div class="picture-video">
                       <span class="picture">Picture: 3</span>
                       <span class="video">Video: 1</span>
-                    </div>
+                    </div> -->
                     <div class="view">
-                      <a href="">View</a>
+                      <a href="javascript:void(0);"@click="viewApprise(item.appraise_url)">View</a>
                     </div>
                   </div>
                 </div>
@@ -251,6 +251,7 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString.js'
+import { validateURL } from '@/utils/validate.js'
 export default {
   name: 'my_trials',
   components: {
@@ -267,6 +268,9 @@ export default {
       showItem: 7,
       value5: 3.6,
       isExpried: false,
+      saveLoading: false,
+      orderBtnLoading: false,
+      urlSaveLoading: false,
       timer: null,
       countDownData: {},
       orderDetails0: [],
@@ -337,7 +341,8 @@ export default {
       this.$api.userApplySucced(this.reqSuccedDetailsData0).then(res => {
         this.orderDetails0 = res.data
         for (let i of this.orderDetails0) {
-          let expiry_time = getTimeDetail(i.expiry_time)
+          i.leftTime = i.expiry_time - res.timestamp
+          let expiry_time = getTimeDetail(i.leftTime)
           i.countDownData = expiry_time
           i.countDown = i.expiry_time
           this.countDown(i)
@@ -345,6 +350,20 @@ export default {
       }).catch(err => { 
         console.log(err)
       })
+    },
+
+    //定时器，时间倒计时
+    countDown (i) {
+      this.timer = setInterval(() => {
+        i.leftTime--
+        let expiry_time1 = getTimeDetail(i.leftTime)
+        i.countDownData = expiry_time1
+        this.refresh(this.orderDetails0)
+        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+          clearInterval(this.timer)
+          i.isExpried = true
+        }
+      }, 1000)
     },
 
     //review
@@ -376,21 +395,10 @@ export default {
         this.orderDetails3 = res.data.data
       })
     },
-    //定时器，时间倒计时
-    countDown (i) {
-      this.timer = setInterval(() => {
-        let expiry_time1 = getTimeDetail(i.countDown)
-        i.countDownData = expiry_time1
-        this.refresh(this.orderDetails0)
-        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
-          clearInterval(this.timer)
-          i.isExpried = true
-        }
-      }, 1000)
-    },
+   
     //提交订单 号码
-    submitOrderNumber (item, e) {
-      e.target.disabled = true
+    submitOrderNumber (item) {
+      this.orderBtnLoading = true
       this.reqAddOrderData.id = item.id
       this.reqAddOrderData.order_number = item.order_number
       if (!this.reqAddOrderData.order_number) {
@@ -401,40 +409,50 @@ export default {
           this.selected = 1
           this.init()
         }
-        e.target.disabled = false
+        this.orderBtnLoading = false
       }).catch(() => {
-        e.target.disabled = false
+        this.orderBtnLoading = false
       })
     },
- 
 
+    //enter 提交订单
+    orderBtnSubmit (item) {
+      this.submitOrderNumber(item)
+    },
+ 
     //修改按钮变成save 按钮
     modifyOrderBtn (item) {
       item.Modify = false
       this.refresh(this.orderDetails1)
     },
     //修改订单号
-    editOrderNumberBtn (item, e) {
-      e.target.disabled = true
+    editOrderNumberBtn (item) {
+      this.saveLoading = true
       this.reqAddOrderData.order_id = item.id
       this.reqAddOrderData.order_number = item.order_number
       this.$api.userOrderNumber(this.reqAddOrderData).then(res => {
         if (res.code === 200) {
-          e.target.disabled = false
+          this.saveLoading = false
           item.Modify = true
           this.orderDetails1.push(1)
           this.orderDetails1.pop()
         }
       }).catch(() => {
-        e.target.disabled = false
+        this.saveLoading = false
       })
+    },
+
+    editOrderSubmit (item) {
+      this.editOrderNumberBtn(item)
     },
 
     //提交review url
     submitAppraiseUrl (item) {
-      if (!item.appraise_url_input) {
+      
+      if (!item.appraise_url_input || !validateURL(item.appraise_url_input) ) {
+        this.$message.error('Please enter a legal URL')
         return
-      }
+      } 
       let reqData =  {
         api_token: getToken(),
         user_id: getUserId(),
@@ -443,7 +461,9 @@ export default {
       }
       reqData.order_id = item.id
       reqData.appraise_url = item.appraise_url_input
+      this.urlSaveLoading = true
       this.$api.userAppraiseUrl(reqData).then(res => {
+        this.urlSaveLoading = false        
         if (res.code === 200) {
           item.status = 0
           item.modifyUrl = reqData.appraise_url
@@ -451,9 +471,13 @@ export default {
           this.orderDetails1.push(1)
           this.orderDetails1.pop()
         }
+      }).catch(() => {
+        this.urlSaveLoading = false
       })
     },
-
+    urlSubmit (item) {
+      this.submitAppraiseUrl(item)
+    },
     //点击modify按钮
     modifyUrlBtn (item) {
       item.modifyUrl = false
@@ -689,11 +713,10 @@ export default {
                   }
                   &.complete-left {
                     position: relative;
-                    top: -8px;
                   }
                   &.complete-right {
                     position: relative;
-                    top: 11px;
+                    top: 38px;
                     .rate {
                       margin-bottom: 15px;
                     }

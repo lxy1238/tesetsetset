@@ -17,9 +17,9 @@
         Status: 
       </label>
       <el-select name="" class=" form-control-bootstrap" v-model="searchForm.status">
-        <el-option value="0" label="Pending">Pending</el-option>
-        <el-option value="1" label="Complete">Complete</el-option>
-        <el-option value="2" label="Decline">Decline</el-option>
+        <el-option value="0" label="Pending"></el-option>
+        <el-option value="1" label="Complete"></el-option>
+        <el-option value="2" label="Decline"></el-option>
       </el-select>
 
 
@@ -147,6 +147,8 @@
                  <template v-if="item.status === 1">
                   <div></div>
                 </template>
+                  <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
+                
               </td>
             </tr>
             <tr v-if="trLists.length === 0">
@@ -401,36 +403,6 @@ export default {
 
 <style lang="less">
 @import url('../../../styles/mixin.less');
-.posted-coupons {
-  .pro-header {
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
-  }
-  .search-form {
-    position: relative;
-    width: 100%;
-    height: 4rem;
-    line-height: 4rem;
-    margin-bottom: 1rem;
-    .form-control-bootstrap {
-      margin-right: 3%;
-      width: 16%;
-    }
-    .search {
-      .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
-      font-size: 0.78rem;
-    }
-    .add-coupons {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
-      margin-top: -20px;
-    }
-
-  }
-}
 .table-trials-posted {
   font-size: 10px !important;
   .trials-table-img {
@@ -440,7 +412,6 @@ export default {
   .trials-receiptor-review-td {
     width: 180px;
   }
-  
 }
 
 .trials-title {
@@ -471,7 +442,6 @@ export default {
     top: 1px;
   }
   button {
-    
     .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
     line-height: 1.5;
   }

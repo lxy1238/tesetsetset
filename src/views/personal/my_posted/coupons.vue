@@ -12,7 +12,6 @@
         Category: 
       </label>
       <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.menu_id">
-        <!-- <option :value="''" >请选择</option> -->
         <el-option :value="item.id" :key="item.id" v-for="item in classifyList" :label="item.name">{{item.name}}</el-option>
       </el-select>
 
@@ -20,13 +19,12 @@
         Status: 
       </label>
       <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.run_status">
-        <!-- <option :value="''" >请选择</option> -->
-        <el-option :value="all_run_status[0]">Pending</el-option>
-        <el-option :value="all_run_status[1]">Active</el-option>
-        <el-option :value="all_run_status[2]">Decline</el-option>
-        <el-option :value="all_run_status[3]">Stop</el-option>
-        <el-option :value="all_run_status[4]">Close</el-option>
-        <el-option :value="all_run_status[5]">Expired</el-option>
+        <el-option :value="all_run_status[0]" label='Pending'></el-option>
+        <el-option :value="all_run_status[1]" label='Active'></el-option>
+        <el-option :value="all_run_status[2]" label='Decline'></el-option>
+        <el-option :value="all_run_status[3]" label='Stop'></el-option>
+        <el-option :value="all_run_status[4]" label='Close'></el-option>
+        <el-option :value="all_run_status[5]" label='Expired'></el-option>
       </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
@@ -400,35 +398,6 @@ export default {
 
 <style lang="less"  >
 @import url("../../../styles/mixin.less");
-.posted-coupons {
-  .pro-header {
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
-  }
-  .search-form {
-    position: relative;
-    width: 100%;
-    height: 4rem;
-    line-height: 4rem;
-    margin-bottom: 1rem;
-    .form-control-bootstrap {
-      margin-right: 3%;
-      width: 16%;
-    }
-    .search {
-      .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
-      font-size: 0.78rem;
-    }
-    .add-coupons {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
-      margin-top: -20px;
-    }
-  }
-}
 
 .coupons-table {
   font-size: 12px;

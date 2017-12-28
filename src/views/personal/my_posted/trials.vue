@@ -473,37 +473,6 @@ export default {
 
 <style lang="less">
 @import url('../../../styles/mixin.less');
-.posted-coupons {
-  .pro-header {
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
-  }
-  .search-form {
-    position: relative;
-    width: 100%;
-    height: 4rem;
-    line-height: 4rem;
-    margin-bottom: 1rem;
-    .form-control-bootstrap {
-      margin-right: 3%;
-      width: 16%;
-    }
-    .search {
-      .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
-      font-size: 0.78rem;
-    }
-    .add-coupons {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
-      margin-top: -20px;
-    }
-
-  }
- 
-}
 .table-trials-posted {
   font-size: 10px !important;
   .trials-table-img {

@@ -1,4 +1,5 @@
 @import url('./dialog.less');
+@import url('./mixin.less');
 // 页面主体部分宽度
 .pages-content {
   // width: 100%;
@@ -229,6 +230,34 @@ table tbody tr td {
         background: #fff;
       }
     }
+  }
+}
+
+
+//查询列表的公共样式
+.search-form {
+  position: relative;
+  font-size: 14px;
+  width: 100%;
+  height: 80px;
+  padding-top: 22px;
+  .form-control-bootstrap {
+    margin-right: 3%;
+    width: 16%;
+  }
+  .search {
+    .btn-h(60px, 36px,#85ba3b,#85ba3b,#fff);
+    font-size: 0.78rem;
+    position: absolute;
+    top: 50%;
+    margin-top: -18px;
+  }
+  .add-coupons {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
+    margin-top: -20px;
   }
 }
 

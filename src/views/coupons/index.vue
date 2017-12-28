@@ -14,7 +14,7 @@
         </div>
         <div class="right inline" >
           <div class="promotion">
-            <img class="img"  :src="logoImg[couponDetail.website]" alt="">
+            <img class="img"  :src="logoImg[couponDetail.website]" alt="" @click="gotoPlatform(couponDetail.product_url)" >
             <div class="title">
               <span @click="gotoPlatform(couponDetail.product_url)">
                 {{couponDetail.product_title}}
@@ -266,7 +266,8 @@ export default {
       submitTemplateData: {
         api_token: getToken(),
         user_id: getUserId(),
-        content: base64Decode(this.$route.params.couponsId),
+        coupon_id:  base64Decode(this.$route.params.couponsId),
+        content: '',
       },
 
 
@@ -331,7 +332,7 @@ export default {
       this.reqGetCodeData.username = this.$store.getters.username
     },
     promotions () {
-      this.couponsGetInfo()
+      this.couponsIsPromotion()
     }
   },
   methods: {
@@ -437,6 +438,8 @@ export default {
             this.getCouponsDetails()
             this.templateDialog = false
           }
+        }).catch(err =>{
+          console.log(err)
         })
       }
     },
@@ -730,6 +733,7 @@ export default {
       margin-bottom: 1rem;
       .img {
         position: absolute;
+        cursor: pointer;
         right: 1.5rem;
         top: 2rem;
       }

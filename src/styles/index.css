@@ -40,6 +40,29 @@
 .el-dialog.el-dialog--small {
   border-radius: 10px;
 }
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.el-input-self {
+  -webkit-appearance: none;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #d8dce5;
+  box-sizing: border-box;
+  color: #5a5e66;
+  display: inline-block;
+  font-size: inherit;
+  height: 40px;
+  line-height: 1;
+  outline: none;
+  padding: 0 15px;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: 100%;
+}
 .pages-content {
   width: 83.333rem;
   margin: 0 auto;
@@ -200,6 +223,77 @@ table tbody tr td {
 }
 .coupons-pagination .pagination li .items {
   background: #fff;
+}
+.search-form {
+  position: relative;
+  font-size: 14px;
+  width: 100%;
+  height: 80px;
+  padding-top: 22px;
+}
+.search-form .form-control-bootstrap {
+  margin-right: 3%;
+  width: 16%;
+}
+.search-form .search {
+  width: 60px;
+  height: 36px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: 0;
+  text-transform: none;
+  -webkit-appearance: button;
+  display: inline-block;
+  line-height: 0.8;
+  white-space: nowrap;
+  background: #85ba3b;
+  border: 1px solid #85ba3b;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  position: absolute;
+  top: 50%;
+  margin-top: -18px;
+}
+.search-form .search:hover {
+  background: #77a735;
+  border-color: #77a735;
+}
+.search-form .search:active {
+  background: #92c549;
+  border-color: #92c549;
+}
+.search-form .add-coupons {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: 0;
+  text-transform: none;
+  -webkit-appearance: button;
+  display: inline-block;
+  line-height: 0.8;
+  white-space: nowrap;
+  background: #7ab7e0;
+  border: 1px solid #7ab7e0;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  margin-top: -20px;
+}
+.search-form .add-coupons:hover {
+  background: #65acdb;
+  border-color: #65acdb;
+}
+.search-form .add-coupons:active {
+  background: #8fc2e5;
+  border-color: #8fc2e5;
 }
 @media screen and (max-width: 1557px) {
   html {

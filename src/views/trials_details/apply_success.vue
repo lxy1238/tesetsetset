@@ -1,6 +1,6 @@
 <template>
-  <div class="page-index " v-if="trialDetail.product_price" v-title="trialDetail.product_title">
-    <div class="pages-content clearfix">
+  <div class="page-index "  >
+    <div class="pages-content clearfix" v-if="trialDetail.product_price" v-title="trialDetail.product_title">
       <explain :is-active="2"></explain>
       <div class="home-content" >
         <div class="details" v-if="trialDetail.product_price">
@@ -31,8 +31,8 @@
                <div class="inline-b question" v-if="selected !== 'Choose reason'">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
-                    <input type="text" v-model="addProblemData.content">
-                    <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
+                    <input type="text" v-model="addProblemData.content" @keyup.enter="problemSubmit">
+                    <el-button type="button" @click="addProblemSubmit" :loading="problemBtnLoading"><span>Submit</span></el-button>
                     <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                   </div>
                 </div>
@@ -44,8 +44,8 @@
           <h3>Submit order number</h3>
           <div class="submit">
             <span>Order number: </span>
-            <input class="input" type="text" v-model="reqAddOrderData.order_number" />
-            <button class="submit-btn" @click="submitOrderNumber($event)" ref="submitBtn">Confirm</button>
+            <input class="input" type="text" v-model="reqAddOrderData.order_number" @keyup.enter="orderSubmit"/>
+            <el-button class="submit-btn" @click="submitOrderNumber($event)" ref="submitBtn" :loading="confirmLoading">Confirm</el-button>
           </div>
           <div>Please confirm that the order number is valid and the transaction is successful, 
             otherwise your trial qualification will be canceled.</div>
@@ -156,6 +156,9 @@ export default {
 
       },
       timer: null,
+      confirmLoading: false,
+      problemBtnLoading: false,
+      leftTime: '',
     }
   },
   components: {
@@ -193,7 +196,8 @@ export default {
     //进入页面获取到产品详情 以及id
     getTrialDetails () {
       this.$api.userApplySucced(this.reqSuccedDetailsData).then(res => {
-        let expiry_time = getTimeDetail(res.data[0].expiry_time)
+        this.leftTime = res.data[0].expiry_time - res.timestamp
+        let expiry_time = getTimeDetail(this.leftTime)
         this.reqAddOrderData.id = res.data[0].id
         this.trialDetail = res.data[0].trials
         this.countDownData = expiry_time
@@ -205,7 +209,8 @@ export default {
     //定时器，时间倒计时
     countDown () {
       this.timer = setInterval(() => {
-        let expiry_time1 = getTimeDetail(this.trialDetail.countDown)
+        this.leftTime--
+        let expiry_time1 = getTimeDetail(this.leftTime)
         this.countDownData = expiry_time1
         if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
           clearInterval(this.timer)
@@ -215,8 +220,8 @@ export default {
     },
 
     //提交订单 号码
-    submitOrderNumber (e) {
-      e.target.disabled = true
+    submitOrderNumber () {
+      this.confirmLoading = true
       if (!this.reqAddOrderData.order_number) {
         return
       }
@@ -224,18 +229,16 @@ export default {
         if (res.code === 200) {
           this.$router.push({path: '/personal/my-trials/index', query: { status: 1 }})
         }
-        e.target.disabled = false
+        this.confirmLoading = false
       }).catch(() => {
-        e.target.disabled = false
+        this.confirmLoading = false
       })
 
     },
     
     //enter 按键提交
-    enter (e) {
-      if (e.keyCode === 13) {
-        this.submitOrderNumber()
-      }
+    orderSubmit () {
+      this.submitOrderNumber()
     },
 
     //选择问题, 提交问题反馈
@@ -260,16 +263,22 @@ export default {
         this.$message.error('You can only type 30 characters')
         return
       }
+      this.problemBtnLoading = true
       this.$api.addProblem(this.addProblemData).then(res => {
         if (res.code === 200) {
           this.$message.success('Submitted successfully!')
           this.isFlagCoupon = false
           this.selected = 'Choose reason'
+          this.problemBtnLoading = false
         }
       }).catch(error => {
+        this.problemBtnLoading = false
         console.log(error)
       })
     },
+    problemSubmit () {
+      this.addProblemSubmit()
+    }
   }
 }
 </script>
@@ -279,6 +288,7 @@ export default {
 .pages-content {
   padding: 0;
   padding-top: 1rem;
+  min-height: 1000px;
 }
 .home-content {
   padding-top: 12px;
@@ -365,16 +375,8 @@ export default {
       }
       .footer {
         .to-amazon {
-          .btn-h(15rem,3rem);
-          background: #84bb3a;
-          border-color: #84bb3a;
+          .btn-h(15rem,3rem, #84bb3a, #84bb3a, #fff);
           font-size: 1rem;
-          color: white;
-          &:active {
-            background: darken(#84bb3a, 10%);
-            border-color: darken(#84bb3a, 10%);
-          }
-
         }
         .right {
           float: right;
@@ -402,15 +404,7 @@ export default {
     .submit {
       margin-bottom: 1rem;
       button {
-        .btn-h(6rem, 1.7rem);
-        background: #84bb3a;
-        border-color: #84bb3a;
-        color: white;
-        &:active {
-          background: darken(#84bb3a, 10%);
-          border-color: darken(#84bb3a, 10%);
-        }
-
+        .btn-h(6rem, 1.7rem, #84bb3a, #84bb3a, #fff);
       }
     }
   } 
@@ -454,21 +448,8 @@ export default {
               height: 1.8rem;
             }
             button {
-              .btn-h;
-              width: 5rem;
-              height: 1.8rem;
-              background: #7db135;
-              border-color: #7db135;
-              color: white;
+              .btn-h(5rem, 1.8rem, #7db135, #7db135, #fff);
               line-height: 0.4;
-              &:hover {
-                background: darken(#7db135, 10%);
-                border-color: darken(#7db135, 10%);
-              }
-              &:active {
-                background: lighten(#7db135, 10%);
-                border-color: lighten(#7db135, 10%);
-              }
             }
             .error {
               position: absolute;

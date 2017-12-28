@@ -193,11 +193,12 @@ export default {
   computed: {
     leftTime () {
       if (this.trialDetailData.end_time) {
-        let time = getTimeDetail(this.trialDetailData.end_time)
+        let leftTime = (this.trialDetailData.end_time - this.trialDetailData.timestamp)
+        let time = getTimeDetail(leftTime)
         if (time.day == 0 && time.hours == 0 && time.minutes == 0) {
           return false
         } else {
-          return getTimeDetail(this.trialDetailData.end_time)
+          return getTimeDetail(leftTime)
         }
       } else {
         return false
@@ -236,6 +237,7 @@ export default {
         this.imgList = res.data.product_img.split(',')
         setTimeout(() => {
           this.trialDetailData = res.data
+          this.trialDetailData.timestamp = res.timestamp
         })
       }).catch(error => {
         console.log(error)
@@ -368,8 +370,15 @@ export default {
           font-size: 20px;
         }
         .time {
+          position: relative;
+          padding-left: 25px;
           span {
             color: #1a1a1a;
+          }
+          .iconfont {
+            position: absolute;
+            top: -4px;
+            left: 0;
           }
         }
       }
