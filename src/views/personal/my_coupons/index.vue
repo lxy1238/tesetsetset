@@ -89,9 +89,9 @@ export default {
 @import url('../../../styles/mixin.less');
 .coupons-content {
   width: 102%;
+  height: 33.33rem;
 }
  .pro-card {
-        // float: left;
         position: relative;
         display: inline-block;
         width: 32%;
@@ -100,9 +100,7 @@ export default {
         box-shadow: 1px 3px 3px rgba(210, 210, 210, 1);
         border-radius: 4px;
         margin-right: 1%;
-        padding-top: .5rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding: .5rem 1rem 0 1rem;
         margin-bottom: 1rem;
         text-align: center;
         overflow: hidden;
@@ -124,7 +122,6 @@ export default {
           width: 100%;
           padding: 10px 0 10px 4.8rem;
           text-align: left;
-          // margin-bottom: 10px;
           .card-top-img {
             position: absolute;
             left: 5%;
@@ -178,7 +175,6 @@ export default {
           .code {
             float: left;
             font-size: 12px;
-            // line-height: 1.5rem;
             color: #1a1a1a;
             margin-left: 5px;
             width: 7rem;
@@ -193,40 +189,16 @@ export default {
             .btn-h(8rem, 1.8rem, #84ba3a, #84ba3a, #fff);
             font-size: 0.68rem;
             position: relative;
-              line-height: 1.8rem;
-            
+            line-height: 1.8rem;
             top: 0px;
-            &:active {
-              background:darken(#84ba3a, 10%);
-              border-color:darken(#84ba3a, 10%);
-            }
             a {
               display: inline-block;
               width: 100%;
               height: 100%;
               color: white;
             }
-
-          }
-        }
-       
-      }
-     .coupons-pagination {
-      .pagination {
-        width: 100%;
-        text-align: right;
-        padding-right: 15rem;
-        li {
-          &.active {
-            .items {
-              border: none;
-            }
-          }
-          .items {
-            background: #fff;
           }
         }
       }
-    }
 
 </style>

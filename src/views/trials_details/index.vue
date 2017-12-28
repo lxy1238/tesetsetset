@@ -16,7 +16,7 @@
         </div>
         <div class="right inline trials-right-content">
           <div class="promotion">
-            <img class="img"  src="../../assets/amazon.png" alt="">
+            <img class="img"  :src="logoImg[trialDetailData.website]" alt="">
             <div class="title">
               <span>
                 {{trialDetailData.product_title}}
@@ -32,9 +32,9 @@
             </div>
             <div class="price-details">
                 <div class="price">Price: <del>{{currency}}{{trialDetailData.product_price}} </del></div>
-                <div class="price" v-if="trialDetailData.shipping_fee != '0.00'">Shipping fee: <del>{{currency}}{{trialDetailData.shipping_fee}}</del> </div>
+                <div class="price" v-if="trialDetailData.shipping_fee != 0">Shipping fee: <del>{{currency}}{{trialDetailData.shipping_fee}}</del> </div>
                 <div class="price" v-else >Free Shipping</div>
-              <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
+              <div class="refund-price">Refund: <span >{{currency}}{{add(trialDetailData.refund_price, trialDetailData.shipping_fee).toFixed(2)}}</span> </div>
               <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
               <div class="reason">Reason: 
                 <span>
@@ -69,7 +69,7 @@
                 </div>
               </div>
               <div class="tabs-body" id="productDetails">
-                <div v-if="selected == 0 && trialDetailData.product_details" class="content1" v-html="trialDetailData.product_details">
+                <div v-if="selected == 0 && trialDetailData.product_details" class="content" v-html="trialDetailData.product_details">
                   
                 </div>
                 <div v-if="selected == 1" class="content">
@@ -112,6 +112,7 @@ import { base64Decode } from '@/utils/randomString'
 import { timestampFormat, getTimeDetail } from '@/utils/date'
 import { getStore } from '@/utils/utils'
 import { getUserId, getToken } from '@/utils/auth'
+import { NumAdd } from '@/utils/calculate'
 export default {
   name: 'coupons',
   components: {
@@ -120,6 +121,10 @@ export default {
   },
   data () {
     return {
+      logoImg: {
+        amazon: require('../../assets/amazon_logo.png'),
+        aliexpress: require('../../assets/aliexpress_logo.png')
+      },
       isTop: false,
       selected: 0,
       added: true,
@@ -225,11 +230,13 @@ export default {
     //获取试用品详情
     getTrialDetail () {
       this.$api.trialDetail(this.reqData).then(res => {
+        this.getPostUserInfo(res.data.user_id)
         this.trialApplyData.trial_id = res.data.id
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
-        this.trialDetailData = res.data
-        this.getPostUserInfo(res.data.user_id)
+        setTimeout(() => {
+          this.trialDetailData = res.data
+        })
       }).catch(error => {
         console.log(error)
       })
@@ -252,9 +259,7 @@ export default {
     getImgUrl (data) {
       this.imgUrl = data
     },
-    submit () {
 
-    },
     gotoTrials () {
       this.$router.push({path: '/trials/index'})
     },
@@ -294,6 +299,9 @@ export default {
           this.$message.info('You have already applied for a successful product. According to the rules, you can not apply for this month')
         }
       })
+    },
+    add (a, b) {
+      return NumAdd(a, b)
     }
   }
 }
@@ -342,7 +350,7 @@ export default {
         top: 2rem;
       }
       .title {
-        width: 90%;
+        width: 85%;
         font-size: 24px;
         line-height: 1;
         height: 48px;
@@ -367,7 +375,7 @@ export default {
       }
       .price-details {
         padding: 1rem 0 1rem .5rem;
-        height: 13rem;
+        min-height: 13rem;
         background: #fafafa;
         color: #808080;
         span {

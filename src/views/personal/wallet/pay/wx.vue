@@ -1,6 +1,6 @@
 <template>
   <section class="pay-wx"  >
-    <h3 class="title-s">WeChat Pay</h3>
+    <h3 class="title-s"  v-loading.fullscreen.lock="fullscreenLoading">WeChat Pay</h3>
     <div class="pay-wx-content">
       <template v-if="resData != ''">
         <div class="red info-text" v-if="countDown > 0" >二维码将在 {{countDown}} 秒后过期</div>
@@ -55,7 +55,8 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         pay_order_number: '',
-      }
+      },
+      fullscreenLoading: false
     }
   },
   computed: {
@@ -76,6 +77,8 @@ export default {
 
     //获取需要充值的金额
     initData () {
+      this.fullscreenLoading = true
+
       if (this.$route.query.withdrawCount) {
         this.reqData.amount = this.$route.query.withdrawCount
         this.reqData.pay_order_number = RandomPayNumber()
@@ -99,6 +102,7 @@ export default {
         }
         this.resData = res.data
         qrcode.makeCode(res.data)
+        this.fullscreenLoading = false
         this.timer = setInterval(() => {
           this.countDown-- 
           if (this.countDown === 0) {

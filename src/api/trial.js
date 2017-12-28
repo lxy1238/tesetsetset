@@ -183,6 +183,15 @@ export const payTrialActive = data => fetch({
   data: qs.stringify(data)
 })
 
+//查看状态为 close 的详情 （自己关闭， 或者后台关闭）
+export const trialProblemCensor = data => fetch({
+  url: '/api/v1/trial/problem-censor',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
 /**
  * 
  * @param 试用品领取人列表

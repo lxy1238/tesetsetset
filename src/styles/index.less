@@ -213,6 +213,25 @@ table tbody tr td {
   color: green;
 }
 
+//分页的样式
+.coupons-pagination {
+  .pagination {
+    width: 100%;
+    text-align: right;
+    padding-right: 15rem;
+    li {
+      &.active {
+        .items {
+          border: none;
+        }
+      }
+      .items {
+        background: #fff;
+      }
+    }
+  }
+}
+
 
 
 
@@ -275,8 +294,8 @@ table tbody tr td {
     padding: 0 !important;
   }
   .go-to-amazon {
-    top: 0px !important;
-    line-height: 1.25 !important;
+    // top: 0px !important;
+    // line-height: 1.25 !important;
   }
 }
 

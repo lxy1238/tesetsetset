@@ -194,6 +194,9 @@
               <el-form-item  prop="email">
                 <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
               </el-form-item>
+               <el-form-item  prop="email" class=" hidden">
+                <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
+              </el-form-item>
               <el-form-item>
                 <el-button  type="button" class="sign-up-btn" @click="resetPasswordBtn" :loading="resetLoading">Request Password</el-button>
               </el-form-item>
@@ -625,6 +628,7 @@ export default {
         this.$api.retrievePassword(this.resetform).then(res => {
           if (res.code === 200) {
             this.resetLoading = false
+            this.hideAllDialog()
             this.$message.success('Please click the link to change the password')
           }
         }).catch(err => {
@@ -959,64 +963,7 @@ export default {
               width: 130%;
               left: -30%;
                .items {
-                li {
-                  position: relative;
-                  .language-input {
-                    .el-input-self;
-                    width: 87%;
-                    height: 20px;
-                    border-radius: 0;
-                    background: #4d6170;
-                    color: white;
-                    text-align: center;
-                    
-                  }
-                  .google {
-                    position: absolute;
-                    left: 14px;
-                    top: 10px;
-                  }
-                  .iconfont {
-                    position: absolute;
-                    right: 15%;
-                    top: 2px;
-                  }
-                  .all-language {
-                    position: absolute;
-                    background: white;
-                    right: 0.666rem;
-                    top: 27px;
-                    width: 1024px;
-                    height: 320px;
-                    background-color: rgb(255, 255, 255);
-                    text-decoration: none;
-                    border-width: 1px;
-                    border-style: solid;
-                    border-color: rgb(107, 144, 218);
-                    border-image: initial;
-                    overflow: hidden;
-                    padding: 4px;
-                    color: blue;
-                    tr {
-                      vertical-align: top;
-                    }
-                    td {
-                      height: 275px;
-                      line-height: 24px;
-                      font-size: 16px;
-                      &.line {
-                        width: 6px;
-                      }
-                      div {
-                        padding: 2px 5px;
-                        &:hover {
-                          background: #3366cc;
-                          color: white;
-                        }
-                      }
-                    }
-                  }
-                }
+            
               }
             }
           }
@@ -1085,7 +1032,6 @@ export default {
           }
         }
         .btn-h {
-          .btn-h(4.5rem, 36px);
           font-size: 0.78rem;
           font-weight: bold;
           text-align: center;
@@ -1093,34 +1039,14 @@ export default {
           top: 15px;
         }
         .login {
-          // font-family: Arial, Helvetica, sans-serif;
-          background: white;
-          border-color: white;
-          color: black;
+          .btn-h(4.5rem, 36px, #ffffff, #ffffff, #000000);
           margin-left: 0;
           margin-right: 1rem;
-          &:hover {
-            background: darken(white, 10%);
-            border-color: darken(white, 10%);
-          }
-          &:active {
-            background: darken(white, 20%);
-            border-color: darken(white, 20%);
-          }
+          
         }
         .sign {
-          background: #0077c5;
-          border-color: #0077c5;
-          color: white;
+          .btn-h(4.5rem, 36px, #0077c5, #0077c5, #fff );
           margin-right: 1rem;
-          &:hover {
-            background: lighten(#0077c5, 10%);
-            border-color: lighten(#0077c5, 10%);
-          }
-          &:active {
-            background: lighten(#0077c5, 20%);
-            border-color: lighten(#0077c5, 20%);
-          }
         }
       }
     }
@@ -1164,7 +1090,6 @@ export default {
   .dialog-body {
     text-align: center;
   }
-
   .or {
     position: relative;
     height: 1rem;
@@ -1197,51 +1122,24 @@ export default {
     .facebook, .google {
       width: 100%;
       margin-bottom: 10px;
-      button {
-       .btn-h(80%, 42px);
-       color: white;
-      }
     }
     .facebook {
       button {
-        background: #3b5998;
-        border-color: #3b5998;
-        &:active {
-          background: darken(#3b5998, 10%);
-          border-color: darken(#3b5998, 10%);
-        }
+         .btn-h(80%, 42px, #3b5998, #3b5998, #ffffff);
       }
     }
     .google {
       button {
-        background: #dd4b39;
-        border-color: #dd4b39;
-        &:active {
-          background: darken(#dd4b39, 10%);
-          border-color: darken(#dd4b39, 10%);
-        }
+         .btn-h(80%, 42px, #dd4b39, #dd4b39, #ffffff);
       }
     }
   }
   .sign-up-btn {
     margin-bottom: 10px;
-    .btn-h(100%, 42px);
-    color: white;
-    background: #7fbadf;
-    border-color: #7fbadf;
-    &:active {
-      background: darken(#7fbadf, 10%);
-      border-color: darken(#7fbadf, 10%);
-    }
+    .btn-h(100%, 42px, #7fbadf, #7fbadf, #fff);
     &.login {
-      background: #0075C1;
-      border-color: #0075C1;
-       &:active {
-      background: darken(#0075C1, 10%);
-      border-color: darken(#0075C1, 10%);
+    .btn-h(100%, 42px, #0075C1, #0075C1, #fff);
     }
-    }
-
   }
   .footer {
     margin: 20px auto;

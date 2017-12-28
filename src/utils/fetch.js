@@ -33,14 +33,14 @@ service.interceptors.response.use(
     if (response.data.code !== 200 ) {
       console.log(response.data)
       if (response.data.code === 500) {
-        MessageBox.alert('You have logged in elsewhere, please log in again', 'log out', {
-          confirmButtonText: 'confirm',
-          callback: () => {
-            store.dispatch('LogOut').then(() => {
-              console.log('log out success！！')
-            })
-          }
+        // MessageBox.alert('You have logged in elsewhere, please log in again', 'log out', {
+        //   confirmButtonText: 'confirm',
+        //   callback: () => {
+        store.dispatch('LogOut').then(() => {
+          console.log('log out success！！')
         })
+        // }
+        // })
         console.log(response)
       }
       NProgress.done()

@@ -3,14 +3,14 @@
     <div class="title-bottom">Reset Password</div>
     <el-form :model="pidForm" :rules="rules" ref="pidForm" label-width="150px">
       <el-form-item label="New password: " prop="password" >  
-        <el-input type="password" v-model="pidForm.password"></el-input>
+        <el-input type="password" v-model="pidForm.password"  @keyup.enter.native="enterSubmit"></el-input>
       </el-form-item>
       <el-form-item label="Confirm password: "  prop="password_confirmation" required>  
-        <el-input type="password" v-model="pidForm.password_confirmation"></el-input>
+        <el-input type="password" v-model="pidForm.password_confirmation" @keyup.enter.native="enterSubmit"></el-input>
       </el-form-item>
     </el-form>
     <div class="pid-footer">
-      <button type="button" @click="changePassword">Save</button>
+      <button type="button" @click="changePassword" :loading="submitLoading">Save</button>
     </div>
   </div>
 </template>
@@ -42,7 +42,6 @@ export default {
       }
     }
     return {
-      modifyShow: true,
       pidForm: {
         email: '',
         password: '',
@@ -56,35 +55,36 @@ export default {
         password_confirmation: [
           {validator: validateConfirmPass, trigger: 'blur'}
         ],
-      }
+      },
+      submitLoading: false
     }
   },
   computed: {
   },
   mounted () {
-    this.modifyShow = true
-    window.addEventListener('keyup', this.keyupSubmit, false)
   },
   beforeDestroy () {
-    this.modifyShow = false
-    window.removeEventListener('keyup', this.keyupSubmit)
   },  
   methods: {
     changePassword () {
       this.$refs['pidForm'].validate((valid) => {
         if (valid) {
+          this.submitLoading = true
           this.pidForm.api_token = this.$route.params.token
           this.pidForm.email = this.$route.params.email
           this.$api.checkRetrievePassword(this.pidForm).then(res => {
-            if (res.code === 402) {
-              this.$message.error(res.message)
-              return false
-            } else {
+            this.submitLoading = false
+            if (res.code === 200) {
               this.$message.success('reset password success!!!')
               setTimeout( () => {
                 this.$router.push({path: '/'})
-              }, 1000)
+              }, 500)
+            } else {
+              this.$message.error(res.message)
+              return false
             }
+          }).catch(() => {
+            this.submitLoading = false
           })
         } else {
           console.log('error submit!!')
@@ -92,12 +92,8 @@ export default {
         }
       })
     },
-    keyupSubmit (e) {
-      if (e.keyCode === 13 && this.modifyShow === true) {
-        this.changePassword()
-      } else {
-        return false
-      }
+    enterSubmit () {
+      this.changePassword()
     }
   }
 }
@@ -122,10 +118,6 @@ export default {
     button {
       .btn-h(10rem, 3rem , #85ba3b, #85ba3b, #fff);
       font-size: 1.4rem;
-      &:active {
-        backgorund: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
     }
   }
 }

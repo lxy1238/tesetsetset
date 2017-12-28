@@ -107,29 +107,11 @@ export default {
 </script>
 
 <style lang="less">
-@import url('../../../styles/mixin.less');
 .posted-coupons {
   font-size: 12px;
   .pro-header {
     position: relative;
     margin-bottom: 1rem;
-  }
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
   }
 }
 

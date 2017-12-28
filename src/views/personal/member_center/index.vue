@@ -65,7 +65,7 @@
       <div class="center-wallet">
         <div class="withdraw wallet">
           <div class="wallet-child">
-            <span class="money">{{currency}}{{userData.account.amount}}</span>
+            <span class="money" v-if="userData.account">{{currency}}{{userData.account.amount}}</span>
             <p>Balance</p>
           </div>
           <div class="money-btn">
@@ -74,7 +74,7 @@
         </div>
         <div class="recharge wallet" v-if="roles[0] == 'merchant'">
           <div class="wallet-child">
-            <span class="money">{{currency}}{{userData.account.frozen_amount}}</span>
+            <span class="money">{{currency}}{{userData.account.security_deposit}}</span>
             <p>Security deposit</p>
           </div>
           <div class="money-btn">
@@ -118,11 +118,18 @@ export default {
   },
   methods: {
     init () {
+      this.infoUpdate()
       setTimeout(() => {
-        this.userData.account = this.userAccount
-        this.userData.base = this.userBase
-        this.userData.joined_date = timestampFormat(this.joined_date)
+        this.$store.dispatch('GetInfo').then(() => {
+          this.infoUpdate()
+        })
       })
+    },
+
+    infoUpdate () {
+      this.userData.account = this.userAccount
+      this.userData.base = this.userBase
+      this.userData.joined_date = timestampFormat(this.joined_date)
     },
     //路由跳转
     gotoAnotherRouter (url, account) {

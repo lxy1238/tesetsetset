@@ -44,7 +44,6 @@
           <tr v-for="item in trLists" >
             <td>
               <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
-              <img v-else class="product-img" src="../../../assets/01.png" alt="">
             </td>
             <td class="coupons-table-title">
               <div>{{item.website}}</div>
@@ -87,7 +86,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+                <div> <a href="javascript:void(0)"  @click="showCloseDetails(item.id)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired ">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
@@ -135,6 +134,23 @@ export default {
   name: 'center_coupons',
   data () {
     return {
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
       thLists: [
         'Image',
         'Title',
@@ -241,7 +257,7 @@ export default {
         .then(res => {
           for (var i of res.data.data) {
             let now = parseInt(new Date().getTime() / 1000)
-            if (i.valid_date + 86400 < now) {
+            if (i.valid_date  < now) {
               i.isExpired = true
             }
             i.valid_date = parseTime(
@@ -335,6 +351,21 @@ export default {
       })
     },
 
+    //显示 商品下架（close) 详情
+    showCloseDetails (id) {
+      this.detailsRequestData.product_id = id
+      this.detailsDialog = true
+      this.$api.couponProblemCensor(this.detailsRequestData).then(res => {
+        if (!res.data) {
+          this.nonApproval = 'self closing'
+          return
+        }
+        this.nonApproval = res.data.revert
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
     //更新优惠券
     updateRunStatus (id, run_status) {
       if (run_status == 'close') {
@@ -388,10 +419,6 @@ export default {
     .search {
       .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
       font-size: 0.78rem;
-      &:active {
-        background: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
     }
     .add-coupons {
       position: absolute;
@@ -399,27 +426,6 @@ export default {
       top: 50%;
       .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
       margin-top: -20px;
-      &:active {
-        background: darken(#7ab7e0, 10%);
-        border-color: darken(#7ab7e0, 10%);
-      }
-    }
-  }
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
     }
   }
 }

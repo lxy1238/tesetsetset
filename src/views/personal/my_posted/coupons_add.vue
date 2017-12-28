@@ -445,6 +445,9 @@ export default {
 
     //获取平台品类信息
     getPlatformCateInfo () {
+      if (!this.couponsForm.product_url) {
+        return
+      }
       this.optionsWebsite = []
       this.$api.getPlatformCate(this.requestData)
         .then(res => {
@@ -456,10 +459,12 @@ export default {
             }
             ObjWebsite.label = i.provider
             ObjWebsite.id = i.id
-            this.optionsWebsite.push(ObjWebsite)
             if (this.couponsForm.product_url.search(i.url) >= 0) {
               this.couponsForm.website = i.provider
-            } 
+              this.optionsWebsite.push(ObjWebsite)
+            } else {
+              this.$message.error('The country can only issue products under the platform')
+            }
           }
         })
         .catch(error => {
@@ -552,7 +557,7 @@ export default {
           for (var i in this.couponsForm) {
             this.couponsFormSubmit[i] = this.couponsForm[i]
           }
-          this.couponsFormSubmit.valid_date = toTimestamp(this.couponsForm.valid_date)
+          this.couponsFormSubmit.valid_date = toTimestamp(this.couponsForm.valid_date) + 86400 - 1
           this.couponsFormSubmit.product_img = this.couponsForm.product_img_s.map((e) => e.url)
           if (this.$route.query.editor) {
             this.couponsFormSubmit.website = this.couponsForm.website

@@ -190,6 +190,17 @@ table tbody tr td {
 .green {
   color: green;
 }
+.coupons-pagination .pagination {
+  width: 100%;
+  text-align: right;
+  padding-right: 15rem;
+}
+.coupons-pagination .pagination li.active .items {
+  border: none;
+}
+.coupons-pagination .pagination li .items {
+  background: #fff;
+}
 @media screen and (max-width: 1557px) {
   html {
     font-size: 14.9px;
@@ -227,10 +238,6 @@ table tbody tr td {
   }
   .login-y.user-info {
     padding: 0 !important;
-  }
-  .go-to-amazon {
-    top: 0px !important;
-    line-height: 1.25 !important;
   }
 }
 @media screen and (max-width: 1280px) {

@@ -8,24 +8,30 @@
           Balance:
         </label>
         <span class="balance-money">
-          {{currency}}{{userAccount.amount}}
+          {{currency}}{{amount}}
         </span>
       </div>
       <div class="withdrawals">
         <label class="left-label">Withdrawals:</label>
         <el-form-item prop="withdrawCount">
-          <el-input v-model="withdrawForm.withdrawCount" class="input-money" ></el-input>
+          <el-input v-model="withdrawForm.withdrawCount" class="input-money" @keyup.enter.native="enterSubmit" ></el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
-        <el-radio class="pay-radio"v-model="withdrawForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="3"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
+        <el-radio class="pay-radio"v-model="withdrawForm.radio" :label="WITHDRAW_TYPE['paypal']" @keyup.enter.native="enterSubmit">
+          <img src="../../../assets/paypal.png" alt="">
+        </el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.radio" :label="WITHDRAW_TYPE['amazon']" @keyup.enter.native="enterSubmit">
+          <img src="../../../assets/pay-amazon.png" alt="">
+        </el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.radio" :label="WITHDRAW_TYPE['alipay']" @keyup.enter.native="enterSubmit">
+          <img src="../../../assets/qLlKVsZuTordMlU.png" alt="">
+        </el-radio>
       </div>
       <div class="withdrawals" v-if="withdrawForm.radio !== '2'">
         <label class="left-label">Acount:</label>
         <el-form-item prop="account">
-          <el-input v-model="withdrawForm.account"></el-input>
+          <el-input v-model="withdrawForm.account" @keyup.enter.native="enterSubmit"></el-input>
         </el-form-item>
       </div>
     </el-form>
@@ -60,6 +66,11 @@ export default {
       }
     }
     return {
+      WITHDRAW_TYPE: {
+        'paypal': '1',
+        'amazon': '2',
+        'alipay': '3'
+      },
       rules: {
         withdrawCount: [
           {validator: validateMoney, trigger: 'blur' },
@@ -73,7 +84,8 @@ export default {
         withdrawCount: '',
         account: '',
       },
-      withdrawDialog: false
+      withdrawDialog: false,
+      amount: '',
     }
   },
   computed: {
@@ -89,7 +101,10 @@ export default {
   },
   methods: {
     init () {
-
+      this.amount = this.userAccount.amount
+      this.$store.dispatch('GetInfo').then(() => {
+        this.amount = this.userAccount.amount
+      })
     },
     //限制只能输入数字和.  e.keyCode 不兼容 火狐浏览器，需要调整
     filterInput () {
@@ -112,10 +127,21 @@ export default {
       })
     },
     submit () {
-      if (this.radio == '3') {
-        // this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
-      }
+      this.withdrawSubmit('withdrawForm', () => {
+        if (this.withdrawForm.radio === this.WITHDRAW_TYPE['paypal']) {
+          console.log('paypal')
+        } else if (this.withdrawForm.radio === this.WITHDRAW_TYPE['amazon']) {
+          console.log('amazon')
+        } else if (this.withdrawForm.radio === this.WITHDRAW_TYPE['alipay']) {
+          console.log('alipay')
+        }
+      })
     },
+
+    //回车提交
+    enterSubmit () {
+      this.submit()
+    }
   }
 }
 </script>

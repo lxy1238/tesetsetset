@@ -38,7 +38,7 @@
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
                     <input class="footer-input" v-model="item.order_number" ></input>
-                    <button type="button" @click="submitOrderNumber(item, $event)" >Save</button>
+                    <button class="order-number" type="button" @click="submitOrderNumber(item, $event)" >Save</button>
                   </div>
                 </div>
                 <div class="right-content">
@@ -85,16 +85,16 @@
                     <span class="footer-span" v-if="item.Modify">{{item.order_number}}</span>
                     <el-input v-else class="footer-input" v-model="item.order_number"></el-input>
 
-                    <button v-if="item.Modify" type="button" @click="modifyOrderBtn(item)">Modity</button>
-                    <button v-else type="button" @click="editOrderNumberBtn(item, $event)">Save</button>
+                    <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Modity</button>
+                    <button v-else type="button" class="order-number" @click="editOrderNumberBtn(item, $event)">Save</button>
                   </div>
                 </div>
                 <div class="right-content">
-                  <template v-if="item.status === 0 &&  !item.modifyUrl">  
+                  <template v-if="!item.modifyUrl">  
                     <div class="footer">
                       <span class="footer-span">Review URL:</span>
                       <el-input class="footer-input" v-model="item.appraise_url_input"></el-input>
-                      <button type="button" @click="submitAppraiseUrl(item)">Save</button>
+                      <button type="button" class="save-btn" @click="submitAppraiseUrl(item)">Save</button>
                     </div>
                     <p>Please upload your review within 30 business days after 
                       ordering and submit the link address for the review, 
@@ -419,10 +419,11 @@ export default {
       this.reqAddOrderData.order_id = item.id
       this.reqAddOrderData.order_number = item.order_number
       this.$api.userOrderNumber(this.reqAddOrderData).then(res => {
-        console.log(res)
         if (res.code === 200) {
           e.target.disabled = false
-          this.getReviewInfo()
+          item.Modify = true
+          this.orderDetails1.push(1)
+          this.orderDetails1.pop()
         }
       }).catch(() => {
         e.target.disabled = false
@@ -442,11 +443,13 @@ export default {
       }
       reqData.order_id = item.id
       reqData.appraise_url = item.appraise_url_input
-      console.log(reqData)
       this.$api.userAppraiseUrl(reqData).then(res => {
-        console.log(res)
         if (res.code === 200) {
-          this.getReviewInfo()
+          item.status = 0
+          item.modifyUrl = reqData.appraise_url
+          item.appraise_url = reqData.appraise_url
+          this.orderDetails1.push(1)
+          this.orderDetails1.pop()
         }
       })
     },
@@ -455,12 +458,15 @@ export default {
     modifyUrlBtn (item) {
       item.modifyUrl = false
       this.refresh(this.orderDetails1)
-    },  
+    }, 
+
+    //打开评论链接
     viewApprise (url) {
-      if (url.search('http://') < 0) {
+      if (url.search('http://') >= 0 || url.search('https://') >= 0) {
+        window.open(url)
+      } else {
         window.open('http://' + url)
       }
-      window.open(url)
     },
     
    
@@ -478,6 +484,7 @@ export default {
       array.push(0)
       array.pop()
     } ,
+    //翻页
     gotoPage0 (i) {
       this.reqSuccedDetailsData0.page = i
       this.getWaitingData()
@@ -494,14 +501,9 @@ export default {
       this.reqSuccedDetailsData3.page = i
       this.getExpiredInfo()
     },
-    test (i) {
-      console.log(i)
-    },
+    
     gotoSuccessDetail (item) {
-      
       this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) })
-
-      console.log(item)
     }
   }
 }
@@ -570,6 +572,7 @@ export default {
               .order-title {
                 color: #333;
                 font-size: 12px;
+                line-height: 1;
                 height: 24px;
                 overflow: hidden;
                 margin-bottom: 20px;
@@ -586,6 +589,9 @@ export default {
                 }
               }
               .footer {
+                position: relative;
+                height: 22px;
+                line-height: 22px;
                 .footer-span {
                   color: #333;
                   font-size: 0.89rem;
@@ -595,6 +601,11 @@ export default {
                   .el-input__inner {
                     height: 24px;
                   }
+                }
+                .order-number {
+                  position: absolute;
+                  top: 0;
+                  margin-left: 5px;
                 }
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
@@ -622,6 +633,9 @@ export default {
                 font-size: 0.83rem;
               }
               .footer {
+                position: relative;
+                height: 22px;
+                line-height: 22px;
                 .footer-span {
                   color: #333;
                   font-size: 0.89rem;
@@ -631,6 +645,11 @@ export default {
                   .el-input__inner {
                     height: 24px;
                   }
+                }
+                .save-btn {
+                  position: absolute;
+                  top: 0;
+                  margin-left: 5px;
                 }
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);

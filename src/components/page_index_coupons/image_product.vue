@@ -84,8 +84,10 @@ export default {
     currency () {
       return getStore('currency') || '$'
     },
+
+    //跳转到dealsbank链接
     dealsbankUrl () {
-      return location.href + 'coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  + (getUserId() ? '?promoter=' + getUserId() : '')
+      return location.host + '/coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  (getUserId() ? '?promoter=' + getUserId() : '')
     },
   },
   mounted () {
@@ -124,7 +126,7 @@ export default {
         let card = this.$refs.imgLoad
         let img = card.getElementsByClassName('product-img')[0]
         let cardTop = card.offsetTop
-        if (cardTop < 800) {
+        if (cardTop < 900) {
           img.src = img.getAttribute('data-img')
         } 
         window.onscroll = () => {
@@ -134,7 +136,7 @@ export default {
           arr.forEach(element => {
             let cardTop = element.offsetTop - scrollTop
             let img = element.getElementsByClassName('product-img')[0]
-            if (cardTop < 800) {
+            if (cardTop < 900) {
               img.src = img.getAttribute('data-img')
             }
           })
@@ -221,10 +223,7 @@ export default {
     text-align: center;
   }
   .content {
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 0;
-    margin-top: 2px;
+    margin: 2px 10px 0 10px;
     color: rgb(137, 137, 137);
     .old {
       text-decoration: line-through;
@@ -351,9 +350,7 @@ export default {
     margin-top: 10px;
     margin-right: 10px;
     .btn-coupons {
-      .btn-h;
-      width: 100%;
-      height: 2rem;
+      .btn-h(100%, 2rem);
       line-height: 0.3;
       font-size: 15px;
       background: #eee;

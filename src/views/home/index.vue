@@ -1,9 +1,9 @@
 <template>
   <div class="home">
     <header-self  ></header-self>
-    <router-view  v-if="showA" />
-    <broad-side   v-if="showB" ></broad-side>
-    <footer-self v-if="showC" ></footer-self>
+    <router-view   />
+    <broad-side   ></broad-side>
+    <footer-self></footer-self>
   </div>
 </template>
 
@@ -21,21 +21,21 @@ export default {
   data () {
     return {
       msg: 'Welcome to dealsbank',
-      showB: false,
-      showC: false,
-      showA: false
+      // showB: false,
+      // showC: false,
+      // showA: false
     }
   },
   mounted () {
-    setTimeout(() => {
-      this.showA = true
-    }, 100)
-    setTimeout(() => {
-      this.showB = true
-    }, 200)
-      setTimeout(() => {
-      this.showC = true
-    }, 300)
+    // setTimeout(() => {
+    //   this.showA = true
+    // }, 100)
+    // setTimeout(() => {
+    //   this.showB = true
+    // }, 200)
+    // setTimeout(() => {
+    //   this.showC = true
+    // }, 300)
   }
 
 }

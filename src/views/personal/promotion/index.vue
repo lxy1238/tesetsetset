@@ -31,7 +31,7 @@
         </coupons-pro>
       </div>
       <pagination 
-        v-if="allpage && allpage != 1 && arrcouponsDetails.length != 0"
+        v-if="allpage && allpage != 1"
         class="coupons-pagination"
         :allpage="allpage"
         :show-item="showItem"
@@ -184,9 +184,10 @@ export default {
 }
 .promotion-coupons {
   width: 104%;
+  height: 695px;
   .coupons-product {
     width: 23%;
-    margin: 0 1.5% 20px 0;
+    margin: 0 1.5% 10px 0;
     .remove {
       float: right;
       margin-right: 10px;
@@ -194,21 +195,5 @@ export default {
     }
   }
 }
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
-  }
-}
+
 </style>

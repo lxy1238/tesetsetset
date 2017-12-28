@@ -98,10 +98,10 @@
         </el-form-item>
       </template>
       <el-form-item label="Reason: "  prop="product_reason" >
-        <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea"></el-input>
+        <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
       </el-form-item>
        <el-form-item label="Specifications: " prop="specifications" >
-        <el-input v-model="trialsForm.specifications" type="textarea" class="textarea"></el-input>
+        <el-input v-model="trialsForm.specifications" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
       </el-form-item>
       <el-form-item label="Product details: " required>
         <div id="summernote"></div>
@@ -136,8 +136,9 @@
         Security Deposit
       </div>
     <div class="trials-money">
-      <p class="money"><label>Refund:</label> {{currency}}{{refund}}</p>
-      <p class="money"><label>Platform fee:</label>  {{currency}}{{platform_fee}}</p>
+      <p class="money"><label>Refund:</label> {{currency}}{{refund_total_price}}</p>
+      <!-- <p class="money"><label>Shipping fee:</label> {{currency}}{{shipping_total_fee}}</p> -->
+      <p class="money"><label>Platform fee:</label>  {{currency}}{{platform_total_fee}}</p>
       <p class="money"><label>Total fee:</label>  <span class="red">{{currency}}{{total_fee}}</span></p>
     </div>
     
@@ -155,7 +156,7 @@ import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
-import { NumAdd } from '@/utils/calculate'
+import { NumAdd, NumMul } from '@/utils/calculate'
 
 export default {
   name: 'trials_add',
@@ -288,20 +289,22 @@ export default {
     currency () {
       return getStore('currency') || '$'
     },
-    refund_one () {
-      if(this.trialsForm.refund_price) {
+    refund_price_one () {
+      if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
         return NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee).toFixed(2)
       } else {
         return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee).toFixed(2)
       }
     },
-    refund () {
+    refund_total_price () {
       if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
-        return (NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
+        return NumMul(NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee) , this.trialsForm.total_quantity).toFixed(2)
       } else {
-        return (NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
+        return NumMul(NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) , this.trialsForm.total_quantity).toFixed(2)
       }
     },
+
+    //单个试用品的平台费用
     platform_fee () {
       switch (this.country_id) {
       case 1:
@@ -310,30 +313,35 @@ export default {
       case 5:
       case 6:
       case 7:
-        if (this.refund_one < 10) {
-          return 1 * this.trialsForm.total_quantity
-        } else if (this.refund_one <= 20 && this.refund_one >= 10) {
-          return 2 * this.trialsForm.total_quantity
-        } else if (this.refund_one > 20) {
-          return 3 * this.trialsForm.total_quantity
+        if (this.trialsForm.product_price < 10) {
+          return NumMul(1, 1).toFixed(2)
+        } else if (this.trialsForm.product_price <= 20 && this.trialsForm.product_price >= 10) {
+          return NumMul(1, 2).toFixed(2)
+        } else if (this.trialsForm.product_price > 20) {
+          return NumMul(1, 3).toFixed(2)
         }
         break
       case 4:
-        if (this.refund_one < 1200) {
-          return 120 * this.trialsForm.total_quantity
-        } else if (this.refund_one <= 2400 && this.refund_one >= 1200) {
-          return 240 * this.trialsForm.total_quantity
-        } else if (this.refund_one > 2400) {
-          return 360 * this.trialsForm.total_quantity
+        if (this.trialsForm.product_price < 1200) {
+          return NumMul(1, 120).toFixed(2)
+        } else if (this.trialsForm.product_price <= 2400 && this.trialsForm.product_price >= 1200) {
+          return NumMul(1, 240).toFixed(2)
+        } else if (this.trialsForm.product_price > 2400) {
+          return NumMul(1, 360).toFixed(2)
         }
         break
-      
       default:
         break
       }
     },
+    platform_total_fee () {
+      return NumMul(this.platform_fee, this.trialsForm.total_quantity).toFixed(2)
+    },
+    shipping_total_fee () {
+      return NumMul(this.trialsForm.shipping_fee, this.trialsForm.total_quantity).toFixed(2)
+    },
     total_fee () {
-      return NumAdd(this.refund, this.platform_fee)
+      return NumAdd(this.refund_total_price, this.platform_total_fee).toFixed(2)
     }
   },  
   mounted () {
@@ -375,6 +383,9 @@ export default {
 
     //blur 时请求信息
     urlBlur () {
+      if (!this.trialsForm.product_url) {
+        return
+      }
       this.getPlatformCateInfo()
     },
     //获取头部品类列表
@@ -531,7 +542,7 @@ export default {
             })
             this.trialsForm.product_img_s = newArr
             this.imgChange()
-            this.trialsForm.product_price = data.product_price ? data.product_price : '' 
+            this.trialsForm.product_price = data.product_price ? data.product_price.replace(/,/g, '') : '' 
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$message.error('please enter a right url')
@@ -644,7 +655,7 @@ export default {
         this.$api.editTrial(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('issue coupon success')
+            this.$message.success('issue trial success')
             this.$router.push({ path: '/posted/trials' })
           }
         }).catch(error => {
@@ -656,7 +667,7 @@ export default {
           .then(res => {
             this.saveLoading = false
             if (res.code === 200) {
-              this.$message.success('issue coupon success')
+              this.$message.success('issue trial success')
               this.$router.push({ path: '/posted/trials' })
             }
           })
@@ -676,10 +687,15 @@ export default {
             this.trialsFormSubmit[i] = this.trialsForm[i]
           }
           this.trialsFormSubmit.start_time = parseInt((+this.trialsForm.active_date[0])/1000)
-          this.trialsFormSubmit.end_time = parseInt((+this.trialsForm.active_date[1])/1000)
+          this.trialsFormSubmit.end_time = parseInt((+this.trialsForm.active_date[1])/1000) + 86400 - 1
           this.trialsFormSubmit.platform_fee = this.platform_fee
-          this.trialsFormSubmit.refund = this.refund
+          this.trialsFormSubmit.platform_total_fee = this.platform_total_fee
+          this.trialsFormSubmit.refund_total_price  = this.refund_total_price 
+          this.trialsFormSubmit.shipping_total_fee  = this.shipping_total_fee 
           this.trialsFormSubmit.total_fee  = this.total_fee
+          if (this.trialsFormSubmit.full_refund == '1') {
+            this.trialsFormSubmit.refund_price = this.trialsFormSubmit.product_price
+          }
           var imgArr = []
           for (let i of this.trialsForm.product_img_s) {
             imgArr.push(i.url)
@@ -762,7 +778,7 @@ export default {
   }
   .textarea {
     textarea {
-      height: 108px;
+      height: 60px;
       resize: none;
     }
   }

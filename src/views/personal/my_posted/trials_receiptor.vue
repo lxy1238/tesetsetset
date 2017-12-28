@@ -22,6 +22,7 @@
         <el-option value="2" label="Decline">Decline</el-option>
       </el-select>
 
+
       <button class="search" @click="postedCouponsSearch">Search</button>
 
     </div>
@@ -46,7 +47,7 @@
               <!-- List price -->
               <td>
                 <div >
-                  {{currency}}{{trialDetails.product_price}}
+                  {{currency}}{{Number(trialDetails.product_price)}}
                 </div>
               </td>
               <!-- user -->
@@ -72,55 +73,55 @@
 
               <!-- review -->
               <td class="trials-receiptor-review-td" >
-                <div class="trials-receiptor-review" v-if="item.review">
+                <div class="trials-receiptor-review" v-if="item.appraise && item.appraise.status === 1">
                   <el-rate  class="rate"
-                      v-model="item.review.rate"
+                      v-model="item.appraise.review_star_rating"
                       disabled
                       text-color="#ff9900"
                       >
                     </el-rate>
                     <div class="picture-video">
-                      <span class="picture">Picture: {{item.review.picture}}</span>
-                      <span class="video">Video: {{item.review.video}}</span>
+                      <span class="picture">Picture: {{item.appraise.picture}}</span>
+                      <span class="video">Video: {{item.appraise.video}}</span>
                     </div>
                     <div class="view">
-                      <a :href="item.review.link">View</a>
+                      <a href="javascript:void(0);"  @click="viewApprise(item.appraise_url)" >View</a>
                     </div>
                 </div>
               </td>
               <!-- shipping fee -->
               <td>
                 <div>
-                 {{currency}}{{trialDetails.shipping_fee}}
+                 {{currency}}{{Number(trialDetails.shipping_fee)}}
                 </div>
               </td>
 
               <!-- platform_fee -->
               <td>
                 <div>
-                 {{currency}}{{trialDetails.platform_fee}}
+                 {{currency}}{{Number(item.platform_fee)}}
                 </div>
               </td>
               <!-- refund -->
               <td>
                 <div>
-                 {{currency}}{{trialDetails.refund_price}}
+                 {{currency}}{{Number(item.actual_total_refund)}}
                 </div>
               </td>
 
                 <!-- Cost -->
               <td>
                 <div>
-                 {{currency}}{{trialDetails.real_fee}}
+                 {{currency}}{{Number(item.store_total_fee)}}
                 </div>
               </td>
            
                 <!-- Status -->
               <td>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && !item.review"> 
+                <div v-if="item.status === 0 && item.run_status == 'normal' && (!item.appraise || (item.appraise && item.appraise.status === 0))"> 
                   Waiting for review
                 </div>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && item.review"> 
+                <div v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1"> 
                   To be confirmed
                 </div>
                 <div v-if="item.status === 0 && item.isExpired" class="red"> 
@@ -137,7 +138,7 @@
             
                 <!-- Operation -->
               <td>
-                <template v-if="item.status === 0 && item.run_status == 'normal' && item.review">
+                <template v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1">
                   <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
                 </template>
                 <template v-if="item.status === 2">
@@ -180,17 +181,17 @@
           <p>Order number: {{checkDetails.order_number}}</p>
           <p>Review link: </p>
           <p>
-            <a href="javasctipt:void(0);">
-              https://www.amazon.com/gp/customer-reviews/R342IRE0KQXMMN/ref=cm_cr_arp_d_rvw_ttl?ie=UTF8&ASIN=B01AK8HPP4
+            <a href="javasctipt:void(0);" @click="viewApprise(checkDetails.appraise_url)">
+              {{checkDetails.appraise_url}}
             </a>
           </p>
           <p>
-            <span>Picture: 3</span>
-            <span>Video: 0</span>
+            <span>Picture: {{checkDetails.appraise.picture}}</span>
+            <span>Video:  {{checkDetails.appraise.video}}</span>
           </p>
           <span class="star-label">Star Level: </span>
              <el-rate  class="rate"
-                      v-model="checkDetails.rate"
+                      v-model="checkDetails.appraise.review_star_rating"
                       disabled
                       text-color="#ff9900"
                       >
@@ -232,14 +233,18 @@ export default {
         'Review', 'Shipping fee', 'Platform fee', 'Refund', 
         'Cost', 'Status', 'Operation'
       ],
-      trLists: [{
-      }],
+      trLists: [],
       DeclineDetails: false,
       expiredDetail: false,
 
       checkDetails: {
-        order_number: 12312,
-        rate: 3,
+        order_number: '',
+        appraise_url: '',
+        appraise: {
+          picture: '',
+          vedio: '',
+          review_star_rating: '',
+        }
       },
       notPassReason:'未查到订单',
       notPassData: false,
@@ -307,7 +312,9 @@ export default {
     initData () {
       this.requestdata.trial_id = JSON.parse(getStore('trialDetails')).id
       var trialDetails = JSON.parse(getStore('trialDetails'))
+
       this.trialDetails = trialDetails
+      console.log(this.trialDetails)
     },
 
     //获取领取人列表接口
@@ -341,6 +348,7 @@ export default {
       this.getReceiptorInfo()
     },
     confirmedOrder (item) {
+      console.log(item)
       this.checkDetails = item
       this.DeclineDetails = true
     },
@@ -376,7 +384,15 @@ export default {
           this.getReceiptorInfo()
         }
       })
-    }
+    },
+    //打开评论链接
+    viewApprise (url) {
+      if (url.search('http://') >= 0 || url.search('https://') >= 0) {
+        window.open(url)
+      } else {
+        window.open('http://' + url)
+      }
+    },
 
   
   }
@@ -404,10 +420,6 @@ export default {
     .search {
       .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
       font-size: 0.78rem;
-      &:active {
-        background: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
     }
     .add-coupons {
       position: absolute;
@@ -415,30 +427,8 @@ export default {
       top: 50%;
       .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
       margin-top: -20px;
-      &:active {
-        background: darken(#7ab7e0, 10%);
-        border-color: darken(#7ab7e0, 10%);
-      }
     }
 
-  }
- 
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
   }
 }
 .table-trials-posted {
@@ -463,22 +453,30 @@ export default {
   text-align: center;
   margin-top: 10px;
   button {
-     .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
+    .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
   }
   .not-pass {
     .btn-h(80px, 34px,#3399FF,#3399FF,red);
   }
 }
 .not-pass-select {
+  position: relative;
   margin-top: 10px;
-  // width: 200px;
   text-align: center;
+  height: 22px;
+  line-height: 22px;
+  select {
+    height: 22px;
+    position: relative;
+    top: 1px;
+  }
   button {
+    
     .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
     line-height: 1.5;
   }
 }
 .el-dialog--tiny {
-    width: 600px;
+  width: 600px;
 }
 </style>

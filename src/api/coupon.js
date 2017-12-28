@@ -155,3 +155,9 @@ export const couponDetele = data => fetch({
   data: qs.stringify(data)
 })
 
+//查看状态为 close 的详情 （自己关闭， 或者后台关闭）
+export const couponProblemCensor = data => fetch({
+  url: '/api/v1/coupon/problem-censor',
+  method: 'POST',
+  data: qs.stringify(data)
+})

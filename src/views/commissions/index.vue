@@ -42,7 +42,7 @@
       </div>
       <div class="table-tr details">
         <div class="details-left">
-          <img  class="product-img" src="http://www.ghostxy.top/dealsbank/img/01.png" alt="">
+          <img  class="product-img" src="" alt="">
           <div class="product-title">
             STATE Geo Mesh CoidGeoMesh Cold Shoulder Shift Dress 
           </div>

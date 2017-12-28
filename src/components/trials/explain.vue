@@ -1,6 +1,6 @@
 <template>
    <div class="trials-explain">
-        <div class="inline" v-for="(item, index) in reminderData" :class="{active: index == isActive}">
+        <div class="inline" v-for="(item, index) in reminderData" :class="{active: index == isActive, first: index === 0}">
           <span class="title">{{item.title}}</span><br>  
           <span class="content">{{item.content}}</span>  
           <i v-if="index < 4 && index != isActive && index != isActive - 1" class="iconfont icon-icon_huaban"></i>
@@ -85,6 +85,9 @@ export default {
     border-left: 1px solid #e1e1e1;
     border-right: 1px solid #e1e1e1;
     background: #FBFBFB;
+    &.first {
+      border-left: none;
+    }
   }
 }
 </style>

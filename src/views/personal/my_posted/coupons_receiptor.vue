@@ -215,38 +215,13 @@ export default {
     .search {
       .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
       font-size: 0.78rem;
-      &:active {
-        background: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
     }
     .add-coupons {
       position: absolute;
       right: 0;
       top: 50%;
-      .btn-h(100px, 40px, #7ab7, #7ab7, #fff);
+      .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
       margin-top: -20px;
-      &:active {
-        background: darken(#7ab7e0, 10%);
-        border-color: darken(#7ab7e0, 10%);
-      }
-    }
-  }
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
     }
   }
 }

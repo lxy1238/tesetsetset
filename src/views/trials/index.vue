@@ -14,7 +14,7 @@
          <p class="trials-price content">
           <span class="old"> <i >{{currency}}{{couponsDetails.product_price}} </i></span>
           <span class="gray-s"> Refund </span>
-          <span class="coupon-right"><strong> {{currency}}{{couponsDetails.refund_price}}</strong>  </span>
+          <span class="coupon-right"><strong> {{currency}}{{add(couponsDetails.refund_price, couponsDetails.shipping_fee).toFixed(2)}}</strong>  </span>
          </p>
          </template>
          <template slot="btn" >View Trials</template>
@@ -36,6 +36,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
+import { NumAdd } from '@/utils/calculate'
 export default {
   name: 'page_index',
   data () {
@@ -109,6 +110,10 @@ export default {
     },
     initData () {
       this.requestData.keyword = this.$route.query.search
+    },
+
+    add (a, b) {
+      return NumAdd(a, b)
     },
 
     //非父子组件之间传递事件

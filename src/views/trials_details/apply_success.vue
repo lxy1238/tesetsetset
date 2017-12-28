@@ -37,7 +37,7 @@
                   </div>
                 </div>
             </div>
-            <img class="amazon" src="../../assets/amazon.png" alt="">
+            <img class="amazon" :src="logoImg[trialDetail.website]" alt="">
           </div>
         </div>
         <div class="submit-order-number" v-if="!isExpired">
@@ -115,6 +115,10 @@ export default {
   name: 'page_index',
   data () {
     return {
+      logoImg: {
+        amazon: require('../../assets/amazon_logo.png'),
+        aliexpress: require('../../assets/aliexpress_logo.png')
+      },
       trialDetail: {},
       countDownData: {},
       isExpired: false,
@@ -241,6 +245,7 @@ export default {
     //显示问题反馈选项
     flagCoupon () {
       this.isFlagCoupon = !this.isFlagCoupon
+      this.selected = 'Choose reason'
     },
     //提交问题
     addProblemSubmit () {
@@ -276,6 +281,7 @@ export default {
   padding-top: 1rem;
 }
 .home-content {
+  padding-top: 12px;
   width: 99.05%;
   .details {
     position: relative;
@@ -436,7 +442,7 @@ export default {
    .question {
           float: right;
           text-align: right;
-          margin-right: 5px;
+          margin-right: 15px;
           .wrong {
             margin-bottom: 0.3rem;
             font-size: 1rem;
