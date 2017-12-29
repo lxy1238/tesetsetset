@@ -9,6 +9,7 @@ const getters = {
   joined_date: state => state.user.joined_date, 
   user_id: state => state.user.user_id,
   currentRouter: state => state.personal.currentRouter,
+  countryInfo: state => state.personal.countryInfo,
   addRouters: state => state.permisstion.addRouters
 }
 

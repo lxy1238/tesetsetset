@@ -16,7 +16,7 @@
       <label for="title" >
         Status: 
       </label>
-      <el-select name="" class=" form-control-bootstrap" v-model="searchForm.status">
+      <el-select name="" class=" form-control-bootstrap" clearable v-model="searchForm.status">
         <el-option value="0" label="Pending"></el-option>
         <el-option value="1" label="Complete"></el-option>
         <el-option value="2" label="Decline"></el-option>
@@ -147,8 +147,6 @@
                  <template v-if="item.status === 1">
                   <div></div>
                 </template>
-                  <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
-                
               </td>
             </tr>
             <tr v-if="trLists.length === 0">
@@ -316,7 +314,6 @@ export default {
       var trialDetails = JSON.parse(getStore('trialDetails'))
 
       this.trialDetails = trialDetails
-      console.log(this.trialDetails)
     },
 
     //获取领取人列表接口
@@ -350,7 +347,6 @@ export default {
       this.getReceiptorInfo()
     },
     confirmedOrder (item) {
-      console.log(item)
       this.checkDetails = item
       this.DeclineDetails = true
     },

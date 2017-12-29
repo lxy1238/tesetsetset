@@ -20,7 +20,10 @@
               <td>{{item.business_number}}</td>
               <td>{{item.business_name}}</td>
               <td>
-                <a  v-if="item.business_name == 'trial'" href="javascript:void(0);" @click="gotoPostTrials(item)">
+                <a  v-if="item.detail == 'Trial audit'" href="javascript:void(0);" @click="gotoPostTrials(item)">
+                  {{item.business_ID}}
+                </a>
+                <a  v-else-if="item.detail == 'Trials refunded'" href="javascript:void(0);" @click="gotoCompleteTrials(item)">
                   {{item.business_ID}}
                 </a>
                 <div v-else>{{item.business_ID}}</div>
@@ -101,7 +104,11 @@ export default {
     gotoPostTrials (item) {
       let trial_id = item.business_name_id
       this.$router.push({path: '/posted/trials', query: {id: trial_id}})
-    }
+    },
+    gotoCompleteTrials (item) {
+      let trial_id = item.business_name_id
+      this.$router.push({path: '/personal/my-trials/index', query: {id: trial_id, status: 2}})
+    } 
   }
 }
 </script>

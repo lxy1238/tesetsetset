@@ -31,17 +31,14 @@ service.interceptors.response.use(
   response => {
     //请求响应之前可以对数据进行操作
     if (response.data.code !== 200 ) {
-      console.log(response.data)
       if (response.data.code === 500) {
         // MessageBox.alert('You have logged in elsewhere, please log in again', 'log out', {
         //   confirmButtonText: 'confirm',
         //   callback: () => {
         store.dispatch('LogOut').then(() => {
-          console.log('log out success！！')
         })
         // }
         // })
-        console.log(response)
       }
       NProgress.done()
       return Promise.reject(response.data)

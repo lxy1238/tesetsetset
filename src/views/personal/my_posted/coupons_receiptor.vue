@@ -129,7 +129,6 @@ export default {
     initData () {
       this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
       var couponsDetails = JSON.parse(getStore('couponDetails'))
-      console.log(couponsDetails)
       for (var i in this.couponsDetails) {
         this.couponsDetails[i] = couponsDetails[i]
       }

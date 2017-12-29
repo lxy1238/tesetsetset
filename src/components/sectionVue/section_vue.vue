@@ -117,7 +117,6 @@ export default {
   },
   methods: {
     getSelectValue (item, items) {
-      console.log(item, items)
       this.select = item.name
     }
   }

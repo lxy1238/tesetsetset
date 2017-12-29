@@ -499,6 +499,9 @@ export default {
       if (this.$route.query.status) {
         this.selectTabs(parseInt(this.$route.query.status))
       }
+      if (this.$route.query.id) {
+        this.reqSuccedDetailsData2.order_id = this.$route.query.id
+      }
     },
 
     selectTabs (index) {

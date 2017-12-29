@@ -157,7 +157,11 @@ import axios from 'axios'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { NumAdd, NumMul } from '@/utils/calculate'
-
+//富文本编辑器需要用到的插件
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.js'
+import 'summernote/dist/summernote.css'
+import 'summernote'
 export default {
   name: 'trials_add',
   data () {

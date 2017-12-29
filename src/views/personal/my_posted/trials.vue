@@ -200,6 +200,7 @@ export default {
         'Cost', 'Valid date', 'Status', 'Operation'
       ],
       trLists: [],
+      country_id: getStore('country_id') || 1,
       allpage: undefined,
       showItem: 7,
       nonApproval: 'self closing',
@@ -330,13 +331,12 @@ export default {
     //跳转到优惠券详情页面
     gotoDetails (item) {
       if (item.status == 1 && item.run_status == this.all_run_status[1]) {
-        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id) + '/' + base64Encode(item.country_id) })
+        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id) + '/' + base64Encode(this.country_id) })
       }
     },
 
     //跳转到 领取优惠券的用户页面
     gotoTrailsreceiptor (item) {
-      console.log(item)
       if (item.order_numbers === 0) {
         return false
       }
@@ -365,7 +365,6 @@ export default {
         .then(() => {
           this.couponDeteleRequestData.id = id
           this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
-            console.log(res)
             this.getPostTrialsList()
           })
           this.$message({

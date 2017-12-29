@@ -94,7 +94,8 @@
                  <span class="share">
                    <i class="text">Promotion on:</i> 
                    <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <!-- <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a> -->
+                  <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
@@ -213,8 +214,8 @@ export default {
 
       //获取详情 参数
       requestCouponDetails: {
-        country_id: base64Decode(this.$route.params.countryId),
         user_id: getUserId() ,
+        country_id: base64Decode(this.$route.params.countryId),
         id: base64Decode(this.$route.params.couponsId),
       },
       //获取该品类下的产品 
@@ -357,6 +358,14 @@ export default {
 
     },
 
+    //判断参数是否存在
+    isDataExit (object) {
+      if (!object.api_token) {
+        object.api_token = getToken()
+        object.user_id = getUserId()
+      }
+    },
+
     //判断链接中携带哪个pid , 如果有分享人的id 那就携带分享人的pid， 如果没有分享人，则携带公司的pid
     hasPromoter () {
       if (this.$route.query.promoter) {
@@ -381,6 +390,7 @@ export default {
     
     //获取优惠券详情
     getCouponsDetails () {
+      this.isDataExit(this.requestCouponDetails)
       this.$api.couponDetails(this.requestCouponDetails)
         .then(res => {
           if (res.data.coupon_user_template) {
@@ -431,6 +441,7 @@ export default {
     //模板保存
     saveTemplate () {
       if (this.isLogin()) {
+        this.isDataExit(this.submitTemplateData)
         this.submitTemplateData.content = this.promotionTemplate
         this.$api.editTemplate(this.submitTemplateData).then(res => {
           if (res.code === 200) {
@@ -473,6 +484,7 @@ export default {
       if(!this.isLogin()) {
         return
       }
+      this.isDataExit(this.checkGetCodeData)
       this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.$api.isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
@@ -529,6 +541,7 @@ export default {
     //加入推广
     addPromotion () {
       if (this.isLogin()) {
+        this.isDataExit(this.addPromotionData)
         this.$api.promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
             this.added = true
@@ -542,6 +555,7 @@ export default {
     //取消推广
     removePromotion () {
       if (this.isLogin()) {
+        this.isDataExit(this.addPromotionData)
         this.$api.promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
             this.added = false
@@ -569,6 +583,7 @@ export default {
           return
         }
         e.target.disabled = true
+        this.isDataExit(this.reqGetCodeData)
         this.$api.userGetCoupon(this.reqGetCodeData).then(() => {
           e.target.disabled = false
           this.getCodeSuccess = true
@@ -639,6 +654,7 @@ export default {
         return
       }
       this.btnLoading = true
+      this.isDataExit(this.addProblemData)
       this.$api.addProblem(this.addProblemData).then(res => {
         this.btnLoading = false
         if (res.code === 200) {

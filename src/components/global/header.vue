@@ -163,7 +163,7 @@
                 <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading">Sign up</el-button>
+                <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading" >Sign up</el-button>
               </el-form-item>
             </el-form>
             <div class="footer">
@@ -320,6 +320,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'countryInfo',
       'username',
       'roles',
       'addRouters',
@@ -342,6 +343,11 @@ export default {
       }
     },
   },
+  beforeCreate () {
+    this.$store.dispatch('getCountryInfo').then(()=> {
+      this.countryLists = this.countryInfo
+    })
+  },
   mounted () {
     this.init()
   },
@@ -360,7 +366,6 @@ export default {
       this.docuemntAddEvent()
       this.enterSubmitForm()
       this.getHeadCateListInfo()
-      this.getUserCountryInfo()
       this.getOtherEvent()
     },
     //数据初始化
@@ -654,10 +659,8 @@ export default {
     },
     //获取国家列表，携带货币符号，
     getUserCountryInfo () {
-      this.$api.getUserCountry().then(res => {
-        this.countryLists = res.data
-      }).catch(error => {
-        console.log(error)
+      this.$store.dispatch('getCountryInfo').then(()=> {
+        this.countryLists = this.countryInfo
       })
     },
 
@@ -750,7 +753,6 @@ export default {
           }else{
             console.log('获取登陆用户相关信息失败！')
           }
-          console.log('Successful login for: ' + response.name)
         })
       }
     },
@@ -905,7 +907,7 @@ export default {
                 top: 0;
                 left: 0;
                 &.img {
-                  top: 0.6rem;
+                  top: 0.8rem;
                   left: .8rem;
                   img {
                     width: 2rem;
@@ -939,7 +941,6 @@ export default {
             }
           }
           &.country {
-            top: -2px;
             width: 10%;
             font-size: 0.833rem;
             .country-span {
@@ -952,7 +953,6 @@ export default {
             }
           }
           &.language {
-            top: -2px;
             width: 12%;
             font-size:  0.833rem;
             .language-span {
@@ -974,6 +974,7 @@ export default {
           .iconfont {
             position: relative;
             top: 1px;
+            right: 1px;
           }
           
         }

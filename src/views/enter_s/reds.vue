@@ -282,7 +282,6 @@ export default {
         if(valid) {
           this.getSelectedExpertiseArr()
           this.getChannelArr()
-          console.log(this.redsForm, this.channelsLists)
         } else {
           console.log('submit error')
         }

@@ -8,20 +8,84 @@ require('es6-promise').polyfill()
 import router from './router'  // 路由配置文件
 import store from './store'    // 全局状态管理
 import api from './api/index'  //所有的接口
+
 import './directive/title/index'
 
+// import VueHtml5Editor from 'vue-html5-editor'
+// Vue.use(VueHtml5Editor, {
+//   icons: {
+//     text: 'el-icon-document',
+//     color: 'fa fa-paint-brush',
+//     font: 'fa fa-font',
+//     align: 'fa fa-align-justify',
+//     list: 'fa fa-list',
+//     link: 'fa fa-chain',
+//     unlink: 'fa fa-chain-broken',
+//     tabulation: 'fa fa-table',
+//     image: 'el-icon-picture',
+//     hr: 'fa fa-minus',
+//     eraser: 'fa fa-eraser',
+//     undo: 'fa-undo fa',
+//     'full-screen': 'fa fa-arrows-alt',
+//     info: 'fa fa-info',
+//   },
+// })
 
-//富文本编辑器需要用到的插件
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap.js'
-import 'summernote/dist/summernote.css'
-import 'summernote'
 
 
+import lang from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
 
-import Element from 'element-ui'
-import locale from 'element-ui/lib/locale/lang/en'
-Vue.use(Element ,{ locale })
+// 设置语言
+locale.use(lang)
+// import Element from 'element-ui'
+import {
+  Dialog,
+  Input,
+  Radio,
+  Select,
+  Option,
+  Button,
+  DatePicker,
+  Tooltip,
+  Form,
+  FormItem,
+  Alert,
+  Icon,
+  Row,
+  Col,
+  Upload,
+  Rate,
+  Loading,
+  MessageBox,
+  Message,
+  Checkbox
+} from 'element-ui'
+
+Vue.use(Dialog)
+Vue.use(Checkbox)
+Vue.use(Input)
+Vue.use(Radio)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Button)
+Vue.use(DatePicker)
+Vue.use(Tooltip)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Alert)
+Vue.use(Icon)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(Upload)
+Vue.use(Rate)
+Vue.use(Loading.directive)
+
+Vue.prototype.$loading = Loading.service
+Vue.prototype.$msgbox = MessageBox
+Vue.prototype.$alert = MessageBox.alert
+Vue.prototype.$confirm = MessageBox.confirm
+Vue.prototype.$message = Message
 
 
 // 全局css样式,重置样式

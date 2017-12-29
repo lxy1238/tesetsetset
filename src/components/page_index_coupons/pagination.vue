@@ -112,7 +112,6 @@ export default {
 @import url("../../styles/mixin.less");
 .pagination-all {
   .p(r);
-  top: -1rem;
   display: block;
   height: 4rem;
   line-height: 4rem;

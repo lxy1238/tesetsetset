@@ -104,7 +104,7 @@ export default {
         return
       } 
       this.isAddPromo = 0
-    }
+    },
   },
   methods: {
     init () {
@@ -148,13 +148,21 @@ export default {
       this.$emit('gotodetails', id)
     },
 
-   
+    //判断数据是否存在
+    isDataExit () {
+      if (!this.addPromoRequestData.api_token) {
+        this.addPromoRequestData.api_token = getToken()
+        this.addPromoRequestData.user_id = getUserId()
+        this.addPromoRequestData.country_id = parseInt(getStore('country_id')) || 1
+      }
+    },
 
     //加入 移除  推广
     addPromotion () {
       if (!getToken()) {
         return
       }
+      this.isDataExit()
       this.$api.promotionAddCoupon(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 1
@@ -166,6 +174,7 @@ export default {
         })
     },
     removePromo () {
+      this.isDataExit()
       this.$api.promotionUserRemove(this.addPromoRequestData)
         .then(() => {
           this.isAddPromo = 0

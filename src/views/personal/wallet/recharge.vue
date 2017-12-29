@@ -88,7 +88,7 @@ export default {
         amount: '',
         pay_currency: '',
       },
-      useraccountInfo: {}
+      useraccountInfo: {},
     }
   },
   computed: {

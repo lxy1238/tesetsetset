@@ -1,10 +1,10 @@
 <template>
   <div class="page-index" >
-    <div class="pages-content" >
+    <div class="pages-content"  v-if="trialDetailData.menu" v-cloak>
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
-    <div class="blank explain"></div>
+    <div class="blank explain" ></div>
       <explain :is-active="0" class="trials-explain"></explain>
       <div class="details-content clearfix " v-if="trialDetailData.id"  v-title="trialDetailData.product_title">
         <div class="left inline clearfix">
@@ -178,7 +178,6 @@ export default {
       imgList: [],
       reqData: {
         id: '',
-        user_id: getUserId()
       },
       trialApplyData: {
         api_token: getToken(),
@@ -286,6 +285,10 @@ export default {
         return
       }
       e.target.disabled = true
+      if (!this.trialApplyData.api_token) {
+        this.trialDetailData.api_token = getToken()
+        this.trialDetailData.user_id = getUserId()
+      }
       this.$api.trialApply(this.trialApplyData).then(res => {
         if (res.code === 200) {
           this.isApply = true

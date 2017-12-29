@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-title="titleMsg">
+  <div id="app" v-title="titleMsg" v-cloak>
     <router-view/>
   </div>
 </template>
@@ -14,6 +14,7 @@ export default {
   name: 'app',
   mounted () {
   },
+
   beforeDestroy () {
   }
 }

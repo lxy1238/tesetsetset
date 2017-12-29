@@ -1,9 +1,9 @@
 <template>
   <div class="personal" v-title="titleMsg">
     <header-self :need-classify="false"></header-self>
-    <subnav :routers="routers"></subnav>
+    <subnav :routers="routers" v-if="showC"></subnav>
     <broad-side></broad-side>
-    <footer-self></footer-self>
+    <footer-self v-if="showC"></footer-self>
   </div>
 </template>
 
@@ -23,11 +23,24 @@ export default {
   data () {
     return {
       titleMsg: 'member center',
-      routers: []
+      routers: [],
+      showA: false,
+      showB: false,
+      showC: false
     }
   },
   mounted () {
     this.routers = this.$store.getters.addRouters
+
+    setTimeout(() => {
+      this.showA = true
+    }, 100)
+    setTimeout(() => {
+      this.showB = true
+    }, 200)
+    setTimeout(() => {
+      this.showC = true
+    }, 300)
   }
 
 }
