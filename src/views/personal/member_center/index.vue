@@ -34,23 +34,23 @@
       </div>
       <div class="statistics clearfix">
         <div class="statistics-child"  v-if="roles[0] == 'celebrity' || roles[0] == 'merchant' ">
-          <span class="count" @click="gotoAnotherRouter('/posted/coupons', userData.account.coupon_posteds)">{{userData.account.coupon_posteds}}</span>
+          <span class="count link" @click="gotoAnotherRouter('/posted/coupons', userData.account.coupon_posteds)">{{userData.account.coupon_posteds}}</span>
           <p>Coupons posted</p>
         </div>
         <div class="statistics-child" v-if="roles[0] == 'merchant'">
-          <span class="count"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
           <p>Trials posted</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
           <p>My Coupons</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
           <p>My Trials</p>
         </div>
         <div class="statistics-child last">
-          <span class="count"  @click="gotoAnotherRouter('/personal/promotion/index', userData.account.promotions)">{{userData.account.promotions}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/personal/promotion/index', userData.account.promotions)">{{userData.account.promotions}}</span>
           <p>My Promotions</p>
         </div>
         <!-- <div class="statistics-child last">
@@ -234,11 +234,7 @@ export default {
         display: inline-block;
         margin-bottom: 0.6rem;
         cursor: pointer;
-        color: #333;
         font-size: 1.22rem;
-        &:hover {
-          color: #0072bc;
-        }
       }
     }
   }
@@ -252,6 +248,7 @@ export default {
         line-height: 3;
         button {
           position: relative;
+          top: 2px;
           .btn-h(130px,40px,#83b93a,#83b93a,#fff);
           font-size: 14px;
           padding-left: 36px;
@@ -274,15 +271,15 @@ export default {
         float: left;
         width: 10.5rem;
         color: #808080;
-        font-size: 0.78rem;
+        font-size: 13px;
         text-align: center;
         border-right: 1px solid #e6e6e6;
         margin-right: 3rem;
         .money {
           display: inline-block;
-          margin-bottom: 1rem;
-          font-size: 1rem;
-          color: #1a1a1a;
+          margin-bottom: 10px;
+          font-size: 18px;
+          color: #333;
         }
       }
     }

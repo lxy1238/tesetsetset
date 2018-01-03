@@ -23,7 +23,7 @@
                 Go To Amazon 
               </button>
               <div class="right">
-                <div class="top" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> flow this trials</div>
+                <div class="top" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> <i class="link">Flag this trials</i> </div>
                 <select name="" id="" v-model="selected" @change="selectProblem"  v-if="isFlagCoupon">
                 <option v-for="(item, index) in options" :value="item" :label="item" >{{item}}</option>
               </select>
@@ -323,8 +323,8 @@ export default {
       }
       .title {
         width: 35rem;
-        font-size: 24px;
-        height: 48px;
+        font-size: 21px;
+        height: 42px;
         line-height: 1;
         overflow: hidden;
         color: #1a1a1a;
@@ -384,6 +384,16 @@ export default {
           select {
             min-width: 120px;
           }
+          .top {
+            height: 18px;
+            overflow: hidden;
+            .iconfont {
+              position: relative;
+              top: 3px;
+            }
+          }
+
+
         }
       }
     }

@@ -408,6 +408,7 @@ export default {
   .coupons-table-title {
     text-align: left;
     width: 250px;
+    padding-left: 10px;
   }
 }
 

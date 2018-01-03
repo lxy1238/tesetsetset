@@ -77,11 +77,12 @@ export default {
       height: 22.22rem;
       background: #31393f;
       .footer-logo {
-        height: 6.6rem;
-        line-height: 7.8rem;
+        height: 70px;
         border-bottom: 1px solid #4d5459;
         img {
           display: inline-block;
+          position: relative;
+          top: 10px;
         }
       }
       .footer-details {

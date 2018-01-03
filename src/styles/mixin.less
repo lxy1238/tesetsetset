@@ -21,6 +21,7 @@
 }
 
 .btn-h(@width:80px, @height:30px, @bgcolor: #ffffff, @border: #ffffff, @color: #1f2d3d) {
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
   width: @width;
   height: @height;
   border-radius: 5px;
@@ -37,6 +38,9 @@
   margin: 0;
   padding: 0;
   border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
   &:hover {
     background: darken(@bgcolor, 5%);
     border-color: darken(@border, 5%);

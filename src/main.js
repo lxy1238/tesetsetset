@@ -11,25 +11,25 @@ import api from './api/index'  //所有的接口
 
 import './directive/title/index'
 
-// import VueHtml5Editor from 'vue-html5-editor'
-// Vue.use(VueHtml5Editor, {
-//   icons: {
-//     text: 'el-icon-document',
-//     color: 'fa fa-paint-brush',
-//     font: 'fa fa-font',
-//     align: 'fa fa-align-justify',
-//     list: 'fa fa-list',
-//     link: 'fa fa-chain',
-//     unlink: 'fa fa-chain-broken',
-//     tabulation: 'fa fa-table',
-//     image: 'el-icon-picture',
-//     hr: 'fa fa-minus',
-//     eraser: 'fa fa-eraser',
-//     undo: 'fa-undo fa',
-//     'full-screen': 'fa fa-arrows-alt',
-//     info: 'fa fa-info',
-//   },
-// })
+import VueHtml5Editor from 'vue-html5-editor'
+Vue.use(VueHtml5Editor,{
+  icons: {
+    text: 'iconfont icon-pencil',
+    color: 'iconfont icon-fa-paint-brush',
+    font: 'iconfont icon-font',
+    align: 'iconfont icon-alignmiddle',
+    list: 'iconfont icon-list',
+    link: 'iconfont icon-link',
+    unlink: 'iconfont icon-unlink',
+    tabulation: 'iconfont icon-table',
+    image: 'iconfont icon-image',
+    hr: 'iconfont icon-fa-minus',
+    eraser: 'iconfont icon-eraser',
+    undo: 'iconfont icon-shuaxin',
+    'full-screen': 'iconfont icon-fullscreen',
+  },
+  hiddenModules: ['info'],
+})
 
 
 
@@ -88,6 +88,7 @@ Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$message = Message
 
 
+// import 'bootstrap/dist/css/bootstrap.css'
 // 全局css样式,重置样式
 // import 'normalize.css'
 import 'element-ui/lib/theme-default/index.css'

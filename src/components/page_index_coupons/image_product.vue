@@ -9,21 +9,21 @@
     <div class="promo-copy-parent"  v-if="addpromo">
      <div class="promo-copy">
         <div class="span-btn" @click="addPromotion(couponsDetails.id)" v-if="isAddPromo === 0">
-          <span>Add Promo</span>
+          <span>Add Promotion</span>
         </div>
          <!-- <div class="span-btn" v-else-if="isAddPromo === 1">
           <span>Running ...</span>
         </div> -->
          <div class="span-btn active" @click="removePromo(couponsDetails.id)" v-else>
-          <span>Cancel Promo  <i class="el-icon-check"></i></span>
+          <span>Cancel <i class="el-icon-check"></i></span>
         </div>
         <div class="line"></div>
         <el-tooltip placement="right">
           <div slot="content" class="copy-content" :id="productDetails">
-            <img class="copy-img" :src="couponsDetails.current_img" />
-            <div class="content-line">{{couponsDetails.product_title}}</div>
-            <div class="content-line">coupons {{currency}} {{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</div>
-            <div class="content-line">coupon address: {{dealsbankUrl}}</div>
+            <img  class="copy-img" :src="couponsDetails.current_img" />
+            <div class="content-line ">{{couponsDetails.product_title}}</div>
+            <div class="content-line">Coupon after the price {{currency}} {{couponsDetails.discount_price}}</div>
+            <div class="content-line">Coupon address: {{dealsbankUrl}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>
           <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
@@ -210,11 +210,15 @@ export default {
   width: 240px;
   height: 355px;
   background: white;
-  border: 1px solid #e1e1e1;
   border-radius: 4px;
   margin: 0 0.5rem 10px 0;
   z-index: 1;
+  border-color: #c7c7c7;
+  border-style: solid;
+  border-width: 1px 1px 3px 1px;
+  border-radius: 4px;
   &:hover {
+    border-color:#adadad;
     .promo-copy {
       transform: translateY(-4px);
     }
@@ -232,7 +236,7 @@ export default {
     text-align: center;
   }
   .content {
-    margin: 2px 10px 0 10px;
+    margin: 2px 0 0 10px;
     color: rgb(137, 137, 137);
     .old {
       text-decoration: line-through;
@@ -247,12 +251,13 @@ export default {
       font-size: 12px;
       float: left;
       color: #1a1a1a;
+     
       i {
         color: rgb(137, 137, 137);
       }
     }
     .price-right-bottom {
-      font-size: 12px;
+      
       float: right;
       margin-right: 10px;
       color: #1a1a1a;
@@ -261,8 +266,10 @@ export default {
       }
     }
     .price-right {
-      color: #1a1a1a;
-      font-size: 0.88rem;
+      color: #333 !important;
+      font-size: 18px !important;
+      max-width: 65%;
+      font-weight: 700;
     }
     .com-right {
       margin-left: 10px;
@@ -341,12 +348,10 @@ export default {
     overflow: hidden; /*内容超出后隐藏*/
     // text-overflow: ellipsis;/* 超出内容显示为省略号*/
     // white-space: nowrap;/*文本不进行换行*/
-    margin-top: 0.5rem;
-    margin-bottom: 5px;
+    // margin-top: 0.5rem;
+    margin-bottom: 10px;
   }
-  .price {
-    font-size: 15px;
-  }
+ 
   .coupons {
     font-size: 10px;
     margin-right: 10px;
@@ -363,6 +368,7 @@ export default {
       line-height: 0.3;
       font-size: 15px;
       background: #eee;
+      border: 1px solid #ccc;
       font-weight: bold;
       &:hover {
         background: #c9caca;

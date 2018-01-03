@@ -14,14 +14,14 @@
           </div>
         </div>
         <template v-if="userInfo.username">
-          <div class="user" @click="gotouser" >
-            <div class=" head inline-b">
-              <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt="">
-              <img  v-else src="../../assets/user.png" alt="">
+          <div class="user" >
+            <div class=" head inline-b" >
+              <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt=""  @click="gotouser">
+              <img  v-else src="../../assets/user.png" alt=""  @click="gotouser">
             </div>
             <div class=" details inline-b">
                 <p>
-                  <span class="name">{{userInfo.username}}</span>
+                  <span class="name link"  @click="gotouser">{{userInfo.username}}</span>
                   <span class="tag" v-if="userInfo.type == 'celebrity'">Influencer</span>
                   <span class="tag" v-if="userInfo.type == 'merchant'">Merchant</span>
                 </p>
@@ -189,7 +189,6 @@ export default {
     background: white;
     margin-top: 0.4rem;
     border-radius: 5px;
-    cursor: pointer;
     p{
       position: relative;
       margin: .3rem 0 .5rem 0;
@@ -199,12 +198,13 @@ export default {
       height: 7rem;
       line-height: 7rem;
       text-align: center;
-      padding: 0.5rem 0;
+      padding: 1.3rem 0;
       img {
-        width: 6rem;
-        height: 6rem;
+        width: 4rem;
+        height: 4rem;
         border-radius: 100%;
         border: 1px solid #f9f9f9;
+        cursor: pointer;
       }
     }
     .details {
@@ -213,29 +213,33 @@ export default {
       height: 7rem;
       color: #808080;
       .name {
-        font-size: 1.3rem;
+        font-size: 18px;
         font-weight: bold;
         color: black;
+        cursor: pointer;
+        &:hover {
+          color: #0072bc;
+          text-decoration: underline;
+        }
       }
       .tag {
         position: relative;
-        top: -0.2rem;
+        // top: -0.2rem;
         left: 1rem;
         font-size: 0.61rem;
         background: #ec5d1c;
+        border-radius: 4px;
         color: white;
         padding: .2rem;
         display: inline-block;
         margin-top: 1rem;
       }
       .join {
-        margin-top: .5rem;
         
         span {
            font-size: 12px;
            float: left;
            margin-bottom: 1px;
-           margin-top: .5rem;
            width: 12rem;
         }
         .level {

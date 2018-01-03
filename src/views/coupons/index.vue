@@ -16,7 +16,7 @@
           <div class="promotion">
             <img class="img"  :src="logoImg[couponDetail.website]" alt="" @click="gotoPlatform(couponDetail.product_url)" >
             <div class="title">
-              <span @click="gotoPlatform(couponDetail.product_url)">
+              <span >
                 {{couponDetail.product_title}}
               </span>
             </div>
@@ -28,13 +28,13 @@
               <span class="inline-b n-price">{{currency}}{{couponDetail.discount_price}}</span>
               <span class="inline-b o-price">{{currency}}{{couponDetail.product_price}}</span>
               <span class="inline-b c-price">Coupon {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
-              <span class="inline-b ratio">{{couponDetail.discount_rate}}%off</span>
+              <span class="inline-b ratio">{{couponDetail.discount_rate}}% off</span>
             </div>
             <div class="data-info">
-              <span class="inline-b expried">Expried:{{couponDetail.valid_date}}</span>
+              <span class="inline-b expried">Expried: {{couponDetail.valid_date}}</span>
               <span class="inline-b" v-if="couponDetail.shipping_fee == '0.00'">Free shopping</span>
               <span class="inline-b" v-else>Shipping fee: {{couponDetail.shipping_fee}}</span>
-              <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
+              <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i>  <i class="link">Flag this coupon</i>  </span>
             </div>
             <div class="select" v-if="isFlagCoupon">
               <select name="" id="" v-model="selected" @change="selectProblem">
@@ -43,8 +43,8 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="added" @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
-                  <button v-else  @click="addPromotion"><span>Add Promo</span></button>
+                  <button v-if="added" @click="removePromotion"><span>Cancel </span> <i class=" el-icon-check"></i></button>
+                  <button v-else  @click="addPromotion"><span>Add Promotion</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
@@ -93,14 +93,14 @@
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('https://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
                    <!-- <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a> -->
-                  <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
+                  <a class="share-a" onclick="javascript:window.open('https://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('https://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
                <div class="promo-footer center">
-                 <a href="#" class="use-it">How to Use? Click here >></a>
+                 <a href="#" class="use-it">How to use? Click here >></a>
                </div>
             </div>
           </div>
@@ -138,11 +138,11 @@
         <div class="dialog-body">
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
-            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
+            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link">Go to Amazon</a> and paste this code at checkout</span></div>
             <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{couponDetail.discount_price}}</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
-              <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
+              <button data-clipboard-target="#couponId" @click="copyCode($event)">Copy</button>
               </div>
           </div>
         </div>
@@ -752,11 +752,11 @@ export default {
         cursor: pointer;
         right: 1.5rem;
         top: 2rem;
+        height: 35px;
       }
       .title {
-        width: 70%;
-        cursor: pointer;
-        font-size: 1.33rem;
+        width: 80%;
+        font-size: 21px;
         color: #1a1a1a;
         font-weight: bold;
         margin-bottom: 1rem;
@@ -777,30 +777,37 @@ export default {
           color: #808080;
         }
         .n-price {
-          font-size: 1.33rem;
-          color: #1a1a1a;
-          font-weight: bold;
+          font-size: 21px;
+          color: #333;
+          font-weight: 700;
           margin-right: 1rem;
           margin-left: 1rem;
         }
         .o-price {
           text-decoration: line-through;
           font-weight: bold;
-          margin-right: 28rem;
+          margin-right: 100px;
         }
         .c-price {
-          margin-right: 1rem;
+          margin-right: 80px;
         }
       }
       .data-info {
-        height: 2rem;
-        line-height: 2rem;
+        height: 20px;
+        line-height: 20px;
         color: #808080;
-        font-size: 0.78rem;
+        font-size: 12px;
         margin-top: 0.5rem;
         .right {
           float: right;
           cursor: pointer;
+          height: 17px;
+          line-height: 1;
+          overflow: hidden;
+          .iconfont {
+            position: relative;
+            top: 3px;
+          }
         }
         .expried {
           margin-right: 2rem;
@@ -826,7 +833,7 @@ export default {
         }
       }
       .btn-promotion {
-        margin-top: 2rem;
+        margin-top: 22px;
         .add-promo {
           margin-right: 2rem;
           button {
@@ -849,7 +856,8 @@ export default {
           text-align: right;
           .wrong {
             margin-bottom: 0.3rem;
-            font-size: 1rem;
+            margin-top: 6px;
+            font-size: 13px;
             color: #808080;
           }
           .submit {
@@ -908,12 +916,12 @@ export default {
           font-size: 1.22rem;
           font-weight: bold;
           color: #1a1a1a;
-          width: 44rem;
+          width: 43rem;
           border-right: 1px solid #e1e1e1;
         }
         .promo-head-r {
           display: inline-block;
-          width: 9rem;
+          width: 10rem;
           text-align: center;
           cursor: pointer;
           &:hover {
@@ -924,7 +932,6 @@ export default {
       .promo-content {
         padding: 1rem;
         .card {
-          // height: 36rem;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
           border-radius: 5px;
           .img {
@@ -1025,59 +1032,60 @@ export default {
 }
 .code-dialog {
   .title {
-    margin-left: 8rem;
+    margin-left: 144px;
     cursor: pointer;
     display: inline-block;
-    width: 24rem;
+    width: 432px;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 18px;
     img {
       position: absolute;
-      left: -110px;
+      left: -125px;
       top: 0;
     }
   }
   .dialog-body {
     text-align: center;
     .top {
-      padding-top: 2rem;
-      height: 12rem;
+      padding-top: 36px;
+      height: 216px;
       .head {
-        font-size: 1.2rem;
+        font-size: 21px;
         font-weight: bold;
-        margin-bottom: 1rem;
+        margin-bottom: 18px;
         color: #1a1a1a;
       }
       .goto-amazon {
         color: #808080;
-        margin-bottom: 1rem;
-        font-size: 0.66rem;
+        margin-bottom: 18px;
+        font-size: 13px;
       }
       .discount {
         button {
-          .btn-h(20rem,3rem, #85bb3b, #85bb3b, #fff);
-          font-size: 1rem;
+          .btn-h(360px,54px, #85bb3b, #85bb3b, #fff);
+          font-size:18px
         }
       }
       .coupon-code {
         position: relative;
-        width: 20rem;
-        height: 3rem;
+        width: 360px;
+        height: 54px;
+        border-radius: 4px;
         margin: 0 auto;
         text-align: left;
-        padding-left: 4rem;
-        line-height: 3rem;
+        padding-left: 72px;
+        line-height: 54px;
         background: #e5f0e1;
         button {
           position: absolute;
-          top: 0.5rem;
-          right: 1rem;
-          .btn-h(5rem,2rem, #85bb3b, #85bb3b, #fff);
-          font-size: 1rem;
+          top: 9px;
+          right: 18px;
+          .btn-h(90px,36px, #85bb3b, #85bb3b, #fff);
+          font-size: 18px;
         }
         .code {
           color: #49663f;
-          font-size: 1rem;
+          font-size: 18px;
           font-weight: bold;
         }
       }

@@ -16,7 +16,7 @@
               </div>
               
             <template v-if="!isLogin">
-              <button class="inline-b btn-h login" @click="ShowLoginDialog">Login</button>
+              <button class="inline-b btn-h login" @click="ShowLoginDialog">Log In</button>
               <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign up</button>
              </template>
             <template v-else>
@@ -28,7 +28,7 @@
                    <img v-if="avatar_img" :src="avatar_img" />
                    <img v-else src="../../assets/user.png" alt="user" />
                  </div>
-                 <div class="absolute username">{{username}}</div>
+                 <div class="absolute username" :class="{member: roles[0] == 'member'}">{{username}}</div>
                  <div class="absolute tag " v-if="roles[0] == 'celebrity'">
                    <span class="reds-color">Influencer</span>
                  </div>
@@ -45,7 +45,7 @@
                    <li v-for="syncRouter in addRouters" v-if="!syncRouter.hidden">
                      <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
                    </li>
-                   <li  @click="logOut"> <a href="javascript:void(0);">log out</a></li>
+                   <li  @click="logOut"> <a href="javascript:void(0);">logout</a></li>
                  </ul>
                </div>
              </div>
@@ -671,7 +671,7 @@ export default {
       var startApp = function () {
         gapi.load('auth2', function (){
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
+            client_id: '308959858897-rn937lo6bq8qjcvhj26in1joc2lngeck.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
@@ -687,7 +687,7 @@ export default {
       var onSuccess = function (user) {
         var profile = user.getBasicProfile()
         let data = {
-          client_id : '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
+          client_id : '308959858897-rn937lo6bq8qjcvhj26in1joc2lngeck.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token
@@ -835,18 +835,21 @@ export default {
       height: 65px;
       .pct(@Width_content);
       border: 1px solid #31393f;
+      vertical-align: middle;
       .content {
         .p(r);
         height: 65px;
         line-height: 65px;
         // margin-top: 1rem;
-        padding-left: 15rem;
+        padding-left: 12rem;
         // border: 1px solid yellow;
         .logo {
           .p(a);
-          left: 0;
-          top: 8px;
-          width: 180px;
+          left: 4px;
+          top: 50%;
+          margin-top: -1.4rem;
+          width: 10.83rem;
+          height: 2.78rem;
           height: inherit;
         }
         .inline-b {
@@ -916,7 +919,7 @@ export default {
                   }
                 }
                 &.username {
-                  width: 5.0rem;
+                  width: 5.4rem;
                   text-align: center;
                   top: -6px;
                   left: 2.8rem;
@@ -924,15 +927,19 @@ export default {
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
+                  &.member {
+                    top: 0;
+                  }
                 }
                 &.tag {
                   height: 1rem;
                   top: 10px;
-                  width: 5.0rem;
+                  width: 5.4rem;
                   text-align: center;
                   left: 2.8rem;
                   span {
                     font-size: 11px;
+                    overflow: hidden;
                     padding:0px 5px;
                     border-radius: 4px;
                   }
@@ -973,19 +980,23 @@ export default {
           }
           .iconfont {
             position: relative;
+            font-size: 13px;
             top: 1px;
             right: 1px;
           }
           
         }
         .coupons {
-          font-weight: bold;
-          color: #c1c1c1;
+          font-weight: 600;
+          color: #d0d6da;
+          text-decoration: none;
+          position: relative;
+          line-height: 64px;
+          display: block;
           text-align: center;
           overflow: hidden;
-          font-weight: normal;
-          font-size: 1rem;
-          width: 10%;
+          font-size: 13px;
+          width: 8%;
           height: 65px;
           &:hover {
             color: white;
@@ -1002,7 +1013,7 @@ export default {
         }
         .search {
           .p(r);
-          width: 35%;
+          width: 38%;
           height: 36px;
           top: 15px;
           margin-right: 0.90rem;
@@ -1033,20 +1044,22 @@ export default {
           }
         }
         .btn-h {
-          font-size: 0.78rem;
-          font-weight: bold;
           text-align: center;
           position: relative;
           top: 15px;
         }
         .login {
           .btn-h(4.5rem, 36px, #ffffff, #ffffff, #000000);
+          font-size: 13px;
           margin-left: 0;
           margin-right: 1rem;
+              background-color: #f1f1f1;
+
           
         }
         .sign {
           .btn-h(4.5rem, 36px, #0077c5, #0077c5, #fff );
+          font-size: 13px;
           margin-right: 1rem;
         }
       }
@@ -1058,18 +1071,23 @@ export default {
       line-height: 30px;
       height: 30px;
       overflow: hidden;
-      text-align: center;
+      padding-left: 5px;
       li {
-        font-size: 12px;
-        font: HelveticaNeueLT  bold;
+        font-size: 10px;
         display: inline-block;
         color: rgb(34, 24, 21);
         cursor: pointer;
         text-align: center;
         margin: 0 1.5rem 0 0;
+        font-weight: 700;
         &.active {
-          color: rgb(230, 49, 115);
-          font-weight: bold;
+          color: #D62828;
+          &:hover {
+            color: #D62828;
+          }
+        }
+        &:hover {
+          color: #0072bc;
         }
       }
     }

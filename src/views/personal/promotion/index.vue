@@ -21,7 +21,7 @@
             </span>
           </p>
           <p class="price content clearfix">
-            <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.coupons.product_price - couponsDetails.coupons.discount_price).toFixed(2)}}</span>
+            <span class="price-left"><i>Coupon</i> {{currency}}{{(couponsDetails.coupons.product_price - couponsDetails.coupons.discount_price).toFixed(2)}}</span>
             <span class="price-right-bottom"> {{couponsDetails.coupons.discount_rate}}% <i>off</i></span>
           </p>
           </template>

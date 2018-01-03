@@ -104,8 +104,9 @@
         <el-input v-model="trialsForm.specifications" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
       </el-form-item>
       <el-form-item label="Product details: " required>
-        <div id="summernote"></div>
-        <div class="red" v-if="!trialsForm.product_details">product details is required</div>
+        <!-- <div id="summernote"></div> -->
+          <vue-html5-editor :content="trialsForm.product_details" @change="update" :auto-height="true" :z-index="998"  :height="300"></vue-html5-editor>
+          <div class="red" v-if="hasDetails">product details is required</div>
       </el-form-item>
       <div class="title-s">
         Trial Information
@@ -157,11 +158,7 @@ import axios from 'axios'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { NumAdd, NumMul } from '@/utils/calculate'
-//富文本编辑器需要用到的插件
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap.js'
-import 'summernote/dist/summernote.css'
-import 'summernote'
+
 export default {
   name: 'trials_add',
   data () {
@@ -205,7 +202,7 @@ export default {
         shipping_fee: '',                       //运费
         product_img: [],                        //产品图片
         product_img_s: [],
-        product_details: 'details',
+        product_details: '',
         active_date: [],
         start_time: '',
         end_time: '',
@@ -280,6 +277,7 @@ export default {
         user_id: getUserId(),
         id: '',
       },
+      hasDetails: false,
 
     }
   },
@@ -355,7 +353,6 @@ export default {
 
     // 初始化操作
     init () {
-      this.showEditor()
       this.initData()
       this.getHeadCateListInfo()
       this.getTrialsStore()
@@ -366,6 +363,11 @@ export default {
       this.trialsForm.user_name = this.username
     },
 
+    update (value) {
+      this.trialsForm.product_details = value
+      console.log(this.trialsForm.product_details)
+      
+    },
     //限制只能输入数字和.
     filterInput () {
       if (this.country_id === 4) {
@@ -602,16 +604,6 @@ export default {
       console.log(i)
     },
 
-    //显示富文本编辑器插件
-    showEditor () {
-      setTimeout(() => {
-        $('#summernote').summernote({
-          height: 300,
-          tabsize: 2
-        })
-        $('#summernote').summernote('code', '')
-      },10)
-    },
 
     //上传图片
     beforeAvatarUploadP (file) {
@@ -686,7 +678,6 @@ export default {
       // this.$refs.upload.submit();
       this.$refs['trialsForm'].validate(valid => {
         if (valid) {
-          e.target.disabled = true
           for (var i in this.trialsForm) {
             this.trialsFormSubmit[i] = this.trialsForm[i]
           }
@@ -705,18 +696,16 @@ export default {
             imgArr.push(i.url)
           }
           this.trialsFormSubmit.product_img = imgArr
-          var markupStr = $('#summernote').summernote('code')
-          this.trialsFormSubmit.product_details = markupStr
-          this.trialsForm.product_details = markupStr
-          if (!markupStr) {
+          if (!this.trialsForm.product_details) {
+            this.hasDetails = true
             return
+          } else {
+            this.hasDetails = false
           }
-          console.log(this.trialsFormSubmit)
           this.issueCoupon(this.trialsFormSubmit)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')
-          e.target.disabled = false
           return false
         }
       })
@@ -755,7 +744,6 @@ export default {
         this.trialsForm.total_quantity = String(res.data.total_quantity)
         this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
-        $('#summernote').summernote('code', res.data.product_details)
         setTimeout(() => {
           this.filterInput()
         }, 10)
@@ -767,7 +755,9 @@ export default {
 
 <style lang="less">
 @import url('../../../styles/mixin.less');
-
+.vue-html5-editor>.toolbar>ul>li .icon {
+  vertical-align: top;
+}
 .coupons-form {
   .input-price-fee {
     width: 198px;

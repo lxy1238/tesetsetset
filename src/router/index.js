@@ -290,7 +290,7 @@ export const asyncRouterMap = [
     children: [
       {
         path: '/settings/account',
-        text: 'Acount Basics',
+        text: 'Account Basics',
         component: _import('personal/settings/account'),
       },
       {

@@ -1,5 +1,5 @@
 .code-dialog .el-dialog.el-dialog--small {
-  width: 40rem;
+  width: 720px;
 }
 .code-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -63,6 +63,10 @@
   transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
   width: 100%;
 }
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../static/font/opensans.ttf');
+}
 [v-cloak] {
   display: none;
 }
@@ -94,7 +98,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Arial;
+  font-family: "Open Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
 }
 ul {
   padding-left: 0;
@@ -107,7 +114,6 @@ i {
 }
 html {
   font-size: 18px;
-  font-family: Arial, Helvetica, sans-serif;
   box-sizing: border-box;
   word-break: break-word;
   text-rendering: optimizeLegibility;
@@ -116,7 +122,7 @@ button,
 input,
 select,
 textarea {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Open Sans", Arial, sans-serif;
   /* 1 */
   font-size: 100%;
   /* 2 */
@@ -138,6 +144,13 @@ a:focus {
   color: #0072bc;
   text-decoration: none;
 }
+.link {
+  color: #0072bc;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
+}
 .clearfix:after {
   visibility: hidden;
   display: block;
@@ -152,7 +165,29 @@ a:focus {
 .left {
   text-align: left;
 }
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
+}
+.hide {
+  display: none !important;
+}
+.show {
+  display: block !important;
+}
+.invisible {
+  visibility: hidden;
+}
+.hidden {
+  display: none !important;
+}
+.pointer {
+  cursor: pointer;
+}
 table {
+  width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
   text-align: center;
@@ -239,6 +274,7 @@ table tbody tr td {
   width: 16%;
 }
 .search-form .search {
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
   width: 60px;
   height: 36px;
   border-radius: 5px;
@@ -248,13 +284,15 @@ table tbody tr td {
   -webkit-appearance: button;
   display: inline-block;
   line-height: 0.8;
-  white-space: nowrap;
   background: #85ba3b;
   border: 1px solid #85ba3b;
   color: #fff;
   margin: 0;
   padding: 0;
   border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
   font-size: 0.78rem;
   position: absolute;
   top: 50%;
@@ -272,6 +310,7 @@ table tbody tr td {
   position: absolute;
   right: 0;
   top: 50%;
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
   width: 100px;
   height: 40px;
   border-radius: 5px;
@@ -281,13 +320,15 @@ table tbody tr td {
   -webkit-appearance: button;
   display: inline-block;
   line-height: 0.8;
-  white-space: nowrap;
   background: #7ab7e0;
   border: 1px solid #7ab7e0;
   color: #fff;
   margin: 0;
   padding: 0;
   border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
   margin-top: -20px;
 }
 .search-form .add-coupons:hover {
@@ -303,7 +344,7 @@ table tbody tr td {
     font-size: 14.9px;
   }
   .coupons-product {
-    height: 340px !important;
+    height: 345px !important;
   }
   .trials-details-left {
     top: 10.3rem !important;
@@ -311,7 +352,7 @@ table tbody tr td {
 }
 @media screen and (max-width: 1389px) {
   .coupons-product {
-    height: 340px !important;
+    height: 345px !important;
   }
 }
 @media screen and (max-width: 1270px) {
@@ -319,7 +360,10 @@ table tbody tr td {
     font-size: 12px;
   }
   .coupons-product {
-    height: 330px !important;
+    height: 340px !important;
+  }
+  .coupons-product .btn-coupons {
+    height: 2.5rem !important;
   }
   .trials-explain {
     width: 98% !important;

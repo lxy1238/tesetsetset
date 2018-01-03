@@ -5,7 +5,7 @@
       <el-form-item label="Original password: " prop="oldpassword" >  
         <el-input type="password"  v-model="pidForm.oldpassword"></el-input>
       </el-form-item>
-      <el-form-item label="New password: " prop="password" >  
+      <el-form-item label="New password: " prop="password" required >  
         <el-input type="password" v-model="pidForm.password"></el-input>
       </el-form-item>
       <el-form-item label="Confirm password: "  prop="password_confirmation" required>  
@@ -13,7 +13,7 @@
       </el-form-item>
     </el-form>
     <div class="pid-footer">
-      <el-button type="button" @click="changePassword" :loading="saveLoading">Save</el-button>
+      <el-button type="button" @click="changePassword" :loading="saveLoading">Save Password</el-button>
     </div>
   </div>
 </template>
@@ -26,20 +26,20 @@ export default {
   data () {
     const validateConfirmPass =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the pass'))
+        return callback(new Error(' Please enter the confirm password.'))
       } else if(value.length < 8 || value.length > 20  ){
-        callback(new Error ('Use at least 8 characters and No more than 20 characters, It is case sensitive.'))
+        callback(new Error ('Must be at least 8 to 20 characters.'))
       } else if (this.pidForm.password !== this.pidForm.password_confirmation) {
-        callback(new Error('Entered passwords differ'))
+        callback(new Error('The confirm password does not match new password.'))
       } else {
         callback()
       }
     }
     const validateNewPass =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the pass'))
+        return callback(new Error('Please enter the new password.'))
       } else if(value.length < 8 || value.length > 20  ){
-        callback(new Error ('Use at least 8 characters and No more than 20 characters, It is case sensitive.'))
+        callback(new Error ('Must be at least 8 to 20 characters.'))
       } else if (this.pidForm.password === this.pidForm.oldpassword) {
         callback(new Error('The new password can\'t be the same as the old one'))
       } else {
@@ -57,8 +57,8 @@ export default {
       },
       rules:{
         oldpassword: [
-          { required: true, message: 'Please enter  password', trigger: 'blur' },
-          { min: 8, max: 20, message: 'Use at least 8 characters and No more than 20 characters, It is case sensitive.', trigger: 'blur' }
+          { required: true, message: 'Please enter the original password', trigger: 'blur' },
+          { min: 8, max: 20, message: 'Must be at least 8 to 20 characters.', trigger: 'blur' }
         ],
         password: [
           {validator: validateNewPass, trigger: 'blur'}
@@ -121,18 +121,19 @@ export default {
 @import url('../../../styles/mixin.less');
 .modify-password {
   .el-input {
-    width: 40%;
+    width: 400px;
   }
   .goto-getpid {
     display: inline-block;
     margin-left: 2rem;
   }
   .pid-footer {
+    width: 400px;
     text-align: center;
     margin-top: 60px;
+    margin-left: 150px;
     button {
-      .btn-h(10rem, 3rem , #85ba3b, #85ba3b, #fff);
-      font-size: 1.4rem;
+      .btn-h(12rem, 3rem , #85ba3b, #85ba3b, #fff);
       &:active {
         backgorund: darken(#85ba3b, 10%);
         border-color: darken(#85ba3b, 10%);

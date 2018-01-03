@@ -1,13 +1,13 @@
 <template>
   <div class="affiliate-pid">
     <div class="title-bottom">Affiliate PID</div>
-     <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
+     <a class="goto-getpid link" href="javascript:void(0);">I don’t know how to get it?</a>
       <div v-for="item in platformArr" class="item-pid">  
-        <label>{{item.provider}} :</label>
+        <label class="capitalize">{{item.provider + ' Affiliate PID'}} :</label>
         <el-input  v-model="item.pid"></el-input>
       </div>
     <div class="pid-footer">
-      <el-button @click="submit" :loading="saveLoading">Save</el-button>
+      <el-button @click="submit" :loading="saveLoading">Save Settings</el-button>
     </div>
   </div>
 </template>
@@ -117,18 +117,20 @@ export default {
   }
   .item-pid {
     margin-bottom: 1rem;
+    label.capitalize {text-transform: capitalize}
   }
   .goto-getpid {
     position: absolute;
     top: 34%;
-    right: 26%;
+    right: 18%;
   }
   .pid-footer {
+    width: 40%;
     text-align: center;
+    margin-left: 140px;
     margin-top: 60px;
     button {
       .btn-h(10rem, 3rem , #85ba3b, #85ba3b, #fff);
-      font-size: 1.4rem;
       &:active {
         backgorund: darken(#85ba3b, 10%);
         border-color: darken(#85ba3b, 10%);

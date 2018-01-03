@@ -1,16 +1,16 @@
 <template>
   <div class="settings-account">
     <div class="title">Settings</div>
-    <div class="title-s">Product Information</div>
+    <div class="title-s">Account Basics</div>
     <div class="form-content" v-if="userInfo">
-      <el-form :model="accountForm" class="account-form" label-width="100px">
+      <el-form :model="accountForm" class="account-form" label-width="110px">
         <el-form-item label="Username: " prop="username" class="account-item" >
-          <el-input disabled  v-model="username"></el-input>
+          <div>{{username}}</div>
         </el-form-item>
         <el-form-item label="Email: " prop="" class="account-item" >
-          <el-input disabled v-model="email"></el-input>
+          <div>{{email}}</div>
         </el-form-item>
-        <el-form-item label="Avatar: " prop="" class="account-item" >
+        <el-form-item label="Profile photo: " prop="" class="account-item" >
           <el-upload class="avatar-uploader" 
                     action="upload" 
                     :show-file-list="false" 
@@ -22,14 +22,14 @@
           </el-upload>
           <div class="limit-text">Only support .jpg, .gif, .png, and the images shall not be exceed 1MB. </div>
         </el-form-item>
-        <el-form-item label="Gende: " prop="" class="account-item" >
+        <el-form-item label="Gender: " prop="" class="account-item" >
           <el-radio v-model="accountForm.sex" label="男"><img class="sex-img" src="../../../assets/setting-account_1.png" alt="">Boy</el-radio>
           <el-radio v-model="accountForm.sex" label="女"><img class="sex-img" src="../../../assets/setting-account_02.png" alt="">Gril</el-radio>
         </el-form-item>
         <el-form-item label="Date of birth: " prop="" class="account-item" >
           <el-date-picker type="date" v-model="accountForm.birthday" ></el-date-picker>
         </el-form-item>
-        <el-form-item label="Introduce: " prop="" class="account-item" >
+        <el-form-item label="Introduce: " prop="" class="account-item account-item-textarea" >
           <el-input type="textarea" v-model="accountForm.introduce" :rows="6" ></el-input>
         </el-form-item>
       </el-form>
@@ -145,7 +145,9 @@ export default {
 
 <style lang="less" scoped>
 @import url("../../../styles/mixin.less");
-
+  .account-item-textarea {
+    width: 710px;
+  }
   .facebook-text {
     img {
       float: left;
@@ -172,6 +174,8 @@ export default {
     margin-bottom: 3rem;
   }
   .footer-account {
+    width: 600px;
+    margin-left: 110px;
     text-align: center;
     button {
       .btn-h(10rem,3rem, #83b938, #83b938, #fff);

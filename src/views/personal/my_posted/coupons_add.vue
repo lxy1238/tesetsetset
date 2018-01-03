@@ -116,7 +116,7 @@
     </el-form-item>
     <el-form-item label="Type: " class="item-inline1" >
       <el-radio class="radio" v-model="couponsForm.use_type" label="Unlimited">Unlimited</el-radio>
-      <el-radio class="radio" v-model="couponsForm.use_type" label="Alone">Alone</el-radio>
+      <!-- <el-radio class="radio" v-model="couponsForm.use_type" label="Alone">Alone</el-radio> -->
     </el-form-item>
     <el-form-item label="Coupon code: " class="item-inline" prop="coupon_code">
       <el-input v-model="couponsForm.coupon_code" v-if="couponsForm.use_type === 'Unlimited'"></el-input>
@@ -562,7 +562,7 @@ export default {
           if (this.$route.query.editor) {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
-          this.issueCoupon(this.couponsFormSubmit, e.target)
+          this.issueCoupon(this.couponsFormSubmi)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')

@@ -15,34 +15,41 @@
           <div v-if="selected == 0" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails0" :class="{last: index == 2}" v-if="!item.isExpried">
-                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt=""  @click="gotoSuccessDetail(item)">
+                <img class="order-img pointer" :src="item.trials.product_img.split(',')[0]" alt=""  @click="gotoSuccessDetail(item)">
                 <div class="center-content">
-                  <div class="order-title" @click="gotoSuccessDetail(item)">{{item.trials.product_title}} </div>
+                  <div class="order-title pointer" @click="gotoSuccessDetail(item)">{{item.trials.product_title}} </div>
                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.trials.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.trials.product_price}}</i>
                     </span>
                     <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i class="free-price">{{currency}}{{item.trials.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.trials.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price">{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Merchant reward: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.trials.refund_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
                     <el-input class="footer-input" v-model="item.order_number" @keyup.enter.native="orderBtnSubmit(item)" ></el-input>
                     <el-button class="order-number" type="button" @click="submitOrderNumber(item)" :loading="orderBtnLoading">Save</el-button>
+                    <div class="red" v-if="!item.order_number && item.hasOrderNumber">Please enter the order number.</div>
                   </div>
                 </div>
                 <div class="right-content">
-                  <p> Count down: {{item.countDownData.hours}}:{{item.countDownData.minutes}}:{{item.countDownData.seconds}} </p>
+                  <p><i class="iconfont icon-icon-test"></i> Count down: {{item.countDownData.hours}}:{{item.countDownData.minutes}}:{{item.countDownData.seconds}} </p>
                   <p>If the order number is not submitted within
                     the allowed time, your trial qualification will
                     be canceled.</p>
@@ -60,25 +67,31 @@
           <div v-if="selected == 1" class="content">
             <div class="wait-order">
              <div class="order" v-for="(item, index) in orderDetails1" :class="{last: index == 2}">
-               <img class="order-img" :src="item.product_img.split(',')[0]" alt="" >
+               <img class="order-img pointer" :src="item.product_img.split(',')[0]" alt="" >
                 <div class="center-content">
-                  <div class="order-title" >{{item.product_title}} </div>
-                  <div class="info">
+                  <div class="order-title pointer" >{{item.product_title}} </div>
+                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.product_price}}</i>
                     </span>
                     <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Merchant reward: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
@@ -87,6 +100,7 @@
 
                     <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Modity</button>
                     <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
+                    <div class="red" v-if="!item.order_number">Please enter the order number.</div>
                   </div>
                 </div>
                 <div class="right-content">
@@ -95,6 +109,7 @@
                       <span class="footer-span">Review URL:</span>
                       <el-input class="footer-input" v-model="item.appraise_url_input" @keyup.enter.native="urlSubmit(item)"></el-input>
                       <el-button type="button" class="save-btn" @click="submitAppraiseUrl(item)" :loading="urlSaveLoading">Save</el-button>
+                       <div class="red" v-if="!item.appraise_url_input && item.notHasInputUrl">Please enter the order number.</div>
                     </div>
                     <p>Please upload your review within 30 business days after 
                       ordering and submit the link address for the review, 
@@ -141,27 +156,33 @@
           <div v-if="selected == 2" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails2" :class="{last: index == 2}">
-               <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
+               <img class="order-img pointer" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                  <div class="order-title">{{item.product_title}} </div>
-                  <div class="info">
+                  <div class="order-title pointer">{{item.product_title}} </div>
+                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.product_price}}</i>
                     </span>
                     <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Merchant reward: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
-                   <div class="footer">
+                  <div class="footer">
                     <span class="footer-span">Order number:</span>
                     <span class="footer-span" v-if="true">{{item.order_number}}</span>
                   </div>
@@ -200,25 +221,31 @@
           <div v-if="selected == 3" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails3" :class="{last: index == 2}">
-                <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
+                <img class="order-img pointer" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                 <div class="order-title">{{item.product_title}} </div>
+                 <div class="order-title pointer">{{item.product_title}} </div>
                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.product_price}}</i>
                     </span>
                     <span v-if="item.shipping_fee != 0">
-                      <label>Shipping fee: </label>
+                      <label class="free-price">Shipping fee: </label>
                       <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Merchant reward: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
@@ -252,6 +279,7 @@ import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString.js'
 import { validateURL } from '@/utils/validate.js'
+import { NumAdd } from '@/utils/calculate'
 export default {
   name: 'my_trials',
   components: {
@@ -398,6 +426,12 @@ export default {
    
     //提交订单 号码
     submitOrderNumber (item) {
+      if (!item.order_number) {
+        item.hasOrderNumber = true
+        return
+      } else {
+        item.hasOrderNumber = false
+      }
       this.orderBtnLoading = true
       this.reqAddOrderData.id = item.id
       this.reqAddOrderData.order_number = item.order_number
@@ -427,6 +461,9 @@ export default {
     },
     //修改订单号
     editOrderNumberBtn (item) {
+      if (!item.order_number) {
+        return
+      }
       this.saveLoading = true
       this.reqAddOrderData.order_id = item.id
       this.reqAddOrderData.order_number = item.order_number
@@ -450,9 +487,12 @@ export default {
     submitAppraiseUrl (item) {
       
       if (!item.appraise_url_input || !validateURL(item.appraise_url_input) ) {
-        this.$message.error('Please enter a legal URL')
+        item.notHasInputUrl = true
+        this.refresh(this.orderDetails1)
         return
-      } 
+      } else {
+        item.notHasInputUrl = false
+      }
       let reqData =  {
         api_token: getToken(),
         user_id: getUserId(),
@@ -531,6 +571,10 @@ export default {
     
     gotoSuccessDetail (item) {
       this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) })
+    },
+
+    add (a, b) {
+      return NumAdd(a, b)
     }
   }
 }
@@ -542,7 +586,7 @@ export default {
      height: 730px;
      border: 1px solid #e1e1e1;
       .head-s {
-        font-size: 1.33rem;
+        font-size: 16px;
         height: 72px;
         background: #f9f9f9;
         border-bottom: 1px solid #e1e1e1;
@@ -587,7 +631,7 @@ export default {
             .order-img {
               position: absolute;
               top: 38px;
-              left: 15px;
+              left: 30px;
               width: 120px;
               height: 108px;
             }
@@ -598,15 +642,16 @@ export default {
               height: 118px;
               .order-title {
                 color: #333;
-                font-size: 12px;
-                line-height: 1;
-                height: 24px;
+                font-size: 13px;
+                font-weight: 700;
+                line-height: 1.21;
+                height: 31px;
                 overflow: hidden;
                 margin-bottom: 20px;
                 width: 80%;
               }
               .info {
-                margin-bottom: 20px;
+                margin-bottom: 10px;
                 span {
                   margin-right: 10px;
                   font-size: 0.78rem;
@@ -614,8 +659,21 @@ export default {
                     color: #808080;
                   }
                 }
+                .trials-price-all {
+                  margin-top: 5px;
+                  .trials-price {
+                    font-weight: 700;
+                  }
+                  .merchant-reward {
+                    color: #D62828;
+                  }
+                }
+                .free-price {
+                  text-decoration: line-through;
+                }
               }
               .footer {
+  
                 position: relative;
                 height: 22px;
                 line-height: 22px;
@@ -657,9 +715,13 @@ export default {
                   color: #1a1a1a;
                 }
                 color: #898989;
-                font-size: 0.83rem;
+                font-size: 13px;
               }
               .footer {
+                .red {
+                  position: relative;
+                  top: -4px;
+                }
                 position: relative;
                 height: 22px;
                 line-height: 22px;
@@ -680,7 +742,7 @@ export default {
                 }
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
-                  font-size: 0.78rem;
+                  font-size: 13px;
                   line-height: 1.43;
                   &:active {
                     background: darken(#82b838, 10%);
@@ -697,7 +759,7 @@ export default {
                 text-align: center;
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
-                  font-size: 0.78rem;
+                  font-size: 13px;
                   line-height: 1.43;
                   &:active {
                     background: darken(#82b838, 10%);
