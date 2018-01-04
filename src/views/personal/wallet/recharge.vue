@@ -15,14 +15,15 @@
         <label class="left-label">
           Security deposit:
         </label>
-        <span class="balance-money">
+        <span class="balance-money balance-money-sd">
           {{currency}}{{useraccountInfo.security_deposit}}
         </span>
       </div>
       <div class="withdrawals">
-        <label class="left-label">recharges:</label>
-        <el-form-item prop="withdrawCount">
-          <el-input v-model="rechangeForm.withdrawCount" class="input-money"  @keyup.enter.native="doSubmit"></el-input>
+        <el-form-item prop="withdrawCount" label="Recharge amount:" label-width="150px" required>
+          <el-input v-model="rechangeForm.withdrawCount" class="input-money"  @keyup.enter.native="doSubmit">
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
@@ -56,9 +57,9 @@ export default {
       if (!value) {
         return callback(new Error('Please enter the recharge amount'))
       } else if(parseFloat(value) == 0 ){
-        callback(new Error ('Please enter the correct amount'))
+        callback(new Error ('Invalid recharge amount'))
       } else if(!reg.test(value)){
-        callback(new Error ('The amount can only enter two decimal places'))
+        callback(new Error ('Invalid recharge amount'))
       } else {
         callback()
       }
@@ -189,21 +190,24 @@ export default {
     .el-form-item {
       display: inline-block;
       margin-bottom: 0;
-      width: 400px;
+      width: 550px;
     }
     .left-label {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 140px;
-      color: #666;
-      font-size: 16px;
+      width: 138px;
+      font-size: 14px;
+      color: #48576a;
     }
     .balance {
       margin-bottom: 1.5rem;
       .balance-money {
         color: #333;
         font-size: 16px;
+        &.balance-money-sd {
+          font-weight: 700;
+        } 
       }
       
     }
@@ -233,7 +237,6 @@ export default {
     .submit {
       button {
         .btn-h(160px, 45px, #84ba3a, #84ba3a, #fff);
-        font-size: 24px;
       }
     }
   }

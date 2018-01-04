@@ -8,21 +8,10 @@
 .code-dialog .el-dialog__body {
   padding: 0;
 }
-.login-dialog .el-dialog.el-dialog--small {
-  width: 420px;
-}
-.login-dialog .el-dialog__header {
-  padding-bottom: 1rem;
-}
-.login-dialog .el-dialog__body {
-  padding: 0 1rem;
-}
-.login-dialog .el-form-item {
-  width: 80%;
-  margin: 20px auto;
-}
 .sign-dialog .el-dialog.el-dialog--small {
-  width: 420px;
+  width: 458px;
+  min-height: 500px;
+  padding-bottom: 40px;
 }
 .sign-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -66,6 +55,14 @@
 @font-face {
   font-family: 'Open Sans';
   src: url('../static/font/opensans.ttf');
+}
+@font-face {
+  font-family: 'Open Sans Bold';
+  src: url('../static/font/OpenSans-Bold.ttf');
+}
+@font-face {
+  font-family: 'Open Sans Semibold';
+  src: url('../static/font/OpenSans-Semibold.ttf');
 }
 [v-cloak] {
   display: none;
@@ -178,13 +175,19 @@ a:focus {
   display: block !important;
 }
 .invisible {
-  visibility: hidden;
+  visibility: hidden !important;
 }
 .hidden {
   display: none !important;
 }
 .pointer {
   cursor: pointer;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+.line-through {
+  text-decoration: line-through;
 }
 table {
   width: 100%;
@@ -343,24 +346,13 @@ table tbody tr td {
   html {
     font-size: 14.9px;
   }
-  .coupons-product {
-    height: 345px !important;
-  }
   .trials-details-left {
     top: 10.3rem !important;
-  }
-}
-@media screen and (max-width: 1389px) {
-  .coupons-product {
-    height: 345px !important;
   }
 }
 @media screen and (max-width: 1270px) {
   html {
     font-size: 12px;
-  }
-  .coupons-product {
-    height: 340px !important;
   }
   .coupons-product .btn-coupons {
     height: 2.5rem !important;

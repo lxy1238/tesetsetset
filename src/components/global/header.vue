@@ -7,8 +7,8 @@
              <a href="javascript:void(0);"  @click="coupons"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
-             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >COUPONS</a>
-             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">TRIALS</a>
+             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >Coupons</a>
+             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">Trials</a>
               <!-- <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a> -->
               <div class=" inline-b search">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
@@ -17,7 +17,7 @@
               
             <template v-if="!isLogin">
               <button class="inline-b btn-h login" @click="ShowLoginDialog">Log In</button>
-              <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign up</button>
+              <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign Up</button>
              </template>
             <template v-else>
              <div class="inline-b login-y user-info" 
@@ -52,7 +52,7 @@
             </template>
             <div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
                <span class="country-span">
-                 <i>{{selectedCountryShop}}</i> 
+                 {{selectedCountryShop}}
                  <template>
                  <i v-if="!showDropdownC" class="iconfont icon-xiangxia"></i>
                  <i v-else class="iconfont icon-icon-"></i>
@@ -89,7 +89,11 @@
 
      <!-- login-form -->
      <el-dialog :visible.sync = "loginDialog" class="sign-dialog" >
-      <span slot="title" class="title">Log In / Sign Up</span>
+      <!-- <span slot="title" class="title">Log In</span> -->
+        <header>
+          <h1 class="center">Welcome to Dealsbank</h1>
+          <p class="center">Log In to start saving.</p>
+        </header>
         <div class="dialog-body">
           <div class="top">
             <div class="facebook">
@@ -118,17 +122,17 @@
                 </div>
               </div>
               <el-form-item >
-                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Login in</el-button>
+                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Login In</el-button>
               </el-form-item>
 
             </el-form>
-            <div class="footer">
+            <div class="footer top">
               <div>
                 By signing up, you agree to our <a href="#">Terms of Sevice</a>  and  <a href="#">Privacy Pol</a>
               </div>
             </div>
-             <div class="footer">
-              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog">Create an Account ></a>
+             <div class="footer bottom">
+              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog"> <b>Create an Account ></b> </a>
             </div>
           </div>
         </div>
@@ -137,7 +141,10 @@
      <!-- sign-form -->
 
      <el-dialog :visible.sync = "signDialog" class="sign-dialog" >
-       <span slot="title" class="title">Log In / Sign Up</span>
+       <header>
+          <h1 class="center">Join Dealsbank</h1>
+          <p class="center">Find and share great deals.</p>
+        </header>
         <div class="dialog-body">
           <div class="top">
             <div class="facebook">
@@ -157,7 +164,7 @@
                 <el-input v-model="signform.email" placeholder="Email Address"></el-input>
               </el-form-item>
               <el-form-item  prop="username">
-                <el-input v-model="signform.username" placeholder="Nickname"></el-input>
+                <el-input v-model="signform.username" placeholder="Username"></el-input>
               </el-form-item>
               <el-form-item  prop="password">
                 <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
@@ -166,14 +173,13 @@
                 <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading" >Sign up</el-button>
               </el-form-item>
             </el-form>
-            <div class="footer">
+            <div class="footer top">
               <div>
                 By signing up, you agree to our <a href="#">Terms of Sevice</a>  and  <a href="#">Privacy Pol</a>
               </div>
             </div>
-             <div class="footer">
-              Already a member? <a href="javascript:void(0);" @click="ShowLoginDialog">Log In ></a> 
-               
+             <div class="footer bottom">
+              Already a member? <a href="javascript:void(0);" @click="ShowLoginDialog"> <b>Log In ></b> </a> 
             </div>
           </div>
         </div>
@@ -181,7 +187,7 @@
 
       <!-- reset-password -->
        <el-dialog :visible.sync = "resetPassword" class="sign-dialog" >
-       <span slot="title" class="title">Reset Password</span>
+       <span slot="title" class="title resetpass">Reset Password</span>
         <div class="dialog-body">
           <div class="top">
             <div class="text">
@@ -212,8 +218,8 @@
               <button class="google" id="customBtn2"><i class="iconfont icon-googleplus"></i> Join with Google</button>
             </div>
           </div>
-             <div class="footer">
-              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog">Create an Account ></a> 
+             <div class="footer bottom">
+              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog"> <b>Create an Account ></b> </a> 
             </div>
           </div>
         </div>
@@ -236,11 +242,24 @@ export default {
       if (!value) {
         return callback(new Error('Please enter your Email'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Please enter the correct mailbox'))
+        return callback(new Error('Invalid email address'))
       } else {
+        // this.$api.sign(this.signform).then(() => {
+        //   callback()
+        // }).catch(err => {
+        //   callback(new Error(err.message))
+        // })
         callback()
       }
+      
     }
+    // const validateUsername = (rule, value, callback) => {
+    //   sign(this.signform).then(res => {
+    //     callback(new Error(res.message))
+    //   }).catch(err => {
+    //     callback(new Error(err.message))
+    //   })
+    // }
     return {
       signform: {
         email: '',
@@ -261,8 +280,9 @@ export default {
           {  validator:validateEmailRule , trigger: 'blur' },
         ],
         username: [
-          { required: true, message: 'Please enter your nickname', trigger: 'blur' },
-          { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' }
+          { required: true, message: 'Please enter your username', trigger: 'blur' },
+          { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' },
+          // {  validator:validateUsername , trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
@@ -582,6 +602,7 @@ export default {
       this.isShowAllLanguage = !this.isShowAllLanguage
     },
     signUp () {
+      
       this.signSubmit('signform', () => {
         this.signloading = true
         this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email
@@ -602,13 +623,13 @@ export default {
     Login () {
       this.signSubmit('loginform', () => {
         this.loginLoading = true
+        console.log(this.loginform)
         this.$store.dispatch('Login', this.loginform).then(res => {
           if (res.code == 200) {
             if(this.loginform.remember == true) {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
-            this.$message.success('login success')
             this.$refs['loginform'].resetFields()
           }
           this.$store.dispatch('GetInfo').then(res => {
@@ -933,7 +954,7 @@ export default {
                 }
                 &.tag {
                   height: 1rem;
-                  top: 10px;
+                  top: 12px;
                   width: 5.4rem;
                   text-align: center;
                   left: 2.8rem;
@@ -953,6 +974,9 @@ export default {
             .country-span {
               width: 100%;
               overflow: hidden;
+              .iconfont {
+                top: -1px;
+              }
             }
             .dropdown {
               width: 130%;
@@ -980,7 +1004,7 @@ export default {
           }
           .iconfont {
             position: relative;
-            font-size: 13px;
+            font-size: 10px;
             top: 1px;
             right: 1px;
           }
@@ -1099,12 +1123,30 @@ export default {
 
 .login-dialog,
 .sign-dialog {
+  h1.center {
+    color: #333;
+    font-size: 30px;
+    font-family: "Open Sans Bold", "Open Sans", Arial, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    margin-top: -15px;
+    margin-bottom: 15px;
+    
+  }
+  p.center {
+    color: #4A4A4A;
+    margin-bottom: 30px;
+    font-size: 15px;
+  }
   .title {
     width: 17rem;
     text-align: center;
-    margin-left: 5rem;
+    margin-left: 150px;
     font-weight: bold;
     font-size: 26px;
+    &.resetpass {
+      margin-left: 100px;
+    }
   }
   .dialog-body {
     text-align: center;
@@ -1113,6 +1155,8 @@ export default {
     position: relative;
     height: 1rem;
     margin-bottom: 1rem;
+    font-size: 11px;
+    color: #666;
     span {
       position: relative;
       z-index: 22;
@@ -1161,10 +1205,22 @@ export default {
     }
   }
   .footer {
-    margin: 20px auto;
     width: 80%;
+    &.bottom {
+      margin: 30px auto 0;
+      font-size: 14px;
+    }
+    &.top {
+      margin: -10px auto 0;
+      font-size: 10px;
+    }
   }
   .remember {
+    .el-checkbox {
+      font-size: 12px;
+    }
+    
+    font-size: 12px;
     .box {
       width: 80%;
       margin: 0 auto;
@@ -1173,6 +1229,9 @@ export default {
         float: right;
       }
     }
+  }
+  .el-checkbox__label {
+    font-size: 10px;
   }
 }
 </style>

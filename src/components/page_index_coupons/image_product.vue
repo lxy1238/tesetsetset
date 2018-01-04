@@ -31,7 +31,7 @@
       </div>
      </div> 
       <p class="platfrom content" >{{couponsDetails.website}}</p>
-      <p class="descript content" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</p>
+      <div class="descript" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</div>
       <slot name="price"></slot>
       <div class="content viewcoupons">
         <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id)">
@@ -208,7 +208,8 @@ export default {
   display: inline-block;
   overflow: hidden;
   width: 240px;
-  height: 355px;
+  // height: 355px;
+  padding-bottom: 10px;
   background: white;
   border-radius: 4px;
   margin: 0 0.5rem 10px 0;
@@ -236,7 +237,7 @@ export default {
     text-align: center;
   }
   .content {
-    margin: 2px 0 0 10px;
+    margin: 10px 0 0 10px;
     color: rgb(137, 137, 137);
     .old {
       text-decoration: line-through;
@@ -344,12 +345,14 @@ export default {
   .descript {
     font-size: 13px;
     color: rgb(51, 51, 51);
-    height: 26px;
+    height: 31px;
     overflow: hidden; /*内容超出后隐藏*/
     // text-overflow: ellipsis;/* 超出内容显示为省略号*/
     // white-space: nowrap;/*文本不进行换行*/
     // margin-top: 0.5rem;
-    margin-bottom: 10px;
+    margin-top: 5px;
+    line-height: 1.21;
+    padding: 0 10px 0 10px;
   }
  
   .coupons {
@@ -361,7 +364,7 @@ export default {
     }
   }
   .viewcoupons {
-    margin-top: 10px;
+    margin-top: 15px;
     margin-right: 10px;
     .btn-coupons {
       .btn-h(100%, 2rem);
@@ -370,6 +373,7 @@ export default {
       background: #eee;
       border: 1px solid #ccc;
       font-weight: bold;
+      color: #666 !important;
       &:hover {
         background: #c9caca;
       }

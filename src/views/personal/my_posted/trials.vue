@@ -2,7 +2,8 @@
   <div class="posted-coupons">
     <template>
        <div class="pro-header">
-        <h3 class="title">Trials Posted</h3>
+        <h3 class="title">My Posted</h3>
+        <div class="title-s">Trials Posted</div>
       </div>
  <div class="search-form">
       <label for="title">

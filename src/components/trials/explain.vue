@@ -62,11 +62,11 @@ export default {
   width: 16.3rem;
   margin: 0;
   .title {
-    font-size: 1rem;
-    color: #666;
+    font-size: 16px;
+    color: #333;
   }
   .content {
-    font-size: 0.8rem;
+    font-size: 11px;
     color: #b2b2b2;
     display: inline-block;
     width: 90%;

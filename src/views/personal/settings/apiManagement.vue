@@ -1,6 +1,7 @@
 <template>
   <div class="affiliate-pid">
-    <div class="title-bottom">Affiliate PID</div>
+    <div class="title">Settings</div>
+    <div class="title-s">Affiliate PID</div>
      <a class="goto-getpid link" href="javascript:void(0);">I don’t know how to get it?</a>
       <div v-for="item in platformArr" class="item-pid">  
         <label class="capitalize">{{item.provider + ' Affiliate PID'}} :</label>
@@ -121,7 +122,7 @@ export default {
   }
   .goto-getpid {
     position: absolute;
-    top: 34%;
+    top: 44%;
     right: 18%;
   }
   .pid-footer {

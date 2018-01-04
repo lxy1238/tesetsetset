@@ -33,7 +33,7 @@
           </el-select>
           <!-- <select-self  :list="options"  @child="getSelectValue" v-model="couponsForm.menu_name"></select-self>    -->
         </el-form-item>
-        <el-form-item label="List price: " prop="product_price" class="item-inline" >
+        <el-form-item label="List price: " prop="product_price" class="item-inline" required>
           <el-input class="input-price-fee input-money " v-model="couponsForm.product_price" >
             <template slot="prepend">{{currency}}</template>
           </el-input>
@@ -53,7 +53,7 @@
                 ref="upload"
                 list-type="picture">
               <el-button size="small" type="primary">Upload</el-button>
-              <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.</div>
+              <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,1M max,6 photos at most.</div>
           </el-upload>
         </el-form-item>
         <el-form-item label="Title: " prop="product_title" class="item-large" >
@@ -103,7 +103,7 @@
        Coupon Information
     </div>
     <el-form-item label="Valid date: " class="item-inline"  prop="valid_date" >
-      <el-date-picker size="large" placeholder="Please select the date" v-model="couponsForm.valid_date" :picker-options="pickerOptions1"></el-date-picker>
+      <el-date-picker size="large"  v-model="couponsForm.valid_date" :picker-options="pickerOptions1"></el-date-picker>
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
       <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
@@ -115,12 +115,12 @@
       </el-input>
     </el-form-item>
     <el-form-item label="Type: " class="item-inline1" >
-      <el-radio class="radio" v-model="couponsForm.use_type" label="Unlimited">Unlimited</el-radio>
-      <!-- <el-radio class="radio" v-model="couponsForm.use_type" label="Alone">Alone</el-radio> -->
+      <el-radio class="radio" title="The same coupon code for everyone." v-model="couponsForm.use_type" label="Unlimited">Unlimited</el-radio>
+      <!-- <el-radio class="radio" title="Everyone has a unique coupon code." v-model="couponsForm.use_type" label="Alone">Alone</el-radio> -->
     </el-form-item>
     <el-form-item label="Coupon code: " class="item-inline" prop="coupon_code">
       <el-input v-model="couponsForm.coupon_code" v-if="couponsForm.use_type === 'Unlimited'"></el-input>
-      <el-input type="textarea" v-model="couponsForm.coupon_code" v-else ></el-input> 
+      <el-input type="textarea" placeholder="One line to fill a coupon code." v-model="couponsForm.coupon_code" v-else ></el-input> 
     </el-form-item>
     <el-form-item class="footer-btn" >
       <el-button type="button" class="save" @click="Submit($event)" :loading="saveLoading">Save</el-button>
@@ -145,9 +145,9 @@ export default {
     let reg =  /^\d+(\.\d{1,2})?$/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the product price'))
+        return callback(new Error('The list price is required.'))
       } else if(!reg.test(value)){
-        callback(new Error ('Please enter the correct format amount'))
+        callback(new Error ('Invalid price.'))
       } else {
         callback()
       }
@@ -160,7 +160,7 @@ export default {
         },
       },
       rules: {
-        product_url: [{ required: true, trigger: 'blur' }],
+        product_url: [{ required: true, message: 'The product URL is required.', trigger: 'blur' }],
         product_price: [{ validator: validateMoney, trigger: 'blur' }],
         website: [{ required: true, message: 'website is required', trigger: 'blur' }],
         menu_id: [{type:'number', required: true, message: 'category is required' ,trigger: 'blur' }],
@@ -174,13 +174,13 @@ export default {
           }
         ],
         product_title: [
-          { required: true, message: 'title is required', trigger: 'blur' }
+          { required: true, message: 'The title is required.', trigger: 'blur' }
         ],
-        product_reason: [{ required: true, trigger: 'blur' }],
-        valid_date: [{ type: 'date', required: true, trigger: 'blur' }],
-        discount_rate: [{ required: true,message: 'discount rate is required', trigger: 'blur' }],
-        quantity_per_day: [{type: 'number' ,message: 'quantity per day is required', required: true, trigger: 'blur' }],
-        coupon_code: [{ required: true, trigger: 'blur' }]
+        product_reason: [{ required: true, message: 'The reason is required.', trigger: 'blur' }],
+        valid_date: [{ type: 'date', required: true, message: 'The valid date is required.', trigger: 'blur' }],
+        discount_rate: [{ required: true,message: 'The discount rate is required.', trigger: 'blur' }],
+        quantity_per_day: [{type: 'number' ,message: 'The quantity per day is required.', required: true, trigger: 'blur' }],
+        coupon_code: [{ required: true, message: 'The coupon code is required.', trigger: 'blur' }]
       },
       optionsWebsite: [],
       optionsCategory: [],
@@ -407,7 +407,7 @@ export default {
     getProInfo (url) {
       this.getinfoBtn = true
       // this.$message.info('For information on goods, please wait a moment')
-      axios.get('http://192.168.1.199:8008/index.php/api/asin', {
+      axios.get('//192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,
         }
@@ -487,14 +487,14 @@ export default {
       const isGIF = file.type === 'image/gif'
       const isPNG = file.type === 'image/png'
 
-      const isLt500K = file.size / 1024 / 500 < 1
+      const isLt500K = file.size / 1024 / 1024 <= 1
 
       let limitF = true
       if (!(isJPG || isGIF || isPNG)) {
         this.$message.error('上传图片只能是 JPG/GIF/PNG格式!')
       }
       if (!isLt500K) {
-        this.$message.error('上传图片文件大小 不能超过 500kb!')
+        this.$message.error('上传图片文件大小 不能超过 1M!')
       }
       if (this.couponsForm.product_img_s.length >= 6) {
         this.$message.error('最多只能上传6张图片！')
@@ -562,7 +562,7 @@ export default {
           if (this.$route.query.editor) {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
-          this.issueCoupon(this.couponsFormSubmi)
+          this.issueCoupon(this.couponsFormSubmit)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')

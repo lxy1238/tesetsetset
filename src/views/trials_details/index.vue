@@ -506,9 +506,12 @@ export default {
             text-align: center;
             line-height: 4rem;
             cursor: pointer;
-            color: #1a1a1a;
+            color: #333;
+            font-size: 18px;
+            font-weight: 700;
+
             &:hover {
-              color: #808080;
+              color: #1a1a1a;
             }
             &.active {
               height: 4.01rem;

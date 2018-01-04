@@ -6,7 +6,7 @@
     <div class="title-s">
       Product Information
     </div>
-    <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="130px" class="coupons-form" >
+    <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
           <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
@@ -528,7 +528,7 @@ export default {
     getProInfo (url) {
       // this.$message.info('For information on goods, please wait a moment')
       this.getInfoLoading = true
-      axios.get('http://192.168.1.199:8008/index.php/api/asin', {
+      axios.get('//192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,
         }

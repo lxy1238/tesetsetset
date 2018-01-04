@@ -23,8 +23,8 @@
           <dl>
             <dt>Join Us</dt>
             <dd>
-              <!-- <router-link to="/enter/index">Seller</router-link> -->
-              <a href="#">Seller</a>
+              <router-link to="/enter/index">Seller</router-link>
+              <!-- <a href="#">Seller</a> -->
             </dd>
             <!-- <dd><a href="#">Sensation</a></dd>
             <dd><a href="#">Member</a></dd> -->

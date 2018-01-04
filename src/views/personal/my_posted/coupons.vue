@@ -1,7 +1,8 @@
 <template>
   <div class="posted-coupons">
     <div class="pro-header">
-      <h3 class="title">Coupons Posted</h3>
+      <h3 class="title">My Posted</h3>
+      <div class="title-s">Coupons Posted</div>
     </div>
     <div class="search-form">
       <label for="title">
@@ -40,7 +41,7 @@
         </thead>
         <tbody >
           <tr v-for="item in trLists" >
-            <td>
+            <td class="img">
               <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
             </td>
             <td class="coupons-table-title">
@@ -76,24 +77,24 @@
             </td>
             <td class="operation">
               <template v-if="item.status === 0 && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired  ">
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
-                <div> <a href="javascript:void(0)"  @click="showCloseDetails(item.id)">Details</a></div>
+                <div class="link"> <a href="javascript:void(0)"  @click="showCloseDetails(item.id)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1]  && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
-                <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
+                <div class="link"> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
               <template v-if="item.isExpired">
                 <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
@@ -405,10 +406,22 @@ export default {
     width: 5rem;
     height: 4rem;
   }
+  .img {
+    width: 160px;
+  }
   .coupons-table-title {
     text-align: left;
     width: 250px;
     padding-left: 10px;
+    .table-product-title {
+      color: #333;
+      margin: 5px 0 5px 0;
+    }
+  }
+  .operation {
+    .link {
+      margin-bottom: 10px;
+    }
   }
 }
 

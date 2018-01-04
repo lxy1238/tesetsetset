@@ -3,9 +3,8 @@
     <h3 class="title-s"  v-loading.fullscreen.lock="fullscreenLoading">WeChat Pay</h3>
     <div class="pay-wx-content">
       <template v-if="resData != ''">
-        <div class="red info-text" v-if="countDown > 0" >二维码将在 {{countDown}} 秒后过期</div>
-        <div class="red info-text" v-else>二维码已过期, <a href="javascript:void(0);" @click="refresh">刷新</a>
-          页面重新获取二维码。
+        <div class="red info-text" v-if="countDown > 0" >The qr code will expire in {{countDown}} seconds.</div>
+        <div class="red info-text" v-else>QR code has expired, <a href="javascript:void(0);" @click="refresh">refresh</a> the page to regain the QR code.
         </div>
       </template>
       <div id="codeWx" >
@@ -18,8 +17,8 @@
         Please use WeChat scan scan qr code to pay
       </div>
       <div class="footer"  v-show="resData != ''">
-        <a href="javasctipt:void(0);" @click="goback">
-          <i class="iconfont icon-down-trangle1"></i>  选择其他支付接口
+        <a href="javasctipt:void(0);" @click="goback" class="link">
+          <i class="iconfont icon-down-trangle1"></i>  Please choose other recharge method
         </a>
       </div>
     </div>
@@ -174,6 +173,8 @@ export default {
           position: absolute;
           right: 5%;
           top: 10px;
+          top: -7px;
+          height: 450px;
         }
       }
       .scan-text {
@@ -191,11 +192,11 @@ export default {
       position: relative;
       margin-top: 1rem;
       padding-left: 20px;
-      font-size: 18px;
+      font-size: 16px;
       .icon-down-trangle1 {
         position: absolute;
         left: 0;
-        top: 0;
+        // top: 2px;
         transform: rotate(90deg);
       }
     }

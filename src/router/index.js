@@ -169,7 +169,7 @@ export const asyncRouterMap = [
     path: '/personal/promotion',
     redirect: '/personal/promotion/index',
     component: p_center,
-    text: 'My Promotion',
+    text: 'My Promotions',
     hasChilds: false,
     children: [{
       path: 'index',

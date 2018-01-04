@@ -107,7 +107,7 @@
           <div class="recommend">
             <div class="re-head">
               <span class="re-head-l">recommend</span>
-              <span class="re-head-r" @click="gotoIndex" >more></span>
+              <span class="re-head-r link" @click="gotoIndex" >more <i>></i></span>
             </div>
               <coupons-pro 
                 v-for="couponsDetails in arrcouponsDetails"  
@@ -155,21 +155,22 @@
           <div class="box dialog-l">
               <h3>Generic label</h3>
             <div class="content">
-              <p>Labels are recommended,You can adjust your content display methods yourself.</p>
-              <div class="text"><span>#Platform#</span> <span class="right">This is the platform of the promotion. </span></div>
-              <div class="text"><span>#Promo_title#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_listprice#</span> <span class="right">This is the listprice of the promotion. </span></div>
-              <div class="text"><span>#Promo_saleprice#</span> <span class="right">This is the saleprice of the promotion. </span></div>
-              <div class="text"><span>#Coupon_value#</span> <span class="right">This is the coupon of the promotion. </span></div>
-              <div class="text"><span>#Discount_scale#</span> <span class="right">This is the scale of the promotion. </span></div>
-              <div class="text"><span>#Promo_description#</span> <span class="right">This is the description of the promotion. </span></div>
-              <div class="text"><span>#Promo_link#</span> <span class="right">This is the link of the promotion. </span></div>
+              <p>Labels are recommended,you can adjust your content display methods yourself.</p>
+              <div class="text"><span>#Platform#, </span> <span >This is the platform of the promotion. </span></div>
+              <div class="text"><span>#Promo_title#, </span> <span >This is the title of the promotion. </span></div>
+              <div class="text"><span>#Promo_listprice#, </span> <span >This is the listprice of the promotion. </span></div>
+              <div class="text"><span>#Promo_saleprice#, </span> <span >This is the saleprice of the promotion. </span></div>
+              <div class="text"><span>#Coupon_value#, </span> <span >This is the coupon of the promotion. </span></div>
+              <div class="text"><span>#Discount_scale#, </span> <span >This is the scale of the promotion. </span></div>
+              <div class="text"><span>#Promo_description#, </span> <span >This is the description of the promotion. </span></div>
+              <div class="text"><span>#Promo_link#, </span> <span >This is the link of the promotion. </span></div>
+              <div class="text"><span>#Order_link#, </span> <span >This is the link of the order. </span></div>
             </div>
             <div class="footer">
               <span>
                 If you do not operate, will not be able to output the corresponding
                 information. 
-                <a href="javascript:void(0);">Not understand? View tutorial >></a>
+                <a class="link" href="javascript:void(0);">Not understand? View tutorial >></a>
               </span>
             </div>
           </div>
@@ -315,8 +316,8 @@ export default {
       getCodeSuccess: false,             //是否领取优惠券成功
       isFlagCoupon: false,              //是否显示问题反馈
 
-      promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
-      promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
+      promotionTemplate: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Promo_link#\n#Promo_desctiption#\n', 
+      promotionTemplateinit: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Promo_link#\n#Promo_desctiption#\n', 
       templateText: '',
       promoterPid: '123456789',         //推广PID  ，默认的
       currency: getStore('currency') || '$'
@@ -511,7 +512,7 @@ export default {
         .then(res => {
           let newArr = []
           res.data.data.forEach(e => {
-            if (e.status == 1 && e.run_status == 'active') {
+            if (e.status == 1) {
               newArr.push(e)
             }
           })
@@ -756,8 +757,8 @@ export default {
       }
       .title {
         width: 80%;
-        font-size: 21px;
-        color: #1a1a1a;
+        font-size: 18px;
+        color: #333;
         font-weight: bold;
         margin-bottom: 1rem;
       }
@@ -1010,21 +1011,25 @@ export default {
         padding: 1rem;
         border-bottom: 1px solid #e1e1e1;
         .re-head-l {
-          font-size: 1.25rem;
-          color: #1a1a1a;
+          font-size: 18px;
+          font-weight: 700;
+          color: #333;
         }
         .re-head-r {
+          position: relative;
           cursor: pointer;
           float: right;
-          color: #808080;
-          &:hover {
-            color: red;
+          margin-right: 12px;
+          display: inline-block;
+          i {
+            position: absolute;
+            right: -10px;
+            top: 1px;
           }
         }
       }
       .coupons-product {
         width: 16.1rem;
-        height: 360px;
         margin: 0.5rem 1rem 0.5rem 0.35rem;
       }
     }
@@ -1046,6 +1051,7 @@ export default {
   }
   .dialog-body {
     text-align: center;
+    
     .top {
       padding-top: 36px;
       height: 216px;
@@ -1096,13 +1102,15 @@ export default {
 .template-dialog {
   .dialog-body {
     height: 500px;
-    padding-left: 50px;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 20px;
     .box {
       position: relative;
       float: left;
-      width: 44%;
+      width: 440px;
       height: 83%;
-      margin: 1rem 20px;
       border-radius: 5px;
       box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
       h3 {

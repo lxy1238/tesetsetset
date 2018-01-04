@@ -13,8 +13,15 @@
         <template slot="price">
          <p class="trials-price content">
           <span class="old"> <i >{{currency}}{{couponsDetails.product_price}} </i></span>
-          <span class="gray-s"> Refund </span>
-          <span class="coupon-right"><strong> {{currency}}{{add(couponsDetails.refund_price, couponsDetails.shipping_fee).toFixed(2)}}</strong>  </span>
+          <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) >= 0">
+            <strong>Free</strong>  
+          </span>
+          <span class="coupon-right" v-else>
+            <strong> {{currency}}{{sub(couponsDetails.product_price, couponsDetails.refund_price).toFixed(2)}}</strong>  
+          </span>
+          <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) > 0">
+            <strong class="full-refund"> +{{currency}}{{sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2)}}</strong>  
+          </span>
          </p>
          </template>
          <template slot="btn" >View Trials</template>
@@ -36,7 +43,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
-import { NumAdd } from '@/utils/calculate'
+import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'page_index',
   data () {
@@ -114,6 +121,9 @@ export default {
 
     add (a, b) {
       return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     },
 
     //非父子组件之间传递事件
@@ -207,7 +217,12 @@ export default {
   text-align: center;
   font-size: 13px;
   .coupon-right {
-    font-size: 16px;
+    font-size: 18px;
+    color: #1a1a1a;
+    .full-refund {
+      font-style: italic;
+      color: #D82323;
+    }
   }
   
 }

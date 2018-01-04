@@ -224,8 +224,8 @@ export default {
       }
       .tag {
         position: relative;
-        // top: -0.2rem;
-        left: 1rem;
+        top: -0.1rem;
+        left: .5rem;
         font-size: 0.61rem;
         background: #ec5d1c;
         border-radius: 4px;

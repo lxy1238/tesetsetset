@@ -14,7 +14,7 @@
             <i class="el-icon-caret-right"></i>
           </button>
         </li>
-        <li class="goto-page">Go To Page <input type="text" @keyup="limit($event)" v-model="gotoPageValue"> <button  @click="gotoPage(gotoPageValue)">Go</button></li>
+        <li class="goto-page">Go to page <input type="text" @keyup="limit($event)" v-model="gotoPageValue"> <button  @click="gotoPage(gotoPageValue)">Go</button></li>
     </ul>
   </div>
 </template>
@@ -171,18 +171,37 @@ export default {
     color: rgb(34, 24, 21);
     margin-right: 0;
     input {
-      width: 45px;
-      height: 45px;
+      position: relative;
+      top: 1px;
+      width: 35px;
+      height: 35px;
       outline: none;
       border-radius: 5px;
       padding: 0.4rem;
+      -webkit-appearance: none;
+      background-color: #fff;
+      background-image: none;
+      border-radius: 4px;
+      border: 1px solid #d8dce5;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      color: #5a5e66;
+      display: inline-block;
+      font-size: inherit;
+      outline: none;
+      -webkit-transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      font-size: 14px;
+      &:focus {
+        border: 1px solid #2d84f4;
+      }
     }
     button {
       display: inline-block;
       background: white;
       border-radius: 5px;
-      width: 54px;
-      height: 36px;
+      width: 35px;
+      height: 35px;
       cursor: pointer;
       outline: none;
       border: 1px solid #eee;

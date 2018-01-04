@@ -1,6 +1,7 @@
 <template>
   <div class="store-settings">
-    <div class="title-bottom">Store Settings
+    <div class="title">Settings</div>
+    <div class="title-bottom title-s">Store Settings
       <button @click="addStore" class="add-store-btn"><i class=" el-icon-plus"></i> Add</button>
     </div>
     <table class="table table-bordered center">
@@ -284,7 +285,7 @@ export default {
         font-size: 1rem;
         position: absolute;
         right: 0;
-        top: 0;
+        top: 10px;
         &:active {
           background: darken(#78b6de, 10%);
           border-color: darken(#78b6de, 10%);

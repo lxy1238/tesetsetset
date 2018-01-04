@@ -35,9 +35,10 @@
                         <label >Trial price: </label>
                         <i class="trials-price">{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span>
+                      <span class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</span>
+                      <span v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) > 0">
                         <label>Merchant reward: </label>
-                        <i class="merchant-reward">{{currency}}{{add(item.trials.refund_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                        <i class="merchant-reward">+{{currency}}{{sub(item.trials.refund_price, item.trials.product_price).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -87,9 +88,10 @@
                         <label >Trial price: </label>
                         <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span>
+                      <span class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</span>
+                      <span v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
                         <label>Merchant reward: </label>
-                        <i class="merchant-reward">{{currency}}{{add(item.refund_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="merchant-reward">+{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -176,9 +178,10 @@
                         <label >Trial price: </label>
                         <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span>
+                      <span class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</span>
+                      <span v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
                         <label>Merchant reward: </label>
-                        <i class="merchant-reward">{{currency}}{{add(item.refund_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="merchant-reward">+{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -241,9 +244,10 @@
                         <label >Trial price: </label>
                         <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span>
+                      <span class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</span>
+                      <span v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
                         <label>Merchant reward: </label>
-                        <i class="merchant-reward">{{currency}}{{add(item.refund_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="merchant-reward">+{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -279,7 +283,7 @@ import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString.js'
 import { validateURL } from '@/utils/validate.js'
-import { NumAdd } from '@/utils/calculate'
+import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'my_trials',
   components: {
@@ -575,6 +579,9 @@ export default {
 
     add (a, b) {
       return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
   }
 }
@@ -666,10 +673,14 @@ export default {
                   }
                   .merchant-reward {
                     color: #D62828;
+                    font-weight: 700;
                   }
                 }
                 .free-price {
                   text-decoration: line-through;
+                }
+                .free {
+                  font-weight: 700;
                 }
               }
               .footer {

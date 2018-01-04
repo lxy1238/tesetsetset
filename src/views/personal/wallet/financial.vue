@@ -4,7 +4,7 @@
         <h3 class="title">My Wallet</h3>
       </div>
       <div class="title-s">
-        finacial
+        Transaction Record
       </div>
 
       <div class="table-box">
@@ -18,7 +18,7 @@
             <tr v-for="item in trLists" v-if="trLists.length !== 0">
               <td>{{item.updated_at}}</td>
               <td>{{item.business_number}}</td>
-              <td>{{item.business_name}}</td>
+              <td class="capitalize">{{item.business_name}}</td>
               <td>
                 <a  v-if="item.detail == 'Trial audit'" href="javascript:void(0);" @click="gotoPostTrials(item)">
                   {{item.business_ID}}
@@ -29,8 +29,8 @@
                 <div v-else>{{item.business_ID}}</div>
 
               </td>
-              <td>{{item.business_type}}</td>
-              <td>{{item.detail}}</td>
+              <td class="capitalize">{{item.business_type}}</td>
+              <td class="capitalize">{{item.detail}}</td>
               <td>{{currency}}{{item.trade_amount}}</td>
               <!-- <td>{{item.run_status}}</td> -->
             </tr>

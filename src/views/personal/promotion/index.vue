@@ -1,7 +1,7 @@
 <template>
   <div class="promotion clearfix">
     <div class="pro-header">
-      <h3 class="title">promotion</h3>
+      <h3 class="title">My Promotions</h3>
       <div class="remove-all" @click="removeAllPromotion">
         <i class="el-icon-delete"></i>
         <span> Remove All</span>
@@ -17,7 +17,7 @@
            <p class="price content">
             <span class="price-right">{{currency}}{{couponsDetails.coupons.product_price}}</span>
             <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
-              <i class="el-icon-delete"></i>
+              <i class="el-icon-delete" title="Remove"></i>
             </span>
           </p>
           <p class="price content clearfix">

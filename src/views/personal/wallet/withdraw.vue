@@ -12,9 +12,10 @@
         </span>
       </div>
       <div class="withdrawals">
-        <label class="left-label">Withdrawals:</label>
-        <el-form-item prop="withdraw_amount">
-          <el-input v-model="withdrawForm.withdraw_amount" class="input-money" @keyup.enter.native="enterSubmit" @keyup.native="keyupMoney" ></el-input>
+        <el-form-item prop="withdraw_amount"  label="Withdraw amount:" label-width="170px" required>
+          <el-input v-model="withdrawForm.withdraw_amount" class="input-money" @keyup.enter.native="enterSubmit" @keyup.native="keyupMoney" >
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
@@ -29,8 +30,10 @@
         </el-radio>
       </div>
       <div class="withdrawals" v-if="withdrawForm.account_type !== WITHDRAW_TYPE['amazon']">
-        <label class="left-label">Acount:</label>
-        <el-form-item prop="account_payee">
+        <el-form-item prop="account_payee" label="Your Paypal account:" label-width="170px" v-if="withdrawForm.account_type === WITHDRAW_TYPE['paypal']">
+          <el-input v-model="withdrawForm.account_payee"  @keyup.enter.native="enterSubmit"></el-input>
+        </el-form-item>
+        <el-form-item prop="account_payee" label="Your Alipay account:" label-width="170px" v-if="withdrawForm.account_type === WITHDRAW_TYPE['alipay']">
           <el-input v-model="withdrawForm.account_payee"  @keyup.enter.native="enterSubmit"></el-input>
         </el-form-item>
       </div>
@@ -60,9 +63,9 @@ export default {
       if (!value) {
         return callback(new Error('Please enter the withdraw amount'))
       } else if(parseFloat(value) == 0 ){
-        callback(new Error ('Please enter the correct amount'))
+        callback(new Error ('Invalid withdraw amount.'))
       } else if(!reg.test(value)){
-        callback(new Error ('The amount can only enter two decimal places'))
+        callback(new Error ('Invalid withdraw amount.'))
       } else {
         callback()
       }
@@ -80,7 +83,7 @@ export default {
           {validator: validateMoney, trigger: 'blur' },
         ],
         account_payee: [
-          { required: true, message: 'Please enter the withdrawal account', trigger: 'blur' },
+          { required: true, message: 'Please enter the account.', trigger: 'blur' },
         ]
       },
       withdrawForm: {
@@ -221,21 +224,24 @@ export default {
     .el-form-item {
       display: inline-block;
       margin-bottom: 0;
-      width: 400px;
+      width: 570px;
+   
     }
+    
     .left-label {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 100px;
-      color: #666;
-      font-size: 16px;
+      width: 158px;
+      font-size: 14px;
+      color: #48576a;
     }
     .balance {
       margin-bottom: 1.5rem;
       .balance-money {
         color: #333;
         font-size: 16px;
+        font-weight: 700;
       }
       
     }

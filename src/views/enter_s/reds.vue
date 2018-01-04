@@ -89,7 +89,7 @@
             </div>
           </div>
           <div class="bottom">
-             <label for="">Proof link</label>
+             <label for="">Proof link </label>
             <el-input type="text"  size="mini" v-model="item.proofLink"></el-input>
           </div>
         </div>
@@ -358,7 +358,7 @@ export default {
           height: 90px;
           background: #f2f2f2;
           color: #666;
-          font-size: 16px;
+          font-size: 13px;
           padding: 6px 10px 0 10px;
           margin-bottom: 18px;
           .top {

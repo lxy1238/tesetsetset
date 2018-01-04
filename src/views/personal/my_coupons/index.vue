@@ -12,14 +12,15 @@
               {{item.coupons.product_title}} 
           </div>
           <div class="pro-info">
-            <span class="old-price">${{item.coupons.product_price}}</span>
-            <span class="coupons-price"><i>coupons</i><b>${{(item.coupons.product_price * item.coupons.discount_rate / 100).toFixed(2)}}</b></span>
-            <span class="proportion"><b>{{item.coupons.discount_rate}}%</b><i>off</i></span>
+            <span class="old-price line-through">{{currency}}{{item.coupons.product_price}}</span>
+            <span class="old-price">{{currency}}{{item.coupons.discount_price}}</span><br />
+            <span class="coupons-price"><i>Coupon</i> <b>{{currency}}{{(item.coupons.product_price * item.coupons.discount_rate / 100).toFixed(2)}}</b></span>
+            <span class="proportion"><b>{{item.coupons.discount_rate}}%</b> <i>off</i></span>
           </div>
         </div>
         <div class="card-bottom" >
           <span class="code" :title="item.coupons.coupon_code">{{item.coupons.coupon_code}}</span>
-          <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go To Amazon </a> </button>
+          <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go to Amazon </a> </button>
         </div>
       </div>
     </div>
@@ -58,7 +59,10 @@ export default {
     ...mapGetters([
       'token',
       'user_id'
-    ])
+    ]),
+    currency () {
+      return getStore('currency') || '$'
+    },
   },
   components: {
     pagination
@@ -97,13 +101,17 @@ export default {
         width: 32%;
         height: 10rem;
         border: 1px solid #d2d2d2;
-        box-shadow: 1px 3px 3px rgba(210, 210, 210, 1);
         border-radius: 4px;
         margin-right: 1%;
         padding: .5rem 1rem 0 1rem;
         margin-bottom: 1rem;
         text-align: center;
         overflow: hidden;
+         border-width: 1px 1px 3px 1px;
+          &:hover {
+            border-color:#adadad;
+          
+          }
         .expried {
           position: absolute;
           z-index: 222;
@@ -130,11 +138,13 @@ export default {
             height: 3rem;
           }
           .pro-title {
-            font-size: 12px;
+            font-size: 13px;
             color: #333;
-            height: 24px;
+            height: 30px;
+            line-height: 1.21;
             overflow: hidden;
-            margin-bottom: .3rem;
+            position: relative;
+            top: -7px;
           }
           .pro-info {
             span {
@@ -142,24 +152,25 @@ export default {
             }
             .old-price {
               font-size: 1rem;
-              color: #1a1a1a;
+              color: #333;
+              font-weight: 700;
             }
             .coupons-price{ 
-              font-size: 0.78rem;
+              font-size: 13px;
               i {
                 color: #808080;
               }
               b {
-                color: #1a1a1a;
+                color: #808080;
               }
             }
             .proportion {
-               font-size: 0.78rem;
+               font-size: 13px;
               i {
                 color: #808080;
               }
               b {
-                color: #1a1a1a;
+                color: #808080;
               }
             }
           }
@@ -191,6 +202,7 @@ export default {
             position: relative;
             line-height: 1.8rem;
             top: 0px;
+            left: 14px;
             a {
               display: inline-block;
               width: 100%;

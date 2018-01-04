@@ -140,9 +140,9 @@ export default {
     },
 
     //跳转到邀请好友页面
-    gotoInvite () {
-      this.$router.push({path:'/enter/invite' })
-    }
+    // gotoInvite () {
+    //   this.$router.push({path:'/enter/invite' })
+    // }
   }
 }
 </script>
@@ -193,7 +193,6 @@ export default {
           top: -3px;
           font-size: 0.61rem;
           color: white;
-          // background: #ec5d1c;
           padding: 2px 5px;
           border-radius: 2px;
         }
@@ -214,7 +213,6 @@ export default {
     }
   }
   .statistics {
-    // padding-left: 1.5rem;
     padding-top: 1rem;
     margin-bottom: 2rem;
     .statistics-child {
@@ -243,7 +241,6 @@ export default {
     .wallet {
       float: left;
       width: 50%;
-      // border: 1px solid red;
       .money-btn {
         line-height: 3;
         button {
@@ -262,6 +259,7 @@ export default {
           left: 13%;
           top: 9px;
           font-size: 28px;
+          font-weight: 400;
         }
       }
       .wallet-child {

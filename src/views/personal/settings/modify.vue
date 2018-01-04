@@ -1,6 +1,7 @@
 <template>
   <div class="modify-password">
-    <div class="title-bottom">Modify Password</div>
+    <div class="title">Settings</div>
+    <div class="title-s">Modify Password</div>
     <el-form :model="pidForm" :rules="rules" ref="pidForm" label-width="150px">
       <el-form-item label="Original password: " prop="oldpassword" >  
         <el-input type="password"  v-model="pidForm.oldpassword"></el-input>
