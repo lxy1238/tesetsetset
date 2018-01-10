@@ -4,7 +4,7 @@
     <div class="about-page">
       <div class="about-content">
         <div class="head-crumbs"  >
-            <span class=" gray-s">Home > Countact Us</span> 
+            <span class=" gray-s">Home > Contact Us</span> 
         </div>
         <div class="card">
           <div class="card-content">

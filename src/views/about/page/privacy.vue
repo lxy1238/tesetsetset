@@ -11,7 +11,7 @@
             <div class="head-title">
               <h3>Privacy Policy</h3>
               <div class="head-text">
-                Here at DealsPlus we recognize that your privacy is very important, and to keep you informed about our privacy practices we ask that you please read the guidelines described below. Keep in mind that because DealsPlus is a growing website and internet technologies are constantly evolving, these guidelines are subject to change and any said changes will be posted on this page. Any material changes from current practices will be posted on the main page of this website to serve as notice. DealsPlus is not responsible for the content or the privacy policies of websites to which it may link.
+                Here at DealsBank we recognize that your privacy is very important, and to keep you informed about our privacy practices we ask that you please read the guidelines described below. Keep in mind that because DealsBank is a growing website and internet technologies are constantly evolving, these guidelines are subject to change and any said changes will be posted on this page. Any material changes from current practices will be posted on the main page of this website to serve as notice. DealsBank is not responsible for the content or the privacy policies of websites to which it may link.
               </div>
             </div>
             <div class="caluse-item">
@@ -28,7 +28,7 @@
                 Location Information
               </div>
               <p>
-                Use of our mobile application may, at your election, include location-based services. When you use the app, you may transmit information about your location to DealsPlus. That information will be used to offer you deals and coupons that are close to your geographic location.
+                Use of our mobile application may, at your election, include location-based services. When you use the app, you may transmit information about your location to DealsBank. That information will be used to offer you deals and coupons that are close to your geographic location.
               </p>
             </div>
             <div class="caluse-item">
@@ -53,7 +53,7 @@
               </div>
               <p>
                 The Children's Online Privacy Protection Act (COPPA) of 1998 provides safeguards to protect children who use the internet by regulating the online collection of personal 
-                information from children under the age of 13. Because of these safeguards, children under the age of 13 are not able to access or use all products and services on DealsPlus. For more information, see our Children's Policy.
+                information from children under the age of 13. Because of these safeguards, children under the age of 13 are not able to access or use all products and services on DealsBank. For more information, see our Children's Policy.
               </p>
             </div>
             <div class="caluse-item">
@@ -61,7 +61,7 @@
                 Use of Aggregate Data
               </div>
               <p>
-                We may collect certain non-personal information to optimize our website for your computer (e.g., the identity of your Internet browser, the type of operating system you use, your IP address, and the domain name of your Internet service provider). We may use such non-personal information for internal purposes, including but not limited to improving the content of our website. DealsPlus may use personally identifiable information in aggregate form to improve our goods and services, including our website, and to make them more responsive to the needs of our customers. This statistical compilation and analysis of information may also be used by DealsPlus, or provided to others as a summary report for marketing, advertising, or research purposes.
+                We may collect certain non-personal information to optimize our website for your computer (e.g., the identity of your Internet browser, the type of operating system you use, your IP address, and the domain name of your Internet service provider). We may use such non-personal information for internal purposes, including but not limited to improving the content of our website. DealsBank may use personally identifiable information in aggregate form to improve our goods and services, including our website, and to make them more responsive to the needs of our customers. This statistical compilation and analysis of information may also be used by DealsBank, or provided to others as a summary report for marketing, advertising, or research purposes.
               </p>
             </div>
             <div class="caluse-item">
@@ -78,7 +78,7 @@
               </div>
               <ul>
                 <li>●
-                  Remember to close your browser when you have finished your DealsPlus session. This is to ensure that others cannot access your personal information and correspondence if you share a computer with someone else or are using a computer in a public place, like a library or internet cafe. You as an individual are responsible for the security of and access to your own computer.
+                  Remember to close your browser when you have finished your DealsBank session. This is to ensure that others cannot access your personal information and correspondence if you share a computer with someone else or are using a computer in a public place, like a library or internet cafe. You as an individual are responsible for the security of and access to your own computer.
                 </li>
                 <li>●
                   Whenever you voluntarily disclose personal information over the internet, this information can be collected and used by others. In short, if you post personal information in 
@@ -93,7 +93,7 @@
               </ul>
             </div>
             <div class="caluse-item-footer">
-              If you have any questions about our Privacy Policy, or you would like to cancel your account, please contact us at support@dealsplus.com
+              If you have any questions about our Privacy Policy, or you would like to cancel your account, please contact us at support@DealsBank.com
             </div>
           </div>
         </div>

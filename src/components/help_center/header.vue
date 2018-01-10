@@ -34,7 +34,7 @@ export default {
           link: '/about/center/merchant'
         },
         {
-          name: 'Countact Us',
+          name: 'Contact Us',
           link: '/about/center/countact'
         },
         {
