@@ -1,6 +1,6 @@
 <template>
   <div class="my-trials">
-    <div class="title-bottom">My Trials</div>
+    <div class="title-bottom" v-title="'My Trials'">My Trials</div>
       <div class="tabs">
         <div class="head-s clearfix">
           <div class="tabs-label" 
@@ -33,12 +33,12 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price">{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                        <!-- <i class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</i> -->
+                        <i class="trials-price" >{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</span>
-                      <span v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) > 0">
-                        <label>Merchant reward: </label>
-                        <i class="merchant-reward">+{{currency}}{{sub(item.trials.refund_price, item.trials.product_price).toFixed(2)}}</i>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.trials.refund_price, item.trials.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -86,12 +86,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</span>
-                      <span v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
-                        <label>Merchant reward: </label>
-                        <i class="merchant-reward">+{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}</i>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -100,7 +99,7 @@
                     <span class="footer-span" v-if="item.Modify">{{item.order_number}}</span>
                     <el-input v-else class="footer-input" v-model="item.order_number" @keyup.enter.native="editOrderSubmit(item)"></el-input>
 
-                    <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Modity</button>
+                    <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Edit</button>
                     <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
                     <div class="red" v-if="!item.order_number">Please enter the order number.</div>
                   </div>
@@ -122,10 +121,10 @@
                       <span class="pending-l">Pending</span>
                     </div>
                     <div class="pending">
-                      <a  href="javascript:void(0);" target="_blank" @click="viewApprise(item.appraise_url)">View</a>
+                      <a  href="javascript:void(0);" target="_blank" @click="viewApprise(item.appraise_url)" class="link">View Review</a>
                     </div>
                     <div class="pending">
-                      <button type="button" @click="modifyUrlBtn(item)">Modity</button>
+                      <button type="button" @click="modifyUrlBtn(item)">Edit</button>
                     </div>
                   </template>
                   <template v-else>
@@ -141,7 +140,7 @@
                       <a  href="#" >View</a>
                     </div>
                     <div class="pending">
-                      <button type="button" @click="modifyUrlBtn(item)">Modity</button>
+                      <button type="button" @click="modifyUrlBtn(item)">Edit</button>
                     </div>
                   </template>
                 </div>
@@ -176,12 +175,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</span>
-                      <span v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
-                        <label>Merchant reward: </label>
-                        <i class="merchant-reward">+{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}</i>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -192,7 +190,7 @@
                 </div>
                 <div class="right-content">
                   <div class="pending complete complete-left">
-                      <div class="complete-text">complete</div>
+                      <div class="complete-text">Complete</div>
                       <div class="complete-refunded">Refunded to balance</div>
                   </div>
                   <div class="pending complete complete-right">
@@ -207,7 +205,7 @@
                       <span class="video">Video: 1</span>
                     </div> -->
                     <div class="view">
-                      <a href="javascript:void(0);"@click="viewApprise(item.appraise_url)">View</a>
+                      <a href="javascript:void(0);"@click="viewApprise(item.appraise_url)" class="link">View Review</a>
                     </div>
                   </div>
                 </div>
@@ -242,12 +240,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price">{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
-                      <span class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</span>
-                      <span v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
-                        <label>Merchant reward: </label>
-                        <i class="merchant-reward">+{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}</i>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
                   </div>
@@ -444,8 +441,8 @@ export default {
       }
       this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
         if (res.code === 200) {
-          this.selected = 1
           this.init()
+          this.selected = 1
         }
         this.orderBtnLoading = false
       }).catch(() => {
@@ -490,7 +487,7 @@ export default {
     //提交review url
     submitAppraiseUrl (item) {
       
-      if (!item.appraise_url_input || !validateURL(item.appraise_url_input) ) {
+      if (!item.appraise_url_input) {
         item.notHasInputUrl = true
         this.refresh(this.orderDetails1)
         return
@@ -669,7 +666,7 @@ export default {
                 .trials-price-all {
                   margin-top: 5px;
                   .trials-price {
-                    font-weight: 700;
+                    // font-weight: 700;
                   }
                   .merchant-reward {
                     color: #D62828;
@@ -680,7 +677,7 @@ export default {
                   text-decoration: line-through;
                 }
                 .free {
-                  font-weight: 700;
+                  // font-weight: 700;
                 }
               }
               .footer {
@@ -767,7 +764,6 @@ export default {
                 top: 47px;
                 color: #88bb3a;
                 width: 32%;
-                text-align: center;
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
                   font-size: 13px;
@@ -779,6 +775,7 @@ export default {
                 }
                 &.complete {
                   width: 46%;
+                  text-align: center;
                   .complete-text {
                     font-size: 0.88rem;
                     margin-bottom: 5px;
@@ -841,8 +838,6 @@ export default {
             }
           }
         }
-        
-
         .pagination {
           width: 100%;
           text-align: right;

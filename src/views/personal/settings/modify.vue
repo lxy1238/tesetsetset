@@ -1,7 +1,7 @@
 <template>
   <div class="modify-password">
     <div class="title">Settings</div>
-    <div class="title-s">Modify Password</div>
+    <div class="title-s" v-title="'Modify Password'">Modify Password</div>
     <el-form :model="pidForm" :rules="rules" ref="pidForm" label-width="150px">
       <el-form-item label="Original password: " prop="oldpassword" >  
         <el-input type="password"  v-model="pidForm.oldpassword"></el-input>
@@ -93,10 +93,10 @@ export default {
           this.$api.resetPassword(this.pidForm).then(res => {
             this.saveLoading = false
             if (res.code === 402) {
-              this.$message.error(res.message)
+              this.$snotify.error(res.message)
               return false
             } else {
-              this.$message.success('reset password success!!!')
+              this.$snotify.success('reset password success!!!')
               this.$router.push({path: '/personal/member/index'})
             }
           })

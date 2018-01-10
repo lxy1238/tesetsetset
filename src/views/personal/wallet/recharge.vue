@@ -1,7 +1,7 @@
 <template>
   <div class="withdraw"  v-loading.fullscreen.lock="fullscreenLoading">
     <div class="title">My Wallet</div>
-    <div class="title-s">Recharge</div>
+    <div class="title-s" v-title="'Recharge'">Recharge</div>
     <el-form :model="rechangeForm" :rules="rules"  ref="rechangeForm"   >
       <div class="balance">
         <label class="left-label">
@@ -165,7 +165,7 @@ export default {
           this.$api.paypal(this.reqData).then(res => {
             if (!res.data) {
               this.fullscreenLoading = false
-              this.$message.info('Payment interface error, please refresh the page or other payment method')
+              this.$snotify.info('Payment interface error, please refresh the page or other payment method')
               return
             }
             location.href = res.data
@@ -235,6 +235,7 @@ export default {
       }
     }
     .submit {
+      margin-left: 214px;
       button {
         .btn-h(160px, 45px, #84ba3a, #84ba3a, #fff);
       }

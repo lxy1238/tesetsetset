@@ -2,7 +2,7 @@
   <div class="modify-password">
     <div class="title-bottom">Reset Password</div>
     <el-form :model="pidForm" :rules="rules" ref="pidForm" label-width="150px">
-      <el-form-item label="New password: " prop="password" >  
+      <el-form-item label="New password: " prop="password" required>  
         <el-input type="password" v-model="pidForm.password"  @keyup.enter.native="enterSubmit"></el-input>
       </el-form-item>
       <el-form-item label="Confirm password: "  prop="password_confirmation" required>  
@@ -75,12 +75,12 @@ export default {
           this.$api.checkRetrievePassword(this.pidForm).then(res => {
             this.submitLoading = false
             if (res.code === 200) {
-              this.$message.success('reset password success!!!')
+              this.$snotify.success('reset password success!!!')
               setTimeout( () => {
                 this.$router.push({path: '/'})
               }, 500)
             } else {
-              this.$message.error(res.message)
+              this.$snotify.error(res.message)
               return false
             }
           }).catch(() => {
@@ -102,7 +102,6 @@ export default {
 <style lang="less" >
 @import url('../../../styles/mixin.less');
 .modify-password {
- min-height: 1000px;
  width: 800px;
  margin: 150px auto;
   .el-input {

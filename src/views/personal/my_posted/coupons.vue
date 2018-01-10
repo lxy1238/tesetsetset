@@ -2,7 +2,7 @@
   <div class="posted-coupons">
     <div class="pro-header">
       <h3 class="title">My Posted</h3>
-      <div class="title-s">Coupons Posted</div>
+      <div class="title-s" v-title="'Coupons Posted'">Coupons Posted</div>
     </div>
     <div class="search-form">
       <label for="title">
@@ -46,7 +46,7 @@
             </td>
             <td class="coupons-table-title">
               <div>{{item.website}}</div>
-              <div class="table-product-title" @click="gotoDetails(item)">{{item.product_title}}</div>
+              <div class="table-product-title" :title="item.product_title" @click="gotoDetails(item)">{{item.product_title}}</div>
               <a href="javascript:void(0);" @click="gotoDetails(item)">{{item.menu.name}}</a>
             </td>
 
@@ -133,22 +133,6 @@ export default {
   name: 'center_coupons',
   data () {
     return {
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
       value: '',
       thLists: [
         'Image',
@@ -316,9 +300,9 @@ export default {
 
     //删除优惠券
     DeleteCoupon (id) {
-      this.$confirm('Determine deleting coupons?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
+      this.$confirm('Are you sure to close this promotion?', 'Friendly reminder', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         type: 'warning'
       })
         .then(() => {
@@ -327,10 +311,7 @@ export default {
           this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
-            this.$message({
-              type: 'success',
-              message: 'delete success!'
-            })
+            this.$snotify.success('delete success!')
           })
           
         })
@@ -416,6 +397,10 @@ export default {
     .table-product-title {
       color: #333;
       margin: 5px 0 5px 0;
+      height: 28px;
+      line-height: 1.21;
+      overflow: hidden;
+      cursor: pointer;
     }
   }
   .operation {

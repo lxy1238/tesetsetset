@@ -96,7 +96,7 @@ export default {
         if (!res.data) {
           clearInterval(this.timer)
           clearInterval(this.timerPay)
-          this.$message.info('The WeChat payment interface is wrong, please reload the page or use other payment methods')
+          this.$snotify.info('The WeChat payment interface is wrong, please reload the page or use other payment methods')
           return
         }
         this.resData = res.data

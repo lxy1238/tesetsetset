@@ -1,5 +1,6 @@
 <template>
   <div id="app" v-title="titleMsg" v-cloak>
+    <vue-snotify></vue-snotify>
     <router-view/>
   </div>
 </template>

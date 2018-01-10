@@ -23,7 +23,7 @@
           <dl>
             <dt>Join Us</dt>
             <dd>
-              <router-link to="/enter/index">Seller</router-link>
+              <router-link to="/about/center/influencer">Seller</router-link>
               <!-- <a href="#">Seller</a> -->
             </dd>
             <!-- <dd><a href="#">Sensation</a></dd>

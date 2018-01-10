@@ -3,7 +3,7 @@
       <div class="content" id="content">
         <div class="img">
           <div class="img-big">
-            <a :href="amazonUrl" target="_blank">
+            <a @click="gotoCoupon" target="_blank">
               <img :src="imgList[activeNum]"  >
             </a>
           </div>
@@ -42,6 +42,7 @@
 <script>
 import { base64Encode } from '@/utils/randomString'
 import { getStore }  from '@/utils/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'detailsLeft',
   data () {
@@ -73,22 +74,15 @@ export default {
   },
   mounted () {
     this.activeNum = 0
+    
   },
   computed: {
+    ...mapGetters([
+      'currentRouter'
+    ]),
     imgLen () {
       return this.imgList.length
     },
-  },
-  watch: {
-    userInfo () {
-      setTimeout(() => {
-        if (this.userInfo.pid) {
-          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.userInfo.pid
-        } else {
-          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.promoPid
-        }
-      }, 500)
-    }
   },
   methods: {
     //页面图片效果
@@ -124,6 +118,15 @@ export default {
       }
       this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
+
+    gotoCoupon () {
+      if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {
+        return
+      }
+      let router = this.currentRouter.replace('/coupons', '')
+      let promoterId = this.$route.query.promoter ? this.$route.query.promoter : ''
+      window.open('/goto' + router + '/' + base64Encode(promoterId))
+    }
   }
 }
 </script>
@@ -135,17 +138,28 @@ export default {
   width: 26.9rem;
   // height: 44.44rem;
   .img {
-    height: 20rem;
+    // height: 20rem;
     background: white;
     border-radius: 5px;
     margin-bottom: 1rem;
+    border: 1px solid #d2d2d2;
     .img-big {
       text-align: center;
+      width: 22.22rem;
+      height: 22.22rem;
+      margin: 0 auto;
       padding-top: 1rem;
-      height: 14rem;
+      position: relative;
       img {
-        width: 16rem;
-        height: 14rem;
+        max-width: 100%;
+        max-height: 95%;
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
       }
     }
     .img-small {
@@ -189,6 +203,7 @@ export default {
     background: white;
     margin-top: 0.4rem;
     border-radius: 5px;
+    border: 1px solid #d2d2d2;
     p{
       position: relative;
       margin: .3rem 0 .5rem 0;

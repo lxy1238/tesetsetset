@@ -23,7 +23,7 @@
             </td>
             <td class="product-details" @click="gotoDetails(item.id)">
               <div>amazon</div>
-              <div class="table-product-title">{{couponsDetails.product_title}}</div>
+              <div class="table-product-title" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</div>
               <a href="javascript:void(0);" >Electronics</a>
             </td>
             <td class="prcie">
@@ -191,9 +191,16 @@ export default {
     width: 5rem;
     height: 4rem;
   }
+  .table-product-title {
+      height: 28px;
+      line-height: 1.21;
+      overflow: hidden;
+      cursor: pointer;
+    }
   .product-details {
     text-align: left;
     width: 200px;
+    padding: 10px 0 10px 10px;
   }
 }
 </style>

@@ -1,26 +1,26 @@
 <template>
   <div class="my-coupons">
-    <div class="title-bottom">
+    <div class="title-bottom" v-title="'My Coupons'">
       My Coupons
     </div>
     <div class="coupons-content" v-if="couponLists.length != 0">
       <div class="pro-card" v-for="item in couponLists" v-if="item.coupons">
-        <div class="expried" v-if="item.coupons.run_status === 'expired'">expired</div>
+        <div class="expried" v-if="item.coupons.run_status === 'expired' || item.coupons.valid_date < (Date.now() / 1000)">expired</div>
         <div class="card-top">
           <img class="card-top-img" :src="item.coupons.product_img.split(',')[0]" alt="">
           <div class="pro-title">
               {{item.coupons.product_title}} 
           </div>
           <div class="pro-info">
-            <span class="old-price line-through">{{currency}}{{item.coupons.product_price}}</span>
-            <span class="old-price">{{currency}}{{item.coupons.discount_price}}</span><br />
+            <span class="old-price line-through">{{currency}}{{item.coupons.product_price}}</span><br />
+            <!-- <span class="old-price">{{currency}}{{item.coupons.discount_price}}</span> -->
             <span class="coupons-price"><i>Coupon</i> <b>{{currency}}{{(item.coupons.product_price * item.coupons.discount_rate / 100).toFixed(2)}}</b></span>
             <span class="proportion"><b>{{item.coupons.discount_rate}}%</b> <i>off</i></span>
           </div>
         </div>
         <div class="card-bottom" >
           <span class="code" :title="item.coupons.coupon_code">{{item.coupons.coupon_code}}</span>
-          <button class="go-to-amazon"> <a :href="item.coupons.product_url" target="_blank">Go to Amazon </a> </button>
+          <button class="go-to-amazon" @click="gotoAmazon(item)"> <a :href="item.coupons.product_url" target="_blank">Go to Amazon </a> </button>
         </div>
       </div>
     </div>
@@ -39,6 +39,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import { mapGetters } from 'vuex'
 import { getToken, getUserId } from '@/utils/auth' 
 import { getStore } from '@/utils/utils'
+import { base64Encode } from '@/utils/randomString'
 export default {
   name: 'my_coupons',
   data () {
@@ -53,6 +54,7 @@ export default {
         page_size: 9
       },
       couponLists : [],
+      country_id: getStore('country_id') || 1
     }
   },
   computed : {
@@ -84,6 +86,9 @@ export default {
       }).catch(error => {
         console.log(error + 'my_coupons error')
       })
+    },
+    gotoAmazon (item) {
+      window.open('/goto/' + base64Encode(item.coupon_id) + '/' + base64Encode(this.country_id) + '/')
     }
   }
 }
@@ -93,13 +98,17 @@ export default {
 @import url('../../../styles/mixin.less');
 .coupons-content {
   width: 102%;
-  height: 33.33rem;
+  height: 34.33rem;
 }
+ .my-coupons .coupons-pagination {
+  margin: 1.5rem 0 0 0;
+}
+
  .pro-card {
         position: relative;
         display: inline-block;
         width: 32%;
-        height: 10rem;
+        height: 11rem;
         border: 1px solid #d2d2d2;
         border-radius: 4px;
         margin-right: 1%;
@@ -148,7 +157,9 @@ export default {
           }
           .pro-info {
             span {
+              display: inline-block;
               margin-right: 4px;
+              margin-bottom: .4rem;
             }
             .old-price {
               font-size: 1rem;
@@ -161,7 +172,8 @@ export default {
                 color: #808080;
               }
               b {
-                color: #808080;
+                color: #1a1a1a;
+                font-weight: 400;
               }
             }
             .proportion {
@@ -170,7 +182,8 @@ export default {
                 color: #808080;
               }
               b {
-                color: #808080;
+                color: #1a1a1a;
+                font-weight: 400;
               }
             }
           }
@@ -178,11 +191,13 @@ export default {
         }
         .card-bottom {
           position: relative;
+          top: 1rem;
           height: 2.7rem;
           line-height: 2.7rem;
           overflow: hidden;
           width: 100%;
           background: #f2f2f2;
+          padding-right: 10px;
           .code {
             float: left;
             font-size: 12px;

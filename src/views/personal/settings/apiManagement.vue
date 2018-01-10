@@ -1,11 +1,12 @@
 <template>
   <div class="affiliate-pid">
     <div class="title">Settings</div>
-    <div class="title-s">Affiliate PID</div>
-     <a class="goto-getpid link" href="javascript:void(0);">I don’t know how to get it?</a>
+    <div class="title-s" v-title="'Affiliate PID'">Affiliate PID</div>
+     <a class="goto-getpid link" :href="howToGetPid[country_id]" target="_blank" v-if="country_id <= 8">I don’t know how to get it?</a>
       <div v-for="item in platformArr" class="item-pid">  
         <label class="capitalize">{{item.provider + ' Affiliate PID'}} :</label>
-        <el-input  v-model="item.pid"></el-input>
+        <el-input  v-model="item.pid"  v-if="country_id === 9" disabled></el-input>
+        <el-input  v-model="item.pid"  v-else></el-input>
       </div>
     <div class="pid-footer">
       <el-button @click="submit" :loading="saveLoading">Save Settings</el-button>
@@ -36,6 +37,17 @@ export default {
       },
       isApiPage: true,
       saveLoading: false,
+      country_id: parseInt(getStore('country_id') || 1),
+      howToGetPid: {
+        '1': 'https://affiliate-program.amazon.com/',
+        '2': 'https://affiliate-program.amazon.co.uk/',
+        '3': 'https://partnernet.amazon.de/',
+        '4': 'https://affiliate.amazon.co.jp/',
+        '5': 'https://partenaires.amazon.fr/',
+        '6': 'https://programma-affiliazione.amazon.it/',
+        '7': 'https://afiliados.amazon.es/',
+        '8': 'https://programma-affiliazione.amazon.it/',
+      }
     }
   },
   mounted () {
@@ -97,7 +109,7 @@ export default {
         this.$api.userAlliancePID(requestData).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('save success')
+            this.$snotify.success('save success')
           }
         }).catch(err => {
           console.log(err)

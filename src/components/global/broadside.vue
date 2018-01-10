@@ -1,10 +1,11 @@
 <template>
   <div class="broadside">
     <ul class="side-icons">
-      <li><i class="iconfont icon-666"></i></li>
+      <li><i class="iconfont icon-facebookicon"></i></li>
       <li><i class="iconfont icon-tuite1"></i></li>
-      <li><i class="iconfont icon-liaotian"></i></li>
-      <li class="last"><i class="iconfont icon-icon_huaban" @click="goTop"></i></li>
+      <li><i class="iconfont icon-pinterestp"></i></li>
+      <li @click="contactUs"><i class="iconfont icon-liaotian"></i></li>
+      <li class="last" @click="goTop"><i class="iconfont icon-icon_huaban" ></i></li>
     </ul>
   </div>
 </template>
@@ -22,6 +23,9 @@ export default {
       animate(document.body, {scrollTop: 0},800)
       animate(document.documentElement, {scrollTop: 0}, 800)
       animate(window, {scrollTop: 0},800)
+    },
+    contactUs () {
+      window.open('/about/center/countact')
     }
   }
 }
@@ -32,23 +36,26 @@ export default {
     position: fixed;
     top: 200px;
     background: #b5b5b5;
+    border: 1px solid #c7c7c7;
     right: 0px;
-    width: 3rem;
-    height: 13.5rem;
+    width: 50px;
+    // height: 13.5rem;
     z-index: 1000;
     .side-icons {
-      width: 2rem;
       margin: 0 auto;
       color: white;
       text-align: center;
       li {
-        height: 3.3rem;
-        line-height: 3.3rem;
+        height: 50px;
+        line-height: 50px;
+        background: #fff;
+        color: #c2c2c2;
         cursor: pointer;
         &:hover {
-          color: #e1e1e1;
+          color: #fff;
+          background: #0077c5;
         }
-        border-bottom: 2px solid white;
+        border-bottom: 1px solid #c7c7c7;
         .iconfont {
           font-size: 24px;
         }

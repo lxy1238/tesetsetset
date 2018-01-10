@@ -1,20 +1,20 @@
 <template>
-  <div  class="coupons-product" ref="imgLoad" >
-    <div class="expried" v-if="couponsDetails.run_status === 'expired'">EXPRIED</div>
-    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)">
+  <div  class="coupons-product" ref="imgLoad" @click.stop="goToCouponsPage(couponsDetails.id)"   >
+    <div class="expried" v-if="couponsDetails.run_status === 'expired' || couponsDetails.valid_date < (Date.now() / 1000)">EXPRIED</div>
+    <div class="img" @click.stop="goToCouponsPage(couponsDetails.id)" :title="couponsDetails.product_title">
       <img class="product-img" v-show="loading"  :data-img="couponsDetails.product_img.split(',')[0]" @load="loadImg"  alt="img">
       <img v-if="!loading" src="../../assets/timg.gif"   alt="img">
     </div>
     <slot name="white"></slot>
     <div class="promo-copy-parent"  v-if="addpromo">
      <div class="promo-copy">
-        <div class="span-btn" @click="addPromotion(couponsDetails.id)" v-if="isAddPromo === 0">
+        <div class="span-btn" @click.stop="addPromotion(couponsDetails.id)" v-if="isAddPromo === 0">
           <span>Add Promotion</span>
         </div>
          <!-- <div class="span-btn" v-else-if="isAddPromo === 1">
           <span>Running ...</span>
         </div> -->
-         <div class="span-btn active" @click="removePromo(couponsDetails.id)" v-else>
+         <div class="span-btn active" @click.stop="removePromo(couponsDetails.id)" v-else>
           <span>Cancel <i class="el-icon-check"></i></span>
         </div>
         <div class="line"></div>
@@ -22,18 +22,19 @@
           <div slot="content" class="copy-content" :id="productDetails">
             <img  class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line ">{{couponsDetails.product_title}}</div>
-            <div class="content-line">Coupon after the price {{currency}} {{couponsDetails.discount_price}}</div>
-            <div class="content-line">Coupon address: {{dealsbankUrl}}</div>
+            <div class="content-line">Only ***{{currency}} {{couponsDetails.discount_price}}*** after using coupons. </div>
+            <div class="content-line">Get {{currency}}{{sub(couponsDetails.product_price,couponsDetails.discount_price)}} coupons: {{dealsbankUrl}}</div>
+            <div class="content-line">Order now: {{gotoAmazonUrl}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>
-          <div class="span-btn" :data-clipboard-target="productDetails1" @click="copy($event)">Copy</div>
+          <div class="span-btn" :data-clipboard-target="productDetails1" @click.stop="copy($event)">Copy</div>
         </el-tooltip>
       </div>
      </div> 
-      <p class="platfrom content" >{{couponsDetails.website}}</p>
+      <p class="platfrom content"  :title="couponsDetails.product_title">{{couponsDetails.website}}</p>
       <div class="descript" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</div>
       <slot name="price"></slot>
-      <div class="content viewcoupons">
+      <div class="content viewcoupons" :title="couponsDetails.product_title">
         <button class="btn-coupons" @click="goToCouponsPage(couponsDetails.id)">
           <slot name="btn"></slot>
         </button>
@@ -47,6 +48,7 @@ import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
 import { mapGetters } from 'vuex'
 import Clip from '@/utils/clipboard.js'
+import { NumSub } from '@/utils/calculate'
 export default {
   name: 'image_product',
   data () {
@@ -89,6 +91,11 @@ export default {
     dealsbankUrl () {
       return location.host + '/coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  (getUserId() ? '?promoter=' + getUserId() : '')
     },
+
+    //跳转到 goto amazon 链接页面
+    gotoAmazonUrl () {
+      return location.host + '/goto/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '/' +base64Encode(getUserId() ?  getUserId() : '')
+    }
   },
   mounted () {
     this.init()
@@ -194,6 +201,9 @@ export default {
     },
     copy (e) {
       Clip(e)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
   },
  
@@ -208,7 +218,7 @@ export default {
   display: inline-block;
   overflow: hidden;
   width: 240px;
-  // height: 355px;
+  cursor: pointer;
   padding-bottom: 10px;
   background: white;
   border-radius: 4px;
@@ -279,13 +289,27 @@ export default {
     }
   }
   .img {
+    position: relative;
     cursor: pointer;
     text-align: center;
+    width: 96%;
+    margin: 0 auto;
+    height: 190px;
+    text-align: center;
+    padding-top: 10px;
     img {
       display: inline-block;
       margin-top: 15px;
-      width: 180px;
-      height: 180px;
+      max-width: 180px;
+      max-height: 180px;
+      position: absolute;
+      display: block;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      z-index: -1;
     }
   }
   .white-trials {
@@ -346,6 +370,7 @@ export default {
     font-size: 13px;
     color: rgb(51, 51, 51);
     height: 31px;
+    font-family: arial, sans-serif;
     overflow: hidden; /*内容超出后隐藏*/
     // text-overflow: ellipsis;/* 超出内容显示为省略号*/
     // white-space: nowrap;/*文本不进行换行*/

@@ -1,7 +1,19 @@
 <template>
   <div class="page-index " v-title="titleMsg">
     <div class="pages-content clearfix">
+      <template v-if="search">
+        <template v-if="search">
+          <div class="head-crumbs"  >
+            <br />
+              <div class="numResults">
+                <span class="semibold"> {{total}} </span> results found matching <strong>{{search}}</strong>
+              </div>
+            <hr />
+          </div>
+        </template>
+      </template>
       <explain ></explain>
+     
       <coupons-pro  v-for="couponsDetails in arrcouponsDetails"  
                     :key="1" 
                     :couponsDetails="couponsDetails"
@@ -19,9 +31,9 @@
           <span class="coupon-right" v-else>
             <strong> {{currency}}{{sub(couponsDetails.product_price, couponsDetails.refund_price).toFixed(2)}}</strong>  
           </span>
-          <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) > 0">
+          <!-- <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) > 0">
             <strong class="full-refund"> +{{currency}}{{sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2)}}</strong>  
-          </span>
+          </span> -->
          </p>
          </template>
          <template slot="btn" >View Trials</template>
@@ -63,7 +75,7 @@ export default {
         menu_id: 0,
         keyword: '',
       },
-      titleMsg: 'trials'
+      titleMsg: 'Product testing, Product trial, Authoritative and Reliable Product ReviewServices on Dealsbank.com'
     }
   },
   components: {
@@ -155,6 +167,7 @@ export default {
       this.$api.getAllTrial(this.requestData).then(res => {
         this.arrcouponsDetails = res.data.data
         this.allpage = res.data.last_page
+        this.total = res.data.total
 
         if (res.data.data.length === 0 && this.requestData.page !== 1) {
           this.gotoPage(1)
@@ -208,6 +221,31 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.head-crumbs {
+  width: 99.05%;
+  hr {
+      background-color: #eee;
+      width: 100%;
+      height: 1px;
+      border: 0;
+      border-top: 1px #d6d6d6 solid;
+      clear: both;
+  }
+}
+.numResults {
+  font-family: "Open Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  color: #444;
+  flex: 1;
+  justify-self: flex-start;
+}
+.semibold {
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+}
 .icon-tuite1 {
   font-size: 34px;
   color: white;

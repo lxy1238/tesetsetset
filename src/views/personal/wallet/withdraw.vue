@@ -1,8 +1,8 @@
 <template>
   <div class="withdraw">
     <div class="title">My Wallet</div>
-    <div class="title-s">Withdraw</div>
-    <el-form  :model="withdrawForm" :rules="rules"  ref="withdrawForm" >
+  <div class="title-s" v-title="'Withdraw'">Withdraw</div>
+    <el-form  :model="withdrawForm" :rules="rules"  ref="withdrawForm" class="withdraw-form" >
       <div class="balance">
         <label class="left-label">
           Balance:
@@ -88,7 +88,7 @@ export default {
       },
       withdrawForm: {
         country_id: getStore('country_id') || 1,
-        currency: getStore('currency') || '$',
+        currency: getStore('pay_currency') || 'USD',
         api_token: getToken(),
         user_id: getUserId(),
         account_type :'PayPal',
@@ -158,7 +158,7 @@ export default {
         for (let i of this.countryLists) {
           if (i.id === this.country_id) {
             this.withdrawForm.rmb_exchange = i.bank_conversion_pri
-            this.withdrawForm.pay_currency = i.currency
+            this.withdrawForm.currency = i.pay_currency
           }
         }
       }
@@ -221,6 +221,9 @@ export default {
 <style lang="less" scoped>
 @import url('../../../styles/mixin.less');
   .withdraw {
+    .withdraw-form {
+      height: 330px;
+    }
     .el-form-item {
       display: inline-block;
       margin-bottom: 0;
@@ -269,9 +272,9 @@ export default {
       }
     }
     .submit {
+      margin-left: 214px;
       button {
         .btn-h(160px, 45px, #84ba3a, #84ba3a, #fff);
-        font-size: 24px;
         &:active {
           background: darken(#84ba3a, 10%);
           border-color: darken(#84ba3a, 10%);

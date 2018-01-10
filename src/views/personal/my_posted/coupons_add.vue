@@ -10,7 +10,7 @@
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" class="item-url" >
           <el-input class="url-input" v-model="couponsForm.product_url"  @blur="getPlatformCateInfo" ></el-input>
-          <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">get</el-button>
+          <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">Get</el-button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline" >
           <el-select v-model="couponsForm.website"  @change="websiteChange">
@@ -406,7 +406,7 @@ export default {
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       this.getinfoBtn = true
-      // this.$message.info('For information on goods, please wait a moment')
+      // this.$snotify.info('For information on goods, please wait a moment')
       axios.get('//192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,
@@ -415,7 +415,7 @@ export default {
         .then( (res) =>{
           this.getinfoBtn = false
           if (!res.data.data) {
-            this.$message.info('Failed to obtain commodity information!!!')
+            this.$snotify.info('Failed to obtain commodity information!!!')
           }
           
           setTimeout(() => {
@@ -431,7 +431,7 @@ export default {
             this.couponsForm.product_price = data.product_price ? data.product_price : '',
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
-              this.$message.error('please enter a right url')
+              this.$snotify.error('please enter a right url')
             }
           }, 500)
         })
@@ -463,7 +463,7 @@ export default {
               this.couponsForm.website = i.provider
               this.optionsWebsite.push(ObjWebsite)
             } else {
-              this.$message.error('The country can only issue products under the platform')
+              this.$snotify.error('The country can only issue products under the platform')
             }
           }
         })
@@ -491,13 +491,13 @@ export default {
 
       let limitF = true
       if (!(isJPG || isGIF || isPNG)) {
-        this.$message.error('上传图片只能是 JPG/GIF/PNG格式!')
+        this.$snotify.error('上传图片只能是 JPG/GIF/PNG格式!')
       }
       if (!isLt500K) {
-        this.$message.error('上传图片文件大小 不能超过 1M!')
+        this.$snotify.error('上传图片文件大小 不能超过 1M!')
       }
       if (this.couponsForm.product_img_s.length >= 6) {
-        this.$message.error('最多只能上传6张图片！')
+        this.$snotify.error('最多只能上传6张图片！')
         limitF = false
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
@@ -527,7 +527,7 @@ export default {
         this.$api.editorCoupon(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('issue coupon success')
+            this.$snotify.success('issue coupon success')
             this.$router.push({ path: '/posted/coupons' })
           }
         }).catch(error => {

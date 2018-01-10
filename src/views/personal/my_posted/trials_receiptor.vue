@@ -412,6 +412,14 @@ export default {
 
 .trials-title {
   width: 150px;
+  padding: 10px 0 10px 10px;
+  cursor: pointer;
+  .trials-title-text {
+    height: 28px;
+    line-height: 1.21;
+    overflow: hidden;
+    cursor: pointer;
+  }
 }
 .star-label {
   float: left;

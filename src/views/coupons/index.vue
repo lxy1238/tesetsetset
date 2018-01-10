@@ -4,7 +4,7 @@
       <div class="head-crumbs"  v-if="couponDetail.valid_date">
         <span class=" gray-s">Coupons > {{couponDetail.menu.name}}</span> 
       </div>
-      <div class="details-content clearfix"  v-if="couponDetail.valid_date"  v-title="couponDetail.product_title">
+      <div class="details-content clearfix"  v-if="couponDetail.valid_date"  v-title="titleMsg">
         <div class="left inline">
           <details-left :imgList="imgList" 
                         :userInfo="userInfo"
@@ -27,14 +27,14 @@
             <div class="price-details" v-if="couponDetail.discount_price">
               <span class="inline-b n-price">{{currency}}{{couponDetail.discount_price}}</span>
               <span class="inline-b o-price">{{currency}}{{couponDetail.product_price}}</span>
-              <span class="inline-b c-price">Coupon {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
+              <span class="inline-b c-price">Coupon {{currency}}{{sub(couponDetail.product_price, couponDetail.discount_price).toFixed(2)}}</span>
               <span class="inline-b ratio">{{couponDetail.discount_rate}}% off</span>
             </div>
             <div class="data-info">
               <span class="inline-b expried">Expried: {{couponDetail.valid_date}}</span>
               <span class="inline-b" v-if="couponDetail.shipping_fee == '0.00'">Free shopping</span>
-              <span class="inline-b" v-else>Shipping fee: {{couponDetail.shipping_fee}}</span>
-              <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i>  <i class="link">Flag this coupon</i>  </span>
+              <span class="inline-b" v-else>Shipping fee: {{currency}}{{couponDetail.shipping_fee}}</span>
+              <span class="inline-b right flagcoupon" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i>  <i class="link">Flag this coupon</i>  </span>
             </div>
             <div class="select" v-if="isFlagCoupon">
               <select name="" id="" v-model="selected" @change="selectProblem">
@@ -76,8 +76,10 @@
                 Promotion template
               </div>
               <div class="promo-head-r" @click="modifyTemplate">
-                <i class="iconfont icon-modify1"></i>
-                Modify template
+                  <i class="iconfont icon-modify1"></i>
+                  <a href="javascript:void(0);">
+                    Modify template
+                  </a>
               </div>
             </div>
             <div class="promo-content">
@@ -106,7 +108,7 @@
           </div>
           <div class="recommend">
             <div class="re-head">
-              <span class="re-head-l">recommend</span>
+              <span class="re-head-l">Related Coupons</span>
               <span class="re-head-r link" @click="gotoIndex" >more <i>></i></span>
             </div>
               <coupons-pro 
@@ -115,10 +117,17 @@
                 :couponsDetails="couponsDetails"
                 @gotodetails="gotodetails">
                 <template slot="price">
-                <p class="price content">{{currency}}{{couponsDetails.product_price}}</p>
+                <!-- <p class="price content">{{currency}}{{couponsDetails.product_price}}</p>
                 <p class="coupons content">
                   <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.discount_price}}</strong></span>
                   <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
+                </p> -->
+                <p class="price content">
+                  <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
+                </p>
+                <p class="price content clearfix">
+                  <span class="price-left"><i>Coupon</i> {{currency}}{{sub(couponsDetails.product_price , couponsDetails.discount_price).toFixed(2)}}</span>
+                  <span class="price-right-bottom"> {{couponsDetails.discount_rate}}% <i>off</i></span>
                 </p>
                 </template>
                 <template slot="btn">
@@ -138,8 +147,8 @@
         <div class="dialog-body">
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
-            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link">Go to Amazon</a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{couponDetail.discount_price}}</button></div>
+            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link"><strong>Go to Amazon</strong></a> and paste this code at checkout</span></div>
+            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{sub(couponDetail.product_price, couponDetail.discount_price).toFixed(2)}}</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
               <button data-clipboard-target="#couponId" @click="copyCode($event)">Copy</button>
@@ -201,6 +210,7 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { mapGetters } from 'vuex'
 import { base64Encode, base64Decode } from '@/utils/randomString'
+import { NumSub } from '@/utils/calculate'
 export default {
   name: 'coupons',
   components: {
@@ -316,15 +326,17 @@ export default {
       getCodeSuccess: false,             //是否领取优惠券成功
       isFlagCoupon: false,              //是否显示问题反馈
 
-      promotionTemplate: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Promo_link#\n#Promo_desctiption#\n', 
-      promotionTemplateinit: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Promo_link#\n#Promo_desctiption#\n', 
+      promotionTemplate: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Order_link#\n#Promo_desctiption#\n', 
+      promotionTemplateinit: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Order_link#\n#Promo_desctiption#\n', 
       templateText: '',
       promoterPid: '123456789',         //推广PID  ，默认的
-      currency: getStore('currency') || '$'
+      currency: getStore('currency') || '$',
+      titleMsg: '',
     }
   },
   computed: {
-    ...mapGetters(['username', 'promotions']),
+    ...mapGetters(['username', 'promotions', 'currentRouter']),
+   
   },
   mounted () {
     this.init()
@@ -367,28 +379,7 @@ export default {
       }
     },
 
-    //判断链接中携带哪个pid , 如果有分享人的id 那就携带分享人的pid， 如果没有分享人，则携带公司的pid
-    hasPromoter () {
-      if (this.$route.query.promoter) {
-        let promoterUserId = parseInt(this.$route.query.promoter)
-        this.requestPlatData.user_id = promoterUserId
-        this.requestPlatData.country_id = base64Decode(this.$route.params.countryId)
-        this.$api.postUserPid(this.requestPlatData).then(res => {
-          for (let i of res.data) {
-            if (i.platform_id === this.couponDetail.platform_id) {
-              if (i.PID) {
-                this.promoterPid = i.PID
-                this.userInfo.pid = i.PID
-              } 
-            }
-          }
-        })
-      } else {
-        this.promoterPid = '12345678'
-        this.userInfo.pid = this.promoterPid
-      }
-    },
-    
+
     //获取优惠券详情
     getCouponsDetails () {
       this.isDataExit(this.requestCouponDetails)
@@ -403,8 +394,11 @@ export default {
           this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
           this.getAllCouponsInfo(res.data.menu_id)
           this.getPostUserInfo(res.data.user_id)
-          this.changeTemplate()
           this.couponsIsPromotion()
+          this.changeTemplate()
+          this.titleMsg = res.data.product_title + ' for ' +
+                          this.currency + res.data.discount_price + 
+                          (res.data.shipping_fee == 0 ? ' + free shipping' : '')
           
         })
         .catch(error => {
@@ -431,6 +425,7 @@ export default {
         .replace(/#Discount_scale#/g, '%'+'this.couponDetail.discount_rate')
         .replace(/#Promo_desctiption#/g, this.couponDetail.product_reason)
         .replace(/#Promo_link#/g, promoLink)
+        .replace(/#Order_link#/g, 'https://' + location.host + this.getOrderLink())
     },
     //显示编辑模板
     modifyTemplate () {
@@ -446,7 +441,7 @@ export default {
         this.submitTemplateData.content = this.promotionTemplate
         this.$api.editTemplate(this.submitTemplateData).then(res => {
           if (res.code === 200) {
-            this.$message.success('Save success')
+            this.$snotify.success('save success')
             this.getCouponsDetails()
             this.templateDialog = false
           }
@@ -481,7 +476,7 @@ export default {
     },
 
     //领取优惠券
-    getCode () {
+    getCode () {  
       if(!this.isLogin()) {
         return
       }
@@ -532,7 +527,6 @@ export default {
           this.userInfo = res.data
           this.userInfo.user_id = this.couponDetail.user_id
           this.userInfo.product_url = this.couponDetail.product_url
-          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + ' postedUserInfo')
@@ -580,7 +574,7 @@ export default {
     getCouponCode (e) {
       if (this.isLogin()) {
         if (this.isStop()) {
-          this.$message.info('The activity is over, or the coupon has been received')
+          this.$snotify.info('The activity is over, or the coupon has been received')
           return
         }
         e.target.disabled = true
@@ -651,7 +645,7 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$message.error('You can only type 30 characters')
+        this.$snotify.error('You can only type 30 characters')
         return
       }
       this.btnLoading = true
@@ -659,7 +653,7 @@ export default {
       this.$api.addProblem(this.addProblemData).then(res => {
         this.btnLoading = false
         if (res.code === 200) {
-          this.$message.success('Submitted successfully!')
+          this.$snotify.success('Submitted successfully!')
           this.isFlagCoupon = false
           this.selected = 'Choose reason'
         }
@@ -673,12 +667,16 @@ export default {
       this.addProblemSubmit()
     },
 
-    
+    getOrderLink () {
+      let router = this.currentRouter.replace('/coupons', '')
+      let endUrl = `/goto${router}/${base64Encode(getUserId() ? getUserId() : '')}`
+      return endUrl
+    },
    
     //跳转到相应 商品链接
     gotoPlatform (url) {
-      let endUrl = `${url}&tag=${this.promoterPid}`
-      window.open(endUrl)
+      let route = this.getOrderLink()
+      window.open(route)
     },
 
     //facebook 分享
@@ -701,6 +699,9 @@ export default {
           }
         }
       )
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
 
   }
@@ -748,6 +749,7 @@ export default {
       background: white;
       border-radius: 5px;
       margin-bottom: 1rem;
+      border: 1px solid #d2d2d2;  
       .img {
         position: absolute;
         cursor: pointer;
@@ -757,9 +759,9 @@ export default {
       }
       .title {
         width: 80%;
-        font-size: 18px;
-        color: #333;
-        font-weight: bold;
+        font-size: 21px;
+        color: black;
+        font-weight: 500;
         margin-bottom: 1rem;
       }
       .describe {
@@ -805,9 +807,18 @@ export default {
           height: 17px;
           line-height: 1;
           overflow: hidden;
+          &.flagcoupon {
+            &:hover {
+              color: #0072bc;
+              .iconfont {
+                color: #0077bc;
+              }
+            }
+          }
           .iconfont {
             position: relative;
             top: 3px;
+            color: #808080;
           }
         }
         .expried {
@@ -823,13 +834,13 @@ export default {
 
         select {
           position: absolute;
-          right: 0;
+          right: 5px;
           color: #808080;
-          font-size: 0.78rem;
+          font-size: 12px;
           min-width: 6rem;
           option {
             color: #808080;
-            font-size: 0.78rem;
+            font-size: 12px;
           }
         }
       }
@@ -842,9 +853,6 @@ export default {
             line-height: 3rem;
             text-align: center;
             line-height: 0.8;
-            span {
-              font-size: 1rem;
-            }
           }
         }
         .get-code {
@@ -858,7 +866,7 @@ export default {
           .wrong {
             margin-bottom: 0.3rem;
             margin-top: 6px;
-            font-size: 13px;
+            font-size: 12px;
             color: #808080;
           }
           .submit {
@@ -906,6 +914,7 @@ export default {
       background: white;
       border-radius: 5px;
       margin-bottom: 1rem;
+      border: 1px solid #d2d2d2;
       .promo-head {
         padding: 0 1rem;
         height: 3rem;
@@ -914,7 +923,7 @@ export default {
         .promo-head-l {
           display: inline-block;
           height: 100%;
-          font-size: 1.22rem;
+          font-size: 16px;
           font-weight: bold;
           color: #1a1a1a;
           width: 43rem;
@@ -926,7 +935,10 @@ export default {
           text-align: center;
           cursor: pointer;
           &:hover {
-            color: #ff6700;
+            color: #0072bc;
+            a {
+              text-decoration: underline;
+            }
           }
         }
       }
@@ -945,7 +957,7 @@ export default {
           }
           .text-describe {
             margin-top: 2rem;
-            font-size: 1rem;
+            font-size: 13px;
             padding: 1rem;
           }
         }
@@ -1006,12 +1018,13 @@ export default {
       border-radius: 5px;
       margin-bottom: 1rem;
       padding-left: 1rem;
+      border: 1px solid #d2d2d2;
       .re-head {
+        padding: 1rem 1rem 1rem 0;
         height: 3rem;
-        padding: 1rem;
         border-bottom: 1px solid #e1e1e1;
         .re-head-l {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 700;
           color: #333;
         }

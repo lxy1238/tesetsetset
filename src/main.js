@@ -11,6 +11,9 @@ import api from './api/index'  //所有的接口
 
 import './directive/title/index'
 
+
+import Snotify from 'vue-snotify'
+Vue.use(Snotify)
 import VueHtml5Editor from 'vue-html5-editor'
 Vue.use(VueHtml5Editor,{
   icons: {

@@ -1,6 +1,6 @@
 <template>
   <div class="page-index "  >
-    <div class="pages-content clearfix" v-if="trialDetail.product_price" v-title="trialDetail.product_title">
+    <div class="pages-content clearfix" v-if="trialDetail.product_price" v-title="titieMsg">
       <explain :is-active="2"></explain>
       <div class="home-content" >
         <div class="details" v-if="trialDetail.product_price">
@@ -11,16 +11,27 @@
             <div class="title" :title="trialDetail.product_title" @click="gotoAmazon(trialDetail.product_url)">{{trialDetail.product_title}}</div>
             <div class="time"> Count down: {{countDownData.hours}}:{{countDownData.minutes}}:{{countDownData.seconds}} <span class="red" v-if="isExpired">已过期</span></div>
             <div class="code-price">
-              <div class="price">Price: {{currency}} {{trialDetail.product_price}} </div>
-              <div class="price">Shipping fee: {{currency}} {{trialDetail.shipping_fee}} </div>
-              <div class="refund-price">Refund: <span >{{currency}} {{trialDetail.refund_price}}</span> </div>
+              <div class="price">
+                <span>List price: <del>{{currency}}{{trialDetail.product_price}} </del></span> 
+                <span v-if="trialDetail.shipping_fee != 0">Shipping fee: <del>{{currency}}{{trialDetail.shipping_fee}}</del> </span>
+                <span v-else >Free Shipping</span>
+              </div>
+              <div class="refund-price">
+                <label>Trial price:</label>  
+                <!-- <span class="free" v-if="sub(trialDetail.refund_price, trialDetail.product_price).toFixed(2) >= 0">Free</span> -->
+                <span  >{{currency}}{{add(trialDetail.product_price, trialDetail.shipping_fee).toFixed(2)}}</span>
+                <span class="merchant-reward" >
+                  <label>Refund amount: </label>
+                  <i class="merchant-reward-money">{{currency}}{{add(trialDetail.refund_price, trialDetail.shipping_fee).toFixed(2)}}</i>
+                </span>
+              </div>
               <div class="reminder">Please place an order within 24 hours and complete the payment. 
                                     And timely upload your order number, or your trial qualification 
                                     will be canceled.</div>
             </div>
             <div class="footer">
               <button class="to-amazon" @click="gotoAmazon(trialDetail.product_url)">
-                Go To Amazon 
+                Go to Amazon 
               </button>
               <div class="right">
                 <div class="top" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> <i class="link">Flag this trials</i> </div>
@@ -111,6 +122,7 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { getTimeDetail } from '@/utils/date.js'
 import { base64Decode } from '@/utils/randomString.js'
+import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'page_index',
   data () {
@@ -159,6 +171,7 @@ export default {
       confirmLoading: false,
       problemBtnLoading: false,
       leftTime: '',
+      titleMsg: 'Application Successful!'
     }
   },
   components: {
@@ -260,13 +273,13 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$message.error('You can only type 30 characters')
+        this.$snotify.error('You can only type 30 characters')
         return
       }
       this.problemBtnLoading = true
       this.$api.addProblem(this.addProblemData).then(res => {
         if (res.code === 200) {
-          this.$message.success('Submitted successfully!')
+          this.$snotify.success('Submitted successfully!')
           this.isFlagCoupon = false
           this.selected = 'Choose reason'
           this.problemBtnLoading = false
@@ -278,6 +291,12 @@ export default {
     },
     problemSubmit () {
       this.addProblemSubmit()
+    },
+    add (a, b) {
+      return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
   }
 }
@@ -295,12 +314,13 @@ export default {
   width: 99.05%;
   .details {
     position: relative;
-    height: 26rem;
+    min-height: 29rem;
     background: white;
     margin-bottom: 1.3rem;
     border-radius: 5px;
     padding-left: 27rem;
     padding-top: 1rem;
+    border: 1px solid #d2d2d2;
     .pro-img {
       position: absolute;
       left: 3rem;
@@ -316,6 +336,42 @@ export default {
     .details-price {
       position: relative;
       margin-left: 2rem;
+      .price {
+          margin-bottom: .6rem;
+          del {
+            color: #808080;
+            display: inline-block;
+            margin-right: 30px;
+          }
+          span {
+            display: inline-block;
+            font-size: 13px;
+            color: #333;
+          }
+        }
+        .refund-price {
+          font-size: 13px;
+          color: #333;
+          margin-bottom: .6rem;
+          span {
+            font-size: 1.3rem;
+            font-weight: bold;
+          }
+          .merchant-reward {
+            display: inline-block;
+            margin-left: 10px;
+            label {
+              font-size: 13px;
+              color: #333;
+              font-weight: 400;
+            }
+            .merchant-reward-money {
+              font-style: italic;
+              color: #D82323;
+            }
+            
+          }
+        }
       .amazon {
         position: absolute;
         right: 1rem;
@@ -338,6 +394,10 @@ export default {
           color: #1a1a1a;
         }
       }
+      .reminder {
+        margin-bottom: .8rem;
+        width: 60%;
+      }
       .code-price {
         position: relative;
         width: 97%;
@@ -347,49 +407,31 @@ export default {
         color: #808080;
         font-size: 1rem;
         margin-bottom: 1rem;
-        .price {
-          margin-bottom: .8rem;
-        }
-        .refund-price {
-          margin-bottom: .8rem;
-          span {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: black;
-          }
-        }
-        .reminder {
-          margin-bottom: .8rem;
-          width: 60%;
-        }
-        .code {
-          position: absolute;
-          width: 12rem;
-          // height: rem;
-          right: 2rem;
-          top: .5rem;
-          .text {
-            font-size: 12px;
-          }
-        }
       }
       .footer {
         .to-amazon {
           .btn-h(15rem,3rem, #84bb3a, #84bb3a, #fff);
-          font-size: 1rem;
         }
         .right {
           float: right;
           margin-right: 2rem;
+          margin-top: -10px;
           select {
             min-width: 120px;
           }
           .top {
             height: 18px;
             overflow: hidden;
+            margin-bottom: 5px;
+            &:hover {
+              .iconfont {
+                color: #0072bc;
+              }
+            }
             .iconfont {
               position: relative;
               top: 3px;
+              color: #808080;
             }
           }
 
@@ -406,6 +448,7 @@ export default {
     padding: 20px 0 0 50px;
     font-size: 1rem;
     color: #808080;
+    border: 1px solid #d2d2d2;
     h3 {
       font-size: 1.33rem;
       color: #1a1a1a;
@@ -423,6 +466,7 @@ export default {
     background: white;
     padding: 10px 20px;
     border-radius: 5px;
+    border: 1px solid #d2d2d2;
     .precautions-s, .description ,.rights-statement {
       padding: 10px 20px;
       border-bottom: 1px solid #d2d2d2;
@@ -438,37 +482,43 @@ export default {
         }
       }
     }
+    .rights-statement {
+      border-bottom: none;
+    }
   }
 
   .footer {
     height: 30px;
   }
    .question {
-          float: right;
-          text-align: right;
-          margin-right: 15px;
-          .wrong {
-            margin-bottom: 0.3rem;
-            font-size: 1rem;
-            color: #808080;
-          }
-          .submit {
-            position: relative;
-            input {
-              height: 1.8rem;
-            }
-            button {
-              .btn-h(5rem, 1.8rem, #7db135, #7db135, #fff);
-              line-height: 0.4;
-            }
-            .error {
-              position: absolute;
-              left: 0;
-              text-align: left;
-              color: red;
-            }
-          }
-        }
+    float: right;
+    text-align: right;
+    margin-right: 15px;
+    position: absolute;
+    right: 1rem;
+    bottom: -4rem;
+    .wrong {
+      margin-bottom: 0.3rem;
+      font-size: 13px;
+      color: #808080;
+    }
+    .submit {
+      position: relative;
+      input {
+        height: 1.8rem;
+      }
+      button {
+        .btn-h(5rem, 1.8rem, #7db135, #7db135, #fff);
+        line-height: 0.4;
+      }
+      .error {
+        position: absolute;
+        left: 0;
+        text-align: left;
+        color: red;
+      }
+    }
+  }
 }
 
 

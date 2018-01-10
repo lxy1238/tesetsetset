@@ -44,44 +44,37 @@ export const constantRouterMap = [
     ]
   },
   //申请入驻、 佣金计算、 激活、 忘记密码
+  // {
+  //   path: '/enter/index',
+  //   component: another,
+  //   children: [
+  //     {
+  //       path: '/enter/invite',
+  //       component: _import('enter_s/invite')
+  //     },
+  //     // {
+  //     //   path: '/commissions/index',
+  //     //   component: _import('commissions/index')
+  //     // },
+     
+  //     // {
+  //     //   path: '/resetpass/:email/:token',
+  //     //   component: _import('another/resetpass/index')
+  //     // },
+  //   ]
+  // },
+  // {
+  //   path: '/activate/:email',
+  //   component: _import('another/activate/index')
+  // },
+  // {
+  //   path: '/combine/index',
+  //   component: _import('combine/index'),
+  //   hidden: true
+  // },
   {
-    path: '/enter/index',
-    component: another,
-    children: [
-      {
-        path: '/enter/index',
-        component: _import('enter_s/index')
-      },
-      {
-        path: '/enter/seller',
-        component: _import('enter_s/seller')
-      },
-      {
-        path: '/enter/reds',
-        component: _import('enter_s/reds')
-      },
-      {
-        path: '/enter/invite',
-        component: _import('enter_s/invite')
-      },
-      // {
-      //   path: '/commissions/index',
-      //   component: _import('commissions/index')
-      // },
-      {
-        path: '/activate/:email',
-        component: _import('another/activate/index')
-      },
-      {
-        path: '/resetpass/:email/:token',
-        component: _import('another/resetpass/index')
-      },
-    ]
-  },
-  {
-    path: '/combine/index',
-    component: _import('combine/index'),
-    hidden: true
+    path: '/goto/:couponId/:countryId/:promoterId?',
+    component: _import('goto/index'),
   },
 
   {
@@ -97,58 +90,46 @@ export const aboutRouterMap = [
     path: '/about/center',
     redirect: '/about/center/index',
     component: about_center,
-    text: 'About Us',
-    hasChilds: false,
-    children: [{
-      path: 'index',
-      component: _import('about/about_us')
-    }]
-  },
-  {
-    path: '/about/faqs',
-    redirect: '/about/faqs',
-    component: about_center,
-    hasChilds: true,
-    isToggle: true,
-    text: 'FAQs / Common Issues',
     children: [
       {
-        path: '/about/login-sign',
-        text: '用户登录与注册',
-        component: _import('about/fqa/login_sign'),
+        path: 'index',
+        component: _import('about/about_us')
       },
       {
-        path: '/about/pick-coupons',
-        text: '折扣券领取流程',
-        component: _import('about/fqa/pick_coupons'),
+        path: 'influencer',
+        component: _import('about/page/influencer')
       },
       {
-        path: '/about/coupon-promo',
-        text: '折扣券营销推广',
-        component: _import('about/fqa/coupon_promo')
+        path: 'merchant',
+        component: _import('about/page/merchant')
       },
       {
-        path: '/about/trials-apply',
-        text: '试用品申请规则',
-        component: _import('about/fqa/trials_apply')
+        path: 'countact',
+        component: _import('about/page/countact')
       },
       {
-        path: '/about/release',
-        text: '如何发布折扣券和试用品',
-        component: _import('about/fqa/release')
+        path: 'faq',
+        component: _import('about/page/faq')
       },
       {
-        path: '/about/member-level',
-        text: '会员等级与积分',
-        component: _import('about/fqa/member_level')
+        path: 'term',
+        component: _import('about/page/term')
       },
       {
-        path: '/about/pid',
-        text: 'PID获取方式',
-        component: _import('about/fqa/pid')
+        path: 'privacy',
+        component: _import('about/page/privacy')
+      },
+      {
+        path: '/activate/:email',
+        component: _import('about/page/email')
+      },
+      {
+        path: '/resetpass/:email/:token',
+        component: _import('about/page/resetpass')
       },
     ]
-  },
+
+  }
 ]
 
 
@@ -230,7 +211,7 @@ export const asyncRouterMap = [
     children: [
       {
         path: '/wallet/financial',
-        text: 'Financial Record',
+        text: 'Transaction Record',
         component: _import('personal/wallet/financial'),
       },
       {

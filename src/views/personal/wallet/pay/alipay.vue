@@ -81,7 +81,7 @@ export default {
       this.$api.alipay(this.reqData).then(res => {
         if (!res.data) {
           this.fullscreenLoading = false
-          this.$message.info('Payment interface error, please refresh the page or other payment method')
+          this.$snotify.info('Payment interface error, please refresh the page or other payment method')
           return
         }
         let num = res.data.search('</form>')

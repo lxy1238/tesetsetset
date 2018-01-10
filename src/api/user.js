@@ -4,6 +4,18 @@ import qs from 'qs'
 
 //用户基本信息
 
+//验证邮箱是否存在
+export const checkEmail = data => fetch({
+  url: '/api/v1/user/check-email',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+//验证username 是否存在
+export const checkUsername = data => fetch({
+  url: '/api/v1/user/check-username',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 //注册
 export const sign = data => fetch({
   url: '/api/v1/user/register',
@@ -108,6 +120,28 @@ export const loginGoogle = data => fetch({
 //用户公开信息  发布优惠券的人的信息获取， 不用登录校验就可以获取
 export const loginFacebook = data => fetch({
   url: '/api/v1/user/login-facebook',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+//用户联系我们
+export const contactUs = data => fetch({
+  url: '/api/v1/assist/contact-us',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//申请成为商家
+export const applyMerchant = data => fetch({
+  url: '/api/v1/user/apply-merchant',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+//申请成为红人
+export const applyCelebritys = data => fetch({
+  url: '/api/v1/user/apply-celebritys',
   method: 'POST',
   data: qs.stringify(data)
 })

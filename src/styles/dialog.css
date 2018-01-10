@@ -30,5 +30,5 @@
   border-radius: 10px;
 }
 .el-checkbox__label {
-  font-size: 12px;
+  font-size: 12px !important;
 }

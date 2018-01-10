@@ -1,10 +1,10 @@
 <template>
   <div class="promotion clearfix">
-    <div class="pro-header">
+    <div class="pro-header" v-title="titleMsg">
       <h3 class="title">My Promotions</h3>
       <div class="remove-all" @click="removeAllPromotion">
         <i class="el-icon-delete"></i>
-        <span> Remove All</span>
+        <span> Remove all</span>
       </div>
     </div>
     <div class="promotion-coupons">
@@ -16,7 +16,7 @@
           <template slot="price" v-if="couponsDetails.coupons">
            <p class="price content">
             <span class="price-right">{{currency}}{{couponsDetails.coupons.product_price}}</span>
-            <span class="remove" @click="removePromotion(couponsDetails.coupons.id)">
+            <span class="remove" @click.stop="removePromotion(couponsDetails.coupons.id)">
               <i class="el-icon-delete" title="Remove"></i>
             </span>
           </p>
@@ -71,7 +71,8 @@ export default {
       removeAllRequestData: {
         api_token: getToken(),
         user_id: getUserId(),
-      }
+      },
+      titleMsg: 'My Promotions'
     }
   },
   components: {
@@ -110,6 +111,8 @@ export default {
       this.$api.promotionUserRemove(this.removeRequestData)
         .then(() => {
           this.getPromotionDetails()
+          this.ArrayRemove(this.promotions, id)
+          this.$store.commit('SET_PROMOTIONS', this.promotions)
         })
         .catch(error => {
           console.log(error)
@@ -128,6 +131,7 @@ export default {
           this.$api.promotionUserRemove(this.removeAllRequestData)
             .then(() => {
               this.getPromotionDetails()
+              this.$store.commit('SET_PROMOTIONS', [])
             })
             .catch(error => {
               console.log(error)
@@ -136,6 +140,13 @@ export default {
         .catch(() => {
           console.log('quxiao')
         })
+    },
+    //数组移除元素
+    ArrayRemove (arr, val) {
+      let index = arr.indexOf(val)
+      if (index > -1) {
+        arr.splice(index, 1)
+      }
     },
 
     //跳转到详情页面
@@ -150,12 +161,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user_id', 'token']),
+    ...mapGetters(['user_id', 'token', 'promotions']),
     currency () {
       return getStore('currency') || '$'
     }
   },
-
 }
 </script>
 
@@ -164,11 +174,11 @@ export default {
   .pro-header {
     position: relative;
     border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
+    margin-bottom: 5px;
   }
   .title {
     font-size: 1.5rem;
-    margin: 0.7rem 0;
+    margin: 5px 0;
     font-weight: normal;
   }
   .remove-all {
@@ -184,16 +194,27 @@ export default {
 }
 .promotion-coupons {
   width: 104%;
-  height: 695px;
+  min-height: 730px;
   .coupons-product {
     width: 23%;
-    margin: 0 1.5% 10px 0;
+    margin: 0 1.5% 5px 0;
     .remove {
       float: right;
       margin-right: 10px;
       cursor: pointer;
     }
+    .img {
+      height: 10rem;
+      img {
+        max-width: 10rem;
+        max-height: 10rem;
+      }
+    }
   }
+  
 }
+  .coupons-pagination {
+    margin: -8px 0 0 0;
+  }
 
 </style>

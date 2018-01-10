@@ -1,5 +1,6 @@
 @import url('./dialog.less');
 @import url('./mixin.less');
+@import url('./snotify.css');
 
 @font-face{
   font-family: 'Open Sans';
@@ -13,6 +14,7 @@
   font-family: 'Open Sans Semibold';
   src : url('../static/font/OpenSans-Semibold.ttf');
 }
+
 
 [v-cloak] {
   display:none;
@@ -29,6 +31,7 @@
   background: #e4e4e4;
   min-width: 83.333rem;
   min-height: 1000px;
+  padding-bottom: 20px;
 }
 .fixed {
   position: fixed !important;
@@ -67,6 +70,9 @@ li {
 
 i {
   font-style: normal;
+}
+img {
+  max-width: 100%;
 }
 
 html {
@@ -306,18 +312,24 @@ table tbody tr td {
     // height: 345px !important
   }
   .trials-details-left {
-    top: 10.3rem !important;
+    // top: 10.3rem !important;
     // display: none;  
   }
   // .trials-right-content.right {
   //   width: 100% !important;
   // }
+  .promotion-coupons {
+    min-height: 660px !important;
+  }
 }
 
 @media screen and (max-width: 1389px) {
   .coupons-product {
     // height: 345px !important
 
+  }
+  .promotion-coupons {
+    min-height: 660px !important;
   }
 }
 
@@ -332,7 +344,7 @@ table tbody tr td {
  .coupons-product .btn-coupons {
     height: 2.5rem !important  
   }
-  .trials-explain {
+  .trials-explain, .head-crumbs {
     width: 98% !important;
   }
   .merchant {
@@ -342,7 +354,7 @@ table tbody tr td {
     width: 98% !important;
   }
   .trials-details-left {
-    top: 12.09rem !important;  
+    // top: 12.09rem !important;  
   }
   .login-y.user-info {
     padding: 0 !important;
@@ -350,6 +362,9 @@ table tbody tr td {
   .go-to-amazon {
     // top: 0px !important;
     // line-height: 1.25 !important;
+  }
+  .promotion-coupons {
+    min-height: 630px !important;
   }
 }
 

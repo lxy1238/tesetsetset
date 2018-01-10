@@ -3,7 +3,7 @@
        <div class="pro-header">
         <h3 class="title">My Wallet</h3>
       </div>
-      <div class="title-s">
+      <div class="title-s" v-title="'Transaction Record'">
         Transaction Record
       </div>
 

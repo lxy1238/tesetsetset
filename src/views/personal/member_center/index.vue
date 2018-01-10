@@ -3,7 +3,7 @@
     <h3 class="title">
         Profile Overview
     </h3>
-    <div class="center-content">
+    <div class="center-content" v-title="titleMsg">
       <div class="title-sm">
         About Me
       </div>
@@ -17,6 +17,26 @@
             <span class="name">{{username}}</span>
             <span class="level reds-color" v-if="roles[0] == 'celebrity'">Influencer</span>
             <span class="level merchant-color" v-if="roles[0] == 'merchant'">Merchant</span>
+            <template v-if="celebrityData && merchantData">
+              <template v-if="celebrityData.status === 0 && merchantData.status === 1">
+                <span class="remind-info red" v-if="celebrityData"> (Apply for a influencer is under review)</span>
+              </template>
+              <template  v-if="celebrityData.status === 2 && merchantData.status === 0">
+                <span class="remind-info red" v-if="merchantData"> (Apply for a merchant is under review)</span>
+              </template>
+              <template v-if="celebrityData.status === 0 && merchantData.status === 2">
+                <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer or merchant , Audit not passed)</span>
+              </template>
+            </template>
+            <template v-if="celebrityData && !merchantData">
+              <span class="remind-info red" v-if="celebrityData.status === 0">(Apply for a influencer is under review)</span>
+              <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer , Audit not passed)</span>
+            </template>
+            <template v-if="!celebrityData && merchantData">
+              <span class="remind-info red" v-if="merchantData.status === 0">(Apply for a merchant is under review)</span>
+              <span class="remind-info red" v-if="merchantData.status === 2">(Apply for a merchant , Audit not passed)</span>
+            </template>
+            
           </div>
           <div class="icon-info">
             <span><i class="iconfont icon-riqi1"> </i> Joined {{userData.joined_date}}</span>
@@ -104,11 +124,14 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         country_id: getStore('country_id') || 1
-      }
+      },
+      merchantData: null,
+      celebrityData: null,
+      titleMsg: 'User Center'
     }
   },
   computed: {
-    ...mapGetters(['username', 'token', 'roles', 'user_id', 'userAccount', 'userBase', 'joined_date']),
+    ...mapGetters(['username', 'token', 'roles', 'user_id', 'userAccount', 'userBase', 'joined_date', 'celebrity', 'merchant']),
     currency () {
       return getStore('currency') || '$'
     }
@@ -130,6 +153,8 @@ export default {
       this.userData.account = this.userAccount
       this.userData.base = this.userBase
       this.userData.joined_date = timestampFormat(this.joined_date)
+      this.celebrityData = this.celebrity
+      this.merchantData = this.merchant
     },
     //路由跳转
     gotoAnotherRouter (url, account) {

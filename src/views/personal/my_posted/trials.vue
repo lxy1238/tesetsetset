@@ -3,7 +3,7 @@
     <template>
        <div class="pro-header">
         <h3 class="title">My Posted</h3>
-        <div class="title-s">Trials Posted</div>
+        <div class="title-s" v-title="'Trials Posted'">Trials Posted</div>
       </div>
  <div class="search-form">
       <label for="title">
@@ -49,15 +49,15 @@
               <!-- title -->
               <td class="trials-title">
                 <div class="trials-title-platform">{{item.website}}</div>
-                <div class="trials-title-text"  @click="gotoDetails(item)">{{item.product_title}}</div>
+                <div class="trials-title-text" :title="item.product_title"  @click="gotoDetails(item)">{{item.product_title}}</div>
                 <a href="javascript:void(0);"  @click="gotoDetails(item)">{{item.menu.name}}</a>
               </td>
               <!-- store -->
-              <td class="trials-store">
+              <!-- <td class="trials-store">
                 <div class="trials-store-content" v-if="item.user_store">
                   {{item.user_store.store_name}}
                 </div>
-              </td>
+              </td> -->
               <!-- List price -->
               <td>
                 <div >
@@ -67,34 +67,35 @@
               <!-- quantity -->
               <td>
                 <div>
-                  {{item.total_quantity}}
+                    <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
+                   {{item.order_numbers}}
+                </a> / {{item.total_quantity}}
                 </div>
               </td>
               <!-- applied -->
-              <td>
-                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
-                   {{item.order_numbers}}
-                </a>
+              <!-- <td>
+                 
                
-              </td>
+              </td> -->
               <!-- shipping_fee -->
               <td>
                 <div>
                   {{currency}}{{Number(item.shipping_total_fee)}}
                 </div>
               </td> 
-              <!-- promotion_fee -->
-              <td>
-                <div>
-                  {{currency}}{{Number(item.platform_total_fee)}}
-                </div>
-              </td>
               <!-- refund -->
               <td>
                 <div>
                   {{currency}}{{Number(NumberSub(item.refund_total_price, item.shipping_total_fee).toFixed(2))}}
                 </div>
               </td>
+              <!-- promotion_fee -->
+              <td>
+                <div>
+                  {{currency}}{{Number(item.platform_total_fee)}}
+                </div>
+              </td>
+              
               <!-- security_deposit -->
               <td>
                 <div>
@@ -103,7 +104,7 @@
               </td>
 
                 <!-- Cost -->
-              <td>
+              <td class="cost">
                 <div>
                   {{currency}}{{Number(item.real_fee)}}
                 </div>
@@ -196,8 +197,8 @@ export default {
   name: 'posted_trials',
   data () {
     return {
-      thLists: ['Image', 'Title', 'Store' , 'List price', 'Quantity', 'Applied', 
-        'Shipping fee', 'Platform fee', 'Refund', 'Security Deposit',
+      thLists: ['Image', 'Title' , 'Price', 'Qty', 
+        'Shipping fee', 'Refund', 'Platform fee',  'Security Deposit',
         'Cost', 'Valid date', 'Status', 'Operation'
       ],
       trLists: [],
@@ -358,9 +359,9 @@ export default {
 
     //删除优惠券
     DeleteCoupon (id) {
-      this.$confirm('Determine deleting trial?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
+      this.$confirm('Are you sure to close this trial?', 'Friendly reminder', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         type: 'warning'
       })
         .then(() => {
@@ -368,10 +369,7 @@ export default {
           this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
             this.getPostTrialsList()
           })
-          this.$message({
-            type: 'success',
-            message: 'delete success!'
-          })
+          this.$snotify.success('Delete success')
         })
         .catch(() => {
           console.log('cancel')
@@ -451,7 +449,7 @@ export default {
             this.getPostTrialsList()
           }
         }).catch(err => {
-          this.$message.error(err)
+          this.$snotify.error(err)
           console.log(err)
         })
       }).catch(() => {
@@ -483,6 +481,19 @@ export default {
 }
 .trials-title {
   width: 120px;
+  text-align: left;
+  .trials-title-text {
+    height: 28px;
+    line-height: 1.21;
+    overflow: hidden;
+    cursor: pointer;
+  }
+}
+.cost {
+  width: 60px;
+}
+.status {
+  width: 100px;
 }
 .details-dialog {
   text-align: center;

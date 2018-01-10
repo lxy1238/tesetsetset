@@ -1,3 +1,4 @@
+@import url('snotify.css');
 .code-dialog .el-dialog.el-dialog--small {
   width: 720px;
 }
@@ -28,6 +29,9 @@
 }
 .el-dialog.el-dialog--small {
   border-radius: 10px;
+}
+.el-checkbox__label {
+  font-size: 12px !important;
 }
 .fl {
   float: left;
@@ -77,6 +81,7 @@
   background: #e4e4e4;
   min-width: 83.333rem;
   min-height: 1000px;
+  padding-bottom: 20px;
 }
 .fixed {
   position: fixed !important;
@@ -108,6 +113,9 @@ li {
 }
 i {
   font-style: normal;
+}
+img {
+  max-width: 100%;
 }
 html {
   font-size: 18px;
@@ -346,8 +354,13 @@ table tbody tr td {
   html {
     font-size: 14.9px;
   }
-  .trials-details-left {
-    top: 10.3rem !important;
+  .promotion-coupons {
+    min-height: 660px !important;
+  }
+}
+@media screen and (max-width: 1389px) {
+  .promotion-coupons {
+    min-height: 660px !important;
   }
 }
 @media screen and (max-width: 1270px) {
@@ -357,7 +370,8 @@ table tbody tr td {
   .coupons-product .btn-coupons {
     height: 2.5rem !important;
   }
-  .trials-explain {
+  .trials-explain,
+  .head-crumbs {
     width: 98% !important;
   }
   .merchant {
@@ -366,11 +380,11 @@ table tbody tr td {
   .home-content {
     width: 98% !important;
   }
-  .trials-details-left {
-    top: 12.09rem !important;
-  }
   .login-y.user-info {
     padding: 0 !important;
+  }
+  .promotion-coupons {
+    min-height: 630px !important;
   }
 }
 @media screen and (max-width: 1280px) {

@@ -1,7 +1,7 @@
 <template>
   <div class="settings-account">
     <div class="title">Settings</div>
-    <div class="title-s">Account Basics</div>
+    <div class="title-s" v-title="'Account Basics'">Account Basics</div>
     <div class="form-content" v-if="userInfo">
       <el-form :model="accountForm" class="account-form" label-width="110px">
         <el-form-item label="Username: " prop="username" class="account-item" >
@@ -29,7 +29,7 @@
         <el-form-item label="Date of birth: " prop="" class="account-item" >
           <el-date-picker type="date" v-model="accountForm.birthday" ></el-date-picker>
         </el-form-item>
-        <el-form-item label="Introduce: " prop="" class="account-item account-item-textarea" >
+        <el-form-item label="Introduction: " prop="" class="account-item account-item-textarea" >
           <el-input type="textarea" v-model="accountForm.introduce" :rows="6" ></el-input>
         </el-form-item>
       </el-form>
@@ -97,10 +97,10 @@ export default {
       var isLt500K = file.size / 1024 / 500 < 1
 
       if (!(isJPG || isGIF || isPNG)) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
+        this.$snotify.error('上传头像图片只能是 JPG 格式!')
       }
       if (!isLt500K) {
-        this.$message.error('上传头像图片大小不能超过 500kb!')
+        this.$snotify.error('上传头像图片大小不能超过 500kb!')
       }
       if ((isJPG || isGIF || isPNG) && isLt500K) {
         var formData = new FormData()
@@ -129,7 +129,7 @@ export default {
         .then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('reset info success')
+            this.$snotify.success('reset info success')
             this.$store.dispatch('GetInfo')
             document.body.scrollTop = document.documentElement.scrollTop = 0
           }
@@ -217,8 +217,8 @@ export default {
     text-align: center;
   }
   .avatar {
-    width: 178px;
-    height: 178px;
+    width: 100px;
+    height: 100px;
     display: block;
     border-radius: 100%;
   }
