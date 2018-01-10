@@ -1,6 +1,7 @@
 <template>
   <div class="store-settings">
-    <div class="title-bottom">Store Settings
+    <div class="title">Settings</div>
+    <div class="title-bottom title-s" v-title="'Store Settings'">Store Settings
       <button @click="addStore" class="add-store-btn"><i class=" el-icon-plus"></i> Add</button>
     </div>
     <table class="table table-bordered center">
@@ -202,26 +203,26 @@ export default {
         this.$api.addStore(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('add store success!')
+            this.$snotify.success('add store success!')
             this.addStoreDialog = false
             this.getStoreList()
           }
         }).catch(error => {
           this.saveLoading = false
-          this.$message.error(error.message)
+          this.$snotify.error(error.message)
           this.addStoreDialog = false
         })
       } else {
         this.$api.editStore(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('edit store success!')
+            this.$snotify.success('edit store success!')
             this.addStoreDialog = false
             this.getStoreList()
           }
         }).catch(error => {
           this.saveLoading = false
-          this.$message.error(error.message)
+          this.$snotify.error(error.message)
           this.addStoreDialog = false
         })
       }
@@ -284,7 +285,7 @@ export default {
         font-size: 1rem;
         position: absolute;
         right: 0;
-        top: 0;
+        top: 10px;
         &:active {
           background: darken(#78b6de, 10%);
           border-color: darken(#78b6de, 10%);

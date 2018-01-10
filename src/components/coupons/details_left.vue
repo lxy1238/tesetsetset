@@ -3,7 +3,7 @@
       <div class="content" id="content">
         <div class="img">
           <div class="img-big">
-            <a :href="amazonUrl" target="_blank">
+            <a @click="gotoCoupon" target="_blank">
               <img :src="imgList[activeNum]"  >
             </a>
           </div>
@@ -14,14 +14,14 @@
           </div>
         </div>
         <template v-if="userInfo.username">
-          <div class="user" @click="gotouser" >
-            <div class=" head inline-b">
-              <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt="">
-              <img  v-else src="../../assets/user.png" alt="">
+          <div class="user" >
+            <div class=" head inline-b" >
+              <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt=""  @click="gotouser">
+              <img  v-else src="../../assets/user.png" alt=""  @click="gotouser">
             </div>
             <div class=" details inline-b">
                 <p>
-                  <span class="name">{{userInfo.username}}</span>
+                  <span class="name link"  @click="gotouser">{{userInfo.username}}</span>
                   <span class="tag" v-if="userInfo.type == 'celebrity'">Influencer</span>
                   <span class="tag" v-if="userInfo.type == 'merchant'">Merchant</span>
                 </p>
@@ -42,6 +42,7 @@
 <script>
 import { base64Encode } from '@/utils/randomString'
 import { getStore }  from '@/utils/utils'
+import { mapGetters } from 'vuex'
 export default {
   name: 'detailsLeft',
   data () {
@@ -73,22 +74,15 @@ export default {
   },
   mounted () {
     this.activeNum = 0
+    
   },
   computed: {
+    ...mapGetters([
+      'currentRouter'
+    ]),
     imgLen () {
       return this.imgList.length
     },
-  },
-  watch: {
-    userInfo () {
-      setTimeout(() => {
-        if (this.userInfo.pid) {
-          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.userInfo.pid
-        } else {
-          this.amazonUrl = this.userInfo.product_url + '&tag=' + this.promoPid
-        }
-      }, 500)
-    }
   },
   methods: {
     //页面图片效果
@@ -124,6 +118,15 @@ export default {
       }
       this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
+
+    gotoCoupon () {
+      if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {
+        return
+      }
+      let router = this.currentRouter.replace('/coupons', '')
+      let promoterId = this.$route.query.promoter ? this.$route.query.promoter : ''
+      window.open('/goto' + router + '/' + base64Encode(promoterId))
+    }
   }
 }
 </script>
@@ -135,17 +138,28 @@ export default {
   width: 26.9rem;
   // height: 44.44rem;
   .img {
-    height: 20rem;
+    // height: 20rem;
     background: white;
     border-radius: 5px;
     margin-bottom: 1rem;
+    border: 1px solid #d2d2d2;
     .img-big {
       text-align: center;
+      width: 22.22rem;
+      height: 22.22rem;
+      margin: 0 auto;
       padding-top: 1rem;
-      height: 14rem;
+      position: relative;
       img {
-        width: 16rem;
-        height: 14rem;
+        max-width: 100%;
+        max-height: 95%;
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
       }
     }
     .img-small {
@@ -189,7 +203,7 @@ export default {
     background: white;
     margin-top: 0.4rem;
     border-radius: 5px;
-    cursor: pointer;
+    border: 1px solid #d2d2d2;
     p{
       position: relative;
       margin: .3rem 0 .5rem 0;
@@ -199,12 +213,13 @@ export default {
       height: 7rem;
       line-height: 7rem;
       text-align: center;
-      padding: 0.5rem 0;
+      padding: 1.3rem 0;
       img {
-        width: 6rem;
-        height: 6rem;
+        width: 4rem;
+        height: 4rem;
         border-radius: 100%;
         border: 1px solid #f9f9f9;
+        cursor: pointer;
       }
     }
     .details {
@@ -213,29 +228,33 @@ export default {
       height: 7rem;
       color: #808080;
       .name {
-        font-size: 1.3rem;
+        font-size: 18px;
         font-weight: bold;
         color: black;
+        cursor: pointer;
+        &:hover {
+          color: #0072bc;
+          text-decoration: underline;
+        }
       }
       .tag {
         position: relative;
-        top: -0.2rem;
-        left: 1rem;
+        top: -0.1rem;
+        left: .5rem;
         font-size: 0.61rem;
         background: #ec5d1c;
+        border-radius: 4px;
         color: white;
         padding: .2rem;
         display: inline-block;
         margin-top: 1rem;
       }
       .join {
-        margin-top: .5rem;
         
         span {
            font-size: 12px;
            float: left;
            margin-bottom: 1px;
-           margin-top: .5rem;
            width: 12rem;
         }
         .level {

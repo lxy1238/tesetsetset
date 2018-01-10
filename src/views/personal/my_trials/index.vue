@@ -1,6 +1,6 @@
 <template>
   <div class="my-trials">
-    <div class="title-bottom">My Trials</div>
+    <div class="title-bottom" v-title="'My Trials'">My Trials</div>
       <div class="tabs">
         <div class="head-s clearfix">
           <div class="tabs-label" 
@@ -15,34 +15,42 @@
           <div v-if="selected == 0" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails0" :class="{last: index == 2}" v-if="!item.isExpried">
-                <img class="order-img" :src="item.trials.product_img.split(',')[0]" alt=""  @click="gotoSuccessDetail(item)">
+                <img class="order-img pointer" :src="item.trials.product_img.split(',')[0]" alt=""  @click="gotoSuccessDetail(item)">
                 <div class="center-content">
-                  <div class="order-title" @click="gotoSuccessDetail(item)">{{item.trials.product_title}} </div>
+                  <div class="order-title pointer" @click="gotoSuccessDetail(item)">{{item.trials.product_title}} </div>
                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.trials.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.trials.product_price}}</i>
                     </span>
                     <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.trials.shipping_fee}}</i>
+                      <i class="free-price">{{currency}}{{item.trials.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.trials.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <!-- <i class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</i> -->
+                        <i class="trials-price" >{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.trials.refund_price, item.trials.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
-                    <input class="footer-input" v-model="item.order_number" ></input>
-                    <button type="button" @click="submitOrderNumber(item, $event)" >Save</button>
+                    <el-input class="footer-input" v-model="item.order_number" @keyup.enter.native="orderBtnSubmit(item)" ></el-input>
+                    <el-button class="order-number" type="button" @click="submitOrderNumber(item)" :loading="orderBtnLoading">Save</el-button>
+                    <div class="red" v-if="!item.order_number && item.hasOrderNumber">Please enter the order number.</div>
                   </div>
                 </div>
                 <div class="right-content">
-                  <p> Count down: {{item.countDownData.hours}}:{{item.countDownData.minutes}}:{{item.countDownData.seconds}} </p>
+                  <p><i class="iconfont icon-icon-test"></i> Count down: {{item.countDownData.hours}}:{{item.countDownData.minutes}}:{{item.countDownData.seconds}} </p>
                   <p>If the order number is not submitted within
                     the allowed time, your trial qualification will
                     be canceled.</p>
@@ -60,41 +68,49 @@
           <div v-if="selected == 1" class="content">
             <div class="wait-order">
              <div class="order" v-for="(item, index) in orderDetails1" :class="{last: index == 2}">
-               <img class="order-img" :src="item.product_img.split(',')[0]" alt="" >
+               <img class="order-img pointer" :src="item.product_img.split(',')[0]" alt="" >
                 <div class="center-content">
-                  <div class="order-title" >{{item.product_title}} </div>
-                  <div class="info">
+                  <div class="order-title pointer" >{{item.product_title}} </div>
+                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.product_price}}</i>
                     </span>
                     <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
                     <span class="footer-span" v-if="item.Modify">{{item.order_number}}</span>
-                    <el-input v-else class="footer-input" v-model="item.order_number"></el-input>
+                    <el-input v-else class="footer-input" v-model="item.order_number" @keyup.enter.native="editOrderSubmit(item)"></el-input>
 
-                    <button v-if="item.Modify" type="button" @click="modifyOrderBtn(item)">Modity</button>
-                    <button v-else type="button" @click="editOrderNumberBtn(item, $event)">Save</button>
+                    <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Edit</button>
+                    <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
+                    <div class="red" v-if="!item.order_number">Please enter the order number.</div>
                   </div>
                 </div>
                 <div class="right-content">
-                  <template v-if="item.status === 0 &&  !item.modifyUrl">  
+                  <template v-if="!item.modifyUrl">  
                     <div class="footer">
                       <span class="footer-span">Review URL:</span>
-                      <el-input class="footer-input" v-model="item.appraise_url_input"></el-input>
-                      <button type="button" @click="submitAppraiseUrl(item)">Save</button>
+                      <el-input class="footer-input" v-model="item.appraise_url_input" @keyup.enter.native="urlSubmit(item)"></el-input>
+                      <el-button type="button" class="save-btn" @click="submitAppraiseUrl(item)" :loading="urlSaveLoading">Save</el-button>
+                       <div class="red" v-if="!item.appraise_url_input && item.notHasInputUrl">Please enter the order number.</div>
                     </div>
                     <p>Please upload your review within 30 business days after 
                       ordering and submit the link address for the review, 
@@ -105,10 +121,10 @@
                       <span class="pending-l">Pending</span>
                     </div>
                     <div class="pending">
-                      <a  href="javascript:void(0);" target="_blank" @click="viewApprise(item.appraise_url)">View</a>
+                      <a  href="javascript:void(0);" target="_blank" @click="viewApprise(item.appraise_url)" class="link">View Review</a>
                     </div>
                     <div class="pending">
-                      <button type="button" @click="modifyUrlBtn(item)">Modity</button>
+                      <button type="button" @click="modifyUrlBtn(item)">Edit</button>
                     </div>
                   </template>
                   <template v-else>
@@ -124,7 +140,7 @@
                       <a  href="#" >View</a>
                     </div>
                     <div class="pending">
-                      <button type="button" @click="modifyUrlBtn(item)">Modity</button>
+                      <button type="button" @click="modifyUrlBtn(item)">Edit</button>
                     </div>
                   </template>
                 </div>
@@ -141,38 +157,44 @@
           <div v-if="selected == 2" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails2" :class="{last: index == 2}">
-               <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
+               <img class="order-img pointer" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                  <div class="order-title">{{item.product_title}} </div>
-                  <div class="info">
+                  <div class="order-title pointer">{{item.product_title}} </div>
+                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.product_price}}</i>
                     </span>
                     <span v-if="item.shipping_fee != 0">
                       <label>Shipping fee: </label>
-                      <i>{{currency}}{{item.shipping_fee}}</i>
+                      <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
-                   <div class="footer">
+                  <div class="footer">
                     <span class="footer-span">Order number:</span>
                     <span class="footer-span" v-if="true">{{item.order_number}}</span>
                   </div>
                 </div>
                 <div class="right-content">
                   <div class="pending complete complete-left">
-                      <div class="complete-text">complete</div>
+                      <div class="complete-text">Complete</div>
                       <div class="complete-refunded">Refunded to balance</div>
                   </div>
                   <div class="pending complete complete-right">
-                    <el-rate  class="rate"
+                    <!-- <el-rate  class="rate"
                       v-model="value5"
                       disabled
                       text-color="#ff9900"
@@ -181,9 +203,9 @@
                     <div class="picture-video">
                       <span class="picture">Picture: 3</span>
                       <span class="video">Video: 1</span>
-                    </div>
+                    </div> -->
                     <div class="view">
-                      <a href="">View</a>
+                      <a href="javascript:void(0);"@click="viewApprise(item.appraise_url)" class="link">View Review</a>
                     </div>
                   </div>
                 </div>
@@ -200,25 +222,31 @@
           <div v-if="selected == 3" class="content">
             <div class="wait-order">
               <div class="order" v-for="(item, index) in orderDetails3" :class="{last: index == 2}">
-                <img class="order-img" :src="item.product_img.split(',')[0]" alt="">
+                <img class="order-img pointer" :src="item.product_img.split(',')[0]" alt="">
                 <div class="center-content">
-                 <div class="order-title">{{item.product_title}} </div>
+                 <div class="order-title pointer">{{item.product_title}} </div>
                   <div class="info">
                     <span>
-                      <label>Price: </label>
-                      <i>{{currency}}{{item.product_price}}</i>
+                      <label>List price: </label>
+                      <i class="free-price">{{currency}}{{item.product_price}}</i>
                     </span>
                     <span v-if="item.shipping_fee != 0">
-                      <label>Shipping fee: </label>
+                      <label class="free-price">Shipping fee: </label>
                       <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
                        <label for="">Free shopping</label>
                     </span>
-                    <span>
-                      <label>Refund: </label>
-                      <i>{{currency}}{{item.refund_price}}</i>
-                    </span>
+                    <div class="trials-price-all">
+                      <span>
+                        <label >Trial price: </label>
+                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                      <span>
+                        <label>Refund amount: </label>
+                        <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
+                      </span>
+                    </div>
                   </div>
                   <div class="footer">
                     <span class="footer-span">Order number:</span>
@@ -251,6 +279,8 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString.js'
+import { validateURL } from '@/utils/validate.js'
+import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'my_trials',
   components: {
@@ -267,6 +297,9 @@ export default {
       showItem: 7,
       value5: 3.6,
       isExpried: false,
+      saveLoading: false,
+      orderBtnLoading: false,
+      urlSaveLoading: false,
       timer: null,
       countDownData: {},
       orderDetails0: [],
@@ -337,7 +370,8 @@ export default {
       this.$api.userApplySucced(this.reqSuccedDetailsData0).then(res => {
         this.orderDetails0 = res.data
         for (let i of this.orderDetails0) {
-          let expiry_time = getTimeDetail(i.expiry_time)
+          i.leftTime = i.expiry_time - res.timestamp
+          let expiry_time = getTimeDetail(i.leftTime)
           i.countDownData = expiry_time
           i.countDown = i.expiry_time
           this.countDown(i)
@@ -345,6 +379,20 @@ export default {
       }).catch(err => { 
         console.log(err)
       })
+    },
+
+    //定时器，时间倒计时
+    countDown (i) {
+      this.timer = setInterval(() => {
+        i.leftTime--
+        let expiry_time1 = getTimeDetail(i.leftTime)
+        i.countDownData = expiry_time1
+        this.refresh(this.orderDetails0)
+        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
+          clearInterval(this.timer)
+          i.isExpried = true
+        }
+      }, 1000)
     },
 
     //review
@@ -376,21 +424,16 @@ export default {
         this.orderDetails3 = res.data.data
       })
     },
-    //定时器，时间倒计时
-    countDown (i) {
-      this.timer = setInterval(() => {
-        let expiry_time1 = getTimeDetail(i.countDown)
-        i.countDownData = expiry_time1
-        this.refresh(this.orderDetails0)
-        if (expiry_time1.day == 0 && expiry_time1.hours == 0 && expiry_time1.minutes == 0 && expiry_time1.seconds == 0) {
-          clearInterval(this.timer)
-          i.isExpried = true
-        }
-      }, 1000)
-    },
+   
     //提交订单 号码
-    submitOrderNumber (item, e) {
-      e.target.disabled = true
+    submitOrderNumber (item) {
+      if (!item.order_number) {
+        item.hasOrderNumber = true
+        return
+      } else {
+        item.hasOrderNumber = false
+      }
+      this.orderBtnLoading = true
       this.reqAddOrderData.id = item.id
       this.reqAddOrderData.order_number = item.order_number
       if (!this.reqAddOrderData.order_number) {
@@ -398,41 +441,58 @@ export default {
       }
       this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
         if (res.code === 200) {
-          this.selected = 1
           this.init()
+          this.selected = 1
         }
-        e.target.disabled = false
+        this.orderBtnLoading = false
       }).catch(() => {
-        e.target.disabled = false
+        this.orderBtnLoading = false
       })
     },
- 
 
+    //enter 提交订单
+    orderBtnSubmit (item) {
+      this.submitOrderNumber(item)
+    },
+ 
     //修改按钮变成save 按钮
     modifyOrderBtn (item) {
       item.Modify = false
       this.refresh(this.orderDetails1)
     },
     //修改订单号
-    editOrderNumberBtn (item, e) {
-      e.target.disabled = true
+    editOrderNumberBtn (item) {
+      if (!item.order_number) {
+        return
+      }
+      this.saveLoading = true
       this.reqAddOrderData.order_id = item.id
       this.reqAddOrderData.order_number = item.order_number
       this.$api.userOrderNumber(this.reqAddOrderData).then(res => {
-        console.log(res)
         if (res.code === 200) {
-          e.target.disabled = false
-          this.getReviewInfo()
+          this.saveLoading = false
+          item.Modify = true
+          this.orderDetails1.push(1)
+          this.orderDetails1.pop()
         }
       }).catch(() => {
-        e.target.disabled = false
+        this.saveLoading = false
       })
+    },
+
+    editOrderSubmit (item) {
+      this.editOrderNumberBtn(item)
     },
 
     //提交review url
     submitAppraiseUrl (item) {
+      
       if (!item.appraise_url_input) {
+        item.notHasInputUrl = true
+        this.refresh(this.orderDetails1)
         return
+      } else {
+        item.notHasInputUrl = false
       }
       let reqData =  {
         api_token: getToken(),
@@ -442,25 +502,36 @@ export default {
       }
       reqData.order_id = item.id
       reqData.appraise_url = item.appraise_url_input
-      console.log(reqData)
+      this.urlSaveLoading = true
       this.$api.userAppraiseUrl(reqData).then(res => {
-        console.log(res)
+        this.urlSaveLoading = false        
         if (res.code === 200) {
-          this.getReviewInfo()
+          item.status = 0
+          item.modifyUrl = reqData.appraise_url
+          item.appraise_url = reqData.appraise_url
+          this.orderDetails1.push(1)
+          this.orderDetails1.pop()
         }
+      }).catch(() => {
+        this.urlSaveLoading = false
       })
     },
-
+    urlSubmit (item) {
+      this.submitAppraiseUrl(item)
+    },
     //点击modify按钮
     modifyUrlBtn (item) {
       item.modifyUrl = false
       this.refresh(this.orderDetails1)
-    },  
+    }, 
+
+    //打开评论链接
     viewApprise (url) {
-      if (url.search('http://') < 0) {
+      if (url.search('http://') >= 0 || url.search('https://') >= 0) {
+        window.open(url)
+      } else {
         window.open('http://' + url)
       }
-      window.open(url)
     },
     
    
@@ -468,6 +539,9 @@ export default {
     gotoPanel () {
       if (this.$route.query.status) {
         this.selectTabs(parseInt(this.$route.query.status))
+      }
+      if (this.$route.query.id) {
+        this.reqSuccedDetailsData2.order_id = this.$route.query.id
       }
     },
 
@@ -478,6 +552,7 @@ export default {
       array.push(0)
       array.pop()
     } ,
+    //翻页
     gotoPage0 (i) {
       this.reqSuccedDetailsData0.page = i
       this.getWaitingData()
@@ -494,14 +569,16 @@ export default {
       this.reqSuccedDetailsData3.page = i
       this.getExpiredInfo()
     },
-    test (i) {
-      console.log(i)
-    },
+    
     gotoSuccessDetail (item) {
-      
       this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) })
+    },
 
-      console.log(item)
+    add (a, b) {
+      return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
   }
 }
@@ -513,7 +590,7 @@ export default {
      height: 730px;
      border: 1px solid #e1e1e1;
       .head-s {
-        font-size: 1.33rem;
+        font-size: 16px;
         height: 72px;
         background: #f9f9f9;
         border-bottom: 1px solid #e1e1e1;
@@ -558,7 +635,7 @@ export default {
             .order-img {
               position: absolute;
               top: 38px;
-              left: 15px;
+              left: 30px;
               width: 120px;
               height: 108px;
             }
@@ -569,14 +646,16 @@ export default {
               height: 118px;
               .order-title {
                 color: #333;
-                font-size: 12px;
-                height: 24px;
+                font-size: 13px;
+                font-weight: 700;
+                line-height: 1.21;
+                height: 31px;
                 overflow: hidden;
                 margin-bottom: 20px;
                 width: 80%;
               }
               .info {
-                margin-bottom: 20px;
+                margin-bottom: 10px;
                 span {
                   margin-right: 10px;
                   font-size: 0.78rem;
@@ -584,8 +663,28 @@ export default {
                     color: #808080;
                   }
                 }
+                .trials-price-all {
+                  margin-top: 5px;
+                  .trials-price {
+                    // font-weight: 700;
+                  }
+                  .merchant-reward {
+                    color: #D62828;
+                    font-weight: 700;
+                  }
+                }
+                .free-price {
+                  text-decoration: line-through;
+                }
+                .free {
+                  // font-weight: 700;
+                }
               }
               .footer {
+  
+                position: relative;
+                height: 22px;
+                line-height: 22px;
                 .footer-span {
                   color: #333;
                   font-size: 0.89rem;
@@ -595,6 +694,11 @@ export default {
                   .el-input__inner {
                     height: 24px;
                   }
+                }
+                .order-number {
+                  position: absolute;
+                  top: 0;
+                  margin-left: 5px;
                 }
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
@@ -619,9 +723,16 @@ export default {
                   color: #1a1a1a;
                 }
                 color: #898989;
-                font-size: 0.83rem;
+                font-size: 13px;
               }
               .footer {
+                .red {
+                  position: relative;
+                  top: -4px;
+                }
+                position: relative;
+                height: 22px;
+                line-height: 22px;
                 .footer-span {
                   color: #333;
                   font-size: 0.89rem;
@@ -632,9 +743,14 @@ export default {
                     height: 24px;
                   }
                 }
+                .save-btn {
+                  position: absolute;
+                  top: 0;
+                  margin-left: 5px;
+                }
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
-                  font-size: 0.78rem;
+                  font-size: 13px;
                   line-height: 1.43;
                   &:active {
                     background: darken(#82b838, 10%);
@@ -648,10 +764,9 @@ export default {
                 top: 47px;
                 color: #88bb3a;
                 width: 32%;
-                text-align: center;
                 button {
                   .btn-h(4rem, 24px, #82b838, #82b838, #fff);
-                  font-size: 0.78rem;
+                  font-size: 13px;
                   line-height: 1.43;
                   &:active {
                     background: darken(#82b838, 10%);
@@ -660,6 +775,7 @@ export default {
                 }
                 &.complete {
                   width: 46%;
+                  text-align: center;
                   .complete-text {
                     font-size: 0.88rem;
                     margin-bottom: 5px;
@@ -670,11 +786,10 @@ export default {
                   }
                   &.complete-left {
                     position: relative;
-                    top: -8px;
                   }
                   &.complete-right {
                     position: relative;
-                    top: 11px;
+                    top: 38px;
                     .rate {
                       margin-bottom: 15px;
                     }
@@ -723,8 +838,6 @@ export default {
             }
           }
         }
-        
-
         .pagination {
           width: 100%;
           text-align: right;

@@ -1,34 +1,41 @@
 <template>
   <div class="withdraw"  v-loading.fullscreen.lock="fullscreenLoading">
     <div class="title">My Wallet</div>
-    <div class="title-s">Recharge</div>
+    <div class="title-s" v-title="'Recharge'">Recharge</div>
     <el-form :model="rechangeForm" :rules="rules"  ref="rechangeForm"   >
       <div class="balance">
         <label class="left-label">
           Balance:
         </label>
         <span class="balance-money">
-          {{currency}}{{userAccount.amount}}
+          {{currency}}{{useraccountInfo.amount}}
         </span>
       </div>
       <div class="balance">
         <label class="left-label">
           Security deposit:
         </label>
-        <span class="balance-money">
-          {{currency}}{{userAccount.amount}}
+        <span class="balance-money balance-money-sd">
+          {{currency}}{{useraccountInfo.security_deposit}}
         </span>
       </div>
       <div class="withdrawals">
-        <label class="left-label">recharges:</label>
-        <el-form-item prop="withdrawCount">
-          <el-input v-model="rechangeForm.withdrawCount" class="input-money"></el-input>
+        <el-form-item prop="withdrawCount" label="Recharge amount:" label-width="150px" required>
+          <el-input v-model="rechangeForm.withdrawCount" class="input-money"  @keyup.enter.native="doSubmit">
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
-        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="2"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="rechangeForm.radio" label="3"><img src="../../../assets/pay-wechat.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" :label="RECHARGE_TYPE['paypal']"  @keyup.enter.native="doSubmit">
+          <img src="../../../assets/paypal.png" alt="">
+        </el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" :label="RECHARGE_TYPE['alipay']" @keyup.enter.native="doSubmit">
+          <img src="../../../assets/qLlKVsZuTordMlU.png" alt="">
+        </el-radio>
+        <el-radio class="pay-radio" v-model="rechangeForm.radio" :label="RECHARGE_TYPE['wechat']"  @keyup.enter.native="doSubmit">
+          <img src="../../../assets/pay-wechat.png" alt="">
+        </el-radio>
       </div>
      
     </el-form>
@@ -50,14 +57,19 @@ export default {
       if (!value) {
         return callback(new Error('Please enter the recharge amount'))
       } else if(parseFloat(value) == 0 ){
-        callback(new Error ('Please enter the correct amount'))
+        callback(new Error ('Invalid recharge amount'))
       } else if(!reg.test(value)){
-        callback(new Error ('The amount can only enter two decimal places'))
+        callback(new Error ('Invalid recharge amount'))
       } else {
         callback()
       }
     }
     return {
+      RECHARGE_TYPE: {
+        'paypal': '1',   //1  paypal 支付
+        'alipay': '2',   //2  支付宝 支付
+        'wechat': '3',   //3  微信支付
+      },
       fullscreenLoading: false,
       rules: {
         withdrawCount: [
@@ -77,6 +89,7 @@ export default {
         amount: '',
         pay_currency: '',
       },
+      useraccountInfo: {},
     }
   },
   computed: {
@@ -99,6 +112,16 @@ export default {
   methods: {
     init () {
       this.filterInput()
+      this.initData()
+      this.$store.dispatch('GetInfo').then(() => {
+        this.initData()
+      })
+    },
+    initData () {
+      this.useraccountInfo = this.userAccount
+      if (this.useraccountInfo.security_deposit != 0) {
+        this.rechangeForm.withdrawCount = this.useraccountInfo.security_deposit
+      }
     },
     //限制只能输入数字和.
     filterInput () {
@@ -117,7 +140,6 @@ export default {
           }
         })
       }
-      
     },
     withdrawSubmit (formName, callback) {
       //element-ui 的表单验证
@@ -132,19 +154,18 @@ export default {
     },
     submit () {
       this.withdrawSubmit('rechangeForm', () => {
-        if (this.rechangeForm.radio == '3') {
+        if (this.rechangeForm.radio === this.RECHARGE_TYPE['wechat']) {
           this.$router.push({path: '/wallet/recharge/pay-wx', query: {withdrawCount: this.rechangeForm.withdrawCount}})
-        } else if (this.rechangeForm.radio == '2') {
+        } else if (this.rechangeForm.radio === this.RECHARGE_TYPE['alipay']) {
           this.$router.push({path: '/wallet/recharge/alipay', query: {withdrawCount: this.rechangeForm.withdrawCount}})
-        } else if (this.rechangeForm.radio == '1') {
-          console.log(1)
+        } else if (this.rechangeForm.radio === this.RECHARGE_TYPE['paypal']) {
           this.fullscreenLoading = true
           this.reqData.amount = this.rechangeForm.withdrawCount
           this.reqData.pay_currency = this.pay_currency
           this.$api.paypal(this.reqData).then(res => {
             if (!res.data) {
               this.fullscreenLoading = false
-              this.$message.info('Payment interface error, please refresh the page or other payment method')
+              this.$snotify.info('Payment interface error, please refresh the page or other payment method')
               return
             }
             location.href = res.data
@@ -154,6 +175,11 @@ export default {
         }
       })
     },
+
+    //回车提交
+    doSubmit () {
+      this.submit()
+    }
   }
 }
 </script>
@@ -164,21 +190,24 @@ export default {
     .el-form-item {
       display: inline-block;
       margin-bottom: 0;
-      width: 400px;
+      width: 550px;
     }
     .left-label {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 140px;
-      color: #666;
-      font-size: 16px;
+      width: 138px;
+      font-size: 14px;
+      color: #48576a;
     }
     .balance {
       margin-bottom: 1.5rem;
       .balance-money {
         color: #333;
         font-size: 16px;
+        &.balance-money-sd {
+          font-weight: 700;
+        } 
       }
       
     }
@@ -206,13 +235,9 @@ export default {
       }
     }
     .submit {
+      margin-left: 214px;
       button {
         .btn-h(160px, 45px, #84ba3a, #84ba3a, #fff);
-        font-size: 24px;
-        &:active {
-          background: darken(#84ba3a, 10%);
-          border-color: darken(#84ba3a, 10%);
-        }
       }
     }
   }

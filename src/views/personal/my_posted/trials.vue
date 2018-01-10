@@ -2,7 +2,8 @@
   <div class="posted-coupons">
     <template>
        <div class="pro-header">
-        <h3 class="title">Trials Posted</h3>
+        <h3 class="title">My Posted</h3>
+        <div class="title-s" v-title="'Trials Posted'">Trials Posted</div>
       </div>
  <div class="search-form">
       <label for="title">
@@ -48,69 +49,72 @@
               <!-- title -->
               <td class="trials-title">
                 <div class="trials-title-platform">{{item.website}}</div>
-                <div class="trials-title-text"  @click="gotoDetails(item)">{{item.product_title}}</div>
+                <div class="trials-title-text" :title="item.product_title"  @click="gotoDetails(item)">{{item.product_title}}</div>
                 <a href="javascript:void(0);"  @click="gotoDetails(item)">{{item.menu.name}}</a>
               </td>
               <!-- store -->
-              <td class="trials-store">
+              <!-- <td class="trials-store">
                 <div class="trials-store-content" v-if="item.user_store">
                   {{item.user_store.store_name}}
                 </div>
-              </td>
+              </td> -->
               <!-- List price -->
               <td>
                 <div >
-                  {{currency}}{{item.product_price}}
+                  {{currency}}{{Number(item.product_price)}}
                 </div>
               </td>
               <!-- quantity -->
               <td>
                 <div>
-                  {{item.total_quantity}}
+                    <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
+                   {{item.order_numbers}}
+                </a> / {{item.total_quantity}}
                 </div>
               </td>
               <!-- applied -->
-              <td>
-                 <a href="javascript:void(0)" @click="gotoTrailsreceiptor(item)">
-                   {{item.order_numbers}}
-                </a>
+              <!-- <td>
+                 
                
-              </td>
+              </td> -->
               <!-- shipping_fee -->
               <td>
                 <div>
-                  {{currency}}{{item.shipping_fee}}
+                  {{currency}}{{Number(item.shipping_total_fee)}}
                 </div>
               </td> 
-              <!-- promotion_fee -->
-              <td>
-                <div>
-                  {{currency}}{{item.total_fee}}
-                </div>
-              </td>
               <!-- refund -->
               <td>
                 <div>
-                  {{currency}}{{item.refund_price}}
+                  {{currency}}{{Number(NumberSub(item.refund_total_price, item.shipping_total_fee).toFixed(2))}}
                 </div>
               </td>
+              <!-- promotion_fee -->
+              <td>
+                <div>
+                  {{currency}}{{Number(item.platform_total_fee)}}
+                </div>
+              </td>
+              
               <!-- security_deposit -->
               <td>
                 <div>
-                  {{currency}}{{item.total_fee}}
+                  {{currency}}{{Number(item.total_fee)}}
                 </div>
               </td>
 
                 <!-- Cost -->
-              <td>
+              <td class="cost">
                 <div>
-                  {{currency}}{{item.real_fee}}
+                  {{currency}}{{Number(item.real_fee)}}
                 </div>
               </td>
                 <!-- valid_date -->
               <td>
                 <div>
-                  {{item.start_time}} to {{item.end_time}}
+                  {{item.start_time}}<br /> 
+                      to <br />
+                  {{item.end_time}}
                 </div>
               </td>
                 <!-- Status -->
@@ -136,7 +140,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired"> 
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+                <div> <a href="javascript:void(0)"  @click="showCloseDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired">
                 <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
@@ -152,6 +156,9 @@
               </template>
                <template v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && item.moneyIsEnough">
                 <div> <a href="javascript:void(0)"  @click="payTrialsActive(item)">online</a></div>
+              </template>
+              <template v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && !item.moneyIsEnough">
+                <div> <a href="javascript:void(0)"  @click="gotoRecharge">recharge</a></div>
               </template>
             </td>
             </tr>
@@ -185,15 +192,17 @@ import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
 import { base64Encode } from '@/utils/randomString'
 import { mapGetters } from 'vuex'
+import { NumSub } from '@/utils/calculate.js'
 export default {
   name: 'posted_trials',
   data () {
     return {
-      thLists: ['Image', 'Title', 'Store' , 'List Price', 'Quantity', 'Applied', 
-        'Shipping fee', 'Promotion Fee', 'Pefund', 'Security Deposit',
+      thLists: ['Image', 'Title' , 'Price', 'Qty', 
+        'Shipping fee', 'Refund', 'Platform fee',  'Security Deposit',
         'Cost', 'Valid date', 'Status', 'Operation'
       ],
       trLists: [],
+      country_id: getStore('country_id') || 1,
       allpage: undefined,
       showItem: 7,
       nonApproval: 'self closing',
@@ -281,6 +290,7 @@ export default {
 
     //查询 trails
     postedCouponsSearch () {
+      this.requestdata.trial_id  = ''
       this.gotoPage(1)
     },
 
@@ -294,7 +304,7 @@ export default {
           } else {
             i.putaway = true
           }
-          if (i.end_time + 86400 < now) {
+          if (i.end_time  < now) {
             i.isExpired = true
           }
           if (parseFloat(i.total_fee) <= parseFloat(this.userAccount.amount)) {
@@ -305,6 +315,7 @@ export default {
           i.start_time = parseTime(i.start_time, '{y}-{m}-{d}')
           i.end_time = parseTime(i.end_time, '{y}-{m}-{d}')
         }
+
         this.trLists = res.data.data
         this.allpage = res.data.last_page
       })
@@ -322,7 +333,7 @@ export default {
     //跳转到优惠券详情页面
     gotoDetails (item) {
       if (item.status == 1 && item.run_status == this.all_run_status[1]) {
-        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id) + '/' + base64Encode(item.country_id) })
+        this.$router.push({ path: '/trialsDetails/' + base64Encode(item.id) + '/' + base64Encode(this.country_id) })
       }
     },
 
@@ -335,6 +346,11 @@ export default {
       setStore('trialDetails', JSON.stringify(item))
     },
 
+    //跳转到充值界面
+    gotoRecharge () {
+      this.$router.push({path: '/wallet/recharge'})
+    },
+
     //编辑待审核状态下和审核未通过的优惠券   
     EditCoupon (id) {
       //携带id 查询需要修改的数据，然后进行修改
@@ -343,21 +359,17 @@ export default {
 
     //删除优惠券
     DeleteCoupon (id) {
-      this.$confirm('Determine deleting trial?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
+      this.$confirm('Are you sure to close this trial?', 'Friendly reminder', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         type: 'warning'
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
           this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
-            console.log(res)
             this.getPostTrialsList()
           })
-          this.$message({
-            type: 'success',
-            message: 'delete success!'
-          })
+          this.$snotify.success('Delete success')
         })
         .catch(() => {
           console.log('cancel')
@@ -373,11 +385,22 @@ export default {
         return
       }
       this.$api.trialCensor(this.detailsRequestData).then(res => {
-        if (res.data.content == '通过') {
+        this.nonApproval = res.data.content
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //显示 商品下架（close) 详情
+    showCloseDetails (id) {
+      this.detailsRequestData.product_id = id
+      this.detailsDialog = true
+      this.$api.couponProblemCensor(this.detailsRequestData).then(res => {
+        if (!res.data) {
           this.nonApproval = 'self closing'
           return
         }
-        this.nonApproval = res.data.content
+        this.nonApproval = res.data.revert
       }).catch(error => {
         console.log(error)
       })
@@ -426,15 +449,18 @@ export default {
             this.getPostTrialsList()
           }
         }).catch(err => {
-          this.$message.error(err)
+          this.$snotify.error(err)
           console.log(err)
         })
       }).catch(() => {
         console.log('cancel')
       })
-    }
+    },
 
-  
+    // 减法
+    NumberSub (a, b) {
+      return NumSub(a, b)
+    }
 
    
    
@@ -445,62 +471,6 @@ export default {
 
 <style lang="less">
 @import url('../../../styles/mixin.less');
-.posted-coupons {
-  .pro-header {
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
-  }
-  .search-form {
-    position: relative;
-    width: 100%;
-    height: 4rem;
-    line-height: 4rem;
-    margin-bottom: 1rem;
-    .form-control-bootstrap {
-      margin-right: 3%;
-      width: 16%;
-    }
-    .search {
-      .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
-      font-size: 0.78rem;
-      &:active {
-        background: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
-    }
-    .add-coupons {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
-      margin-top: -20px;
-      &:active {
-        background: darken(#7ab7e0, 10%);
-        border-color: darken(#7ab7e0, 10%);
-      }
-    }
-
-  }
- 
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
-  }
-}
 .table-trials-posted {
   font-size: 10px !important;
   .trials-table-img {
@@ -511,6 +481,19 @@ export default {
 }
 .trials-title {
   width: 120px;
+  text-align: left;
+  .trials-title-text {
+    height: 28px;
+    line-height: 1.21;
+    overflow: hidden;
+    cursor: pointer;
+  }
+}
+.cost {
+  width: 60px;
+}
+.status {
+  width: 100px;
 }
 .details-dialog {
   text-align: center;

@@ -9,7 +9,7 @@ export default function RandomString () {
 export function base64Encode (string) {
   
   let base64 = require('js-base64').Base64
-  return  base64.encode(RandomString()+string)
+  return  base64.encode(RandomString()+string).replace(/=/g, '')
 }
 export function base64Decode (string) {
   if (string === undefined) {

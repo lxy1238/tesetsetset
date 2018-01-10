@@ -7,17 +7,17 @@
              <a href="javascript:void(0);"  @click="coupons"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
-             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >COUPONS</a>
-             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">TRIALS</a>
+             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >Coupons</a>
+             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">Trials</a>
               <!-- <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a> -->
-              <div class=" inline-b search">
+              <div class=" inline-b search" :class="{isnotLanguage: !initLanguageSuccess}">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
                 <i class="iconfont icon-search" @click="filterKeyword(keyword)"></i>                
               </div>
               
             <template v-if="!isLogin">
-              <button class="inline-b btn-h login" @click="ShowLoginDialog">Login</button>
-              <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign up</button>
+              <button class="inline-b btn-h login" @click="ShowLoginDialog">Log In</button>
+              <button class="inline-b btn-h sign" @click="ShowSignDialog">Sign Up</button>
              </template>
             <template v-else>
              <div class="inline-b login-y user-info" 
@@ -28,7 +28,7 @@
                    <img v-if="avatar_img" :src="avatar_img" />
                    <img v-else src="../../assets/user.png" alt="user" />
                  </div>
-                 <div class="absolute username">{{username}}</div>
+                 <div class="absolute username" :class="{member: roles[0] == 'member'}">{{username}}</div>
                  <div class="absolute tag " v-if="roles[0] == 'celebrity'">
                    <span class="reds-color">Influencer</span>
                  </div>
@@ -45,14 +45,15 @@
                    <li v-for="syncRouter in addRouters" v-if="!syncRouter.hidden">
                      <router-link :to="syncRouter.path">{{syncRouter.text}}</router-link>
                    </li>
-                   <li  @click="logOut"> <a href="javascript:void(0);">log out</a></li>
+                   <li  @click="logOut"> <a href="javascript:void(0);">Log Out</a></li>
                  </ul>
                </div>
              </div>
             </template>
             <div class="inline-b login-y country " :class="{active: showDropdownC}" @click.stop="showDropdownCountry($event)">
                <span class="country-span">
-                 <i>{{selectedCountryShop}}</i> 
+                 <!-- {{selectedCountryShop}} -->
+                 <img :src="countryImg[selectedCountryShop]" />
                  <template>
                  <i v-if="!showDropdownC" class="iconfont icon-xiangxia"></i>
                  <i v-else class="iconfont icon-icon-"></i>
@@ -60,18 +61,21 @@
                 </span>
                 <div v-if="showDropdownC" class="dropdown" style="position: absolute">
                  <ul class="items">
-                   <li v-for="item in countryLists" @click="filterCountry(item)">{{item.name}} </li>
+                    <li v-for="item in countryLists" @click="filterCountry(item)">
+                      <img :src="countryImg[item.name]" />
+                     {{item.name}} 
+                    </li>
                  </ul>
                </div>
             </div>
-            <div class="inline-b login-y language" :class="{active: showDropdownL}"  @click.stop="showDropdownLanguage($event)"  >
+            <div class="inline-b login-y language" :class="{active: showDropdownL}"  @click.stop="showDropdownLanguage($event)" v-if="initLanguageSuccess" >
                <span class="language-span" >Language 
                 <i v-if="!showDropdownL" class="iconfont icon-xiangxia"></i>
                  <i v-else class="iconfont icon-icon-"></i>
               </span>
               <div v-show="showDropdownL" class="dropdown" style="position: absolute">
                  <ul class="items" style="text-align:center" >
-                     <div id="google_translate_element"  @click.stop="showDropdownLanguage1($event)">加载google翻译插件</div>
+                     <div id="google_translate_element"  @click.stop="showDropdownLanguage1($event)"></div>
                  </ul>
                </div>
             </div>
@@ -89,8 +93,13 @@
 
      <!-- login-form -->
      <el-dialog :visible.sync = "loginDialog" class="sign-dialog" >
-      <span slot="title" class="title">Log In / Sign Up</span>
+      <!-- <span slot="title" class="title">Log In</span> -->
+        
         <div class="dialog-body">
+          <div class="sign-dialog-head">
+            <div class="center">Welcome to Dealsbank</div>
+            <p class="center">Log In to start saving.</p>
+          </div>
           <div class="top">
             <div class="facebook">
               <button type="button" class="facebook" @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
@@ -113,22 +122,22 @@
               </el-form-item>
               <div class="remember">
                 <div class="box">
-                  <el-checkbox v-model="loginform.remember" label="Remember me" name="type"></el-checkbox> 
+                  <el-checkbox v-model="loginform.remember" label="Remember me" name="type" ></el-checkbox> 
                   <span class="forget" @click="forgetPass"><a href="javascript:void(0);">Forgot password?</a></span>
                 </div>
               </div>
               <el-form-item >
-                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Login in</el-button>
+                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Login In</el-button>
               </el-form-item>
 
             </el-form>
-            <div class="footer">
+            <div class="footer top">
               <div>
-                By signing up, you agree to our <a href="#">Terms of Sevice</a>  and  <a href="#">Privacy Pol</a>
+                By clicking Log In, you agree to our <a href="javascript:void(0);" @click="gotoTerm">Terms of Sevice</a>  and  <a href="javascript:void(0);" @click="gotoPrivacy">Privacy Policy.</a>
               </div>
             </div>
-             <div class="footer">
-              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog">Create an Account ></a>
+             <div class="footer bottom">
+              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog"> <b>Create an Account ></b> </a>
             </div>
           </div>
         </div>
@@ -137,8 +146,12 @@
      <!-- sign-form -->
 
      <el-dialog :visible.sync = "signDialog" class="sign-dialog" >
-       <span slot="title" class="title">Log In / Sign Up</span>
+        
         <div class="dialog-body">
+          <div class="sign-dialog-head">
+            <div class="center">Join Dealsbank</div>
+            <p class="center">Share is funny.</p>
+          </div>
           <div class="top">
             <div class="facebook">
               <button class="facebook"  @click="loginFacebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
@@ -157,23 +170,22 @@
                 <el-input v-model="signform.email" placeholder="Email Address"></el-input>
               </el-form-item>
               <el-form-item  prop="username">
-                <el-input v-model="signform.username" placeholder="Nickname"></el-input>
+                <el-input v-model="signform.username" placeholder="Username"></el-input>
               </el-form-item>
               <el-form-item  prop="password">
                 <el-input type="password" v-model="signform.password" placeholder="Password (8 to 20 characters)"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading">Sign up</el-button>
+                <el-button type="button" class="sign-up-btn" @click="signUp" :loading="signloading" >Sign Up</el-button>
               </el-form-item>
             </el-form>
-            <div class="footer">
+            <div class="footer top">
               <div>
-                By signing up, you agree to our <a href="#">Terms of Sevice</a>  and  <a href="#">Privacy Pol</a>
+                By creating an account, you agree to our <a  href="javascript:void(0);" @click="gotoTerm">Terms of Sevice</a>  and  <a href="javascript:void(0);" @click="gotoPrivacy">Privacy Policy.</a>
               </div>
             </div>
-             <div class="footer">
-              Already a member? <a href="javascript:void(0);" @click="ShowLoginDialog">Log In ></a> 
-               
+             <div class="footer bottom">
+              Already a member? <a href="javascript:void(0);" @click="ShowLoginDialog"> <b>Log In ></b> </a> 
             </div>
           </div>
         </div>
@@ -181,7 +193,7 @@
 
       <!-- reset-password -->
        <el-dialog :visible.sync = "resetPassword" class="sign-dialog" >
-       <span slot="title" class="title">Reset Password</span>
+       <span slot="title" class="title resetpass">Reset Password</span>
         <div class="dialog-body">
           <div class="top">
             <div class="text">
@@ -192,6 +204,9 @@
           <div class="bottom top">
             <el-form :model="resetform" :rules="rules" ref="resetform" >
               <el-form-item  prop="email">
+                <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
+              </el-form-item>
+               <el-form-item  prop="email" class=" hidden">
                 <el-input v-model="resetform.email" placeholder="Email Address "></el-input>
               </el-form-item>
               <el-form-item>
@@ -209,8 +224,8 @@
               <button class="google" id="customBtn2"><i class="iconfont icon-googleplus"></i> Join with Google</button>
             </div>
           </div>
-             <div class="footer">
-              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog">Create an Account ></a> 
+             <div class="footer bottom">
+              Not a member? <a href="javascript:void(0);" @click="ShowSignDialog"> <b>Create an Account ></b> </a> 
             </div>
           </div>
         </div>
@@ -233,10 +248,36 @@ export default {
       if (!value) {
         return callback(new Error('Please enter your Email'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Please enter the correct mailbox'))
+        return callback(new Error('Invalid email address'))
       } else {
         callback()
       }
+    }
+    const validateEmailRule1 =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter your Email'))
+      } else if (!validateEmail(value)) {
+        return callback(new Error('Invalid email address'))
+      } else {
+        this.$api.checkEmail({email: value}).then(res => {
+          if (!res.data) {
+            callback()
+          } else {
+            callback(new Error('This email is already in use'))
+          }
+        })
+      }
+    }
+    const validateUsername = (rule, value, callback) => {
+      this.$api.checkUsername({username: value}).then(res => {
+        if (!res.data) {
+          callback()
+        } else {
+          callback(new Error('This username is already in use.'))
+        }
+      }).catch(() => {
+        callback()
+      })
     }
     return {
       signform: {
@@ -255,11 +296,12 @@ export default {
       },
       rulesSign: {
         email: [
-          {  validator:validateEmailRule , trigger: 'blur' },
+          {  validator:validateEmailRule1 , trigger: 'blur' },
         ],
         username: [
-          { required: true, message: 'Please enter your nickname', trigger: 'blur' },
-          { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' }
+          { required: true, message: 'Please enter your username', trigger: 'blur' },
+          { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' },
+          {  validator:validateUsername , trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
@@ -306,7 +348,19 @@ export default {
       country_id: parseInt(getStore('country_id')) || 1,
       app_id: '894275327387425',
       selectedCoupon: 1,
-      isLogin: getToken() 
+      isLogin: getToken(),
+      countryImg: {
+        'United States': require('../../assets/United States.png'),
+        'United Kingdom': require('../../assets/united_kingdom.png'),
+        'Germany': require('../../assets/germany.png'),
+        'Japan': require('../../assets/japan.png'),
+        'France': require('../../assets/france.png'),
+        'Italy': require('../../assets/italy.png'),
+        'Spain': require('../../assets/spain.png'),
+        'Canada': require('../../assets/Canada.png'),
+        'Australia': require('../../assets/australia.png')
+      },
+      initLanguageSuccess: false  //判断翻译插件是否加载完成
     }
   },
   props: {
@@ -317,6 +371,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'countryInfo',
       'username',
       'roles',
       'addRouters',
@@ -339,6 +394,11 @@ export default {
       }
     },
   },
+  beforeCreate () {
+    this.$store.dispatch('getCountryInfo').then(()=> {
+      this.countryLists = this.countryInfo
+    })
+  },
   mounted () {
     this.init()
   },
@@ -357,7 +417,6 @@ export default {
       this.docuemntAddEvent()
       this.enterSubmitForm()
       this.getHeadCateListInfo()
-      this.getUserCountryInfo()
       this.getOtherEvent()
     },
     //数据初始化
@@ -574,6 +633,7 @@ export default {
       this.isShowAllLanguage = !this.isShowAllLanguage
     },
     signUp () {
+      
       this.signSubmit('signform', () => {
         this.signloading = true
         this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email
@@ -581,11 +641,11 @@ export default {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
-            this.$message.success('Please login to the mailbox for activation validation')
+            this.$snotify.success('Please login to the mailbox for activation validation')
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
-          this.$message.error(error.message)
+          this.$snotify.error(error.message)
           this.signloading = false
           console.error('sign fail' + error)
         })
@@ -594,13 +654,13 @@ export default {
     Login () {
       this.signSubmit('loginform', () => {
         this.loginLoading = true
+        console.log(this.loginform)
         this.$store.dispatch('Login', this.loginform).then(res => {
           if (res.code == 200) {
             if(this.loginform.remember == true) {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
-            this.$message.success('login success')
             this.$refs['loginform'].resetFields()
           }
           this.$store.dispatch('GetInfo').then(res => {
@@ -612,7 +672,7 @@ export default {
             })
           })
         }).catch(err => {
-          this.$message.error(err.message)
+          this.$snotify.error(err.message)
           this.loginLoading = false
           console.log(err+ ' login2')
         })    
@@ -625,11 +685,12 @@ export default {
         this.$api.retrievePassword(this.resetform).then(res => {
           if (res.code === 200) {
             this.resetLoading = false
-            this.$message.success('Please click the link to change the password')
+            this.hideAllDialog()
+            this.$snotify.success('Please click the link to change the password')
           }
         }).catch(err => {
           this.resetLoading = false
-          this.$message.error(err.message)
+          this.$snotify.error(err.message)
         })
       })
     },
@@ -650,10 +711,8 @@ export default {
     },
     //获取国家列表，携带货币符号，
     getUserCountryInfo () {
-      this.$api.getUserCountry().then(res => {
-        this.countryLists = res.data
-      }).catch(error => {
-        console.log(error)
+      this.$store.dispatch('getCountryInfo').then(()=> {
+        this.countryLists = this.countryInfo
       })
     },
 
@@ -664,7 +723,7 @@ export default {
       var startApp = function () {
         gapi.load('auth2', function (){
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
+            client_id: '308959858897-rn937lo6bq8qjcvhj26in1joc2lngeck.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
@@ -680,7 +739,7 @@ export default {
       var onSuccess = function (user) {
         var profile = user.getBasicProfile()
         let data = {
-          client_id : '308959858897-g8s16enj5j234cfvp6iq77lkbfgmi2j6.apps.googleusercontent.com',
+          client_id : '308959858897-rn937lo6bq8qjcvhj26in1joc2lngeck.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token
@@ -746,7 +805,6 @@ export default {
           }else{
             console.log('获取登陆用户相关信息失败！')
           }
-          console.log('Successful login for: ' + response.name)
         })
       }
     },
@@ -799,10 +857,22 @@ export default {
         fjs.parentNode.insertBefore(js, fjs)
       }(document, 'script', 'google-translate'))
 
-      window.googleTranslateElementInit = function  () {
-        new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element')
+      window.googleTranslateElementInit =  () => {
+        this.initLanguageSuccess = true
+        console.log(123)
+        setTimeout(() => {
+          new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element')
+        }, 300)
       }
+    },
+
+    gotoPrivacy () {
+      window.open('/about/center/privacy')
+    },
+    gotoTerm () {
+      window.open('/about/center/term')
     }
+
   }
 }
 </script>
@@ -829,18 +899,21 @@ export default {
       height: 65px;
       .pct(@Width_content);
       border: 1px solid #31393f;
+      vertical-align: middle;
       .content {
         .p(r);
         height: 65px;
         line-height: 65px;
         // margin-top: 1rem;
-        padding-left: 15rem;
+        padding-left: 12rem;
         // border: 1px solid yellow;
         .logo {
           .p(a);
-          left: 0;
-          top: 8px;
-          width: 180px;
+          left: 4px;
+          top: 50%;
+          margin-top: -1.4rem;
+          width: 10.83rem;
+          height: 2.78rem;
           height: inherit;
         }
         .inline-b {
@@ -873,6 +946,11 @@ export default {
                   height: 32px;
                   line-height: 32px;
                   overflow: hidden;
+                  img {
+                      float: left;
+                      margin-top: 8.5px;
+                      margin-right: 5px;
+                  }
                   &:hover {
                     background: #3a4853;
                   }
@@ -896,12 +974,15 @@ export default {
             text-align: right;
             padding-right: 1rem;
             .user-info-content {
+              .iconfont {
+                right: 6px;
+              }
               .absolute {
                 position: absolute;
                 top: 0;
                 left: 0;
                 &.img {
-                  top: 0.6rem;
+                  top: 0.8rem;
                   left: .8rem;
                   img {
                     width: 2rem;
@@ -910,7 +991,7 @@ export default {
                   }
                 }
                 &.username {
-                  width: 5.0rem;
+                  width: 5.4rem;
                   text-align: center;
                   top: -6px;
                   left: 2.8rem;
@@ -918,15 +999,19 @@ export default {
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
+                  &.member {
+                    top: 0;
+                  }
                 }
                 &.tag {
                   height: 1rem;
-                  top: 10px;
-                  width: 5.0rem;
+                  top: 12px;
+                  width: 5.4rem;
                   text-align: center;
                   left: 2.8rem;
                   span {
                     font-size: 11px;
+                    overflow: hidden;
                     padding:0px 5px;
                     border-radius: 4px;
                   }
@@ -935,12 +1020,18 @@ export default {
             }
           }
           &.country {
-            top: -2px;
-            width: 10%;
+            width: 12%;
             font-size: 0.833rem;
             .country-span {
               width: 100%;
               overflow: hidden;
+              img {
+                position: relative;
+                top: 2px;
+              }
+              .iconfont {
+                top: -1px;
+              }
             }
             .dropdown {
               width: 130%;
@@ -948,7 +1039,6 @@ export default {
             }
           }
           &.language {
-            top: -2px;
             width: 12%;
             font-size:  0.833rem;
             .language-span {
@@ -959,64 +1049,7 @@ export default {
               width: 130%;
               left: -30%;
                .items {
-                li {
-                  position: relative;
-                  .language-input {
-                    .el-input-self;
-                    width: 87%;
-                    height: 20px;
-                    border-radius: 0;
-                    background: #4d6170;
-                    color: white;
-                    text-align: center;
-                    
-                  }
-                  .google {
-                    position: absolute;
-                    left: 14px;
-                    top: 10px;
-                  }
-                  .iconfont {
-                    position: absolute;
-                    right: 15%;
-                    top: 2px;
-                  }
-                  .all-language {
-                    position: absolute;
-                    background: white;
-                    right: 0.666rem;
-                    top: 27px;
-                    width: 1024px;
-                    height: 320px;
-                    background-color: rgb(255, 255, 255);
-                    text-decoration: none;
-                    border-width: 1px;
-                    border-style: solid;
-                    border-color: rgb(107, 144, 218);
-                    border-image: initial;
-                    overflow: hidden;
-                    padding: 4px;
-                    color: blue;
-                    tr {
-                      vertical-align: top;
-                    }
-                    td {
-                      height: 275px;
-                      line-height: 24px;
-                      font-size: 16px;
-                      &.line {
-                        width: 6px;
-                      }
-                      div {
-                        padding: 2px 5px;
-                        &:hover {
-                          background: #3366cc;
-                          color: white;
-                        }
-                      }
-                    }
-                  }
-                }
+            
               }
             }
           }
@@ -1026,18 +1059,23 @@ export default {
           }
           .iconfont {
             position: relative;
+            font-size: 10px;
             top: 1px;
+            right: 1px;
           }
           
         }
         .coupons {
-          font-weight: bold;
-          color: #c1c1c1;
+          font-weight: 600;
+          color: #d0d6da;
+          text-decoration: none;
+          position: relative;
+          line-height: 64px;
+          display: block;
           text-align: center;
           overflow: hidden;
-          font-weight: normal;
-          font-size: 1rem;
-          width: 10%;
+          font-size: 13px;
+          width: 8%;
           height: 65px;
           &:hover {
             color: white;
@@ -1054,7 +1092,7 @@ export default {
         }
         .search {
           .p(r);
-          width: 35%;
+          width: 38%;
           height: 36px;
           top: 15px;
           margin-right: 0.90rem;
@@ -1083,44 +1121,28 @@ export default {
             cursor: pointer;
             transform: rotate(180deg);
           }
+          &.isnotLanguage {
+            width: 48%;
+          }
         }
         .btn-h {
-          .btn-h(4.5rem, 36px);
-          font-size: 0.78rem;
-          font-weight: bold;
           text-align: center;
           position: relative;
           top: 15px;
         }
         .login {
-          // font-family: Arial, Helvetica, sans-serif;
-          background: white;
-          border-color: white;
-          color: black;
+          .btn-h(4.5rem, 36px, #ffffff, #ffffff, #000000);
+          font-size: 13px;
           margin-left: 0;
           margin-right: 1rem;
-          &:hover {
-            background: darken(white, 10%);
-            border-color: darken(white, 10%);
-          }
-          &:active {
-            background: darken(white, 20%);
-            border-color: darken(white, 20%);
-          }
+              background-color: #f1f1f1;
+
+          
         }
         .sign {
-          background: #0077c5;
-          border-color: #0077c5;
-          color: white;
+          .btn-h(4.5rem, 36px, #0077c5, #0077c5, #fff );
+          font-size: 13px;
           margin-right: 1rem;
-          &:hover {
-            background: lighten(#0077c5, 10%);
-            border-color: lighten(#0077c5, 10%);
-          }
-          &:active {
-            background: lighten(#0077c5, 20%);
-            border-color: lighten(#0077c5, 20%);
-          }
         }
       }
     }
@@ -1131,18 +1153,23 @@ export default {
       line-height: 30px;
       height: 30px;
       overflow: hidden;
-      text-align: center;
+      padding-left: 5px;
       li {
-        font-size: 12px;
-        font: HelveticaNeueLT  bold;
+        font-size: 10px;
         display: inline-block;
         color: rgb(34, 24, 21);
         cursor: pointer;
         text-align: center;
         margin: 0 1.5rem 0 0;
+        font-weight: 700;
         &.active {
-          color: rgb(230, 49, 115);
-          font-weight: bold;
+          color: #D62828;
+          &:hover {
+            color: #D62828;
+          }
+        }
+        &:hover {
+          color: #0072bc;
         }
       }
     }
@@ -1154,21 +1181,41 @@ export default {
 
 .login-dialog,
 .sign-dialog {
+  .sign-dialog-head {
+    div.center {
+      color: #333;
+      font-size: 30px;
+      // font-family: "Open Sans Bold", "Open Sans", Arial, sans-serif;
+      font-style: normal;
+      font-weight: 1000;
+      margin-top: -15px;
+      margin-bottom: 15px;
+    }
+    p.center {
+      color: #4A4A4A;
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+  }
   .title {
     width: 17rem;
     text-align: center;
-    margin-left: 5rem;
+    margin-left: 150px;
     font-weight: bold;
     font-size: 26px;
+    &.resetpass {
+      margin-left: 100px;
+    }
   }
   .dialog-body {
     text-align: center;
   }
-
   .or {
     position: relative;
     height: 1rem;
     margin-bottom: 1rem;
+    font-size: 11px;
+    color: #666;
     span {
       position: relative;
       z-index: 22;
@@ -1197,57 +1244,43 @@ export default {
     .facebook, .google {
       width: 100%;
       margin-bottom: 10px;
-      button {
-       .btn-h(80%, 42px);
-       color: white;
-      }
     }
     .facebook {
       button {
-        background: #3b5998;
-        border-color: #3b5998;
-        &:active {
-          background: darken(#3b5998, 10%);
-          border-color: darken(#3b5998, 10%);
-        }
+         .btn-h(80%, 42px, #3b5998, #3b5998, #ffffff);
       }
     }
     .google {
       button {
-        background: #dd4b39;
-        border-color: #dd4b39;
-        &:active {
-          background: darken(#dd4b39, 10%);
-          border-color: darken(#dd4b39, 10%);
-        }
+         .btn-h(80%, 42px, #dd4b39, #dd4b39, #ffffff);
       }
     }
   }
   .sign-up-btn {
     margin-bottom: 10px;
-    .btn-h(100%, 42px);
-    color: white;
-    background: #7fbadf;
-    border-color: #7fbadf;
-    &:active {
-      background: darken(#7fbadf, 10%);
-      border-color: darken(#7fbadf, 10%);
-    }
+    .btn-h(100%, 42px, #7fbadf, #7fbadf, #fff);
     &.login {
-      background: #0075C1;
-      border-color: #0075C1;
-       &:active {
-      background: darken(#0075C1, 10%);
-      border-color: darken(#0075C1, 10%);
+    .btn-h(100%, 42px, #0075C1, #0075C1, #fff);
     }
-    }
-
   }
   .footer {
-    margin: 20px auto;
     width: 80%;
+    &.bottom {
+      margin: 30px auto 0;
+      font-size: 14px;
+    }
+    &.top {
+      margin: -10px auto 0;
+      font-size: 10px;
+      line-height: 1.42;
+    }
   }
   .remember {
+    .el-checkbox {
+      font-size: 12px;
+    }
+    
+    font-size: 12px;
     .box {
       width: 80%;
       margin: 0 auto;
@@ -1256,6 +1289,9 @@ export default {
         float: right;
       }
     }
+  }
+  .el-checkbox__label {
+    font-size: 10px;
   }
 }
 </style>

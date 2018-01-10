@@ -3,8 +3,8 @@
        <div class="pro-header">
         <h3 class="title">My Wallet</h3>
       </div>
-      <div class="title-s">
-        finacial
+      <div class="title-s" v-title="'Transaction Record'">
+        Transaction Record
       </div>
 
       <div class="table-box">
@@ -18,16 +18,19 @@
             <tr v-for="item in trLists" v-if="trLists.length !== 0">
               <td>{{item.updated_at}}</td>
               <td>{{item.business_number}}</td>
-              <td>{{item.business_name}}</td>
+              <td class="capitalize">{{item.business_name}}</td>
               <td>
-                <a  v-if="item.business_name == 'trial'" href="javascript:void(0);" @click="gotoPostTrials(item)">
+                <a  v-if="item.detail == 'Trial audit'" href="javascript:void(0);" @click="gotoPostTrials(item)">
+                  {{item.business_ID}}
+                </a>
+                <a  v-else-if="item.detail == 'Trials refunded'" href="javascript:void(0);" @click="gotoCompleteTrials(item)">
                   {{item.business_ID}}
                 </a>
                 <div v-else>{{item.business_ID}}</div>
 
               </td>
-              <td>{{item.business_type}}</td>
-              <td>{{item.detail}}</td>
+              <td class="capitalize">{{item.business_type}}</td>
+              <td class="capitalize">{{item.detail}}</td>
               <td>{{currency}}{{item.trade_amount}}</td>
               <!-- <td>{{item.run_status}}</td> -->
             </tr>
@@ -101,35 +104,21 @@ export default {
     gotoPostTrials (item) {
       let trial_id = item.business_name_id
       this.$router.push({path: '/posted/trials', query: {id: trial_id}})
-    }
+    },
+    gotoCompleteTrials (item) {
+      let trial_id = item.business_name_id
+      this.$router.push({path: '/personal/my-trials/index', query: {id: trial_id, status: 2}})
+    } 
   }
 }
 </script>
 
 <style lang="less">
-@import url('../../../styles/mixin.less');
 .posted-coupons {
   font-size: 12px;
   .pro-header {
     position: relative;
     margin-bottom: 1rem;
-  }
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
   }
 }
 

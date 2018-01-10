@@ -1,5 +1,6 @@
+@import url('snotify.css');
 .code-dialog .el-dialog.el-dialog--small {
-  width: 40rem;
+  width: 720px;
 }
 .code-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -8,21 +9,10 @@
 .code-dialog .el-dialog__body {
   padding: 0;
 }
-.login-dialog .el-dialog.el-dialog--small {
-  width: 420px;
-}
-.login-dialog .el-dialog__header {
-  padding-bottom: 1rem;
-}
-.login-dialog .el-dialog__body {
-  padding: 0 1rem;
-}
-.login-dialog .el-form-item {
-  width: 80%;
-  margin: 20px auto;
-}
 .sign-dialog .el-dialog.el-dialog--small {
-  width: 420px;
+  width: 458px;
+  min-height: 500px;
+  padding-bottom: 40px;
 }
 .sign-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -40,6 +30,47 @@
 .el-dialog.el-dialog--small {
   border-radius: 10px;
 }
+.el-checkbox__label {
+  font-size: 12px !important;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.el-input-self {
+  -webkit-appearance: none;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #d8dce5;
+  box-sizing: border-box;
+  color: #5a5e66;
+  display: inline-block;
+  font-size: inherit;
+  height: 40px;
+  line-height: 1;
+  outline: none;
+  padding: 0 15px;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: 100%;
+}
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../static/font/opensans.ttf');
+}
+@font-face {
+  font-family: 'Open Sans Bold';
+  src: url('../static/font/OpenSans-Bold.ttf');
+}
+@font-face {
+  font-family: 'Open Sans Semibold';
+  src: url('../static/font/OpenSans-Semibold.ttf');
+}
+[v-cloak] {
+  display: none;
+}
 .pages-content {
   width: 83.333rem;
   margin: 0 auto;
@@ -50,6 +81,7 @@
   background: #e4e4e4;
   min-width: 83.333rem;
   min-height: 1000px;
+  padding-bottom: 20px;
 }
 .fixed {
   position: fixed !important;
@@ -68,7 +100,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Arial;
+  font-family: "Open Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
 }
 ul {
   padding-left: 0;
@@ -79,9 +114,11 @@ li {
 i {
   font-style: normal;
 }
+img {
+  max-width: 100%;
+}
 html {
   font-size: 18px;
-  font-family: Arial, Helvetica, sans-serif;
   box-sizing: border-box;
   word-break: break-word;
   text-rendering: optimizeLegibility;
@@ -90,7 +127,7 @@ button,
 input,
 select,
 textarea {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Open Sans", Arial, sans-serif;
   /* 1 */
   font-size: 100%;
   /* 2 */
@@ -112,6 +149,13 @@ a:focus {
   color: #0072bc;
   text-decoration: none;
 }
+.link {
+  color: #0072bc;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
+}
 .clearfix:after {
   visibility: hidden;
   display: block;
@@ -126,7 +170,35 @@ a:focus {
 .left {
   text-align: left;
 }
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
+}
+.hide {
+  display: none !important;
+}
+.show {
+  display: block !important;
+}
+.invisible {
+  visibility: hidden !important;
+}
+.hidden {
+  display: none !important;
+}
+.pointer {
+  cursor: pointer;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+.line-through {
+  text-decoration: line-through;
+}
 table {
+  width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
   text-align: center;
@@ -190,30 +262,116 @@ table tbody tr td {
 .green {
   color: green;
 }
+.coupons-pagination .pagination {
+  width: 100%;
+  text-align: right;
+  padding-right: 15rem;
+}
+.coupons-pagination .pagination li.active .items {
+  border: none;
+}
+.coupons-pagination .pagination li .items {
+  background: #fff;
+}
+.search-form {
+  position: relative;
+  font-size: 14px;
+  width: 100%;
+  height: 80px;
+  padding-top: 22px;
+}
+.search-form .form-control-bootstrap {
+  margin-right: 3%;
+  width: 16%;
+}
+.search-form .search {
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
+  width: 60px;
+  height: 36px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: 0;
+  text-transform: none;
+  -webkit-appearance: button;
+  display: inline-block;
+  line-height: 0.8;
+  background: #85ba3b;
+  border: 1px solid #85ba3b;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
+  font-size: 0.78rem;
+  position: absolute;
+  top: 50%;
+  margin-top: -18px;
+}
+.search-form .search:hover {
+  background: #77a735;
+  border-color: #77a735;
+}
+.search-form .search:active {
+  background: #92c549;
+  border-color: #92c549;
+}
+.search-form .add-coupons {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: 0;
+  text-transform: none;
+  -webkit-appearance: button;
+  display: inline-block;
+  line-height: 0.8;
+  background: #7ab7e0;
+  border: 1px solid #7ab7e0;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
+  margin-top: -20px;
+}
+.search-form .add-coupons:hover {
+  background: #65acdb;
+  border-color: #65acdb;
+}
+.search-form .add-coupons:active {
+  background: #8fc2e5;
+  border-color: #8fc2e5;
+}
 @media screen and (max-width: 1557px) {
   html {
     font-size: 14.9px;
   }
-  .coupons-product {
-    height: 340px !important;
-  }
-  .trials-details-left {
-    top: 10.3rem !important;
+  .promotion-coupons {
+    min-height: 660px !important;
   }
 }
 @media screen and (max-width: 1389px) {
-  .coupons-product {
-    height: 340px !important;
+  .promotion-coupons {
+    min-height: 660px !important;
   }
 }
 @media screen and (max-width: 1270px) {
   html {
     font-size: 12px;
   }
-  .coupons-product {
-    height: 330px !important;
+  .coupons-product .btn-coupons {
+    height: 2.5rem !important;
   }
-  .trials-explain {
+  .trials-explain,
+  .head-crumbs {
     width: 98% !important;
   }
   .merchant {
@@ -222,15 +380,11 @@ table tbody tr td {
   .home-content {
     width: 98% !important;
   }
-  .trials-details-left {
-    top: 12.09rem !important;
-  }
   .login-y.user-info {
     padding: 0 !important;
   }
-  .go-to-amazon {
-    top: 0px !important;
-    line-height: 1.25 !important;
+  .promotion-coupons {
+    min-height: 630px !important;
   }
 }
 @media screen and (max-width: 1280px) {

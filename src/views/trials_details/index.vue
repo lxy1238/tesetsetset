@@ -1,12 +1,12 @@
 <template>
   <div class="page-index" >
-    <div class="pages-content" >
+    <div class="pages-content"  v-if="trialDetailData.menu" v-cloak>
       <div class="head-crumbs">
         <span class=" gray-s" v-if="trialDetailData.menu">Trials > {{trialDetailData.menu.name}}</span> 
       </div>
-    <div class="blank explain"></div>
+    <div class="blank explain" ></div>
       <explain :is-active="0" class="trials-explain"></explain>
-      <div class="details-content clearfix " v-if="trialDetailData.id"  v-title="trialDetailData.product_title">
+      <div class="details-content clearfix " v-if="trialDetailData.id"  v-title="titleMsg">
         <div class="left inline clearfix">
           <details-left :isTop="isTop" 
                         :imgList="imgList" 
@@ -16,8 +16,8 @@
         </div>
         <div class="right inline trials-right-content">
           <div class="promotion">
-            <img class="img"  src="../../assets/amazon.png" alt="">
-            <div class="title">
+            <img class="img"  :src="logoImg[trialDetailData.website]" alt="">
+            <div class="title" :title="trialDetailData.product_title">
               <span>
                 {{trialDetailData.product_title}}
               </span>
@@ -31,12 +31,26 @@
               </div>
             </div>
             <div class="price-details">
-                <div class="price">Price: <del>{{currency}}{{trialDetailData.product_price}} </del></div>
-                <div class="price" v-if="trialDetailData.shipping_fee != '0.00'">Shipping fee: <del>{{currency}}{{trialDetailData.shipping_fee}}</del> </div>
-                <div class="price" v-else >Free Shipping</div>
-              <div class="refund-price">Refund: <span >{{currency}}{{trialDetailData.refund_price}}</span> </div>
-              <div class="reminder">Specifications: <span> {{trialDetailData.specifications}}</span>  </div>
-              <div class="reason">Reason: 
+              <div class="price">
+                <span>List price: <del>{{currency}}{{trialDetailData.product_price}} </del></span> 
+                <span v-if="trialDetailData.shipping_fee != 0">Shipping fee: <del>{{currency}}{{trialDetailData.shipping_fee}}</del> </span>
+                <span v-else >Free Shipping</span>
+              </div>
+              <div class="refund-price">
+                <label>Trial price:</label>  
+                <!-- <span class="free" v-if="sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2) >= 0">Free</span> -->
+                <span  >{{currency}}{{add(trialDetailData.product_price, trialDetailData.shipping_fee).toFixed(2)}}</span>
+                <span class="merchant-reward" >
+                  <label>Refund amount: </label>
+                  <i class="merchant-reward-money">{{currency}}{{add(trialDetailData.refund_price, trialDetailData.shipping_fee).toFixed(2)}}</i>
+                </span>
+              </div>
+              <div class="reminder"><strong>Specifications: </strong>
+                <br />
+                <span> {{trialDetailData.specifications}}</span>  
+                </div>
+              <div class="reminder"><strong>Recommend reason: </strong>
+                <br /> 
                 <span>
                   {{trialDetailData.product_reason}}
                 </span>
@@ -44,21 +58,21 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo" v-if="!trialDetailData.trial_apply && !isApply">
-                  <button @click="trialsApplyBtn($event)">Apply</button>
+                  <el-button @click="trialsApplyBtn($event)" :loading="btnLoading">Apply</el-button>
                 </div>
                 <div class="inline-b add-promo" v-else>
-                You have applied or you are not eligible
+                  You have applied or you are not eligible
                 </div>
                  <span class="share">
-                   <i class="text">Share on:</i> 
-                  <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
+                   <i class="text">Share on: </i> 
+                  <a class="share-a" onclick="javascript:window.open('https://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('https://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('https://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
             </div>
           </div>
         </div>
-          <div class="promotion-template">
+          <div class="promotion-template clearfix">
             <div class="tabs">
               <div class="head-s clearfix">
                 <div class="tabs-label" 
@@ -70,7 +84,7 @@
               </div>
               <div class="tabs-body" id="productDetails">
                 <div v-if="selected == 0 && trialDetailData.product_details" class="content1" v-html="trialDetailData.product_details">
-                  
+
                 </div>
                 <div v-if="selected == 1" class="content">
                   <div class="head">
@@ -102,16 +116,30 @@
           </div>
 
       </el-dialog>
+
+       <!-- 已经申请成功 -->
+      <el-dialog  :visible.sync="applySuccessDialog" title="infomation" class="not-trials-dialog" size="tiny">
+          <p class="sorry-text">Sorry!</p>
+
+          <p v-if="hasSubmitOrder">This month, you have successfully applied for the platform of the trial products, each platform can only apply once a month, <a href="javascript:void(0);"  @click="gotoMytrials">
+             click to view</a>.
+          </p>
+          <p v-else>You already have a trial of the platform to be ordered, <a href="javascript:void(0);" @click="gotoSuccess" > 
+            click to view</a>.
+          </p>
+
+      </el-dialog>
   </div>
 </template>
 
 <script>
 import detailsLeft from '@/components/coupons/details_left.vue'
 import explain from '@/components/trials/explain.vue'
-import { base64Decode } from '@/utils/randomString'
+import { base64Encode, base64Decode } from '@/utils/randomString'
 import { timestampFormat, getTimeDetail } from '@/utils/date'
 import { getStore } from '@/utils/utils'
 import { getUserId, getToken } from '@/utils/auth'
+import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'coupons',
   components: {
@@ -120,6 +148,10 @@ export default {
   },
   data () {
     return {
+      logoImg: {
+        amazon: require('../../assets/amazon_logo.png'),
+        aliexpress: require('../../assets/aliexpress_logo.png')
+      },
       isTop: false,
       selected: 0,
       added: true,
@@ -158,6 +190,10 @@ export default {
 
       ],
       notGetTrialsDialog: false,
+      applySuccessDialog: false,
+      btnLoading: false,
+      hasSubmitOrder: false,
+      trial_id: '',
       tabsHead: [
         'Description', 'Novice Process'
       ],
@@ -173,7 +209,6 @@ export default {
       imgList: [],
       reqData: {
         id: '',
-        user_id: getUserId()
       },
       trialApplyData: {
         api_token: getToken(),
@@ -182,17 +217,26 @@ export default {
         country_id: base64Decode(this.$route.params.countryId),
         platform_id: '',
       },
-      currency:  getStore('currency') || '$'
+      currency:  getStore('currency') || '$',
+      reqSuccedDetailsData0: {
+        country_id: getStore('country_id') || 1,
+        api_token: getToken(),
+        user_id: getUserId(),
+        page: 1,
+        page_size: 3
+      },
+      titleMsg: '',
     }
   },
   computed: {
     leftTime () {
       if (this.trialDetailData.end_time) {
-        let time = getTimeDetail(this.trialDetailData.end_time)
+        let leftTime = (this.trialDetailData.end_time - this.trialDetailData.timestamp)
+        let time = getTimeDetail(leftTime)
         if (time.day == 0 && time.hours == 0 && time.minutes == 0) {
           return false
         } else {
-          return getTimeDetail(this.trialDetailData.end_time)
+          return getTimeDetail(leftTime)
         }
       } else {
         return false
@@ -225,11 +269,17 @@ export default {
     //获取试用品详情
     getTrialDetail () {
       this.$api.trialDetail(this.reqData).then(res => {
+        this.getPostUserInfo(res.data.user_id)
         this.trialApplyData.trial_id = res.data.id
         this.trialApplyData.platform_id = res.data.platform_id
         this.imgList = res.data.product_img.split(',')
-        this.trialDetailData = res.data
-        this.getPostUserInfo(res.data.user_id)
+        setTimeout(() => {
+          this.trialDetailData = res.data
+          this.trialDetailData.timestamp = res.timestamp
+        })
+        this.titleMsg = res.data.product_title + ' for ' +
+                          this.currency + res.data.product_price + 
+                           ' + free shipping'
       }).catch(error => {
         console.log(error)
       })
@@ -252,9 +302,7 @@ export default {
     getImgUrl (data) {
       this.imgUrl = data
     },
-    submit () {
 
-    },
     gotoTrials () {
       this.$router.push({path: '/trials/index'})
     },
@@ -270,16 +318,22 @@ export default {
         return true
       }
     },
-    trialsApplyBtn (e) {
+    trialsApplyBtn () {
       if (!this.isLogin()) {
         return
       }
       if (this.trialDetailData.run_status === 'stop') {
-        this.$message.info('The test supplies have been distributed today. Please come and apply tomorrow')
+        this.$snotify.info('The test supplies have been distributed today. Please come and apply tomorrow')
         return
       }
-      e.target.disabled = true
+      
+      if (!this.trialApplyData.api_token) {
+        this.trialDetailData.api_token = getToken()
+        this.trialDetailData.user_id = getUserId()
+      }
+      this.btnLoading = true
       this.$api.trialApply(this.trialApplyData).then(res => {
+        this.btnLoading = false
         if (res.code === 200) {
           this.isApply = true
           if (res.data === 1) {
@@ -289,11 +343,36 @@ export default {
           }
         }
       }).catch(error => {
+        this.btnLoading = false
         if (error.code === 402) {
-          this.$router.push({path: '/personal/my-trials/index'})
-          this.$message.info('You have already applied for a successful product. According to the rules, you can not apply for this month')
+          // this.$router.push({path: '/personal/my-trials/index'})
+          // this.$snotify.info('You have already applied for a successful product. According to the rules, you can not apply for this month')
+          this.$api.userApplySucced(this.reqSuccedDetailsData0).then(res => {
+            if (res.data.length === 0) {
+              this.hasSubmitOrder = true
+            } else {
+              this.trial_id = res.data[0].trial_id
+              this.hasSubmitOrder = false
+            }
+            this.applySuccessDialog = true
+          }).catch(err => { 
+            console.log(err)
+          })
         }
       })
+    },
+
+    gotoSuccess () {
+      this.$router.push({ path: '/successTrials/' + base64Encode(this.trial_id) + '/' + this.$route.params.countryId})
+    },
+    gotoMytrials () {
+      this.$router.push( {path: '/personal/my-trials/index', query:{status: 1}})
+    },
+    add (a, b) {
+      return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
   }
 }
@@ -306,16 +385,15 @@ export default {
   width: 100%;
   background: #e4e4e4;
   z-index: 222;
-  height: 3rem;
-  line-height: 3rem;
+  height: 54px;
+  line-height: 54px;
 }
 .pages-content {
   position: relative;
-  padding: 0;
 }
 .details-content {
   position: relative;
-  top: 4rem;
+  top: 72px;
 }
 .el-dialog--small {
   width: 40rem !important;
@@ -328,7 +406,7 @@ export default {
   &.right {
     float: right;
     width: 55.5rem;
-    margin-top: 3.1rem;
+    margin-top: 48px;
     .promotion {
       position: relative;
       padding: 1rem;
@@ -336,16 +414,18 @@ export default {
       border-radius: 5px;
       margin-bottom: 1rem;
       min-height: 28rem;
+      border: 1px solid #d2d2d2;
       .img {
         position: absolute;
         right: 1.5rem;
         top: 2rem;
+        height: 35px;
       }
       .title {
-        width: 90%;
-        font-size: 24px;
-        line-height: 1;
-        height: 48px;
+        width: 85%;
+        font-size: 21px;
+        line-height: 1.21;
+        height: 50px;
         overflow: hidden;
         color: #1a1a1a;
         font-weight: bold;
@@ -360,32 +440,64 @@ export default {
           font-size: 20px;
         }
         .time {
+          position: relative;
+          padding-left: 25px;
           span {
             color: #1a1a1a;
+          }
+          .iconfont {
+            position: absolute;
+            top: -4px;
+            left: 0;
           }
         }
       }
       .price-details {
         padding: 1rem 0 1rem .5rem;
-        height: 13rem;
+        min-height: 13rem;
         background: #fafafa;
         color: #808080;
         span {
           display: inline-block;
-          font-size: 0.88rem;
-          color: #1a1a1a;
+          font-size: 13px;
+          color: #333;
         }
         .price {
           margin-bottom: .6rem;
+          del {
+            color: #808080;
+            display: inline-block;
+            margin-right: 30px;
+          }
         }
         .refund-price {
+          font-size: 13px;
+          color: #333;
           margin-bottom: .6rem;
           span {
             font-size: 1.3rem;
             font-weight: bold;
           }
+          .merchant-reward {
+            display: inline-block;
+            margin-left: 10px;
+            label {
+              font-size: 13px;
+              color: #333;
+              font-weight: 400;
+            }
+            .merchant-reward-money {
+              font-style: italic;
+              color: #D82323;
+            }
+            
+          }
         }
         .reminder {
+          strong {
+            color: #333;
+            font-size: 14px;
+          }
           margin-bottom: .6rem;
         }
       }
@@ -450,6 +562,9 @@ export default {
         .share {
           float: right;
           margin-right: 2rem;
+          .text {
+            margin-right: 3px;
+          }
           a {
             color: #808080;
             .iconfont {
@@ -463,15 +578,14 @@ export default {
   
   }
 }
-
   .promotion-template {
-      // min-height: 1000px;
       background: white;
       border-radius: 5px;
       overflow: hidden;
-      // margin-bottom: 5rem;
       padding-bottom: 5rem;
-      width: 100%;
+      border: 1px solid #d2d2d2;
+      width: 66.5%;
+      margin-left: 27.9rem;
       .tabs {
         .head-s {
           font-size: 1.33rem;
@@ -486,9 +600,12 @@ export default {
             text-align: center;
             line-height: 4rem;
             cursor: pointer;
-            color: #1a1a1a;
+            color: #333;
+            font-size: 18px;
+            font-weight: 700;
+
             &:hover {
-              color: #808080;
+              color: #1a1a1a;
             }
             &.active {
               height: 4.01rem;
@@ -500,9 +617,16 @@ export default {
         }
         .tabs-body {
           text-align: center;
-          min-width: 1000px;
+          // min-width: 1000px;
           margin: 0 auto;
           margin-top: 1rem;
+          .content1 {
+            padding: 0 10px;
+            width: 100%;
+            img {
+              max-width: 100%;
+            }
+          }
           .content {
             padding: 0 3rem;
               .head {
@@ -524,15 +648,16 @@ export default {
                 }
                 .img-r {
                   right: 0;
-                  width: 360px;
-                  height: 234px;
+                  width: 20rem;
+                  height: 12rem;
                 }
                 .text {
                   position: relative;
                   margin: 0 auto;
-                  width: 324px;
+                  width: 20rem;
                   // margin-left: 125px;
-                  left: -130px;
+                  left: -8rem;
+                  text-align: left;
 
                 }
                 .title {
@@ -554,7 +679,12 @@ export default {
   // trials申请失败
 .not-trials-dialog {
     p {
-      height: 40px;
+      height: 30px;
+      &.sorry-text {
+        font-weight: 700;
+        font-size: 18px;
+        margin-top: 0;
+      }
     }
     p, div {
       text-align: center;
@@ -579,14 +709,14 @@ export default {
 }
 .trials-explain {
   position: fixed;
-  margin-top: 1rem;
+  margin-top: 18px;
   z-index: 666;
   width: 83.333rem !important;
 }
 .trials-details-left {
-  // position: fixed;
+  position: fixed;
   height: 28rem;
-  margin-top: 3.1rem !important
+  margin-top: 36px; 
 }
 .iconfont {
     position: relative;

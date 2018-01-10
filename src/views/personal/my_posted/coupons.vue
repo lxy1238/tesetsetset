@@ -1,7 +1,8 @@
 <template>
   <div class="posted-coupons">
     <div class="pro-header">
-      <h3 class="title">Coupons Posted</h3>
+      <h3 class="title">My Posted</h3>
+      <div class="title-s" v-title="'Coupons Posted'">Coupons Posted</div>
     </div>
     <div class="search-form">
       <label for="title">
@@ -12,7 +13,6 @@
         Category: 
       </label>
       <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.menu_id">
-        <!-- <option :value="''" >请选择</option> -->
         <el-option :value="item.id" :key="item.id" v-for="item in classifyList" :label="item.name">{{item.name}}</el-option>
       </el-select>
 
@@ -20,13 +20,12 @@
         Status: 
       </label>
       <el-select name="" class=" form-control-bootstrap" clearable v-model="requestdata.run_status">
-        <!-- <option :value="''" >请选择</option> -->
-        <el-option :value="all_run_status[0]">Pending</el-option>
-        <el-option :value="all_run_status[1]">Active</el-option>
-        <el-option :value="all_run_status[2]">Decline</el-option>
-        <el-option :value="all_run_status[3]">Stop</el-option>
-        <el-option :value="all_run_status[4]">Close</el-option>
-        <el-option :value="all_run_status[5]">Expired</el-option>
+        <el-option :value="all_run_status[0]" label='Pending'></el-option>
+        <el-option :value="all_run_status[1]" label='Active'></el-option>
+        <el-option :value="all_run_status[2]" label='Decline'></el-option>
+        <el-option :value="all_run_status[3]" label='Stop'></el-option>
+        <el-option :value="all_run_status[4]" label='Close'></el-option>
+        <el-option :value="all_run_status[5]" label='Expired'></el-option>
       </el-select>
 
       <button class="search" @click="postedCouponsSearch">Search</button>
@@ -42,13 +41,12 @@
         </thead>
         <tbody >
           <tr v-for="item in trLists" >
-            <td>
+            <td class="img">
               <img v-if="item.product_img" class="product-img" :src="item.product_img.split(',')[0]" alt="">
-              <img v-else class="product-img" src="../../../assets/01.png" alt="">
             </td>
             <td class="coupons-table-title">
               <div>{{item.website}}</div>
-              <div class="table-product-title" @click="gotoDetails(item)">{{item.product_title}}</div>
+              <div class="table-product-title" :title="item.product_title" @click="gotoDetails(item)">{{item.product_title}}</div>
               <a href="javascript:void(0);" @click="gotoDetails(item)">{{item.menu.name}}</a>
             </td>
 
@@ -79,24 +77,24 @@
             </td>
             <td class="operation">
               <template v-if="item.status === 0 && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired  ">
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired "> 
-                <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
+                <div class="link"> <a href="javascript:void(0)"  @click="showCloseDetails(item.id)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
-                <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
-                <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="EditCoupon(item.id)">Edit</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1]  && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
-                <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
+                <div class="link"> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
+                <div class="link"> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
               </template>
               <template v-if="item.isExpired">
                 <!-- <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div> -->
@@ -135,6 +133,7 @@ export default {
   name: 'center_coupons',
   data () {
     return {
+      value: '',
       thLists: [
         'Image',
         'Title',
@@ -241,7 +240,7 @@ export default {
         .then(res => {
           for (var i of res.data.data) {
             let now = parseInt(new Date().getTime() / 1000)
-            if (i.valid_date + 86400 < now) {
+            if (i.valid_date  < now) {
               i.isExpired = true
             }
             i.valid_date = parseTime(
@@ -301,9 +300,9 @@ export default {
 
     //删除优惠券
     DeleteCoupon (id) {
-      this.$confirm('Determine deleting coupons?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
+      this.$confirm('Are you sure to close this promotion?', 'Friendly reminder', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         type: 'warning'
       })
         .then(() => {
@@ -312,10 +311,7 @@ export default {
           this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
-            this.$message({
-              type: 'success',
-              message: 'delete success!'
-            })
+            this.$snotify.success('delete success!')
           })
           
         })
@@ -330,6 +326,21 @@ export default {
       this.detailsDialog = true
       this.$api.couponCensor(this.detailsRequestData).then(res => {
         this.nonApproval = res.data.content
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    //显示 商品下架（close) 详情
+    showCloseDetails (id) {
+      this.detailsRequestData.product_id = id
+      this.detailsDialog = true
+      this.$api.couponProblemCensor(this.detailsRequestData).then(res => {
+        if (!res.data) {
+          this.nonApproval = 'self closing'
+          return
+        }
+        this.nonApproval = res.data.revert
       }).catch(error => {
         console.log(error)
       })
@@ -369,60 +380,6 @@ export default {
 
 <style lang="less"  >
 @import url("../../../styles/mixin.less");
-.posted-coupons {
-  .pro-header {
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
-  }
-  .search-form {
-    position: relative;
-    width: 100%;
-    height: 4rem;
-    line-height: 4rem;
-    margin-bottom: 1rem;
-    .form-control-bootstrap {
-      margin-right: 3%;
-      width: 16%;
-    }
-    .search {
-      .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
-      font-size: 0.78rem;
-      &:active {
-        background: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
-    }
-    .add-coupons {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      .btn-h(100px, 40px, #7ab7e0, #7ab7e0, #fff);
-      margin-top: -20px;
-      &:active {
-        background: darken(#7ab7e0, 10%);
-        border-color: darken(#7ab7e0, 10%);
-      }
-    }
-  }
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
-  }
-}
 
 .coupons-table {
   font-size: 12px;
@@ -430,9 +387,26 @@ export default {
     width: 5rem;
     height: 4rem;
   }
+  .img {
+    width: 160px;
+  }
   .coupons-table-title {
     text-align: left;
     width: 250px;
+    padding-left: 10px;
+    .table-product-title {
+      color: #333;
+      margin: 5px 0 5px 0;
+      height: 28px;
+      line-height: 1.21;
+      overflow: hidden;
+      cursor: pointer;
+    }
+  }
+  .operation {
+    .link {
+      margin-bottom: 10px;
+    }
   }
 }
 

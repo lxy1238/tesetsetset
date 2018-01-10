@@ -5,7 +5,7 @@
       <h3 class="title">Coupons</h3>
     </div>
     <div class="search-form">
-          <el-date-picker type="daterange" placeholder="Applied date" v-model="daterange"></el-date-picker>
+          <el-date-picker type="daterange" placeholder="Applied date" v-model="daterange" class="form-control-bootstrap "></el-date-picker>
       <button class="search" @click="postedCouponsSearch">Search</button>
 
     </div>
@@ -23,7 +23,7 @@
             </td>
             <td class="product-details" @click="gotoDetails(item.id)">
               <div>amazon</div>
-              <div class="table-product-title">{{couponsDetails.product_title}}</div>
+              <div class="table-product-title" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</div>
               <a href="javascript:void(0);" >Electronics</a>
             </td>
             <td class="prcie">
@@ -129,7 +129,6 @@ export default {
     initData () {
       this.requestdata.coupon_id = JSON.parse(getStore('couponDetails')).id
       var couponsDetails = JSON.parse(getStore('couponDetails'))
-      console.log(couponsDetails)
       for (var i in this.couponsDetails) {
         this.couponsDetails[i] = couponsDetails[i]
       }
@@ -140,7 +139,6 @@ export default {
     getPickCoupons () {
       this.$api.pickCoupons(this.requestdata)
         .then(res => {
-          console.log(res)
           this.trLists = res.data.data
           this.allpage = res.data.last_page
         })
@@ -181,74 +179,11 @@ export default {
 @import url("../../../styles/mixin.less");
 .posted-coupons {
   font-size: 12px;
-  .pro-header {
-    position: relative;
-    border-bottom: 1px solid #e6e6e6;
-    margin-bottom: 1rem;
-  }
-  .title {
-    font-size: 1.5rem;
-    margin: 1rem 0;
-    font-weight: normal;
-  }
-  .title-s {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    line-height: 2rem;
-    color: #1a1a1a;
-    border-bottom: 1px solid #e6e6e6;
-  }
   .item-inline {
     display: inline-block;
     width: 50%;
   }
-  .search-form {
-    position: relative;
-    width: 100%;
-    height: 4rem;
-    line-height: 4rem;
-    margin-bottom: 1rem;
-    .form-control-bootstrap {
-      margin-right: 3%;
-      min-width: 10%;
-    }
-    .search {
-      .btn-h(60px, 34px,#85ba3b,#85ba3b,#fff);
-      font-size: 0.78rem;
-      &:active {
-        background: darken(#85ba3b, 10%);
-        border-color: darken(#85ba3b, 10%);
-      }
-    }
-    .add-coupons {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      .btn-h(100px, 40px, #7ab7, #7ab7, #fff);
-      margin-top: -20px;
-      &:active {
-        background: darken(#7ab7e0, 10%);
-        border-color: darken(#7ab7e0, 10%);
-      }
-    }
-  }
-}
-.coupons-pagination {
-  .pagination {
-    width: 100%;
-    text-align: right;
-    padding-right: 15rem;
-    li {
-      &.active {
-        .items {
-          border: none;
-        }
-      }
-      .items {
-        background: #fff;
-      }
-    }
-  }
+
 }
 
 .coupons-table {
@@ -256,9 +191,16 @@ export default {
     width: 5rem;
     height: 4rem;
   }
+  .table-product-title {
+      height: 28px;
+      line-height: 1.21;
+      overflow: hidden;
+      cursor: pointer;
+    }
   .product-details {
     text-align: left;
     width: 200px;
+    padding: 10px 0 10px 10px;
   }
 }
 </style>

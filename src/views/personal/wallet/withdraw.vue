@@ -1,31 +1,40 @@
 <template>
   <div class="withdraw">
     <div class="title">My Wallet</div>
-    <div class="title-s">Withdraw</div>
-    <el-form  :model="withdrawForm" :rules="rules"  ref="withdrawForm" >
+  <div class="title-s" v-title="'Withdraw'">Withdraw</div>
+    <el-form  :model="withdrawForm" :rules="rules"  ref="withdrawForm" class="withdraw-form" >
       <div class="balance">
         <label class="left-label">
           Balance:
         </label>
         <span class="balance-money">
-          {{currency}}{{userAccount.amount}}
+          {{currency}}{{amount}}
         </span>
       </div>
       <div class="withdrawals">
-        <label class="left-label">Withdrawals:</label>
-        <el-form-item prop="withdrawCount">
-          <el-input v-model="withdrawForm.withdrawCount" class="input-money" ></el-input>
+        <el-form-item prop="withdraw_amount"  label="Withdraw amount:" label-width="170px" required>
+          <el-input v-model="withdrawForm.withdraw_amount" class="input-money" @keyup.enter.native="enterSubmit" @keyup.native="keyupMoney" >
+            <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
       </div>
       <div class="pay-mode">
-        <el-radio class="pay-radio"v-model="withdrawForm.radio" label="1"><img src="../../../assets/paypal.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="2"><img src="../../../assets/pay-amazon.png" alt=""></el-radio>
-        <el-radio class="pay-radio" v-model="withdrawForm.radio" label="3"><img src="../../../assets/qLlKVsZuTordMlU.png" alt=""></el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.account_type" :label="WITHDRAW_TYPE['paypal']" @keyup.enter.native="enterSubmit">
+          <img src="../../../assets/paypal.png" alt="">
+        </el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.account_type" :label="WITHDRAW_TYPE['amazon']" @keyup.enter.native="enterSubmit">
+          <img src="../../../assets/pay-amazon.png" alt="">
+        </el-radio>
+        <el-radio class="pay-radio" v-model="withdrawForm.account_type" :label="WITHDRAW_TYPE['alipay']" @keyup.enter.native="enterSubmit">
+          <img src="../../../assets/qLlKVsZuTordMlU.png" alt="">
+        </el-radio>
       </div>
-      <div class="withdrawals" v-if="withdrawForm.radio !== '2'">
-        <label class="left-label">Acount:</label>
-        <el-form-item prop="account">
-          <el-input v-model="withdrawForm.account"></el-input>
+      <div class="withdrawals" v-if="withdrawForm.account_type !== WITHDRAW_TYPE['amazon']">
+        <el-form-item prop="account_payee" label="Your Paypal account:" label-width="170px" v-if="withdrawForm.account_type === WITHDRAW_TYPE['paypal']">
+          <el-input v-model="withdrawForm.account_payee"  @keyup.enter.native="enterSubmit"></el-input>
+        </el-form-item>
+        <el-form-item prop="account_payee" label="Your Alipay account:" label-width="170px" v-if="withdrawForm.account_type === WITHDRAW_TYPE['alipay']">
+          <el-input v-model="withdrawForm.account_payee"  @keyup.enter.native="enterSubmit"></el-input>
         </el-form-item>
       </div>
     </el-form>
@@ -43,7 +52,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getToken, getUserId, getEmail } from '@/utils/auth'
 import { getStore  } from '@/utils/utils'
+import { NumMul } from '@/utils/calculate.js'
 export default {
   name: 'withdraw',
   data () {
@@ -52,33 +63,51 @@ export default {
       if (!value) {
         return callback(new Error('Please enter the withdraw amount'))
       } else if(parseFloat(value) == 0 ){
-        callback(new Error ('Please enter the correct amount'))
+        callback(new Error ('Invalid withdraw amount.'))
       } else if(!reg.test(value)){
-        callback(new Error ('The amount can only enter two decimal places'))
+        callback(new Error ('Invalid withdraw amount.'))
       } else {
         callback()
       }
     }
     return {
+      WITHDRAW_TYPE: {
+        'paypal': 'PayPal',
+        'amazon': 'Amazon',
+        'alipay': 'Alipay'
+      },
+      countryLists: [],
+      country_id: parseInt(getStore('country_id')) || 1,
       rules: {
-        withdrawCount: [
+        withdraw_amount: [
           {validator: validateMoney, trigger: 'blur' },
         ],
-        account: [
-          { required: true, message: 'Please enter the withdrawal account', trigger: 'blur' },
+        account_payee: [
+          { required: true, message: 'Please enter the account.', trigger: 'blur' },
         ]
       },
       withdrawForm: {
-        radio: '1',
-        withdrawCount: '',
-        account: '',
+        country_id: getStore('country_id') || 1,
+        currency: getStore('pay_currency') || 'USD',
+        api_token: getToken(),
+        user_id: getUserId(),
+        account_type :'PayPal',
+        user_type: '',
+        withdraw_amount: '',
+        account_payee: '',
+        rmb_exchange: '',
+        rmb_withdraw_amount: '',
+
       },
-      withdrawDialog: false
+      withdrawDialog: false,
+      amount: '',
     }
   },
   computed: {
     ...mapGetters([
-      'userAccount'
+      'userAccount',
+      'roles',
+      'countryInfo'
     ]),
     currency () {
       return getStore('currency') || '$'
@@ -86,10 +115,23 @@ export default {
   },
   mounted () {
     this.init()
+    
   },
   methods: {
     init () {
-
+      this.initData()
+      this.filterInput()
+      
+    },
+    initData () {
+      this.withdrawForm.user_type = this.roles[0]
+      this.amount = this.userAccount.amount
+      this.$store.dispatch('GetInfo').then(() => {
+        this.amount = this.userAccount.amount
+      })
+      setTimeout(() => {
+        this.getUserCountryInfo()
+      })
     },
     //限制只能输入数字和.  e.keyCode 不兼容 火狐浏览器，需要调整
     filterInput () {
@@ -100,6 +142,28 @@ export default {
         }
       })
     },
+
+    keyupMoney () {
+      var amount = parseFloat(this.withdrawForm.withdraw_amount)
+      if (amount > this.amount) {
+        this.withdrawForm.withdraw_amount = this.amount
+      }
+    },
+
+     
+    //获取国家列表，携带货币符号，
+    getUserCountryInfo () {
+      if (this.countryInfo) {
+        this.countryLists = this.countryInfo
+        for (let i of this.countryLists) {
+          if (i.id === this.country_id) {
+            this.withdrawForm.rmb_exchange = i.bank_conversion_pri
+            this.withdrawForm.currency = i.pay_currency
+          }
+        }
+      }
+    },
+
     withdrawSubmit (formName, callback) {
       //element-ui 的表单验证
       this.$refs[formName].validate((valid) => {
@@ -111,11 +175,45 @@ export default {
         }
       })
     },
-    submit () {
-      if (this.radio == '3') {
-        // this.$router.push({path: '/wallet/withdraw/pay-wx', query: {withdrawCount: this.withdrawCount}})
-      }
+    //提现接口请求
+    postWithdrawApi () {
+      this.withdrawForm.rmb_withdraw_amount = NumMul(this.withdrawForm.rmb_exchange, this.withdrawForm.withdraw_amount)
+      this.$api.withdrawApi(this.withdrawForm).then(res => {
+        if (res.code === 200) {
+          this.withdrawDialog = true
+          this.clearInput()
+          this.initData()
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+      
     },
+    submit () {
+      this.withdrawSubmit('withdrawForm', () => {
+        if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['paypal']) {
+          this.postWithdrawApi()
+        } else if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['amazon']) {
+          this.withdrawForm.account_payee = getEmail()
+          this.postWithdrawApi()
+        } else if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['alipay']) {
+          this.withdrawForm.rmb_exchange = 1
+          this.postWithdrawApi()
+        }
+      })
+    },
+
+    //提现完成清空数据
+    clearInput () {
+      this.withdrawForm.withdraw_amount = ''
+      this.withdrawForm.account_payee = ''
+
+    },
+
+    //回车提交
+    enterSubmit () {
+      this.submit()
+    }
   }
 }
 </script>
@@ -123,24 +221,30 @@ export default {
 <style lang="less" scoped>
 @import url('../../../styles/mixin.less');
   .withdraw {
+    .withdraw-form {
+      height: 330px;
+    }
     .el-form-item {
       display: inline-block;
       margin-bottom: 0;
-      width: 400px;
+      width: 570px;
+   
     }
+    
     .left-label {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 100px;
-      color: #666;
-      font-size: 16px;
+      width: 158px;
+      font-size: 14px;
+      color: #48576a;
     }
     .balance {
       margin-bottom: 1.5rem;
       .balance-money {
         color: #333;
         font-size: 16px;
+        font-weight: 700;
       }
       
     }
@@ -168,9 +272,9 @@ export default {
       }
     }
     .submit {
+      margin-left: 214px;
       button {
         .btn-h(160px, 45px, #84ba3a, #84ba3a, #fff);
-        font-size: 24px;
         &:active {
           background: darken(#84ba3a, 10%);
           border-color: darken(#84ba3a, 10%);

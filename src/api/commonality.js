@@ -42,6 +42,13 @@ export const getUserCountry = () => fetch({
 })
 
 
+/**
+ * 
+ * @param 支付
+ *  
+ * 
+ */
+
 //支付
 
 export const payWX = data => fetch({
@@ -76,6 +83,22 @@ export const alipay = data => fetch({
 
 export const paypal = data => fetch({
   url: '/api/v1/pay/pay-pal',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
+
+
+/**
+ * 
+ * @param 提现
+ *  
+ * 
+ */
+
+//提现
+export const withdrawApi = data => fetch({
+  url: '/api/v1/pay/withdraw',
   method: 'POST',
   data: qs.stringify(data)
 })

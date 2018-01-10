@@ -3,7 +3,7 @@
     <h3 class="title">
         Profile Overview
     </h3>
-    <div class="center-content">
+    <div class="center-content" v-title="titleMsg">
       <div class="title-sm">
         About Me
       </div>
@@ -17,6 +17,26 @@
             <span class="name">{{username}}</span>
             <span class="level reds-color" v-if="roles[0] == 'celebrity'">Influencer</span>
             <span class="level merchant-color" v-if="roles[0] == 'merchant'">Merchant</span>
+            <template v-if="celebrityData && merchantData">
+              <template v-if="celebrityData.status === 0 && merchantData.status === 1">
+                <span class="remind-info red" v-if="celebrityData"> (Apply for a influencer is under review)</span>
+              </template>
+              <template  v-if="celebrityData.status === 2 && merchantData.status === 0">
+                <span class="remind-info red" v-if="merchantData"> (Apply for a merchant is under review)</span>
+              </template>
+              <template v-if="celebrityData.status === 0 && merchantData.status === 2">
+                <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer or merchant , Audit not passed)</span>
+              </template>
+            </template>
+            <template v-if="celebrityData && !merchantData">
+              <span class="remind-info red" v-if="celebrityData.status === 0">(Apply for a influencer is under review)</span>
+              <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer , Audit not passed)</span>
+            </template>
+            <template v-if="!celebrityData && merchantData">
+              <span class="remind-info red" v-if="merchantData.status === 0">(Apply for a merchant is under review)</span>
+              <span class="remind-info red" v-if="merchantData.status === 2">(Apply for a merchant , Audit not passed)</span>
+            </template>
+            
           </div>
           <div class="icon-info">
             <span><i class="iconfont icon-riqi1"> </i> Joined {{userData.joined_date}}</span>
@@ -34,23 +54,23 @@
       </div>
       <div class="statistics clearfix">
         <div class="statistics-child"  v-if="roles[0] == 'celebrity' || roles[0] == 'merchant' ">
-          <span class="count" @click="gotoAnotherRouter('/posted/coupons', userData.account.coupon_posteds)">{{userData.account.coupon_posteds}}</span>
+          <span class="count link" @click="gotoAnotherRouter('/posted/coupons', userData.account.coupon_posteds)">{{userData.account.coupon_posteds}}</span>
           <p>Coupons posted</p>
         </div>
         <div class="statistics-child" v-if="roles[0] == 'merchant'">
-          <span class="count"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
           <p>Trials posted</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
           <p>My Coupons</p>
         </div>
         <div class="statistics-child">
-          <span class="count"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
           <p>My Trials</p>
         </div>
         <div class="statistics-child last">
-          <span class="count"  @click="gotoAnotherRouter('/personal/promotion/index', userData.account.promotions)">{{userData.account.promotions}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/personal/promotion/index', userData.account.promotions)">{{userData.account.promotions}}</span>
           <p>My Promotions</p>
         </div>
         <!-- <div class="statistics-child last">
@@ -65,7 +85,7 @@
       <div class="center-wallet">
         <div class="withdraw wallet">
           <div class="wallet-child">
-            <span class="money">{{currency}}{{userData.account.amount}}</span>
+            <span class="money" v-if="userData.account">{{currency}}{{userData.account.amount}}</span>
             <p>Balance</p>
           </div>
           <div class="money-btn">
@@ -74,7 +94,7 @@
         </div>
         <div class="recharge wallet" v-if="roles[0] == 'merchant'">
           <div class="wallet-child">
-            <span class="money">{{currency}}{{userData.account.frozen_amount}}</span>
+            <span class="money">{{currency}}{{userData.account.security_deposit}}</span>
             <p>Security deposit</p>
           </div>
           <div class="money-btn">
@@ -104,11 +124,14 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         country_id: getStore('country_id') || 1
-      }
+      },
+      merchantData: null,
+      celebrityData: null,
+      titleMsg: 'User Center'
     }
   },
   computed: {
-    ...mapGetters(['username', 'token', 'roles', 'user_id', 'userAccount', 'userBase', 'joined_date']),
+    ...mapGetters(['username', 'token', 'roles', 'user_id', 'userAccount', 'userBase', 'joined_date', 'celebrity', 'merchant']),
     currency () {
       return getStore('currency') || '$'
     }
@@ -118,11 +141,20 @@ export default {
   },
   methods: {
     init () {
+      this.infoUpdate()
       setTimeout(() => {
-        this.userData.account = this.userAccount
-        this.userData.base = this.userBase
-        this.userData.joined_date = timestampFormat(this.joined_date)
+        this.$store.dispatch('GetInfo').then(() => {
+          this.infoUpdate()
+        })
       })
+    },
+
+    infoUpdate () {
+      this.userData.account = this.userAccount
+      this.userData.base = this.userBase
+      this.userData.joined_date = timestampFormat(this.joined_date)
+      this.celebrityData = this.celebrity
+      this.merchantData = this.merchant
     },
     //路由跳转
     gotoAnotherRouter (url, account) {
@@ -133,9 +165,9 @@ export default {
     },
 
     //跳转到邀请好友页面
-    gotoInvite () {
-      this.$router.push({path:'/enter/invite' })
-    }
+    // gotoInvite () {
+    //   this.$router.push({path:'/enter/invite' })
+    // }
   }
 }
 </script>
@@ -186,7 +218,6 @@ export default {
           top: -3px;
           font-size: 0.61rem;
           color: white;
-          // background: #ec5d1c;
           padding: 2px 5px;
           border-radius: 2px;
         }
@@ -207,7 +238,6 @@ export default {
     }
   }
   .statistics {
-    // padding-left: 1.5rem;
     padding-top: 1rem;
     margin-bottom: 2rem;
     .statistics-child {
@@ -227,11 +257,7 @@ export default {
         display: inline-block;
         margin-bottom: 0.6rem;
         cursor: pointer;
-        color: #333;
         font-size: 1.22rem;
-        &:hover {
-          color: #0072bc;
-        }
       }
     }
   }
@@ -240,11 +266,11 @@ export default {
     .wallet {
       float: left;
       width: 50%;
-      // border: 1px solid red;
       .money-btn {
         line-height: 3;
         button {
           position: relative;
+          top: 2px;
           .btn-h(130px,40px,#83b93a,#83b93a,#fff);
           font-size: 14px;
           padding-left: 36px;
@@ -258,6 +284,7 @@ export default {
           left: 13%;
           top: 9px;
           font-size: 28px;
+          font-weight: 400;
         }
       }
       .wallet-child {
@@ -267,15 +294,15 @@ export default {
         float: left;
         width: 10.5rem;
         color: #808080;
-        font-size: 0.78rem;
+        font-size: 13px;
         text-align: center;
         border-right: 1px solid #e6e6e6;
         margin-right: 3rem;
         .money {
           display: inline-block;
-          margin-bottom: 1rem;
-          font-size: 1rem;
-          color: #1a1a1a;
+          margin-bottom: 10px;
+          font-size: 18px;
+          color: #333;
         }
       }
     }

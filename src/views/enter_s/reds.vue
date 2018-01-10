@@ -1,83 +1,72 @@
 <template>
   <div class="enter-reds">
     <div class="enter-reds-content">
-      <div class="header-text">
-        <h3>Become Influencers</h3>
-        <p class="header-text-top">After becoming a Influencers, you can apply for Freebies, 
-           but also get more promotion 
-          commission, you can also issue their own discount coupons</p>
-        <p class="header-text-bottom">The following information will be used as an 
-          important criterion for review. Please fill in carefully!</p>
-      </div>
       <div class="title-s">
         Applicant information
       </div>
-
       <el-form 
             :model="redsForm" 
             :rules="rules" 
             ref="redsForm" 
             label-width="140px" 
-            label-position="top"
             class="reds-form" >
-      <el-form-item label="Full name: " prop="full_name" >
-        <el-input class="url-input" v-model="redsForm.full_name" ></el-input>
+      <el-form-item label="Full name: " prop="fullname" >
+        <el-input class="url-input" v-model="redsForm.fullname" ></el-input>
       </el-form-item>
-      <el-form-item label="E-mail: " prop="email" class="item-inline"  >
+      <el-form-item label="E-mail: " prop="email" class="item-inline"  required>
         <el-input class="url-input" v-model="redsForm.email"></el-input>
       </el-form-item>
       <el-form-item label="Country: " prop="country" class="item-inline"  >
-        <el-select v-model="redsForm.country">
+        <el-select v-model="redsForm.country" filterable>
            <el-option 
-            v-for="item in optionsCountry"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in geolocation"
+            :key="item[1]"
+            :label="item[1]"
+            :value="item[1]">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Province/State: "  prop="province_state"  class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="redsForm.province_state"></el-input>
+      <el-form-item label="Daytime Phone: " prop="mobile" >
+        <el-input v-model="redsForm.mobile"  class="textarea" placeholder="+86" @keyup.native="filterNumber"></el-input>
       </el-form-item>
-      <el-form-item label="City/Town: " prop="city_town" class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="redsForm.city_town"></el-input>
+       <el-form-item label="Income situation: " prop="income" >
+        <el-select v-model="redsForm.income" filterable>
+           <el-option 
+            v-for="item in optionIncome"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="Street address: " prop="street_address"  >
-        <el-input v-model="redsForm.street_address"></el-input>
+      <el-form-item label="Category: "  class="item-inline1" required>
+        <el-radio class="radio" v-model="redsForm.operation" label="Team">Team</el-radio>
+        <el-radio class="radio" v-model="redsForm.operation" label="Personal">Personal</el-radio>
       </el-form-item>
-      <el-form-item label="Postcode/Zip Code: "  prop="postcode" >
-        <el-input v-model="redsForm.postcode"  class="textarea"></el-input>
+      <el-form-item label="introduction: " class="item-inline"  prop="introduction" required>
+        <el-input v-model="redsForm.introduction" type="textarea" :rows="6"></el-input>
       </el-form-item>
-       <el-form-item label="Daytime Phone: " prop="daytime_phone" >
-        <el-input v-model="redsForm.daytime_phone"  class="textarea" placeholder="+86"></el-input>
-      </el-form-item>
-       <el-form-item label="Income situation: " prop="income_situation" >
-        <el-input v-model="redsForm.income_situation" class="textarea" placeholder="$"></el-input>
-      </el-form-item>
-      <div class="title-s">
-        Media information
-      </div>
-      <el-form-item label="Areas of expertise" class="item-inline"   >
+     
+     
+        <div class="title-s title-xs">
+          Areas of Interest
+        </div>
          <ul class="experitse-items clearfix">
            <li v-for="item in expertiseList" 
                :class="{active: item.isSelected}"
                @click="selectedExpertise(item)">{{item.text}}
            </li>
          </ul>
-      </el-form-item>
-      <el-form-item label="Category: "  class="item-inline1" >
-        <el-radio class="radio" v-model="redsForm.category" label="Team">Team</el-radio>
-        <el-radio class="radio" v-model="redsForm.category" label="Personal">Personal</el-radio>
-      </el-form-item>
-      <el-form-item label="Detailed introduction: " class="item-inline"  prop="detailed_introduction">
-        <el-input v-model="redsForm.detailed_introduction" type="textarea" :rows="6"></el-input>
-      </el-form-item>
-      <el-form-item label="Resources and channels:"  class="resources-channels" >
+
+      <div class="title-s title-xs">
+         Resources and channels
+        </div>
+      <el-form-item  class="resources-channels" label-width="0px" >
         <div class="resources-channels-item"  v-for="item in channelsLists">
           <div class="top">
             <div class="channels" v-if="item.imgUrl">
               <img :src="item.imgUrl" alt=""> 
-              <span class="channel-name"> {{item.name}}</span>
+              <span class="channel-name"> {{item.channel_name}}</span>
             </div>
             <div class="channel" v-else >
               <label for="">Channel name</label>
@@ -85,30 +74,41 @@
             </div>
             <div class="fans-number">
               <label for="">Number of fans</label>
-              <el-input type="text"  size="mini" v-model="item.fansNum" placeholder="please enter a number" @blur="filterNum(item)"></el-input>
+              <el-input type="text"  size="mini" v-model="item.fans" placeholder="please enter a number" @keyup.native="filterNumber1(item)"></el-input>
             </div>
           </div>
           <div class="bottom">
-             <label for="">Proof link</label>
-            <el-input type="text"  size="mini" v-model="item.proofLink"></el-input>
+             <label for="">Proof link </label>
+            <el-input type="text"  size="mini" v-model="item.url"></el-input>
           </div>
         </div>
         <div class="channels-add-more" @click="addMoreChannel">
           Add more channels <i class=" el-icon-plus"></i>
         </div>
       </el-form-item>
-      <el-form-item class="submit-btn">
-        <button type="button" @click="submit">Submit</button>
-      </el-form-item>
+      <div class="submit-btn">
+        <el-button type="button" @click="submit" :loading="btnLoading">Submit</el-button>
+      </div>
     </el-form>
     </div>
   </div>
 </template>
 
 <script>
+import { getToken, getUserId, getEmail } from '@/utils/auth'
+import { validateEmail } from '@/utils/validate.js'
 export default {
   name: 'enter_reds',
   data () {
+    const validateEmailRule =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter your Email'))
+      } else if (!validateEmail(value)) {
+        return callback(new Error('Invalid email address'))
+      } else {
+        callback()
+      }
+    }
     return {
       optionsCountry: [
         {
@@ -117,46 +117,35 @@ export default {
         }
       ],
       redsForm: {
-        full_name: 'ghost',
-        email: '123@qq.com',
-        country: 'USA',
-        province_state: 'amazon',
-        city_town: 'awef',
-        street_address: 'awef',
-        postcode: 'awef',
-        daytime_phone: 'awef',
-        income_situation: 'awef',
-        category: 'Team',
-        detailed_introduction: 'aewf',
-        expertises: [],
+        api_token: getToken(),
+        user_id: getUserId(),
+        fullname: 'ghost',
+        email: getEmail(),
+        country: '',
+        mobile: 'awef',
+        income: 'awef',
+        operation: 'Team',
+        introduction: 'aewf',
+        specialty: [],
         channels: []
       },
       rules: {
-        full_name: [
+        fullname: [
           {required: true ,message: 'Full Name  is required', trigger: 'blur'}
         ],
         email: [
-          {required: true ,message: 'Email  is required', trigger: 'blur'}
+          {validator: validateEmailRule, trigger: 'blur'}
         ],
         country: [
           {required: true ,message: 'Country  is required', trigger: 'blur'}
         ],
-        province_state: [
-          {required: true ,message: 'Province/State  is required', trigger: 'blur'}
-        ],
-        city_town: [
-          {required: true ,message: 'City/Town  is required', trigger: 'blur'}
-        ],
-        street_address: [
-          {required: true ,message: 'Street address is required', trigger: 'blur'}
-        ],
         postcode: [
           {required: true ,message: 'Postcode/Zip Code is required', trigger: 'blur'}
         ],
-        daytime_phone: [
+        mobile: [
           {required: true ,message: 'Daytime phone date is required', trigger: 'blur'}
         ],
-        income_situation: [
+        income: [
           {required: true ,message: 'Income situation per day is required', trigger: 'blur'}
         ],
       },
@@ -201,64 +190,258 @@ export default {
       channelsLists: [
         {
           imgUrl: require('../../assets/reds-facebook.png'),
-          name: 'Facebook',
-          fansNum: '',
-          proofLink: '',
+          channel_name: 'Facebook',
+          fans: '',
+          url: '',
         },
         {
           imgUrl: require('../../assets/reds-tiwwer.png'),
-          name: 'Twitter',
-          fansNum: '',
-          proofLink: '',
+          channel_name: 'Twitter',
+          fans: '',
+          url: '',
         },
         {
           imgUrl: require('../../assets/reds-youtube.png'),
-          name: 'Youtube',
-          fansNum: '',
-          proofLink: '',
+          channel_name: 'Youtube',
+          fans: '',
+          url: '',
         },
         {
           imgUrl: require('../../assets/reds-pinterest.png'),
-          name: 'Pinterest',
-          fansNum: '',
-          proofLink: '',
+          channel_name: 'Pinterest',
+          fans: '',
+          url: '',
         },
         {
           imgUrl: require('../../assets/reds-instagram.png'),
-          name: 'Instagram',
-          fansNum: '',
-          proofLink: '',
+          channel_name: 'Instagram',
+          fans: '',
+          url: '',
         },
         {
           imgUrl: require('../../assets/reds-vk.png'),
-          name: 'VK',
-          fansNum: '',
-          proofLink: '',
+          channel_name: 'VK',
+          fans: '',
+          url: '',
         },
       ],
       channelsListData: {
-        name: '',
-        fansNum: '',
-        proofLink: '',
-      }
+        channel_name: '',
+        fans: '',
+        url: '',
+      },
+      optionIncome: [
+        '$1000以下',
+        '$1000-$5000',
+        '$5000-$10000'
+      ],
+      geolocation: [   
+        ['AO', 'Angola'],   
+        ['AF', 'Afghanistan'],   
+        ['AL', 'Albania'],   
+        ['DZ', 'Algeria'],   
+        ['AD', 'Andorra'],   
+        ['AI', 'Anguilla'],   
+        ['AG', 'Barbuda Antigua'],   
+        ['AR', 'Argentina'],   
+        ['AM', 'Armenia'],   
+        ['AU', 'Australia'],   
+        ['AT', 'Austria'],   
+        ['AZ', 'Azerbaijan'],   
+        ['BS', 'Bahamas'],   
+        ['BH', 'Bahrain'],   
+        ['BD', 'Bangladesh'],   
+        ['BB', 'Barbados'],   
+        ['BY', 'Belarus'],   
+        ['BE', 'Belgium'],   
+        ['BZ', 'Belize'],   
+        ['BJ', 'Benin'],   
+        ['BM', 'Bermuda Is.'],   
+        ['BO', 'Bolivia'],   
+        ['BW', 'Botswana'],   
+        ['BR', 'Brazil'],   
+        ['BN', 'Brunei'],   
+        ['BG', 'Bulgaria'],   
+        ['BF', 'Burkina-faso'],   
+        ['MM', 'Burma'],   
+        ['BI', 'Burundi'],   
+        ['CM', 'Cameroon'],   
+        ['CA', 'Canada'],   
+        ['CF', 'Central African Republic'],   
+        ['TD', 'Chad'],   
+        ['CL', 'Chile'],   
+        ['CN', 'China'],   
+        ['CO', 'Colombia'],   
+        ['CG', 'Congo'],   
+        ['CK', 'Cook Is.'],   
+        ['CR', 'Costa Rica'],   
+        ['CU', 'Cuba'],   
+        ['CY', 'Cyprus'],   
+        ['CZ', 'Czech Republic'],   
+        ['DK', 'Denmark'],   
+        ['DJ', 'Djibouti'],   
+        ['DO', 'Dominica Rep.'],   
+        ['EC', 'Ecuador'],   
+        ['EG', 'Egypt'],   
+        ['SV', 'EI Salvador'],   
+        ['EE', 'Estonia'],   
+        ['ET', 'Ethiopia'],   
+        ['FJ', 'Fiji'],   
+        ['FI', 'Finland'],   
+        ['FR', 'France'],   
+        ['GF', 'French Guiana'],   
+        ['GA', 'Gabon'],   
+        ['GM', 'Gambia'],   
+        ['GE', 'Georgia'],   
+        ['DE', 'Germany'],   
+        ['GH', 'Ghana'],   
+        ['GI', 'Gibraltar'],   
+        ['GR', 'Greece'],   
+        ['GD', 'Grenada'],   
+        ['GU', 'Guam'],   
+        ['GT', 'Guatemala'],   
+        ['GN', 'Guinea'],   
+        ['GY', 'Guyana'],   
+        ['HT', 'Haiti'],   
+        ['HN', 'Honduras'],   
+        ['HK', 'Hongkong'],   
+        ['HU', 'Hungary'],   
+        ['IS', 'Iceland'],   
+        ['IN', 'India'],   
+        ['ID', 'Indonesia'],   
+        ['IR', 'Iran'],   
+        ['IQ', 'Iraq'],   
+        ['IE', 'Ireland'],   
+        ['IL', 'Israel'],   
+        ['IT', 'Italy'],   
+        ['JM', 'Jamaica'],   
+        ['JP', 'Japan'],   
+        ['JO', 'Jordan'],   
+        ['KH', 'Kampuchea (Cambodia )'],   
+        ['KZ', 'Kazakstan'],   
+        ['KE', 'Kenya'],   
+        ['KR', 'Korea'],   
+        ['KW', 'Kuwait'],   
+        ['KG', 'Kyrgyzstan'],   
+        ['LA', 'Laos'],   
+        ['LV', 'Latvia'],   
+        ['LB', 'Lebanon'],   
+        ['LS', 'Lesotho'],   
+        ['LR', 'Liberia'],   
+        ['LY', 'Libya'],   
+        ['LI', 'Liechtenstein'],   
+        ['LT', 'Lithuania'],   
+        ['LU', 'Luxembourg'],   
+        ['MO', 'Macao'],   
+        ['MG', 'Madagascar'],   
+        ['MW', 'Malawi'],   
+        ['MY', 'Malaysia'],   
+        ['MV', 'Maldives'],   
+        ['ML', 'Mali'],   
+        ['MT', 'Malta'],   
+        ['MU', 'Mauritius'],   
+        ['MX', 'Mexico'],   
+        ['MD', 'Moldova'],   
+        ['MC', 'Monaco'],   
+        ['MN', 'Mongolia'],   
+        ['MS', 'Montserrat Is.'],   
+        ['MA', 'Morocco'],   
+        ['MZ', 'Mozambique'],   
+        ['NA', 'Namibia'],   
+        ['NR', 'Nauru'],   
+        ['NP', 'Nepal'],   
+        ['NL', 'Netherlands'],   
+        ['NZ', 'New Zealand'],   
+        ['NI', 'Nicaragua'],   
+        ['NE', 'Niger'],   
+        ['NG', 'Nigeria'],   
+        ['KP', 'North Korea'],   
+        ['NO', 'Norway'],   
+        ['OM', 'Oman'],   
+        ['PK', 'Pakistan'],   
+        ['PA', 'Panama'],   
+        ['PG', 'Papua New Cuinea'],   
+        ['PY', 'Paraguay'],   
+        ['PE', 'Peru'],   
+        ['PH', 'Philippines'],   
+        ['PL', 'Poland'],   
+        ['PF', 'French Polynesia'],   
+        ['PT', 'Portugal'],   
+        ['PR', 'Puerto Rico'],   
+        ['QA', 'Qatar'],   
+        ['RO', 'Romania'],   
+        ['RU', 'Russia'],   
+        ['LC', 'Saint Lueia'],   
+        ['VC', 'Saint Vincent'],   
+        ['SM', 'San Marino'],   
+        ['ST', 'Sao Tome and Principe'],   
+        ['SA', 'Saudi Arabia'],   
+        ['SN', 'Senegal'],   
+        ['SC', 'Seychelles'],   
+        ['SL', 'Sierra Leone'],   
+        ['SG', 'Singapore'],   
+        ['SK', 'Slovakia'],   
+        ['SI', 'Slovenia'],   
+        ['SB', 'Solomon Is.'],   
+        ['SO', 'Somali'],   
+        ['ZA', 'South Africa'],   
+        ['ES', 'Spain'],   
+        ['LK', 'Sri Lanka'],   
+        ['SD', 'Sudan'],   
+        ['SR', 'Suriname'],   
+        ['SZ', 'Swaziland'],   
+        ['SE', 'Sweden'],   
+        ['CH', 'Switzerland'],   
+        ['SY', 'Syria'],   
+        ['TW', 'Taiwan'],   
+        ['TJ', 'Tajikstan'],   
+        ['TZ', 'Tanzania'],   
+        ['TH', 'Thailand'],   
+        ['TG', 'Togo'],   
+        ['TO', 'Tonga'],   
+        ['TT', 'Trinidad and Tobago'],   
+        ['TN', 'Tunisia'],   
+        ['TR', 'Turkey'],   
+        ['TM', 'Turkmenistan'],   
+        ['UG', 'Uganda'],   
+        ['UA', 'Ukraine'],   
+        ['AE', 'United Arab Emirates'],   
+        ['GB', 'United Kiongdom'],   
+        ['US', 'United States of America'],   
+        ['UY', 'Uruguay'],   
+        ['UZ', 'Uzbekistan'],   
+        ['VE', 'Venezuela'],   
+        ['VN', 'Vietnam'],   
+        ['YE', 'Yemen'],   
+        ['YU', 'Yugoslavia'],   
+        ['ZW', 'Zimbabwe'],   
+        ['ZR', 'Zaire'],   
+        ['ZM', 'Zambia']   
+      ],
+      btnLoading: false,
     }
   },
+
   methods: {
     selectedExpertise (item) {
+      this.getSelectedExpertiseArr()
+      if (this.redsForm.specialty.length === 1 && item.isSelected) {
+        return
+      }
       item.isSelected = !item.isSelected
     },
     addMoreChannel () {
       this.channelsLists.push({
-        name: '',
-        fansNum: '',
-        proofLink: '',
+        channel_name: '',
+        fans: '',
+        url: '',
       })
     },
     getSelectedExpertiseArr () {
-      this.redsForm.expertises = []
+      this.redsForm.specialty = []
       this.expertiseList.forEach((e) => {
         if (e.isSelected === true) {
-          this.redsForm.expertises.push(e.text)
+          this.redsForm.specialty.push(e.text)
         } 
       })
     },
@@ -266,34 +449,61 @@ export default {
       this.redsForm.channels = [],
       this.channelsLists.forEach((e) => {
         if (e.imgUrl) {
-          if (e.fansNum && e.proofLink) {
+          if (e.fans && e.url) {
             this.redsForm.channels.push(e)
           }
-        } else if (e.name && e.fansNum && e.proofLink) {
+        } else if (e.name && e.fans && e.url) {
           this.redsForm.channels.push(e)
         }
       })
       if (this.redsForm.channels.length === 0){
-        this.$message.error('至少填写一个推广通道')
+        this.$snotify.error('Fill in at least one promotion channel!')
+        return false
       }
+      return true
     },
     submit () {
+      if (!this.isLogin()) {
+        this.$snotify.info('please log in first')
+        return
+      }
       this.$refs['redsForm'].validate((valid) => {
         if(valid) {
+          this.btnLoading = true
           this.getSelectedExpertiseArr()
           this.getChannelArr()
-          console.log(this.redsForm, this.channelsLists)
+          this.$api.applyCelebritys(this.redsForm).then(res => {
+            this.btnLoading = false
+            if (res.code === 200) {
+              this.$snotify.success('Submit success, please wait for the result of the audit')
+              this.$router.push({path: '/personal/member/index'})
+            }
+          }).catch(err => {
+            if (err.message === 'validation.phone') {
+              this.$snotify.error('Invalid phone')
+            }
+            this.btnLoading = false
+          })
         } else {
           console.log('submit error')
         }
       })
     },
-    filterNum (item) {
-      let reg = /^[0-9]+$/
-      if (!reg.test(item.fansNum)) {
-        item.fansNum = ''
+    //只能输入电话
+    filterNumber () {
+      this.redsForm.mobile = this.redsForm.mobile.replace(/[^0-9-]+/g, '')
+    },
+    filterNumber1 (item) {
+      item.fans = item.fans.replace(/\D+/g, '')
+    },
+    //判断是否登录，否则提醒请登录
+    isLogin () {
+      if (!getToken()) {
+        return false
+      } else {
+        return true
       }
-    }
+    },
   },
   mounted () {
   
@@ -301,12 +511,15 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 @import url('../../styles/mixin.less');
+ .title-s {
+    width: 1100px;
+  }
   .enter-reds {
+    padding-bottom: 40px;
     .enter-reds-content {
       width: 800px;
-      margin: 0 auto;
       min-height: 1000px;
       .header-text {
         text-align: center;
@@ -325,10 +538,6 @@ export default {
           font-size: 16px;
           color: #ff0000;
           font-weight: bold;
-        }
-        .title-s {
-          font-size: 16px;
-          color: #333;
         }
       }
     }
@@ -359,7 +568,7 @@ export default {
           height: 90px;
           background: #f2f2f2;
           color: #666;
-          font-size: 16px;
+          font-size: 13px;
           padding: 6px 10px 0 10px;
           margin-bottom: 18px;
           .top {
@@ -386,7 +595,7 @@ export default {
                display: inline-block;
                float: right;
                .el-input {
-                 width: 57%;
+                 width: 60%;
                }
             }
           }

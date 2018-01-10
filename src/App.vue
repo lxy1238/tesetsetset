@@ -1,5 +1,6 @@
 <template>
-  <div id="app" v-title="titleMsg">
+  <div id="app" v-title="titleMsg" v-cloak>
+    <vue-snotify></vue-snotify>
     <router-view/>
   </div>
 </template>
@@ -14,6 +15,7 @@ export default {
   name: 'app',
   mounted () {
   },
+
   beforeDestroy () {
   }
 }
@@ -23,5 +25,6 @@ export default {
 //引入全局字体图标
 @import url('../node_modules/normalize.css');
 @import url("./static/iconfont/iconfont.css");
+@import url("./static/iconfont-editor/iconfont.css");
 @import url("./styles/index.less");
 </style>

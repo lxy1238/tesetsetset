@@ -1,67 +1,58 @@
 <template>
   <div class="enter-reds">
     <div class="enter-reds-content">
-      <div class="header-text">
-        <h3>Become Merchant</h3>
-        <p class="header-text-top">Become a merchant, you can release discount coupons and trial products</p>
-        <p class="header-text-bottom">The following information will be used as an 
-          important criterion for review. Please fill in carefully!</p>
-      </div>
       <div class="title-s">
-        Applicant information
+        Contact information
       </div>
-
       <el-form 
             :model="sellerForm" 
             :rules="rules" 
             ref="sellerForm" 
             label-width="140px" 
-            label-position="top"
             class="reds-form" >
-      <el-form-item label="Full name: " prop="full_name" >
-        <el-input class="url-input" v-model="sellerForm.full_name" ></el-input>
+      <el-form-item label="Full name: " prop="fullname" >
+        <el-input class="url-input" v-model="sellerForm.fullname" ></el-input>
       </el-form-item>
-      <el-form-item label="E-mail: " prop="email" class="item-inline"  >
+      <el-form-item label="Email: " prop="email" class="item-inline"  required>
         <el-input class="url-input" v-model="sellerForm.email"></el-input>
       </el-form-item>
+      <el-form-item label="Street address: " prop="addr"  >
+        <el-input v-model="sellerForm.addr"></el-input>
+      </el-form-item>
+      <el-form-item label="City/Town: " prop="city" class="item-inline"  >
+        <el-input class="url-input input-price-fee" v-model="sellerForm.city"></el-input>
+      </el-form-item>
+      <el-form-item label="Province/State: "  prop="province"  class="item-inline"  >
+        <el-input class="url-input input-price-fee" v-model="sellerForm.province"></el-input>
+      </el-form-item>
       <el-form-item label="Country: " prop="country" class="item-inline"  >
-        <el-select v-model="sellerForm.country">
+        <el-select v-model="sellerForm.country" filterable>
            <el-option 
-            v-for="item in optionsCountry"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in geolocation"
+            :key="item[1]"
+            :label="item[1]"
+            :value="item[1]">
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Province/State: "  prop="province_state"  class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="sellerForm.province_state"></el-input>
+   
+      <el-form-item label="Post Code: "  prop="postal" >
+        <el-input v-model="sellerForm.postal"  class="textarea" @keyup.native="filterNumber"></el-input>
       </el-form-item>
-      <el-form-item label="City/Town: " prop="city_town" class="item-inline"  >
-        <el-input class="url-input input-price-fee" v-model="sellerForm.city_town"></el-input>
+       <el-form-item label="Phone: " prop="mobile" >
+        <el-input v-model="sellerForm.mobile"  class="textarea" placeholder="+86" @keyup.native="filterNumber"></el-input>
       </el-form-item>
-      <el-form-item label="Street address: " prop="street_address"  >
-        <el-input v-model="sellerForm.street_address"></el-input>
-      </el-form-item>
-      <el-form-item label="Postcode/Zip Code: "  prop="postcode" >
-        <el-input v-model="sellerForm.postcode"  class="textarea"></el-input>
-      </el-form-item>
-       <el-form-item label="Daytime Phone: " prop="daytime_phone" >
-        <el-input v-model="sellerForm.daytime_phone"  class="textarea" placeholder="+86"></el-input>
-      </el-form-item>
-       <!-- <el-form-item label="Income situation: " prop="income_situation" >
-        <el-input v-model="sellerForm.income_situation" class="textarea" placeholder="$"></el-input>
-      </el-form-item> -->
+   
       <div class="title-s">
-        Media information
+        Store information
       </div>
-       <el-form-item label="Country: " prop="owned_platform" class="item-inline"  >
-        <el-select v-model="sellerForm.owned_platform">
+       <el-form-item label="Website: " prop="platform" class="item-inline"  >
+        <el-select v-model="sellerForm.platform" filterable >
            <el-option 
-            v-for="item in ownedPlatformLists"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in optionsWebsite"
+            :key="item.url"
+            :label="item.url"
+            :value="item.url">
           </el-option>
         </el-select>
       </el-form-item>
@@ -75,7 +66,7 @@
         <el-input v-model="sellerForm.store_url" type="text" ></el-input>
       </el-form-item>
       <el-form-item class="submit-btn">
-        <button type="button" @click="submit">Submit</button>
+        <button type="button" @click="submit" :loading="btnLoading">Submit</button>
       </el-form-item>
     </el-form>
     </div>
@@ -83,9 +74,20 @@
 </template>
 
 <script>
+import { getToken, getUserId, getEmail } from '@/utils/auth'
+import { validateEmail } from '@/utils/validate.js'
 export default {
   name: 'enter_reds',
   data () {
+    const validateEmailRule =  (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter your Email'))
+      } else if (!validateEmail(value)) {
+        return callback(new Error('Invalid email address'))
+      } else {
+        callback()
+      }
+    }
     return {
       optionsCountry: [
         {
@@ -100,50 +102,48 @@ export default {
         }
       ],
       sellerForm: {
-        full_name: 'awef',
-        email: 'awef',
-        country: 'awef',
-        province_state: 'awef',
-        city_town: 'awef',
-        street_address: 'awef',
-        postcode: 'awef',
-        daytime_phone: 'awef',
-        income_situation: 'awef',
-        category: 'Team',
-        detailed_introduction: 'awef',
-        owned_platform: 'aewf',
-        store_id: 'awef',
-        store_name: 'awef',
-        store_url:  'awef'
+        api_token: getToken(),
+        user_id: getUserId(),
+        fullname: '',
+        email: getEmail(),
+        country: '',
+        province: '',
+        city: '',
+        addr: '',
+        postal: '',
+        mobile: '',
+        category: '',
+        detailed_introduction: '',
+        platform: '',
+        store_id: '',
+        store_name: '',
+        store_url:  ''
      
       },
       rules: {
-        full_name: [
+        fullname: [
           {required: true ,message: 'full name required', trigger: 'blur'}
         ],
         email: [
-          {required: true ,message: 'email is required', trigger: 'blur'}
+          {validator: validateEmailRule, trigger: 'blur'}
         ],
         country: [
           {required: true ,message: 'country  is required', trigger: 'blur'}
         ],
-        province_state: [
+        province: [
           {required: true ,message: 'province/stateis required', trigger: 'blur'}
         ],
-        city_town: [
+        city: [
           {required: true ,message: 'city/town title is required', trigger: 'blur'}
         ],
-        street_address: [
+        addr: [
           {required: true ,message: 'street address is required', trigger: 'blur'}
         ],
-        postcode: [
-          {required: true ,message: 'postcode is required', trigger: 'blur'}
+        postal: [
+          {required: true ,message: 'postal is required', trigger: 'blur'}
         ],
-        daytime_phone: [
+        mobile: [
           {required: true ,message: 'daytime phone  is required', trigger: 'blur'}
-        ],
-        income_situation: [
-          {required: true ,message: 'income situation is required', trigger: 'blur'}
         ],
         store_id: [
           {required: true ,message: 'Store ID is required', trigger: 'blur'}
@@ -154,36 +154,280 @@ export default {
         store_url: [
           {required: true ,message: 'Store URL is required', trigger: 'blur'}
         ],
-        owned_platform: [
+        platform: [
           {required: true ,message: 'owned platform quantity per day is required', trigger: 'blur'}
         ],
       },
+      geolocation: [   
+        ['AO', 'Angola'],   
+        ['AF', 'Afghanistan'],   
+        ['AL', 'Albania'],   
+        ['DZ', 'Algeria'],   
+        ['AD', 'Andorra'],   
+        ['AI', 'Anguilla'],   
+        ['AG', 'Barbuda Antigua'],   
+        ['AR', 'Argentina'],   
+        ['AM', 'Armenia'],   
+        ['AU', 'Australia'],   
+        ['AT', 'Austria'],   
+        ['AZ', 'Azerbaijan'],   
+        ['BS', 'Bahamas'],   
+        ['BH', 'Bahrain'],   
+        ['BD', 'Bangladesh'],   
+        ['BB', 'Barbados'],   
+        ['BY', 'Belarus'],   
+        ['BE', 'Belgium'],   
+        ['BZ', 'Belize'],   
+        ['BJ', 'Benin'],   
+        ['BM', 'Bermuda Is.'],   
+        ['BO', 'Bolivia'],   
+        ['BW', 'Botswana'],   
+        ['BR', 'Brazil'],   
+        ['BN', 'Brunei'],   
+        ['BG', 'Bulgaria'],   
+        ['BF', 'Burkina-faso'],   
+        ['MM', 'Burma'],   
+        ['BI', 'Burundi'],   
+        ['CM', 'Cameroon'],   
+        ['CA', 'Canada'],   
+        ['CF', 'Central African Republic'],   
+        ['TD', 'Chad'],   
+        ['CL', 'Chile'],   
+        ['CN', 'China'],   
+        ['CO', 'Colombia'],   
+        ['CG', 'Congo'],   
+        ['CK', 'Cook Is.'],   
+        ['CR', 'Costa Rica'],   
+        ['CU', 'Cuba'],   
+        ['CY', 'Cyprus'],   
+        ['CZ', 'Czech Republic'],   
+        ['DK', 'Denmark'],   
+        ['DJ', 'Djibouti'],   
+        ['DO', 'Dominica Rep.'],   
+        ['EC', 'Ecuador'],   
+        ['EG', 'Egypt'],   
+        ['SV', 'EI Salvador'],   
+        ['EE', 'Estonia'],   
+        ['ET', 'Ethiopia'],   
+        ['FJ', 'Fiji'],   
+        ['FI', 'Finland'],   
+        ['FR', 'France'],   
+        ['GF', 'French Guiana'],   
+        ['GA', 'Gabon'],   
+        ['GM', 'Gambia'],   
+        ['GE', 'Georgia'],   
+        ['DE', 'Germany'],   
+        ['GH', 'Ghana'],   
+        ['GI', 'Gibraltar'],   
+        ['GR', 'Greece'],   
+        ['GD', 'Grenada'],   
+        ['GU', 'Guam'],   
+        ['GT', 'Guatemala'],   
+        ['GN', 'Guinea'],   
+        ['GY', 'Guyana'],   
+        ['HT', 'Haiti'],   
+        ['HN', 'Honduras'],   
+        ['HK', 'Hongkong'],   
+        ['HU', 'Hungary'],   
+        ['IS', 'Iceland'],   
+        ['IN', 'India'],   
+        ['ID', 'Indonesia'],   
+        ['IR', 'Iran'],   
+        ['IQ', 'Iraq'],   
+        ['IE', 'Ireland'],   
+        ['IL', 'Israel'],   
+        ['IT', 'Italy'],   
+        ['JM', 'Jamaica'],   
+        ['JP', 'Japan'],   
+        ['JO', 'Jordan'],   
+        ['KH', 'Kampuchea (Cambodia )'],   
+        ['KZ', 'Kazakstan'],   
+        ['KE', 'Kenya'],   
+        ['KR', 'Korea'],   
+        ['KW', 'Kuwait'],   
+        ['KG', 'Kyrgyzstan'],   
+        ['LA', 'Laos'],   
+        ['LV', 'Latvia'],   
+        ['LB', 'Lebanon'],   
+        ['LS', 'Lesotho'],   
+        ['LR', 'Liberia'],   
+        ['LY', 'Libya'],   
+        ['LI', 'Liechtenstein'],   
+        ['LT', 'Lithuania'],   
+        ['LU', 'Luxembourg'],   
+        ['MO', 'Macao'],   
+        ['MG', 'Madagascar'],   
+        ['MW', 'Malawi'],   
+        ['MY', 'Malaysia'],   
+        ['MV', 'Maldives'],   
+        ['ML', 'Mali'],   
+        ['MT', 'Malta'],   
+        ['MU', 'Mauritius'],   
+        ['MX', 'Mexico'],   
+        ['MD', 'Moldova'],   
+        ['MC', 'Monaco'],   
+        ['MN', 'Mongolia'],   
+        ['MS', 'Montserrat Is.'],   
+        ['MA', 'Morocco'],   
+        ['MZ', 'Mozambique'],   
+        ['NA', 'Namibia'],   
+        ['NR', 'Nauru'],   
+        ['NP', 'Nepal'],   
+        ['NL', 'Netherlands'],   
+        ['NZ', 'New Zealand'],   
+        ['NI', 'Nicaragua'],   
+        ['NE', 'Niger'],   
+        ['NG', 'Nigeria'],   
+        ['KP', 'North Korea'],   
+        ['NO', 'Norway'],   
+        ['OM', 'Oman'],   
+        ['PK', 'Pakistan'],   
+        ['PA', 'Panama'],   
+        ['PG', 'Papua New Cuinea'],   
+        ['PY', 'Paraguay'],   
+        ['PE', 'Peru'],   
+        ['PH', 'Philippines'],   
+        ['PL', 'Poland'],   
+        ['PF', 'French Polynesia'],   
+        ['PT', 'Portugal'],   
+        ['PR', 'Puerto Rico'],   
+        ['QA', 'Qatar'],   
+        ['RO', 'Romania'],   
+        ['RU', 'Russia'],   
+        ['LC', 'Saint Lueia'],   
+        ['VC', 'Saint Vincent'],   
+        ['SM', 'San Marino'],   
+        ['ST', 'Sao Tome and Principe'],   
+        ['SA', 'Saudi Arabia'],   
+        ['SN', 'Senegal'],   
+        ['SC', 'Seychelles'],   
+        ['SL', 'Sierra Leone'],   
+        ['SG', 'Singapore'],   
+        ['SK', 'Slovakia'],   
+        ['SI', 'Slovenia'],   
+        ['SB', 'Solomon Is.'],   
+        ['SO', 'Somali'],   
+        ['ZA', 'South Africa'],   
+        ['ES', 'Spain'],   
+        ['LK', 'Sri Lanka'],   
+        ['SD', 'Sudan'],   
+        ['SR', 'Suriname'],   
+        ['SZ', 'Swaziland'],   
+        ['SE', 'Sweden'],   
+        ['CH', 'Switzerland'],   
+        ['SY', 'Syria'],   
+        ['TW', 'Taiwan'],   
+        ['TJ', 'Tajikstan'],   
+        ['TZ', 'Tanzania'],   
+        ['TH', 'Thailand'],   
+        ['TG', 'Togo'],   
+        ['TO', 'Tonga'],   
+        ['TT', 'Trinidad and Tobago'],   
+        ['TN', 'Tunisia'],   
+        ['TR', 'Turkey'],   
+        ['TM', 'Turkmenistan'],   
+        ['UG', 'Uganda'],   
+        ['UA', 'Ukraine'],   
+        ['AE', 'United Arab Emirates'],   
+        ['GB', 'United Kiongdom'],   
+        ['US', 'United States of America'],   
+        ['UY', 'Uruguay'],   
+        ['UZ', 'Uzbekistan'],   
+        ['VE', 'Venezuela'],   
+        ['VN', 'Vietnam'],   
+        ['YE', 'Yemen'],   
+        ['YU', 'Yugoslavia'],   
+        ['ZW', 'Zimbabwe'],   
+        ['ZR', 'Zaire'],   
+        ['ZM', 'Zambia']   
+      ],
+      optionsWebsite: [],
+      reqPlatformData: {
+        api_token: getToken(),
+        user_id: getUserId()
+      },
+      btnLoading: false,
     }
   },
   methods: {
+    init () {
+      if (!this.isLogin()) {
+        this.$snotify.info('please log in first')
+        return
+      }
+      this.getPlatformCateInfo()
+    },
     submit () {
       this.$refs['sellerForm'].validate((valid) => {
         if(valid) {
-          console.log(this.sellerForm)
+          if (!this.isLogin()) {
+            this.$snotify.info('please log in first')
+            return
+          }
+          this.btnLoading = true
+          this.$api.applyMerchant(this.sellerForm).then(res => {
+            this.btnLoading = false
+            if (res.code === 200) {
+              this.$snotify.success('Submit success, please wait for the result of the audit')
+              this.$refs['sellerForm'].resetFields()
+              this.$router.push({path: '/personal/member/index'})
+            }
+          }).catch(err => {
+            if (err.message === 'validation.phone') {
+              this.$snotify.error('Invalid phone')
+            }
+            this.btnLoading = false
+          })
         } else {
           console.log('submit error')
         }
       })
     },
+
+    //平台初始化
+    getPlatformCateInfo () {
+      this.$api.getPlatformCate(this.reqPlatformData).then(res => {
+        this.optionsWebsite = res.data
+      })
+    },
+    websiteChange (id) {
+      for (let i of this.optionsWebsite) {
+        if (i.id == id) {
+          this.addStoreForm.country_id = i.country_id
+        }
+      } 
+    },
+    //判断是否登录，否则提醒请登录
+    isLogin () {
+      if (!getToken()) {
+        return false
+      } else {
+        return true
+      }
+    },
+
+    //只能输入电话
+    filterNumber () {
+      this.sellerForm.mobile = this.sellerForm.mobile.replace(/[^0-9-]+/g, '')
+      this.sellerForm.postal = this.sellerForm.postal.replace(/[^0-9-]+/g, '')
+    }
   },
   mounted () {
-  
-  }
+    this.init()
+  },
 }
 </script>
 
 <style lang="less" scoped>
 @import url('../../styles/mixin.less');
+  .title-s {
+    width: 1100px;
+  }
   .enter-reds {
     .enter-reds-content {
       width: 800px;
-      margin: 0 auto;
       min-height: 1000px;
+      margin-top: 130px;
       .header-text {
         text-align: center;
         h3 {

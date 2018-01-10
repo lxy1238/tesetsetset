@@ -3,6 +3,15 @@
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
+      <template v-if="search">
+        <div class="head-crumbs"  >
+          <div class="numResults">
+            <span class="semibold"> {{total}} </span> results found matching <strong>{{search}}</strong>
+          </div>
+        <hr />
+        </div>
+
+      </template>
         <coupons-pro v-for="couponsDetails in arrcouponsDetails"  
                      :key="1" 
                      :couponsDetails="couponsDetails"
@@ -13,7 +22,7 @@
             <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
           </p>
           <p class="price content clearfix">
-            <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>
+            <span class="price-left"><i>Coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>
             <span class="price-right-bottom"> {{couponsDetails.discount_rate}}% <i>off</i></span>
           </p>
           <!-- <el-tooltip  :visible-arrow="false" placement="top" effect="light">
@@ -62,7 +71,8 @@ export default {
         menu_id: 0,
         keyword: '',
       },
-      titleMsg: 'coupons'
+      titleMsg: 'Best Deals, Coupons, Promo Codes, Great Discounts on Dealsbank.com',
+      total: 0,
     }
   },
   components: {
@@ -157,7 +167,7 @@ export default {
         .then(res => {
           this.arrcouponsDetails = res.data.data
           this.allpage = res.data.last_page
-
+          this.total = res.data.total
           this.userPromotions = this.promotions.map((e) => { return e.coupon_id })
           if (res.data.data.length === 0 && this.requestData.page !== 1) {
             this.gotoPage(1)
@@ -222,5 +232,32 @@ export default {
   }
   .pages-content {
     min-height: 1000px;
+    .head-crumbs {
+      width: 99.05%;
+      hr {
+          background-color: #eee;
+          width: 100%;
+          height: 1px;
+          border: 0;
+          border-top: 1px #d6d6d6 solid;
+          clear: both;
+          margin-bottom: 10px;
+      }
+    }
+    .numResults {
+      font-family: "Open Sans", Arial, sans-serif;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      color: #444;
+      flex: 1;
+      justify-self: flex-start;
+      margin-bottom: 10px;
+    }
+    .semibold {
+      font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
+      font-style: normal;
+      font-weight: 600;
+    }
   }
 </style>

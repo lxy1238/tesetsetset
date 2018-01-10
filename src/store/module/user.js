@@ -15,6 +15,8 @@ const user = {
     joined_date: '',
     userAccount: {},
     userBase: {},
+    celebrity: null,
+    merchant: null,
 
   },
   mutations: {
@@ -45,6 +47,12 @@ const user = {
     SET_JOINEDDATE: (state, joined_date) => {
       state.joined_date = joined_date
     },
+    SET_CELEBRITY: (state, celebrity) => {
+      state.celebrity = celebrity
+    },
+    SET_MERCHANT: (state, merchant) => {
+      state.merchant = merchant
+    }
     
   },
   actions: {
@@ -77,6 +85,8 @@ const user = {
             commit('SET_USERACCOUNT', data.account)
             commit('SET_USERBASE',data.base)   
             commit('SET_JOINEDDATE', data.joined_date)
+            commit('SET_CELEBRITY', data.celebrity)
+            commit('SET_MERCHANT', data.merchant)
           } 
           resolve(res)
         }).catch(err => {

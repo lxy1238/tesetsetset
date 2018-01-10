@@ -1,7 +1,19 @@
 <template>
   <div class="page-index " v-title="titleMsg">
     <div class="pages-content clearfix">
+      <template v-if="search">
+        <template v-if="search">
+          <div class="head-crumbs"  >
+            <br />
+              <div class="numResults">
+                <span class="semibold"> {{total}} </span> results found matching <strong>{{search}}</strong>
+              </div>
+            <hr />
+          </div>
+        </template>
+      </template>
       <explain ></explain>
+     
       <coupons-pro  v-for="couponsDetails in arrcouponsDetails"  
                     :key="1" 
                     :couponsDetails="couponsDetails"
@@ -13,8 +25,15 @@
         <template slot="price">
          <p class="trials-price content">
           <span class="old"> <i >{{currency}}{{couponsDetails.product_price}} </i></span>
-          <span class="gray-s"> Refund </span>
-          <span class="coupon-right"><strong> {{currency}}{{couponsDetails.refund_price}}</strong>  </span>
+          <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) >= 0">
+            <strong>Free</strong>  
+          </span>
+          <span class="coupon-right" v-else>
+            <strong> {{currency}}{{sub(couponsDetails.product_price, couponsDetails.refund_price).toFixed(2)}}</strong>  
+          </span>
+          <!-- <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) > 0">
+            <strong class="full-refund"> +{{currency}}{{sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2)}}</strong>  
+          </span> -->
          </p>
          </template>
          <template slot="btn" >View Trials</template>
@@ -36,6 +55,7 @@ import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString'
+import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'page_index',
   data () {
@@ -55,7 +75,7 @@ export default {
         menu_id: 0,
         keyword: '',
       },
-      titleMsg: 'trials'
+      titleMsg: 'Product testing, Product trial, Authoritative and Reliable Product ReviewServices on Dealsbank.com'
     }
   },
   components: {
@@ -111,6 +131,13 @@ export default {
       this.requestData.keyword = this.$route.query.search
     },
 
+    add (a, b) {
+      return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
+    },
+
     //非父子组件之间传递事件
     emitEvent () {
       this.$root.eventHub.$emit('changeSelectCoupon')
@@ -140,6 +167,7 @@ export default {
       this.$api.getAllTrial(this.requestData).then(res => {
         this.arrcouponsDetails = res.data.data
         this.allpage = res.data.last_page
+        this.total = res.data.total
 
         if (res.data.data.length === 0 && this.requestData.page !== 1) {
           this.gotoPage(1)
@@ -193,6 +221,31 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.head-crumbs {
+  width: 99.05%;
+  hr {
+      background-color: #eee;
+      width: 100%;
+      height: 1px;
+      border: 0;
+      border-top: 1px #d6d6d6 solid;
+      clear: both;
+  }
+}
+.numResults {
+  font-family: "Open Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  color: #444;
+  flex: 1;
+  justify-self: flex-start;
+}
+.semibold {
+  font-family: "Open Sans Semibold", "Open Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+}
 .icon-tuite1 {
   font-size: 34px;
   color: white;
@@ -202,7 +255,12 @@ export default {
   text-align: center;
   font-size: 13px;
   .coupon-right {
-    font-size: 16px;
+    font-size: 18px;
+    color: #1a1a1a;
+    .full-refund {
+      font-style: italic;
+      color: #D82323;
+    }
   }
   
 }

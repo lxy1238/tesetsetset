@@ -14,10 +14,9 @@ export function toTimestamp (time) {
     return parseInt(time.getTime() / 1000)
   }
 }
-//获取剩下多少时间, 传入时间戳
-export function getTimeDetail (timestamp) {
-  let now = toTimestamp(new Date())
-  let leftTime = timestamp - now
+//获取剩下多少时间, 传入时间 , 毫秒数
+export function getTimeDetail (seconde) {
+  let leftTime = seconde
   let result = {
     day: 0,
     hours: 0,
@@ -183,7 +182,6 @@ export function scrollTo (element, to, duration) {
   const difference = to - element.scrollTop
   const perTick = difference / duration * 10
   setTimeout(() => {
-    console.log(new Date())
     element.scrollTop = element.scrollTop + perTick
     if (element.scrollTop === to) return
     scrollTo(element, to, duration - 10)

@@ -1,13 +1,15 @@
 <template>
   <div class="affiliate-pid">
-    <div class="title-bottom">Affiliate PID</div>
-     <a class="goto-getpid" href="javascript:void(0);">I don’t know how to get it?</a>
+    <div class="title">Settings</div>
+    <div class="title-s" v-title="'Affiliate PID'">Affiliate PID</div>
+     <a class="goto-getpid link" :href="howToGetPid[country_id]" target="_blank" v-if="country_id <= 8">I don’t know how to get it?</a>
       <div v-for="item in platformArr" class="item-pid">  
-        <label>{{item.provider}} :</label>
-        <el-input  v-model="item.pid"></el-input>
+        <label class="capitalize">{{item.provider + ' Affiliate PID'}} :</label>
+        <el-input  v-model="item.pid"  v-if="country_id === 9" disabled></el-input>
+        <el-input  v-model="item.pid"  v-else></el-input>
       </div>
     <div class="pid-footer">
-      <el-button @click="submit" :loading="saveLoading">Save</el-button>
+      <el-button @click="submit" :loading="saveLoading">Save Settings</el-button>
     </div>
   </div>
 </template>
@@ -35,6 +37,17 @@ export default {
       },
       isApiPage: true,
       saveLoading: false,
+      country_id: parseInt(getStore('country_id') || 1),
+      howToGetPid: {
+        '1': 'https://affiliate-program.amazon.com/',
+        '2': 'https://affiliate-program.amazon.co.uk/',
+        '3': 'https://partnernet.amazon.de/',
+        '4': 'https://affiliate.amazon.co.jp/',
+        '5': 'https://partenaires.amazon.fr/',
+        '6': 'https://programma-affiliazione.amazon.it/',
+        '7': 'https://afiliados.amazon.es/',
+        '8': 'https://programma-affiliazione.amazon.it/',
+      }
     }
   },
   mounted () {
@@ -96,7 +109,7 @@ export default {
         this.$api.userAlliancePID(requestData).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('save success')
+            this.$snotify.success('save success')
           }
         }).catch(err => {
           console.log(err)
@@ -117,18 +130,20 @@ export default {
   }
   .item-pid {
     margin-bottom: 1rem;
+    label.capitalize {text-transform: capitalize}
   }
   .goto-getpid {
     position: absolute;
-    top: 34%;
-    right: 26%;
+    top: 44%;
+    right: 18%;
   }
   .pid-footer {
+    width: 40%;
     text-align: center;
+    margin-left: 140px;
     margin-top: 60px;
     button {
       .btn-h(10rem, 3rem , #85ba3b, #85ba3b, #fff);
-      font-size: 1.4rem;
       &:active {
         backgorund: darken(#85ba3b, 10%);
         border-color: darken(#85ba3b, 10%);

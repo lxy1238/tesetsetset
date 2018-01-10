@@ -1,23 +1,22 @@
 <template>
   <div class="page-index" >
     <div class="pages-content" >
-      <div class="head-crumbs">
-        <span class=" gray-s">Coupons > {{menu_name}}</span> 
+      <div class="head-crumbs"  v-if="couponDetail.valid_date">
+        <span class=" gray-s">Coupons > {{couponDetail.menu.name}}</span> 
       </div>
-      <div class="details-content clearfix"  v-if="couponDetail.valid_date"  v-title="couponDetail.product_title">
+      <div class="details-content clearfix"  v-if="couponDetail.valid_date"  v-title="titleMsg">
         <div class="left inline">
-          <details-left :isTop="isTop" 
-                        :imgList="imgList" 
+          <details-left :imgList="imgList" 
                         :userInfo="userInfo"
                         @send="getImgUrl" 
-                        class="details-left-coupons"
-                        ></details-left>      
+                        class="details-left-coupons">
+          </details-left>      
         </div>
         <div class="right inline" >
           <div class="promotion">
-            <img class="img"  src="../../assets/amazon.png" alt="">
+            <img class="img"  :src="logoImg[couponDetail.website]" alt="" @click="gotoPlatform(couponDetail.product_url)" >
             <div class="title">
-              <span @click="gotoPlatform(couponDetail.product_url)">
+              <span >
                 {{couponDetail.product_title}}
               </span>
             </div>
@@ -28,14 +27,14 @@
             <div class="price-details" v-if="couponDetail.discount_price">
               <span class="inline-b n-price">{{currency}}{{couponDetail.discount_price}}</span>
               <span class="inline-b o-price">{{currency}}{{couponDetail.product_price}}</span>
-              <span class="inline-b c-price">Coupon {{currency}}{{(couponDetail.product_price - couponDetail.discount_price).toFixed(2)}}</span>
-              <span class="inline-b ratio">{{couponDetail.discount_rate}}%off</span>
+              <span class="inline-b c-price">Coupon {{currency}}{{sub(couponDetail.product_price, couponDetail.discount_price).toFixed(2)}}</span>
+              <span class="inline-b ratio">{{couponDetail.discount_rate}}% off</span>
             </div>
             <div class="data-info">
-              <span class="inline-b expried">Expried:{{couponDetail.valid_date}}</span>
+              <span class="inline-b expried">Expried: {{couponDetail.valid_date}}</span>
               <span class="inline-b" v-if="couponDetail.shipping_fee == '0.00'">Free shopping</span>
-              <span class="inline-b" v-else>Shipping fee: {{couponDetail.shipping_fee}}</span>
-              <span class="inline-b right" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> Flag this coupon</span>
+              <span class="inline-b" v-else>Shipping fee: {{currency}}{{couponDetail.shipping_fee}}</span>
+              <span class="inline-b right flagcoupon" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i>  <i class="link">Flag this coupon</i>  </span>
             </div>
             <div class="select" v-if="isFlagCoupon">
               <select name="" id="" v-model="selected" @change="selectProblem">
@@ -44,8 +43,8 @@
             </div>
             <div class="btn-promotion">
                 <div class="inline-b add-promo">
-                  <button v-if="added" @click="removePromotion"><span>Cancel Promo</span> <i class=" el-icon-check"></i></button>
-                  <button v-else  @click="addPromotion"><span>Add Promo</span></button>
+                  <button v-if="added" @click="removePromotion"><span>Cancel </span> <i class=" el-icon-check"></i></button>
+                  <button v-else  @click="addPromotion"><span>Add Promotion</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
                    <button @click="getCode"><span>Get Code</span></button>
@@ -53,8 +52,8 @@
                 <div class="inline-b question" v-if="selected !== 'Choose reason' && isFlagCoupon">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
                   <div class="submit">
-                    <input type="text" v-model="addProblemData.content" @keyup="enter($event)">
-                    <button type="button" @click="addProblemSubmit"><span>Submit</span></button>
+                    <input type="text" v-model="addProblemData.content" @keyup.enter="enterSubmit">
+                    <el-button type="button" @click="addProblemSubmit" :loading="btnLoading"><span>Submit</span></el-button>
                     <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                   </div>
                 </div>
@@ -77,8 +76,10 @@
                 Promotion template
               </div>
               <div class="promo-head-r" @click="modifyTemplate">
-                <i class="iconfont icon-modify1"></i>
-                Modify template
+                  <i class="iconfont icon-modify1"></i>
+                  <a href="javascript:void(0);">
+                    Modify template
+                  </a>
               </div>
             </div>
             <div class="promo-content">
@@ -92,41 +93,47 @@
                </div>
                <div class="share-to-p">
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
-                 <!-- <button  data-clipboard-target="#proCard" @click="shareFaceBook">share</button> -->
                  <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('http://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
-                   <a class="share-a" onclick="javascript:window.open('http://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('https://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                   <!-- <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a> -->
+                  <a class="share-a" onclick="javascript:window.open('https://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
+                   <a class="share-a" onclick="javascript:window.open('https://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
                  </span>
                </div>
                <div class="promo-footer center">
-                 <a href="#" class="use-it">How to Use? Click here >></a>
+                 <a href="#" class="use-it">How to use? Click here >></a>
                </div>
             </div>
           </div>
           <div class="recommend">
             <div class="re-head">
-              <span class="re-head-l">recommend</span>
-              <span class="re-head-r" @click="gotoIndex" >more></span>
+              <span class="re-head-l">Related Coupons</span>
+              <span class="re-head-r link" @click="gotoIndex" >more <i>></i></span>
             </div>
               <coupons-pro 
                 v-for="couponsDetails in arrcouponsDetails"  
                 :key="1" 
                 :couponsDetails="couponsDetails"
-                :promotions="userPromotions" 
                 @gotodetails="gotodetails">
                 <template slot="price">
-                <p class="price content">{{currency}}{{couponsDetails.product_price}}</p>
+                <!-- <p class="price content">{{currency}}{{couponsDetails.product_price}}</p>
                 <p class="coupons content">
                   <span><i class="gray-s">Coupons</i> <strong>{{couponsDetails.discount_price}}</strong></span>
                   <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
+                </p> -->
+                <p class="price content">
+                  <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
+                </p>
+                <p class="price content clearfix">
+                  <span class="price-left"><i>Coupon</i> {{currency}}{{sub(couponsDetails.product_price , couponsDetails.discount_price).toFixed(2)}}</span>
+                  <span class="price-right-bottom"> {{couponsDetails.discount_rate}}% <i>off</i></span>
                 </p>
                 </template>
                 <template slot="btn">
                   View Coupons
                 </template>
-            </coupons-pro>
+              </coupons-pro>
           </div>
         </div>
       </div>
@@ -135,36 +142,17 @@
       <el-dialog  :visible.sync="showGetCodeDialog" class="code-dialog">
         <span slot="title" class="title" @click="gotoPlatform(couponDetail.product_url)">
           {{couponDetail.product_title}}
-          <img src="../../assets/amazon.png" alt="">
+          <img :src="logoImg[couponDetail.website]" alt="">
         </span>
         <div class="dialog-body">
           <div class="top">
             <div class="head"><span >Here's your coupon code</span></div>
-            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)">Go to Amszon</a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{couponDetail.discount_price}}</button></div>
+            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link"><strong>Go to Amazon</strong></a> and paste this code at checkout</span></div>
+            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{sub(couponDetail.product_price, couponDetail.discount_price).toFixed(2)}}</button></div>
             <div class="coupon-code"  v-else>
               <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
-              <button data-clipboard-target="#couponId" @click="copyCode($event)">copy</button>
+              <button data-clipboard-target="#couponId" @click="copyCode($event)">Copy</button>
               </div>
-          </div>
-          <div class="bottom" v-if="false">
-            <div class="head"><span>Get great coupons - like this - delivered straight to your inbo</span></div>
-            <div class="submit">
-              <input type="text" placeholder="Enter your email address" /><button>Submit</button>
-            </div>
-            <div class="or">
-                <span>OR</span>
-                <div class="line"></div>
-            </div>
-            <div class="join-f-g">
-              <button class="facebook"><i class="iconfont icon-facebook"></i>Join with Facebook</button>
-              <button class="google"><i class="iconfont icon-googleplus"></i> Join with Google</button>
-            </div>
-            <div class="footer">
-              <span>
-                By signing up, you agree to our <a href="#">Terms of Sevice</a>  and  <a href="#">Privacy Pol</a>
-              </span>
-            </div>
           </div>
         </div>
 
@@ -176,21 +164,22 @@
           <div class="box dialog-l">
               <h3>Generic label</h3>
             <div class="content">
-              <p>Labels are recommended,You can adjust your content display methods yourself.</p>
-              <div class="text"><span>#Platform#</span> <span class="right">This is the platform of the promotion. </span></div>
-              <div class="text"><span>#Promo_title#</span> <span class="right">This is the title of the promotion. </span></div>
-              <div class="text"><span>#Promo_listprice#</span> <span class="right">This is the listprice of the promotion. </span></div>
-              <div class="text"><span>#Promo_saleprice#</span> <span class="right">This is the saleprice of the promotion. </span></div>
-              <div class="text"><span>#Coupon_value#</span> <span class="right">This is the coupon of the promotion. </span></div>
-              <div class="text"><span>#Discount_scale#</span> <span class="right">This is the scale of the promotion. </span></div>
-              <div class="text"><span>#Promo_description#</span> <span class="right">This is the description of the promotion. </span></div>
-              <div class="text"><span>#Promo_link#</span> <span class="right">This is the link of the promotion. </span></div>
+              <p>Labels are recommended,you can adjust your content display methods yourself.</p>
+              <div class="text"><span>#Platform#, </span> <span >This is the platform of the promotion. </span></div>
+              <div class="text"><span>#Promo_title#, </span> <span >This is the title of the promotion. </span></div>
+              <div class="text"><span>#Promo_listprice#, </span> <span >This is the listprice of the promotion. </span></div>
+              <div class="text"><span>#Promo_saleprice#, </span> <span >This is the saleprice of the promotion. </span></div>
+              <div class="text"><span>#Coupon_value#, </span> <span >This is the coupon of the promotion. </span></div>
+              <div class="text"><span>#Discount_scale#, </span> <span >This is the scale of the promotion. </span></div>
+              <div class="text"><span>#Promo_description#, </span> <span >This is the description of the promotion. </span></div>
+              <div class="text"><span>#Promo_link#, </span> <span >This is the link of the promotion. </span></div>
+              <div class="text"><span>#Order_link#, </span> <span >This is the link of the order. </span></div>
             </div>
             <div class="footer">
               <span>
                 If you do not operate, will not be able to output the corresponding
                 information. 
-                <a href="javascript:void(0);">Not understand? View tutorial >></a>
+                <a class="link" href="javascript:void(0);">Not understand? View tutorial >></a>
               </span>
             </div>
           </div>
@@ -221,6 +210,7 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { mapGetters } from 'vuex'
 import { base64Encode, base64Decode } from '@/utils/randomString'
+import { NumSub } from '@/utils/calculate'
 export default {
   name: 'coupons',
   components: {
@@ -230,8 +220,83 @@ export default {
   },
   data () {
     return {
-      isTop: true,
-      userInfo: {
+      
+      //接口请求参数列表
+
+      //获取详情 参数
+      requestCouponDetails: {
+        user_id: getUserId() ,
+        country_id: base64Decode(this.$route.params.countryId),
+        id: base64Decode(this.$route.params.couponsId),
+      },
+      //获取该品类下的产品 
+      requestData: {
+        country_id: base64Decode(this.$route.params.countryId),
+        menu_id: '',
+        page: 1,
+        page_size: 9
+      },
+      //领券
+      reqGetCodeData: {
+        country_id: base64Decode(this.$route.params.countryId),
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: base64Decode(this.$route.params.couponsId),
+        username: '',
+        generalize_uid: '',
+        generalize_username: ''
+      },
+      //检测是否领券
+      checkGetCodeData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id: ''
+      },
+      //加入推广
+      addPromotionData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        country_id: base64Decode(this.$route.params.countryId),
+        coupon_id: base64Decode(this.$route.params.couponsId),
+      },
+      //提交问题
+      addProblemData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        product_id: '',
+        menu: '',
+        title: '',
+        content: ''
+
+      },
+      //获取平台信息
+      requestPlatData: {
+        country_id: '',
+        user_id: '',
+      },
+      //模板默认样式
+      submitTemplateData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        coupon_id:  base64Decode(this.$route.params.couponsId),
+        content: '',
+      },
+
+
+      //品类列表
+      classifyList: [
+        {
+          id: 0,
+          name: 'Top'
+        }
+      ],
+      arrcouponsDetails: [],   //该品类下的所有优惠券
+      couponDetail: {},
+      logoImg: {              //相应的平台logo
+        amazon: require('../../assets/amazon_logo.png'),
+        aliexpress: require('../../assets/aliexpress_logo.png')
+      },
+      userInfo: {            //发布人用户信息
         avatar_img: '',
         username: '',
         type: '',
@@ -240,8 +305,6 @@ export default {
         coupon_posteds: '',
         pid: '',
       },
-      imgList: [],
-      html: 'hello',
       options: [
         'Choose reason',
         'Dead deal',
@@ -253,91 +316,26 @@ export default {
         'Alive again'
       ],
       selected: 'Choose reason',
-      added: false,
+      imgList: [],
       imgUrl: '',
-      arrcouponsDetails: [],
-      couponDetail: {},
-      showGetCodeDialog: false,
-      templateDialog: false,
-      getCodeSuccess: false, //是否领取优惠券成功
-      userPromotions: [],
-      requestData: {
-        country_id: base64Decode(this.$route.params.countryId),
-        menu_id: '',
-        page: 1,
-        page_size: 9
-      },
-      requestCouponDetails: {
-        country_id: base64Decode(this.$route.params.countryId),
-        user_id: getUserId() ,
-        id: '',
-      },
-      reqGetCodeData: {
-        country_id: base64Decode(this.$route.params.countryId),
-        api_token: getToken(),
-        user_id: getUserId(),
-        coupon_id: '',
-        username: '',
-        generalize_uid: '',
-        generalize_username: ''
-      },
-      checkGetCodeData: {
-        api_token: getToken(),
-        user_id: getUserId(),
-        coupon_id: ''
-      },
-      addPromotionData: {
-        api_token: getToken(),
-        user_id: getUserId(),
-        country_id: base64Decode(this.$route.params.countryId),
-        coupon_id: '',
-      },
-      addProblemData: {
-        api_token: getToken(),
-        user_id: getUserId(),
-        product_id: '',
-        menu: '',
-        title: '',
-        content: ''
 
-      },
-      //品类列表
-      classifyList: [
-        {
-          id: 0,
-          name: 'Top'
-        }
-      ],
+      added: false,                       //是否加入推广
+      btnLoading: false,                 //按钮正在加载
+      showGetCodeDialog: false,          //领取优惠券弹窗
+      templateDialog: false,             //编辑模板弹窗
+      getCodeSuccess: false,             //是否领取优惠券成功
+      isFlagCoupon: false,              //是否显示问题反馈
 
-      //是否显示问题反馈
-      isFlagCoupon: false,
-
-      //模板默认样式
-      submitTemplateData: {
-        api_token: getToken(),
-        user_id: getUserId(),
-        content: ''
-      },
-      promotionTemplate: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
-      promotionTemplateinit: '#Promo_title#\nSave price: #Promo_listprice# \t Coupon Value: #Coupon_value#\n#Promo_desctiption#\nClick to get coupon: #Promo_link#', 
+      promotionTemplate: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Order_link#\n#Promo_desctiption#\n', 
+      promotionTemplateinit: '#Promo_title#\nOnly ***#Promo_listprice#*** after using coupons\nGet #Coupon_value# coupons: #Promo_link#\nOrder now: #Order_link#\n#Promo_desctiption#\n', 
       templateText: '',
-      promoterPid: '123456789',
-      requestPlatData: {
-        country_id: '',
-        user_id: '',
-      },
-      currency: getStore('currency') || '$'
+      promoterPid: '123456789',         //推广PID  ，默认的
+      currency: getStore('currency') || '$',
+      titleMsg: '',
     }
   },
   computed: {
-    ...mapGetters(['username', 'promotions']),
-    menu_name () {
-      for (var i of this.classifyList) {
-        if (i.id === this.requestData.menu_id) {
-          return i.name
-        }
-      }
-    },
+    ...mapGetters(['username', 'promotions', 'currentRouter']),
    
   },
   mounted () {
@@ -348,25 +346,19 @@ export default {
       this.reqGetCodeData.username = this.$store.getters.username
     },
     promotions () {
-      console.log(this.promotions)
-      this.couponsGetInfo()
+      this.couponsIsPromotion()
     }
   },
   methods: {
     //初始化
     init () {
       this.initData()
-      this.getHeadCateListInfo()
       this.getCouponsDetails()
     },
 
     //数据初始化
     initData () {
       this.reqGetCodeData.username = this.username
-      this.reqGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
-      this.addPromotionData.coupon_id = base64Decode(this.$route.params.couponsId)
-      this.submitTemplateData.coupon_id = base64Decode(this.$route.params.couponsId)
-
 
       //获取国家id ,传递给头部组件
       let country_id = base64Decode(this.$route.params.countryId)
@@ -379,31 +371,18 @@ export default {
 
     },
 
-    //判断链接中携带哪个pid , 如果有分享人的id 那就携带分享人的pid， 如果没有分享人，则携带公司的pid
-    hasPromoter () {
-      if (this.$route.query.promoter) {
-        let promoterUserId = parseInt(this.$route.query.promoter)
-        this.requestPlatData.user_id = promoterUserId
-        this.requestPlatData.country_id = base64Decode(this.$route.params.countryId)
-        this.$api.postUserPid(this.requestPlatData).then(res => {
-          for (let i of res.data) {
-            if (i.platform_id === this.couponDetail.platform_id) {
-              if (i.PID) {
-                this.promoterPid = i.PID
-                this.userInfo.pid = i.PID
-              } 
-            }
-          }
-        })
-      } else {
-        this.promoterPid = '12345678'
-        this.userInfo.pid = this.promoterPid
+    //判断参数是否存在
+    isDataExit (object) {
+      if (!object.api_token) {
+        object.api_token = getToken()
+        object.user_id = getUserId()
       }
     },
-    
+
+
     //获取优惠券详情
     getCouponsDetails () {
-      this.requestCouponDetails.id = base64Decode(this.$route.params.couponsId)
+      this.isDataExit(this.requestCouponDetails)
       this.$api.couponDetails(this.requestCouponDetails)
         .then(res => {
           if (res.data.coupon_user_template) {
@@ -413,11 +392,13 @@ export default {
           this.imgUrl = res.data.current_img
           this.couponDetail = res.data
           this.couponDetail.valid_date = parseTime(res.data.valid_date, '{y}-{m}-{d}')
-          this.requestData.menu_id = res.data.menu_id
-          this.getAllCouponsInfo()
+          this.getAllCouponsInfo(res.data.menu_id)
           this.getPostUserInfo(res.data.user_id)
+          this.couponsIsPromotion()
           this.changeTemplate()
-          this.couponsGetInfo()
+          this.titleMsg = res.data.product_title + ' for ' +
+                          this.currency + res.data.discount_price + 
+                          (res.data.shipping_fee == 0 ? ' + free shipping' : '')
           
         })
         .catch(error => {
@@ -444,6 +425,7 @@ export default {
         .replace(/#Discount_scale#/g, '%'+'this.couponDetail.discount_rate')
         .replace(/#Promo_desctiption#/g, this.couponDetail.product_reason)
         .replace(/#Promo_link#/g, promoLink)
+        .replace(/#Order_link#/g, 'https://' + location.host + this.getOrderLink())
     },
     //显示编辑模板
     modifyTemplate () {
@@ -455,13 +437,16 @@ export default {
     //模板保存
     saveTemplate () {
       if (this.isLogin()) {
+        this.isDataExit(this.submitTemplateData)
         this.submitTemplateData.content = this.promotionTemplate
         this.$api.editTemplate(this.submitTemplateData).then(res => {
           if (res.code === 200) {
-            this.$message.success('Save success')
+            this.$snotify.success('save success')
             this.getCouponsDetails()
             this.templateDialog = false
           }
+        }).catch(err =>{
+          console.log(err)
         })
       }
     },
@@ -486,15 +471,16 @@ export default {
     gotodetails (id) {
       this.requestCouponDetails.id = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.$router.push({ path: '/coupons/' + base64Encode(id) })
+      this.$router.push({ path: '/coupons/' + base64Encode(id) + '/' + this.$route.params.countryId })
       this.getCouponsDetails()
     },
 
     //领取优惠券
-    getCode () {
+    getCode () {  
       if(!this.isLogin()) {
         return
       }
+      this.isDataExit(this.checkGetCodeData)
       this.checkGetCodeData.coupon_id = base64Decode(this.$route.params.couponsId)
       this.$api.isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
@@ -515,12 +501,13 @@ export default {
 
 
     //获取该品类下的优惠券
-    getAllCouponsInfo () {
+    getAllCouponsInfo (menuId) {
+      this.requestData.menu_id = menuId
       this.$api.getAllCoupons(this.requestData) 
         .then(res => {
           let newArr = []
           res.data.data.forEach(e => {
-            if (e.status == 1 && e.run_status == 'active') {
+            if (e.status == 1) {
               newArr.push(e)
             }
           })
@@ -540,7 +527,6 @@ export default {
           this.userInfo = res.data
           this.userInfo.user_id = this.couponDetail.user_id
           this.userInfo.product_url = this.couponDetail.product_url
-          this.hasPromoter()
         })
         .catch(error => {
           console.log(error + ' postedUserInfo')
@@ -550,6 +536,7 @@ export default {
     //加入推广
     addPromotion () {
       if (this.isLogin()) {
+        this.isDataExit(this.addPromotionData)
         this.$api.promotionAddCoupon(this.addPromotionData).then(res => {
           if (res.code === 200) {
             this.added = true
@@ -563,6 +550,7 @@ export default {
     //取消推广
     removePromotion () {
       if (this.isLogin()) {
+        this.isDataExit(this.addPromotionData)
         this.$api.promotionUserRemove(this.addPromotionData).then(res => {
           if (res.code === 200) {
             this.added = false
@@ -586,10 +574,11 @@ export default {
     getCouponCode (e) {
       if (this.isLogin()) {
         if (this.isStop()) {
-          this.$message.info('The activity is over, or the coupon has been received')
+          this.$snotify.info('The activity is over, or the coupon has been received')
           return
         }
         e.target.disabled = true
+        this.isDataExit(this.reqGetCodeData)
         this.$api.userGetCoupon(this.reqGetCodeData).then(() => {
           e.target.disabled = false
           this.getCodeSuccess = true
@@ -619,8 +608,8 @@ export default {
       return this.couponDetail.run_status === 'stop' ? true : false
     },  
 
-    //获取用户信息
-    couponsGetInfo () {
+    //如果用户登录，判断该产品用户是否加入推广
+    couponsIsPromotion () {
       if (getToken()) {
         if (this.promotions.includes(this.couponDetail.id)) {
           this.added = true
@@ -656,40 +645,38 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$message.error('You can only type 30 characters')
+        this.$snotify.error('You can only type 30 characters')
         return
       }
+      this.btnLoading = true
+      this.isDataExit(this.addProblemData)
       this.$api.addProblem(this.addProblemData).then(res => {
+        this.btnLoading = false
         if (res.code === 200) {
-          this.$message.success('Submitted successfully!')
+          this.$snotify.success('Submitted successfully!')
           this.isFlagCoupon = false
           this.selected = 'Choose reason'
         }
       }).catch(error => {
+        this.btnLoading = false
         console.log(error)
       })
     },
 
-    enter (e) {
-      if (e.keyCode === 13) {
-        this.addProblemSubmit()
-      }  
+    enterSubmit () {
+      this.addProblemSubmit()
     },
 
-    //获取头部品类列表
-    getHeadCateListInfo () {
-      this.$api.getHeadCateList().then(res => {
-        this.classifyList = this.classifyList.concat(res.data)
-      }).catch(error => {
-        console.log(error)
-      })
+    getOrderLink () {
+      let router = this.currentRouter.replace('/coupons', '')
+      let endUrl = `/goto${router}/${base64Encode(getUserId() ? getUserId() : '')}`
+      return endUrl
     },
    
     //跳转到相应 商品链接
     gotoPlatform (url) {
-      console.log(this.promoterPid)
-      let endUrl = `${url}&tag=${this.promoterPid}`
-      window.open(endUrl)
+      let route = this.getOrderLink()
+      window.open(route)
     },
 
     //facebook 分享
@@ -712,6 +699,9 @@ export default {
           }
         }
       )
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     }
 
   }
@@ -759,17 +749,19 @@ export default {
       background: white;
       border-radius: 5px;
       margin-bottom: 1rem;
+      border: 1px solid #d2d2d2;  
       .img {
         position: absolute;
+        cursor: pointer;
         right: 1.5rem;
         top: 2rem;
+        height: 35px;
       }
       .title {
-        width: 70%;
-        cursor: pointer;
-        font-size: 1.33rem;
-        color: #1a1a1a;
-        font-weight: bold;
+        width: 80%;
+        font-size: 21px;
+        color: black;
+        font-weight: 500;
         margin-bottom: 1rem;
       }
       .describe {
@@ -788,30 +780,46 @@ export default {
           color: #808080;
         }
         .n-price {
-          font-size: 1.33rem;
-          color: #1a1a1a;
-          font-weight: bold;
+          font-size: 21px;
+          color: #333;
+          font-weight: 700;
           margin-right: 1rem;
           margin-left: 1rem;
         }
         .o-price {
           text-decoration: line-through;
           font-weight: bold;
-          margin-right: 28rem;
+          margin-right: 100px;
         }
         .c-price {
-          margin-right: 1rem;
+          margin-right: 80px;
         }
       }
       .data-info {
-        height: 2rem;
-        line-height: 2rem;
+        height: 20px;
+        line-height: 20px;
         color: #808080;
-        font-size: 0.78rem;
+        font-size: 12px;
         margin-top: 0.5rem;
         .right {
           float: right;
           cursor: pointer;
+          height: 17px;
+          line-height: 1;
+          overflow: hidden;
+          &.flagcoupon {
+            &:hover {
+              color: #0072bc;
+              .iconfont {
+                color: #0077bc;
+              }
+            }
+          }
+          .iconfont {
+            position: relative;
+            top: 3px;
+            color: #808080;
+          }
         }
         .expried {
           margin-right: 2rem;
@@ -826,58 +834,30 @@ export default {
 
         select {
           position: absolute;
-          right: 0;
+          right: 5px;
           color: #808080;
-          font-size: 0.78rem;
+          font-size: 12px;
           min-width: 6rem;
           option {
             color: #808080;
-            font-size: 0.78rem;
+            font-size: 12px;
           }
         }
       }
       .btn-promotion {
-        margin-top: 2rem;
+        margin-top: 22px;
         .add-promo {
           margin-right: 2rem;
           button {
-            .btn-h;
-            width: 10rem;
-            height: 3rem;
-            color: white;
+            .btn-h(10rem, 3rem, #85bb3b, #85bb3b, #fff);
             line-height: 3rem;
-            background: #85bb3b;
-            border-color: #85bb3b;
             text-align: center;
             line-height: 0.8;
-            span {
-              font-size: 1rem;
-            }
-            &:hover {
-              background: darken(#85bb3b, 5%);
-              border-color: darken(#85bb3b, 5%);
-            }
-            &:active {
-              background: lighten(#85bb3b, 10%);
-              border-color: lighten(#85bb3b, 10%);
-            }
           }
         }
         .get-code {
           button {
-            background: #c6f389;
-            border-color: #c6f389;
-            span {
-              font-size: 1rem;
-            }
-            &:hover {
-              background: darken(#c6f389, 10%);
-              border-color: darken(#c6f389, 10%);
-            }
-            &:active {
-              background: lighten(#c6f389, 10%);
-              border-color: lighten(#c6f389, 10%);
-            }
+            .btn-h(10rem, 3rem, #85bb3b, #85bb3b, #fff);
           }
         }
         .question {
@@ -885,7 +865,8 @@ export default {
           text-align: right;
           .wrong {
             margin-bottom: 0.3rem;
-            font-size: 1rem;
+            margin-top: 6px;
+            font-size: 12px;
             color: #808080;
           }
           .submit {
@@ -894,21 +875,8 @@ export default {
               height: 1.8rem;
             }
             button {
-              .btn-h;
-              width: 5rem;
-              height: 1.8rem;
-              background: #7db135;
-              border-color: #7db135;
-              color: white;
+              .btn-h(5rem, 1.8rem, #7db135, #7db135, #fff);
               line-height: 0.4;
-              &:hover {
-                background: darken(#7db135, 10%);
-                border-color: darken(#7db135, 10%);
-              }
-              &:active {
-                background: lighten(#7db135, 10%);
-                border-color: lighten(#7db135, 10%);
-              }
             }
             .error {
               position: absolute;
@@ -943,11 +911,10 @@ export default {
     }
     .promotion-template {
       position: relative;
-      // height: 48.9rem;
       background: white;
       border-radius: 5px;
-      // padding: 1rem;
       margin-bottom: 1rem;
+      border: 1px solid #d2d2d2;
       .promo-head {
         padding: 0 1rem;
         height: 3rem;
@@ -956,26 +923,28 @@ export default {
         .promo-head-l {
           display: inline-block;
           height: 100%;
-          font-size: 1.22rem;
+          font-size: 16px;
           font-weight: bold;
           color: #1a1a1a;
-          width: 44rem;
+          width: 43rem;
           border-right: 1px solid #e1e1e1;
         }
         .promo-head-r {
           display: inline-block;
-          width: 9rem;
+          width: 10rem;
           text-align: center;
           cursor: pointer;
           &:hover {
-            color: #ff6700;
+            color: #0072bc;
+            a {
+              text-decoration: underline;
+            }
           }
         }
       }
       .promo-content {
         padding: 1rem;
         .card {
-          // height: 36rem;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
           border-radius: 5px;
           .img {
@@ -988,7 +957,7 @@ export default {
           }
           .text-describe {
             margin-top: 2rem;
-            font-size: 1rem;
+            font-size: 13px;
             padding: 1rem;
           }
         }
@@ -1028,20 +997,7 @@ export default {
             }
           }
           button {
-            .btn-h;
-            width: 9rem;
-            height: 2.67rem;
-            background: #85bb3a;
-            border-color: #85bb3a;
-            color: white;
-            &:hover {
-              background: darken(#85bb3b, 5%);
-              border-color: darken(#85bb3b, 5%);
-            }
-            &:active {
-              background: lighten(#85bb3b, 10%);
-              border-color: lighten(#85bb3b, 10%);
-            }
+            .btn-h(9rem, 2.67rem, #85bb3a, #85bb3a, #fff);
           }
           span {
             float: right;
@@ -1062,26 +1018,31 @@ export default {
       border-radius: 5px;
       margin-bottom: 1rem;
       padding-left: 1rem;
+      border: 1px solid #d2d2d2;
       .re-head {
+        padding: 1rem 1rem 1rem 0;
         height: 3rem;
-        padding: 1rem;
         border-bottom: 1px solid #e1e1e1;
         .re-head-l {
-          font-size: 1.25rem;
-          color: #1a1a1a;
+          font-size: 16px;
+          font-weight: 700;
+          color: #333;
         }
         .re-head-r {
+          position: relative;
           cursor: pointer;
           float: right;
-          color: #808080;
-          &:hover {
-            color: red;
+          margin-right: 12px;
+          display: inline-block;
+          i {
+            position: absolute;
+            right: -10px;
+            top: 1px;
           }
         }
       }
       .coupons-product {
         width: 16.1rem;
-        height: 360px;
         margin: 0.5rem 1rem 0.5rem 0.35rem;
       }
     }
@@ -1089,152 +1050,62 @@ export default {
 }
 .code-dialog {
   .title {
-    margin-left: 8rem;
+    margin-left: 144px;
     cursor: pointer;
     display: inline-block;
-    width: 24rem;
+    width: 432px;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 18px;
     img {
       position: absolute;
-      left: -110px;
+      left: -125px;
       top: 0;
     }
   }
   .dialog-body {
     text-align: center;
+    
     .top {
-      padding-top: 2rem;
-      height: 12rem;
+      padding-top: 36px;
+      height: 216px;
       .head {
-        font-size: 1.2rem;
+        font-size: 21px;
         font-weight: bold;
-        margin-bottom: 1rem;
+        margin-bottom: 18px;
         color: #1a1a1a;
       }
       .goto-amazon {
         color: #808080;
-        margin-bottom: 1rem;
-        font-size: 0.66rem;
+        margin-bottom: 18px;
+        font-size: 13px;
       }
       .discount {
         button {
-          .btn-h(20rem,3rem);
-          color: white;
-          font-size: 1rem;
-          background: #85bb3b;
-          border-color: #85bb3b;
-          &:active {
-            background: darken(#85bb3b, 10%);
-            border-color: darken(#85bb3b, 10%);
-          }
+          .btn-h(360px,54px, #85bb3b, #85bb3b, #fff);
+          font-size:18px
         }
       }
       .coupon-code {
         position: relative;
-        width: 20rem;
-        height: 3rem;
+        width: 360px;
+        height: 54px;
+        border-radius: 4px;
         margin: 0 auto;
         text-align: left;
-        padding-left: 4rem;
-        line-height: 3rem;
+        padding-left: 72px;
+        line-height: 54px;
         background: #e5f0e1;
         button {
           position: absolute;
-          top: 0.5rem;
-          right: 1rem;
-          .btn-h(5rem,2rem);
-          color: white;
-          font-size: 1rem;
-          background: #85bb3b;
-          border-color: #85bb3b;
-          &:active {
-            background: darken(#85bb3b, 10%);
-            border-color: darken(#85bb3b, 10%);
-          }
+          top: 9px;
+          right: 18px;
+          .btn-h(90px,36px, #85bb3b, #85bb3b, #fff);
+          font-size: 18px;
         }
         .code {
           color: #49663f;
-          font-size: 1rem;
+          font-size: 18px;
           font-weight: bold;
-        }
-      }
-    }
-    .bottom {
-      padding-top: 1rem;
-      height: 14rem;
-      background: #f9f9f9;
-      .head,
-      .submit,
-      .or,
-      .join-f-g,
-      .footer {
-        margin-bottom: 1rem;
-      }
-      .head {
-        color: #1a1a1a;
-        font-size: 0.89rem;
-        font-weight: bold;
-      }
-      .submit {
-        input {
-          width: 16.67rem;
-          height: 2rem;
-          outline: none;
-          padding-left: 5px;
-        }
-        button {
-          .btn-h(5.56rem, 2.2rem);
-          border-radius: 0;
-          color: white;
-          background: #7ebbe2;
-          border-color: #7ebbe2;
-          &:active {
-            background: darken(#7ebbe2, 10%);
-            border-color: darken(#7ebbe2, 10%);
-          }
-        }
-      }
-      .or {
-        position: relative;
-        height: 1rem;
-        span {
-          position: relative;
-          z-index: 22;
-          background: #f9f9f9;
-        }
-        .line {
-          position: absolute;
-          top: 7px;
-          z-index: 1;
-          left: 20%;
-          display: inline-block;
-          width: 60%;
-          height: 1px;
-          background: #ddd;
-        }
-      }
-      .join-f-g {
-        button {
-          .btn-h(11.11rem, 2rem);
-          color: white;
-          font-size: 0.78rem;
-        }
-        .facebook {
-          background: #3a5899;
-          border-color: #3a5899;
-          &:active {
-            background: darken(#3a5899, 10%);
-            border-color: darken(#3a5899, 10%);
-          }
-        }
-        .google {
-          background: #dd4a38;
-          border-color: #dd4a38;
-          &:active {
-            background: darken(#dd4a38, 10%);
-            border-color: darken(#dd4a38, 10%);
-          }
         }
       }
     }
@@ -1244,13 +1115,15 @@ export default {
 .template-dialog {
   .dialog-body {
     height: 500px;
-    padding-left: 50px;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 20px;
     .box {
       position: relative;
       float: left;
-      width: 44%;
+      width: 440px;
       height: 83%;
-      margin: 1rem 20px;
       border-radius: 5px;
       box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
       h3 {

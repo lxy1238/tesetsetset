@@ -18,7 +18,7 @@ export function NumAdd (a, b) {
 }
 
 //减法
-export function Numsub (a, b) {
+export function NumSub (a, b) {
   var c, d, e
   
   try {

@@ -6,11 +6,11 @@
     <div class="title-s">
       Product Information
     </div>
-    <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="130px" class="coupons-form" >
+    <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
           <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
-          <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">get</el-button>
+          <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">Get</el-button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
           <el-select v-model="trialsForm.website"  @change="websiteChange">
@@ -42,13 +42,13 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
+        <el-form-item label="List price: "  prop="product_price"  class="item-inline"  required >
           <el-input class="url-input input-price-fee input-money " v-model="trialsForm.product_price" >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-          <el-input class="url-input input-price-fee input-money " v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" placeholder="Default free freight">
+          <el-input class="url-input input-price-fee input-money " v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -82,7 +82,7 @@
         <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
         </el-form-item>
-        <el-form-item label="List price: "  prop="product_price"  class="item-inline"  >
+        <el-form-item label="List price: "  prop="product_price"  class="item-inline" required >
           <el-input class="url-input input-money " v-model="trialsForm.product_price"  ></el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
@@ -98,24 +98,25 @@
         </el-form-item>
       </template>
       <el-form-item label="Reason: "  prop="product_reason" >
-        <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea"></el-input>
+        <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
       </el-form-item>
        <el-form-item label="Specifications: " prop="specifications" >
-        <el-input v-model="trialsForm.specifications" type="textarea" class="textarea"></el-input>
+        <el-input v-model="trialsForm.specifications" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
       </el-form-item>
       <el-form-item label="Product details: " required>
-        <div id="summernote"></div>
-        <div class="red" v-if="!trialsForm.product_details">product details is required</div>
+        <!-- <div id="summernote"></div> -->
+          <vue-html5-editor :content="trialsForm.product_details" @change="update" :auto-height="true" :z-index="998"  :height="300"></vue-html5-editor>
+          <div class="red" v-if="hasDetails">product details is required</div>
       </el-form-item>
       <div class="title-s">
         Trial Information
       </div>
-      <el-form-item label="Active date: " class="" prop="active_date"  >
+      <el-form-item label="Valid date: " class="" prop="active_date"  >
           <el-date-picker
             v-model="trialsForm.active_date"
             type="daterange"
             :picker-options="pickerOptions1"
-            placeholder="Select date range">
+            >
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
@@ -125,20 +126,21 @@
       <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
         <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
-      <el-form-item label="Is Full Return: " class="item-inline1" >
-        <el-radio class="radio" v-model="trialsForm.full_refund" label="1" >yes</el-radio>
-        <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >no</el-radio>
+      <el-form-item label="Full Return: " class="item-inline1" >
+        <el-radio class="radio" v-model="trialsForm.full_refund" label="1" >Yes</el-radio>
+        <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >No</el-radio>
       </el-form-item>
-      <el-form-item label=" Each trial returns: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
+      <el-form-item label="Per trial refund: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
         <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('refund_price')"></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
       </div>
     <div class="trials-money">
-      <p class="money"><label>Refund:</label> {{currency}}{{refund}}</p>
-      <p class="money"><label>Platform fee:</label>  {{currency}}{{platform_fee}}</p>
-      <p class="money"><label>Total fee:</label>  <span class="red">{{currency}}{{total_fee}}</span></p>
+      <p class="money"><label>Total refund:</label> {{currency}}{{refund_total_price}}</p>
+      <!-- <p class="money"><label>Shipping fee:</label> {{currency}}{{shipping_total_fee}}</p> -->
+      <p class="money"><label>Platform fee:</label>  {{currency}}{{platform_total_fee}}</p>
+      <p class="money"><label>Total:</label>  <span class="red">{{currency}}{{total_fee}}</span></p>
     </div>
     
     <el-form-item class="footer-btn" >
@@ -155,7 +157,7 @@ import axios from 'axios'
 // import qs from 'qs'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
-import { NumAdd } from '@/utils/calculate'
+import { NumAdd, NumMul } from '@/utils/calculate'
 
 export default {
   name: 'trials_add',
@@ -163,9 +165,9 @@ export default {
     let reg =  /^\d+(\.\d{1,2})?$/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the product price'))
+        return callback(new Error('The list price is required.'))
       } else if(!reg.test(value)){
-        callback(new Error ('Please enter the correct format amount'))
+        callback(new Error ('Invalid amount'))
       } else {
         callback()
       }
@@ -200,7 +202,7 @@ export default {
         shipping_fee: '',                       //运费
         product_img: [],                        //产品图片
         product_img_s: [],
-        product_details: 'details',
+        product_details: '',
         active_date: [],
         start_time: '',
         end_time: '',
@@ -217,10 +219,10 @@ export default {
       trialsFormSubmit: {},
       rules: {
         product_url: [
-          {required: true ,message: 'product url is required', trigger: 'blur'}
+          {required: true ,message: 'The product URL is required.', trigger: 'blur'}
         ],
         website: [
-          {required: true, message: 'website is required', trigger: 'change'}
+          {required: true, message: 'The website is required', trigger: 'change'}
         ],
         menu_id: [
           {type:'number',required: true, message: 'category is required', trigger: 'change'}
@@ -237,22 +239,22 @@ export default {
           }
         ],
         product_title: [
-          {required: true ,message: 'product title is required', trigger: 'blur'}
+          {required: true ,message: 'The title is required.', trigger: 'blur'}
         ],
         user_store_id: [
           {type: 'number', required: true ,message: 'store is required', trigger: 'blur'}
         ],
         product_reason: [
-          {required: true ,message: 'reason is required', trigger: 'blur'}
+          {required: true ,message: 'The reason is required.', trigger: 'blur'}
         ],
         specifications: [
-          {required: true ,message: 'Specifications is required', trigger: 'blur'}
+          {required: true ,message: 'The specifications is required.', trigger: 'blur'}
         ],
         active_date: [
-          {type: 'array',required: true ,message: 'active date is required', trigger: 'change'}
+          {type: 'array',required: true ,message: 'The valid date is required.', trigger: 'change'}
         ],
         quantity_per_day: [
-          { required: true ,message: 'quantity per day is required , Must be Numbers', trigger: 'blur'}
+          { required: true ,message: 'The quantity per day is required.', trigger: 'blur'}
         ],
         total_quantity: [
           { required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
@@ -275,6 +277,7 @@ export default {
         user_id: getUserId(),
         id: '',
       },
+      hasDetails: false,
 
     }
   },
@@ -288,20 +291,22 @@ export default {
     currency () {
       return getStore('currency') || '$'
     },
-    refund_one () {
-      if(this.trialsForm.refund_price) {
+    refund_price_one () {
+      if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
         return NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee).toFixed(2)
       } else {
         return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee).toFixed(2)
       }
     },
-    refund () {
+    refund_total_price () {
       if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
-        return (NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
+        return NumMul(NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee) , this.trialsForm.total_quantity).toFixed(2)
       } else {
-        return (NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) * this.trialsForm.total_quantity).toFixed(2)
+        return NumMul(NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) , this.trialsForm.total_quantity).toFixed(2)
       }
     },
+
+    //单个试用品的平台费用
     platform_fee () {
       switch (this.country_id) {
       case 1:
@@ -310,30 +315,35 @@ export default {
       case 5:
       case 6:
       case 7:
-        if (this.refund_one < 10) {
-          return 1 * this.trialsForm.total_quantity
-        } else if (this.refund_one <= 20 && this.refund_one >= 10) {
-          return 2 * this.trialsForm.total_quantity
-        } else if (this.refund_one > 20) {
-          return 3 * this.trialsForm.total_quantity
+        if (this.trialsForm.product_price < 10) {
+          return NumMul(1, 1).toFixed(2)
+        } else if (this.trialsForm.product_price <= 20 && this.trialsForm.product_price >= 10) {
+          return NumMul(1, 2).toFixed(2)
+        } else if (this.trialsForm.product_price > 20) {
+          return NumMul(1, 3).toFixed(2)
         }
         break
       case 4:
-        if (this.refund_one < 1200) {
-          return 120 * this.trialsForm.total_quantity
-        } else if (this.refund_one <= 2400 && this.refund_one >= 1200) {
-          return 240 * this.trialsForm.total_quantity
-        } else if (this.refund_one > 2400) {
-          return 360 * this.trialsForm.total_quantity
+        if (this.trialsForm.product_price < 1200) {
+          return NumMul(1, 120).toFixed(2)
+        } else if (this.trialsForm.product_price <= 2400 && this.trialsForm.product_price >= 1200) {
+          return NumMul(1, 240).toFixed(2)
+        } else if (this.trialsForm.product_price > 2400) {
+          return NumMul(1, 360).toFixed(2)
         }
         break
-      
       default:
         break
       }
     },
+    platform_total_fee () {
+      return NumMul(this.platform_fee, this.trialsForm.total_quantity).toFixed(2)
+    },
+    shipping_total_fee () {
+      return NumMul(this.trialsForm.shipping_fee, this.trialsForm.total_quantity).toFixed(2)
+    },
     total_fee () {
-      return NumAdd(this.refund, this.platform_fee)
+      return NumAdd(this.refund_total_price, this.platform_total_fee).toFixed(2)
     }
   },  
   mounted () {
@@ -343,7 +353,6 @@ export default {
 
     // 初始化操作
     init () {
-      this.showEditor()
       this.initData()
       this.getHeadCateListInfo()
       this.getTrialsStore()
@@ -354,6 +363,11 @@ export default {
       this.trialsForm.user_name = this.username
     },
 
+    update (value) {
+      this.trialsForm.product_details = value
+      console.log(this.trialsForm.product_details)
+      
+    },
     //限制只能输入数字和.
     filterInput () {
       if (this.country_id === 4) {
@@ -375,6 +389,9 @@ export default {
 
     //blur 时请求信息
     urlBlur () {
+      if (!this.trialsForm.product_url) {
+        return
+      }
       this.getPlatformCateInfo()
     },
     //获取头部品类列表
@@ -509,9 +526,9 @@ export default {
 
     //通过输入链接获取所有产品信息
     getProInfo (url) {
-      // this.$message.info('For information on goods, please wait a moment')
+      // this.$snotify.info('For information on goods, please wait a moment')
       this.getInfoLoading = true
-      axios.get('http://192.168.1.199:8008/index.php/api/asin', {
+      axios.get('//192.168.1.199:8008/index.php/api/asin', {
         params: {
           url: url,
         }
@@ -520,7 +537,7 @@ export default {
           this.getInfoLoading = false
           setTimeout(() => {
             if (!res.data.data) {
-              this.$message.info('Failed to obtain commodity information!!!')
+              this.$snotify.info('Failed to obtain commodity information!!!')
             }
             let data = res.data.data
             let newArr = []
@@ -531,10 +548,10 @@ export default {
             })
             this.trialsForm.product_img_s = newArr
             this.imgChange()
-            this.trialsForm.product_price = data.product_price ? data.product_price : '' 
+            this.trialsForm.product_price = data.product_price ? data.product_price.replace(/,/g, '') : '' 
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
-              this.$message.error('please enter a right url')
+              this.$snotify.error('please enter a right url')
             }
           }, 50)
         })
@@ -562,7 +579,7 @@ export default {
               this.trialsForm.website = i.provider
               this.optionsWebsite.push(ObjWebsite)
             } else {
-              this.$message.error('The country can only issue products under the platform')
+              this.$snotify.error('The country can only issue products under the platform')
             }
           }
         })
@@ -587,16 +604,6 @@ export default {
       console.log(i)
     },
 
-    //显示富文本编辑器插件
-    showEditor () {
-      setTimeout(() => {
-        $('#summernote').summernote({
-          height: 300,
-          tabsize: 2
-        })
-        $('#summernote').summernote('code', '')
-      },10)
-    },
 
     //上传图片
     beforeAvatarUploadP (file) {
@@ -608,13 +615,13 @@ export default {
 
       var limitF = true
       if (!(isJPG || isGIF || isPNG)) {
-        this.$message.error('上传图片只能是 JPG/GIF/PNG格式!')
+        this.$snotify.error('上传图片只能是 JPG/GIF/PNG格式!')
       }
       if (!isLt500K) {
-        this.$message.error('上传图片文件大小 不能超过 500kb!')
+        this.$snotify.error('上传图片文件大小 不能超过 500kb!')
       }
       if (this.trialsForm.product_img_s.length >= 6) {
-        this.$message.error('最多只能上传6张图片！')
+        this.$snotify.error('最多只能上传6张图片！')
         limitF = false
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
@@ -644,7 +651,7 @@ export default {
         this.$api.editTrial(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$message.success('issue coupon success')
+            this.$snotify.success('issue trial success')
             this.$router.push({ path: '/posted/trials' })
           }
         }).catch(error => {
@@ -656,7 +663,7 @@ export default {
           .then(res => {
             this.saveLoading = false
             if (res.code === 200) {
-              this.$message.success('issue coupon success')
+              this.$snotify.success('issue trial success')
               this.$router.push({ path: '/posted/trials' })
             }
           })
@@ -666,37 +673,43 @@ export default {
           })
       } 
     },
-    Submit (e) {
+    Submit () {
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['trialsForm'].validate(valid => {
         if (valid) {
-          e.target.disabled = true
           for (var i in this.trialsForm) {
             this.trialsFormSubmit[i] = this.trialsForm[i]
           }
           this.trialsFormSubmit.start_time = parseInt((+this.trialsForm.active_date[0])/1000)
-          this.trialsFormSubmit.end_time = parseInt((+this.trialsForm.active_date[1])/1000)
+          this.trialsFormSubmit.end_time = parseInt((+this.trialsForm.active_date[1])/1000) + 86400 - 1
           this.trialsFormSubmit.platform_fee = this.platform_fee
-          this.trialsFormSubmit.refund = this.refund
+          this.trialsFormSubmit.platform_total_fee = this.platform_total_fee
+          this.trialsFormSubmit.refund_total_price  = this.refund_total_price 
+          this.trialsFormSubmit.shipping_total_fee  = this.shipping_total_fee 
           this.trialsFormSubmit.total_fee  = this.total_fee
+          if (this.trialsFormSubmit.full_refund == '1') {
+            this.trialsFormSubmit.refund_price = this.trialsFormSubmit.product_price
+          }
           var imgArr = []
           for (let i of this.trialsForm.product_img_s) {
             imgArr.push(i.url)
           }
           this.trialsFormSubmit.product_img = imgArr
-          var markupStr = $('#summernote').summernote('code')
-          this.trialsFormSubmit.product_details = markupStr
-          this.trialsForm.product_details = markupStr
-          if (!markupStr) {
+          if (!this.trialsForm.product_details) {
+            this.hasDetails = true
+            return
+          } else {
+            this.hasDetails = false
+          }
+          if (this.trialsForm.product_details.length > 800) {
+            this.$snotify.error('Details can not exceed 800 characters')
             return
           }
-          console.log(this.trialsFormSubmit)
           this.issueCoupon(this.trialsFormSubmit)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
           console.log('error submit!!')
-          e.target.disabled = false
           return false
         }
       })
@@ -721,7 +734,6 @@ export default {
       }
       this.isEditorData = false
       this.trialDetailsrequestData.id = this.$route.query.editor
-      console.log(this.trialDetailsrequestData)
       this.$api.trialEditDetail(this.trialDetailsrequestData).then(res => {
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
         let newArr = []
@@ -735,7 +747,6 @@ export default {
         this.trialsForm.total_quantity = String(res.data.total_quantity)
         this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
-        $('#summernote').summernote('code', res.data.product_details)
         setTimeout(() => {
           this.filterInput()
         }, 10)
@@ -747,7 +758,9 @@ export default {
 
 <style lang="less">
 @import url('../../../styles/mixin.less');
-
+.vue-html5-editor>.toolbar>ul>li .icon {
+  vertical-align: top;
+}
 .coupons-form {
   .input-price-fee {
     width: 198px;
@@ -762,7 +775,7 @@ export default {
   }
   .textarea {
     textarea {
-      height: 108px;
+      height: 60px;
       resize: none;
     }
   }

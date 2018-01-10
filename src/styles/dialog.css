@@ -1,5 +1,5 @@
 .code-dialog .el-dialog.el-dialog--small {
-  width: 40rem;
+  width: 720px;
 }
 .code-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -8,21 +8,10 @@
 .code-dialog .el-dialog__body {
   padding: 0;
 }
-.login-dialog .el-dialog.el-dialog--small {
-  width: 420px;
-}
-.login-dialog .el-dialog__header {
-  padding-bottom: 1rem;
-}
-.login-dialog .el-dialog__body {
-  padding: 0 1rem;
-}
-.login-dialog .el-form-item {
-  width: 80%;
-  margin: 20px auto;
-}
 .sign-dialog .el-dialog.el-dialog--small {
-  width: 420px;
+  width: 458px;
+  min-height: 500px;
+  padding-bottom: 40px;
 }
 .sign-dialog .el-dialog__header {
   padding-bottom: 1rem;
@@ -39,4 +28,7 @@
 }
 .el-dialog.el-dialog--small {
   border-radius: 10px;
+}
+.el-checkbox__label {
+  font-size: 12px !important;
 }
