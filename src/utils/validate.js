@@ -32,14 +32,29 @@ export function validateURL (textval) {
 }
 
 
+/* 获取链接的host 和 子体asin码 */
+export function validateAmazonHost (textval) {
+  // const urlregex =/(www.amazon.[a-z]*)(\/[a-zA-Z0-9-]*)?(\/gp\/([A-Z0-9]+))?(\/dp\/([A-Z0-9]+))?/
+  const urlregex = /(www.amazon.[a-z|.]*)[\/a-zA-Z0-9|-]*\/[gp|dp]*\/([A-Z0-9]*)/
+  return urlregex.exec(textval)
+}
+
+//获取关键字
+
+export function validateKeyword (textval) {
+  // const urlregex =/(www.amazon.[a-z]*)(\/[a-zA-Z0-9-]*)?(\/gp\/([A-Z0-9]+))?(\/dp\/([A-Z0-9]+))?/
+  const urlregex = /keywords=([a-zA-Z0-9|%20|.|_|\+]+)/
+  return urlregex.exec(textval)
+}
+
 /* 验证图片是否存在 */
 
-export function validateImg (imgUrl) {
-  var ImgObj = new Image()//判断图片是否存在  
-  ImgObj.src = imgUrl  
-  if (ImgObj.width > 0 && ImgObj.height > 0) {  
-    return true  
-  } else {  
-    return false
-  }  
-}
+// export function validateImg (imgUrl) {
+//   var ImgObj = new Image()//判断图片是否存在  
+//   ImgObj.src = imgUrl  
+//   if (ImgObj.width > 0 && ImgObj.height > 0) {  
+//     return true  
+//   } else {  
+//     return false
+//   }  
+// }

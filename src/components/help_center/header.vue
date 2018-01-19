@@ -84,6 +84,8 @@ export default {
       img {
         position: relative;
         top: 8px;
+        width: 195px;
+        height: 49px;
         cursor: pointer;
       }
       .item-route {

@@ -72,7 +72,7 @@ export default {
     font-size: 16px;
     width: 1100px;
     margin: 0 auto;
-    padding: 40px 0 70px 0;
+    padding: 50px 0 70px 0 !important;
     p {
       margin: 0 0 40px 0;
     }

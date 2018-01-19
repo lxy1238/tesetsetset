@@ -33,11 +33,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <!-- <i class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</i> -->
-                        <i class="trials-price" >{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                        <i class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</i>
+                        <i class="trials-price" v-else>{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
                       </span>
                       <span>
-                        <label>Refund amount: </label>
+                        <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.trials.refund_price, item.trials.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
@@ -46,6 +46,7 @@
                     <span class="footer-span">Order number:</span>
                     <el-input class="footer-input" v-model="item.order_number" @keyup.enter.native="orderBtnSubmit(item)" ></el-input>
                     <el-button class="order-number" type="button" @click="submitOrderNumber(item)" :loading="orderBtnLoading">Save</el-button>
+                    <el-button class="order-number goto-platform" type="button" @click="gotoPlatform(item)" >Go to Amazon</el-button>
                     <div class="red" v-if="!item.order_number && item.hasOrderNumber">Please enter the order number.</div>
                   </div>
                 </div>
@@ -86,10 +87,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
+                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
                       <span>
-                        <label>Refund amount: </label>
+                        <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
@@ -110,11 +112,9 @@
                       <span class="footer-span">Review URL:</span>
                       <el-input class="footer-input" v-model="item.appraise_url_input" @keyup.enter.native="urlSubmit(item)"></el-input>
                       <el-button type="button" class="save-btn" @click="submitAppraiseUrl(item)" :loading="urlSaveLoading">Save</el-button>
-                       <div class="red" v-if="!item.appraise_url_input && item.notHasInputUrl">Please enter the order number.</div>
+                       <div class="red" v-if="!item.appraise_url_input && item.notHasInputUrl">Please enter the review URL.</div>
                     </div>
-                    <p>Please upload your review within 30 business days after 
-                      ordering and submit the link address for the review, 
-                      otherwise your money will not the returned.</p>
+                    <p>Please upload your review within 15 days after ordering and submit the link address for the review, otherwise your money can not refund to you.</p>
                   </template>
                   <template v-else-if="item.status === 0  && item.modifyUrl">
                     <div class="pending">
@@ -129,15 +129,14 @@
                   </template>
                   <template v-else>
                     <div class="not-pass">
-                      <div class="not-pass-title">Not pass</div>
-                      <div class="not-pass-text">No relevant orders 
-                        were found</div>
+                      <div class="not-pass-title">Reject</div>
+                      <div class="not-pass-text">{{item.censor_content}}</div>
                     </div> 
                     <div class="pending " style="visibility:hidden">
                       <span class="pending-l">Pending</span>
                     </div>
                     <div class="pending">
-                      <a  href="#" >View</a>
+                      <a  href="#" >View Review</a>
                     </div>
                     <div class="pending">
                       <button type="button" @click="modifyUrlBtn(item)">Edit</button>
@@ -175,10 +174,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
+                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
                       <span>
-                        <label>Refund amount: </label>
+                        <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
@@ -190,7 +190,7 @@
                 </div>
                 <div class="right-content">
                   <div class="pending complete complete-left">
-                      <div class="complete-text">Complete</div>
+                      <div class="complete-text">Completed</div>
                       <div class="complete-refunded">Refunded to balance</div>
                   </div>
                   <div class="pending complete complete-right">
@@ -240,10 +240,11 @@
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                        <i class="trials-price" >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                       <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
+                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
                       </span>
                       <span>
-                        <label>Refund amount: </label>
+                        <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
                     </div>
@@ -573,6 +574,9 @@ export default {
     gotoSuccessDetail (item) {
       this.$router.push({ path: '/trialsDetails/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) })
     },
+    gotoPlatform (item) {
+      window.open( '/goto/product/trial/' + base64Encode(item.trial_id) + '/' + base64Encode(this.country_id) )
+    },
 
     add (a, b) {
       return NumAdd(a, b)
@@ -665,11 +669,11 @@ export default {
                 }
                 .trials-price-all {
                   margin-top: 5px;
-                  .trials-price {
-                    // font-weight: 700;
+                  .refund-amount {
+                    color: #808080;
                   }
                   .merchant-reward {
-                    color: #D62828;
+                    color: #333;
                     font-weight: 700;
                   }
                 }
@@ -687,7 +691,7 @@ export default {
                 line-height: 22px;
                 .footer-span {
                   color: #333;
-                  font-size: 0.89rem;
+                  font-size: 13px;
                 }
                 .footer-input {
                   width:40%;
@@ -699,10 +703,15 @@ export default {
                   position: absolute;
                   top: 0;
                   margin-left: 5px;
+                  &.goto-platform {
+                      .btn-h(120px, 24px, #82b838, #82b838, #fff);
+                      font-size: 13px;
+                      margin-left: 80px;
+                  }
                 }
                 button {
-                  .btn-h(4rem, 24px, #82b838, #82b838, #fff);
-                  font-size: 0.78rem;
+                  .btn-h(70px, 24px, #82b838, #82b838, #fff);
+                  font-size: 13px;
                   line-height: 1.43;
                   &:active {
                     background: darken(#82b838, 10%);
@@ -777,12 +786,12 @@ export default {
                   width: 46%;
                   text-align: center;
                   .complete-text {
-                    font-size: 0.88rem;
+                    font-size: 13px;
                     margin-bottom: 5px;
                   }
                   .complete-refunded {
                     color: #8a8a8a;
-                    font-size: 0.78rem;
+                    font-size: 13px;
                   }
                   &.complete-left {
                     position: relative;
@@ -810,10 +819,10 @@ export default {
                 position: absolute;
                 display: inline-block;
                 width: 6rem;
-                top: 34px;
+                top: 38px;
                 text-align: center;
                 left: 0;
-                font-size: 0.89rem;
+                font-size: 13px;
                 .not-pass-title {
                   color: #ec5b1c;
                 }
@@ -827,7 +836,7 @@ export default {
                 text-align: center;
                 .expired-top {
                   color: #ec5b1c;
-                  font-size: 0.88rem;
+                  font-size: 13px;
                   margin-bottom: 8px;
                 }
                 .expired-text {

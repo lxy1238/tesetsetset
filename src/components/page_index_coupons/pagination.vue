@@ -20,9 +20,6 @@
 </template>
 
 <script>
-import { Icon } from 'element-ui'
-import Vue from 'vue'
-Vue.use(Icon)
 export default {
   name: 'pagination',
   data () {

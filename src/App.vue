@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-title="titleMsg" v-cloak>
+  <div id="app"  v-cloak>
     <vue-snotify></vue-snotify>
     <router-view/>
   </div>
@@ -13,9 +13,6 @@ export default {
     }
   },
   name: 'app',
-  mounted () {
-  },
-
   beforeDestroy () {
   }
 }

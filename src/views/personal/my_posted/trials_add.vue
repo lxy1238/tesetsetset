@@ -9,10 +9,10 @@
     <el-form :model="trialsForm" :rules="rules" ref="trialsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
-          <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur"></el-input>
-          <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">Get</el-button>
+          <el-input class="url-input" v-model="trialsForm.product_url" ></el-input>
+          <!-- <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">Get</el-button> -->
         </el-form-item>
-        <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
+        <el-form-item label="Website: " prop="website" class="item-inline"  >
           <el-select v-model="trialsForm.website"  @change="websiteChange">
             <el-option 
               v-for="item in optionsWebsite"
@@ -71,42 +71,60 @@
       </template>
       <template v-else>
         <el-form-item label="Product URL: " prop="product_url" >
-          <el-input class="url-input" v-model="trialsForm.product_url" @blur="urlBlur" disabled></el-input>
+          <el-input class="url-input" v-model="trialsForm.product_url"  disabled></el-input>
         </el-form-item>
-        <el-form-item label="Wedsite: " prop="website" class="item-inline"  >
+        <el-form-item label="Website: " prop="website" class="item-inline"  >
           <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
         </el-form-item>
         <el-form-item label="Store: " prop="user_store_id" class="item-inline"  >
-          <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
+          <el-input class="url-input" v-model="trialsForm.user_store.store_name" disabled></el-input>
         </el-form-item>
         <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
-         <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
+         <el-input class="url-input" v-model="trialsForm.menu.name" disabled></el-input>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline" required >
-          <el-input class="url-input input-money " v-model="trialsForm.product_price"  ></el-input>
+          <el-input class="url-input input-money " v-model="trialsForm.product_price"  >
+             <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-          <el-input class="url-input" v-model="trialsForm.shipping_fee"  disabled></el-input>
+          <el-input class="url-input input-money" v-model="trialsForm.shipping_fee"  >
+             <template slot="prepend">{{currency}}</template>
+          </el-input>
         </el-form-item>
-        <el-form-item label="Image: " prop="product_img_s" >
+         <el-form-item label="Image" prop="product_img_s" >
+          <el-upload 
+                class="upload-demo-img" 
+                action="upload" 
+                :on-remove="handleRemoveP" 
+                :before-upload="beforeAvatarUploadP" 
+                  :file-list="trialsForm.product_img_s"
+                list-type="picture">
+              <el-button size="small" type="primary">Upload</el-button>
+              <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
+              </div>
+          </el-upload>
+        </el-form-item>
+        <!-- <el-form-item label="Image: " prop="product_img_s" >
           <ul class="is-editor-img" v-if="trialsForm.product_img_s">
             <li v-for="item in trialsForm.product_img_s"><img :src="item.url" alt="" ></li>
           </ul>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="Title: " prop="product_title"  >
-          <el-input v-model="trialsForm.product_title" disabled></el-input>
+          <el-input v-model="trialsForm.product_title" :maxlength="250" ></el-input>
         </el-form-item>
       </template>
       <el-form-item label="Reason: "  prop="product_reason" >
-        <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
+        <el-input v-model="trialsForm.product_reason" type="textarea" class="textarea" :maxlength="150" placeholder="The maximum input is 150 characters"></el-input>
       </el-form-item>
        <el-form-item label="Specifications: " prop="specifications" >
-        <el-input v-model="trialsForm.specifications" type="textarea" class="textarea" :maxlength="200" placeholder="The maximum input is 200 characters"></el-input>
+        <el-input v-model="trialsForm.specifications" type="textarea" class="textarea" :maxlength="50" placeholder="The maximum input is 50 characters"></el-input>
       </el-form-item>
       <el-form-item label="Product details: " required>
         <!-- <div id="summernote"></div> -->
           <vue-html5-editor :content="trialsForm.product_details" @change="update" :auto-height="true" :z-index="998"  :height="300"></vue-html5-editor>
-          <div class="red" v-if="hasDetails">product details is required</div>
+          <span class="red" v-if="!hasDetails">The product details is required.</span>
+          <div class="red" v-else-if="hasDetailsLength">The product details can not exceed 800 characters.</div>
       </el-form-item>
       <div class="title-s">
         Trial Information
@@ -120,18 +138,18 @@
           </el-date-picker>
       </el-form-item>
       <el-form-item label="Quantity per day: " class="item-inline1" prop="quantity_per_day" >
-        <el-input v-model="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')"></el-input>
+        <el-input v-model="trialsForm.quantity_per_day" @blur="filterMoney('quantity_per_day')" ></el-input>
       </el-form-item>
     
       <el-form-item label="Total quantity: " class="item-inline" prop="total_quantity">
         <el-input v-model="trialsForm.total_quantity" @blur="filterMoney('total_quantity')"></el-input>
       </el-form-item>
-      <el-form-item label="Full Return: " class="item-inline1" >
+      <el-form-item label="Full refund: " class="item-inline1" >
         <el-radio class="radio" v-model="trialsForm.full_refund" label="1" >Yes</el-radio>
         <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >No</el-radio>
       </el-form-item>
-      <el-form-item label="Per trial refund: " v-if="trialsForm.full_refund === '0'"  class="item-inline1" >
-        <el-input type="text" v-model="trialsForm.refund_price" @blur="filterMoney('refund_price')"></el-input>
+      <el-form-item label="Per trial refund: " v-show="trialsForm.full_refund === '0'"  class="item-inline1" >
+        <el-input type="text" class=" input-money" v-model="trialsForm.refund_price" @blur="filterMoney('refund_price')"></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
@@ -172,6 +190,39 @@ export default {
         callback()
       }
     }
+    const validateUrl = (rule, value, callback) => {
+      this.optionsWebsite = []
+      this.$api.getPlatformCate(this.requestData)
+        .then(res => {
+          if(res.data.length <= 0) {return}
+          for (let i of res.data) {
+            var ObjWebsite = {
+              label: '',
+              id: ''
+            }
+            ObjWebsite.label = i.provider
+            ObjWebsite.id = i.id
+            if (this.trialsForm.product_url.search(i.url) >= 0 && this.trialsForm.product_url.includes('/dp/')) {
+              this.trialsForm.website = i.provider
+              this.optionsWebsite.push(ObjWebsite)
+              callback()
+            } else {
+              callback(new Error('In the current country, the product URL is invalid.'))
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+    const validateQuantity = (rule, value, callback) => {
+      if ( Number(this.trialsForm.quantity_per_day) > Number(this.trialsForm.total_quantity) ) {
+        callback(new Error('The quantity per day can not greater than total quantity!'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       pickerOptions1: {
         disabledDate (time) {
@@ -219,13 +270,14 @@ export default {
       trialsFormSubmit: {},
       rules: {
         product_url: [
-          {required: true ,message: 'The product URL is required.', trigger: 'blur'}
+          {required: true ,message: 'The product URL is required.', trigger: 'blur'},
+          {validator: validateUrl, trigger: 'blur'}
         ],
         website: [
-          {required: true, message: 'The website is required', trigger: 'change'}
+          {required: true, message: 'The website is required.', trigger: 'change'}
         ],
         menu_id: [
-          {type:'number',required: true, message: 'category is required', trigger: 'change'}
+          {type:'number',required: true, message: 'The category is required.', trigger: 'change'}
         ],
         product_price: [
           {validator: validateMoney, trigger: 'blur'}
@@ -234,15 +286,15 @@ export default {
           {
             type: 'array',
             required: true,
-            message: 'Please Upload image',
-            trigger: 'change'
+            message: 'Please upload image.',
+            trigger: 'blur'
           }
         ],
         product_title: [
           {required: true ,message: 'The title is required.', trigger: 'blur'}
         ],
         user_store_id: [
-          {type: 'number', required: true ,message: 'store is required', trigger: 'blur'}
+          {type: 'number', required: true ,message: 'The store is required.', trigger: 'blur'}
         ],
         product_reason: [
           {required: true ,message: 'The reason is required.', trigger: 'blur'}
@@ -254,10 +306,12 @@ export default {
           {type: 'array',required: true ,message: 'The valid date is required.', trigger: 'change'}
         ],
         quantity_per_day: [
-          { required: true ,message: 'The quantity per day is required.', trigger: 'blur'}
+          { required: true ,message: 'The quantity per day is required.', trigger: 'blur'},
+          // {validator: validateQuantity, trigger: 'blur'}
         ],
         total_quantity: [
-          { required: true ,message: 'total quantity per day is required , Must be Numbers', trigger: 'blur'}
+          { required: true ,message: 'The total quantity is required.', trigger: 'blur'},
+          // {validator: validateQuantity, trigger: 'blur'}
         ]
       },
       fileList2: [
@@ -277,7 +331,8 @@ export default {
         user_id: getUserId(),
         id: '',
       },
-      hasDetails: false,
+      hasDetails: true,
+      hasDetailsLength: false
 
     }
   },
@@ -365,7 +420,11 @@ export default {
 
     update (value) {
       this.trialsForm.product_details = value
-      console.log(this.trialsForm.product_details)
+      if (!this.trialsForm.product_details) {
+        this.hasDetails = false
+      } else {
+        this.hasDetails = true
+      }
       
     },
     //限制只能输入数字和.
@@ -387,13 +446,7 @@ export default {
       }
     },
 
-    //blur 时请求信息
-    urlBlur () {
-      if (!this.trialsForm.product_url) {
-        return
-      }
-      this.getPlatformCateInfo()
-    },
+    
     //获取头部品类列表
     getHeadCateListInfo () {
       this.$api.getHeadCateList().then(res => {
@@ -551,7 +604,7 @@ export default {
             this.trialsForm.product_price = data.product_price ? data.product_price.replace(/,/g, '') : '' 
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
-              this.$snotify.error('please enter a right url')
+              this.$snotify.error('please enter a right url.')
             }
           }, 50)
         })
@@ -562,31 +615,6 @@ export default {
      
     },
 
-    //获取平台品类信息
-    getPlatformCateInfo () {
-      this.optionsWebsite = []
-      this.$api.getPlatformCate(this.requestData)
-        .then(res => {
-          if(res.data.length <= 0) {return}
-          for (let i of res.data) {
-            var ObjWebsite = {
-              label: '',
-              id: ''
-            }
-            ObjWebsite.label = i.provider
-            ObjWebsite.id = i.id
-            if (this.trialsForm.product_url.search(i.url) >= 0) {
-              this.trialsForm.website = i.provider
-              this.optionsWebsite.push(ObjWebsite)
-            } else {
-              this.$snotify.error('The country can only issue products under the platform')
-            }
-          }
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    },
 
     //平台发生改变
     websiteChange (label) {
@@ -611,17 +639,17 @@ export default {
       var isGIF = file.type === 'image/gif'
       var isPNG = file.type === 'image/png'
 
-      var isLt500K = file.size / 1024 / 500 < 1
+      var isLt500K = file.size / 1024 / 1024 < 1
 
       var limitF = true
       if (!(isJPG || isGIF || isPNG)) {
-        this.$snotify.error('上传图片只能是 JPG/GIF/PNG格式!')
+        this.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
       }
       if (!isLt500K) {
-        this.$snotify.error('上传图片文件大小 不能超过 500kb!')
+        this.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
       }
       if (this.trialsForm.product_img_s.length >= 6) {
-        this.$snotify.error('最多只能上传6张图片！')
+        this.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
         limitF = false
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
@@ -651,7 +679,7 @@ export default {
         this.$api.editTrial(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('issue trial success')
+            this.$snotify.success('Submit Successfully!')
             this.$router.push({ path: '/posted/trials' })
           }
         }).catch(error => {
@@ -663,7 +691,7 @@ export default {
           .then(res => {
             this.saveLoading = false
             if (res.code === 200) {
-              this.$snotify.success('issue trial success')
+              this.$snotify.success('Submit Successfully!')
               this.$router.push({ path: '/posted/trials' })
             }
           })
@@ -697,15 +725,22 @@ export default {
           }
           this.trialsFormSubmit.product_img = imgArr
           if (!this.trialsForm.product_details) {
-            this.hasDetails = true
+            this.hasDetails = false
             return
           } else {
-            this.hasDetails = false
+            this.hasDetails = true
           }
-          if (this.trialsForm.product_details.length > 800) {
-            this.$snotify.error('Details can not exceed 800 characters')
+          if ( Number(this.trialsForm.quantity_per_day) > Number(this.trialsForm.total_quantity) ) {
+            this.$snotify.error('The quantity per day can not greater than total quantity!')
             return
           }
+          // if (this.trialsForm.product_details.length > 800) {
+          //   this.hasDetailsLength = true
+          //   // this.$snotify.error('The product details can not exceed 800 characters.')
+          //   return
+          // } else {
+          //   this.hasDetailsLength = false
+          // }
           this.issueCoupon(this.trialsFormSubmit)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
@@ -799,6 +834,9 @@ export default {
     width: 100px;
     float: left;
     margin-right: 1%;
+    img {
+      max-width: 70px !important;
+    }
   }
   .footer-btn {
     text-align: center;

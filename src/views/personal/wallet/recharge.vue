@@ -55,11 +55,11 @@ export default {
     let reg =  /^\d+(\.\d{1,2})?$/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the recharge amount'))
+        return callback(new Error('Please enter the amount.'))
       } else if(parseFloat(value) == 0 ){
-        callback(new Error ('Invalid recharge amount'))
+        callback(new Error ('Invalid recharge amount.'))
       } else if(!reg.test(value)){
-        callback(new Error ('Invalid recharge amount'))
+        callback(new Error ('Invalid recharge amount.'))
       } else {
         callback()
       }
@@ -165,7 +165,7 @@ export default {
           this.$api.paypal(this.reqData).then(res => {
             if (!res.data) {
               this.fullscreenLoading = false
-              this.$snotify.info('Payment interface error, please refresh the page or other payment method')
+              this.$snotify.error('Payment interface error, please refresh the page or other payment method.')
               return
             }
             location.href = res.data

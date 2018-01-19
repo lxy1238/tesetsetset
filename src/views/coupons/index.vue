@@ -13,7 +13,7 @@
           </details-left>      
         </div>
         <div class="right inline" >
-          <div class="promotion">
+          <div class="coupon-promotion">
             <img class="img"  :src="logoImg[couponDetail.website]" alt="" @click="gotoPlatform(couponDetail.product_url)" >
             <div class="title">
               <span >
@@ -47,7 +47,7 @@
                   <button v-else  @click="addPromotion"><span>Add Promotion</span></button>
                 </div>
                 <div class="inline-b add-promo get-code">
-                   <button @click="getCode"><span>Get Code</span></button>
+                   <button @click="getCode"><span>Get Coupon</span></button>
                 </div>
                 <div class="inline-b question" v-if="selected !== 'Choose reason' && isFlagCoupon">
                   <div class="wrong"><span>What’s wrong with this deal?</span></div>
@@ -93,23 +93,25 @@
                </div>
                <div class="share-to-p">
                  <button  data-clipboard-target="#proCard" @click="handleClip($event)">Copy</button>
-                 <span class="share">
+                 <!-- <span class="share">
                    <i class="text">Promotion on:</i> 
-                   <a class="share-a" onclick="javascript:window.open('https://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
-                   <!-- <a class="share-a" @click="shareFaceBook" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a> -->
                   <a class="share-a" onclick="javascript:window.open('https://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
                    <a class="share-a" onclick="javascript:window.open('https://twitter.com/home?status='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-tuite_twitter"></i></a>
-                 </span>
+                   <a class="share-a" onclick="javascript:window.open('https://pinterest.com/pin/create/link/?url='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);"  target="_blank"><i class="iconfont icon-pinterest"></i></a>
+                 </span> -->
                </div>
                <div class="promo-footer center">
-                 <a href="#" class="use-it">How to use? Click here >></a>
+                 <router-link to="/about/center/faq" class="link" target="_blank">
+                      How to use? Click here >>
+                 </router-link>
+                 <!-- <a href="#" class="use-it"</a> -->
                </div>
             </div>
           </div>
           <div class="recommend">
             <div class="re-head">
-              <span class="re-head-l">Related Coupons</span>
-              <span class="re-head-r link" @click="gotoIndex" >more <i>></i></span>
+              <span class="re-head-l">Related coupons</span>
+              <span class="re-head-r link" @click="gotoIndex" >More <i>></i></span>
             </div>
               <coupons-pro 
                 v-for="couponsDetails in arrcouponsDetails"  
@@ -123,7 +125,7 @@
                   <span class="coupon-right"><strong>{{couponsDetails.discount_rate}}%</strong> <i class="gray-s">off</i> </span>
                 </p> -->
                 <p class="price content">
-                  <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
+                  <span class="price-right">{{currency}}{{couponsDetails.discount_price}}</span>
                 </p>
                 <p class="price content clearfix">
                   <span class="price-left"><i>Coupon</i> {{currency}}{{sub(couponsDetails.product_price , couponsDetails.discount_price).toFixed(2)}}</span>
@@ -145,14 +147,20 @@
           <img :src="logoImg[couponDetail.website]" alt="">
         </span>
         <div class="dialog-body">
-          <div class="top">
-            <div class="head"><span >Here's your coupon code</span></div>
-            <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link"><strong>Go to Amazon</strong></a> and paste this code at checkout</span></div>
-            <div class="discount" @click="getCouponCode($event)" v-if="!getCodeSuccess"><button>Discount Coupon Worth  {{currency}} {{sub(couponDetail.product_price, couponDetail.discount_price).toFixed(2)}}</button></div>
-            <div class="coupon-code"  v-else>
-              <span id="couponId" class="code">{{couponDetail.coupon_code}}</span>
-              <button data-clipboard-target="#couponId" @click="copyCode($event)">Copy</button>
+          <div class="top" >
+            <template v-if="!hasCoupon">
+              <div class="head"><span >Here's your coupon code</span></div>
+              <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link"><strong>Go to Amazon</strong></a> and paste this code at checkout</span></div>
+              <div class="discount" @click="getCouponCode()" v-if="!getCodeSuccess"><el-button :loading="getCodeBtnLoading">Discount Coupon Worth  {{currency}} {{sub(couponDetail.product_price, couponDetail.discount_price).toFixed(2)}}</el-button></div>
+              <div class="coupon-code"  v-else>
+                <span id="couponId" class="code" v-if="coupon_code">{{coupon_code}}</span>
+                <button data-clipboard-target="#couponId" @click="copyCode($event)">Copy</button>
               </div>
+            </template>
+            <template v-else>
+              <div class="head"><span >No Coupon Code Required</span></div>
+              <div class="goto-amazon"><span ><a href="javascript:void(0)" @click="gotoPlatform(couponDetail.product_url)" class="link"><strong>Shop Amazon now to save!</strong></a></span></div>
+            </template>
           </div>
         </div>
 
@@ -242,6 +250,7 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         coupon_id: base64Decode(this.$route.params.couponsId),
+        use_type: '',
         username: '',
         generalize_uid: '',
         generalize_username: ''
@@ -313,7 +322,8 @@ export default {
         'Spam',
         'Inaccurate',
         'No value',
-        'Alive again'
+        'Alive again',
+        'Price error'
       ],
       selected: 'Choose reason',
       imgList: [],
@@ -332,6 +342,9 @@ export default {
       promoterPid: '123456789',         //推广PID  ，默认的
       currency: getStore('currency') || '$',
       titleMsg: '',
+      coupon_code: '',
+      getCodeBtnLoading: false,
+      hasCoupon: false,
     }
   },
   computed: {
@@ -399,7 +412,7 @@ export default {
           this.titleMsg = res.data.product_title + ' for ' +
                           this.currency + res.data.discount_price + 
                           (res.data.shipping_fee == 0 ? ' + free shipping' : '')
-          
+          this.reqGetCodeData.use_type = res.data.use_type
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -410,22 +423,22 @@ export default {
     changeTemplate () {
       let template = this.promotionTemplate
       let promoLink
-      if (location.href.indexOf('?promoter') >= 0) {
+      if (this.$route.params.promoterId) {
         promoLink = location.href
       } else {
-        promoLink = `${location.href}${getUserId() ? '?promoter=' + getUserId() : ''}`
+        promoLink = `${location.href}/${base64Encode(getUserId() ? getUserId() : '')}`
       }
       this.templateText = template
         .replace(/\n/g, '<br>')
         .replace(/#Platform#/g, this.couponDetail.website)
         .replace(/#Promo_title#/g, this.couponDetail.product_title)
-        .replace(/#Promo_listprice#/g, `${this.currency}${this.couponDetail.product_price}`)
+        .replace(/#Promo_listprice#/g, `${this.currency}${this.couponDetail.discount_price}`)
         .replace(/#Promo_scleprice#/g, this.couponDetail.discount_price)
         .replace(/#Coupon_value#/g, this.currency+(this.couponDetail.product_price - this.couponDetail.discount_price).toFixed(2))
         .replace(/#Discount_scale#/g, '%'+'this.couponDetail.discount_rate')
         .replace(/#Promo_desctiption#/g, this.couponDetail.product_reason)
         .replace(/#Promo_link#/g, promoLink)
-        .replace(/#Order_link#/g, 'https://' + location.host + this.getOrderLink())
+        .replace(/#Order_link#/g, 'https://' + location.host + this.getOrderLink() +  (getUserId() ? '/' + base64Encode(getUserId()) : ''))
     },
     //显示编辑模板
     modifyTemplate () {
@@ -441,7 +454,7 @@ export default {
         this.submitTemplateData.content = this.promotionTemplate
         this.$api.editTemplate(this.submitTemplateData).then(res => {
           if (res.code === 200) {
-            this.$snotify.success('save success')
+            this.$snotify.success('Submit Successfully! ')
             this.getCouponsDetails()
             this.templateDialog = false
           }
@@ -475,7 +488,7 @@ export default {
       this.getCouponsDetails()
     },
 
-    //领取优惠券
+    //领取优惠券 ,检测是否领取成功
     getCode () {  
       if(!this.isLogin()) {
         return
@@ -485,6 +498,7 @@ export default {
       this.$api.isUserGetCoupon(this.checkGetCodeData).then(res => {
         this.showGetCodeDialog = true
         if (res.data) {
+          this.coupon_code = res.data.code.code
           this.getCodeSuccess = true
         }
       })
@@ -571,19 +585,21 @@ export default {
  
 
     //领取优惠券
-    getCouponCode (e) {
+    getCouponCode () {
       if (this.isLogin()) {
         if (this.isStop()) {
-          this.$snotify.info('The activity is over, or the coupon has been received')
+          this.hasCoupon = true
+          // this.$snotify.info('The activity is over, or the coupon has been received.')
           return
         }
-        e.target.disabled = true
+        this.getCodeBtnLoading = true
         this.isDataExit(this.reqGetCodeData)
         this.$api.userGetCoupon(this.reqGetCodeData).then(() => {
-          e.target.disabled = false
+          this.getCode()
+          this.getCodeBtnLoading = false
           this.getCodeSuccess = true
         }).catch(() => {
-          e.target.disabled = false
+          this.getCodeBtnLoading = false
         })
       }
     },
@@ -631,6 +647,7 @@ export default {
     //显示问题反馈选项
     flagCoupon () {
       this.isFlagCoupon = !this.isFlagCoupon
+      this.selected = 'Choose reason'
     },
     //提交问题
     addProblemSubmit () {
@@ -645,7 +662,7 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$snotify.error('You can only type 30 characters')
+        this.$snotify.error('Submit Failed! You can only type 30 characters.')
         return
       }
       this.btnLoading = true
@@ -653,9 +670,11 @@ export default {
       this.$api.addProblem(this.addProblemData).then(res => {
         this.btnLoading = false
         if (res.code === 200) {
-          this.$snotify.success('Submitted successfully!')
+          this.$snotify.success('Submitted Successfully!')
           this.isFlagCoupon = false
           this.selected = 'Choose reason'
+          this.addProblemData.content = ''
+          this.addProblemData.menu = ''
         }
       }).catch(error => {
         this.btnLoading = false
@@ -669,7 +688,7 @@ export default {
 
     getOrderLink () {
       let router = this.currentRouter.replace('/coupons', '')
-      let endUrl = `/goto${router}/${base64Encode(getUserId() ? getUserId() : '')}`
+      let endUrl = `/goto/product/coupon${router}`
       return endUrl
     },
    
@@ -742,7 +761,7 @@ export default {
     float: right;
     width: 55.5rem;
     margin-top: 54px;
-    .promotion {
+    .coupon-promotion {
       position: relative;
       // height: 22rem;
       padding: 1rem;
@@ -849,7 +868,7 @@ export default {
         .add-promo {
           margin-right: 2rem;
           button {
-            .btn-h(10rem, 3rem, #85bb3b, #85bb3b, #fff);
+            .btn-h(180px, 3rem, #85bb3b, #85bb3b, #fff);
             line-height: 3rem;
             text-align: center;
             line-height: 0.8;
@@ -875,7 +894,7 @@ export default {
               height: 1.8rem;
             }
             button {
-              .btn-h(5rem, 1.8rem, #7db135, #7db135, #fff);
+              .btn-h(90px, 1.8rem, #7db135, #7db135, #fff);
               line-height: 0.4;
             }
             .error {
@@ -950,9 +969,18 @@ export default {
           .img {
             padding: 2rem 0 0 0;
             text-align: center;
+            height: 25rem;
+            position: relative;
             img {
-              width: 23rem;
-              height: 20rem;
+              max-width: 23rem;
+              max-height: 23rem;
+              position: absolute;
+              display: block;
+              left: 0;
+              top: 0;
+              bottom: 0;
+              right: 0;
+              margin: auto;
             }
           }
           .text-describe {
@@ -1066,8 +1094,8 @@ export default {
     text-align: center;
     
     .top {
-      padding-top: 36px;
-      height: 216px;
+        padding-top: 36px;
+        padding-bottom: 40px;
       .head {
         font-size: 21px;
         font-weight: bold;
@@ -1092,7 +1120,7 @@ export default {
         border-radius: 4px;
         margin: 0 auto;
         text-align: left;
-        padding-left: 72px;
+        padding-left: 20px;
         line-height: 54px;
         background: #e5f0e1;
         button {
@@ -1105,7 +1133,13 @@ export default {
         .code {
           color: #49663f;
           font-size: 18px;
+          display: inline-block;
+          width: 240px;
+          height: inherit;
           font-weight: bold;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }

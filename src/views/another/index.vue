@@ -33,7 +33,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
  .another-all-header.header-all {
-    height: 70px !important;
+    height: 65px !important;
   }
  .another-all-header {
     height: 70px;

@@ -71,11 +71,9 @@
 
         <template v-else>
           <div class="remind-info">
-            <p class="red center" v-if="rolesName === 'merchant'">Congratulations, you have become a merchant,  
-              <a href="javascript:void(0);" @click="gotoMember">click to view</a>  
+            <p class="red center" v-if="rolesName === 'merchant'">Merchant can not apply for becoming our cooperation influencer simultaneously. 
             </p>
-            <p class="red center" v-if="rolesName === 'celebrity'">Congratulations, you have become a influencer, 
-              <a href="javascript:void(0);"  @click="gotoMember">click to view</a>
+            <p class="red center" v-if="rolesName === 'celebrity'">Congratulations, you are already our cooperation influencer!
             </p>
             <p class="red center" v-if="merchantData && merchantData.status === 0">You have applied to become a merchant, under review ...</p>
             <p class="red center" v-if="celebrityData && celebrityData.status === 0">You have applied to become a influencer, under review ...</p>

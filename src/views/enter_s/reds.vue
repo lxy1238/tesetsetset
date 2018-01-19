@@ -2,7 +2,7 @@
   <div class="enter-reds">
     <div class="enter-reds-content">
       <div class="title-s">
-        Applicant information
+        Applicant Information
       </div>
       <el-form 
             :model="redsForm" 
@@ -13,7 +13,7 @@
       <el-form-item label="Full name: " prop="fullname" >
         <el-input class="url-input" v-model="redsForm.fullname" ></el-input>
       </el-form-item>
-      <el-form-item label="E-mail: " prop="email" class="item-inline"  required>
+      <el-form-item label="Email: " prop="email" class="item-inline"  required>
         <el-input class="url-input" v-model="redsForm.email"></el-input>
       </el-form-item>
       <el-form-item label="Country: " prop="country" class="item-inline"  >
@@ -26,8 +26,8 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Daytime Phone: " prop="mobile" >
-        <el-input v-model="redsForm.mobile"  class="textarea" placeholder="+86" @keyup.native="filterNumber"></el-input>
+      <el-form-item label="Daytime phone: " prop="mobile" >
+        <el-input v-model="redsForm.mobile"  class="textarea"  ></el-input>
       </el-form-item>
        <el-form-item label="Income situation: " prop="income" >
         <el-select v-model="redsForm.income" filterable>
@@ -39,11 +39,11 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Category: "  class="item-inline1" required>
+      <el-form-item label="Organization: "  class="item-inline1" required>
         <el-radio class="radio" v-model="redsForm.operation" label="Team">Team</el-radio>
         <el-radio class="radio" v-model="redsForm.operation" label="Personal">Personal</el-radio>
       </el-form-item>
-      <el-form-item label="introduction: " class="item-inline"  prop="introduction" required>
+      <el-form-item label="Introduction: " class="item-inline"  prop="introduction" required>
         <el-input v-model="redsForm.introduction" type="textarea" :rows="6"></el-input>
       </el-form-item>
      
@@ -59,7 +59,7 @@
          </ul>
 
       <div class="title-s title-xs">
-         Resources and channels
+         Resources and Channels
         </div>
       <el-form-item  class="resources-channels" label-width="0px" >
         <div class="resources-channels-item"  v-for="item in channelsLists">
@@ -69,21 +69,21 @@
               <span class="channel-name"> {{item.channel_name}}</span>
             </div>
             <div class="channel" v-else >
-              <label for="">Channel name</label>
+              <label for="">Channel name:</label>
               <el-input type="text"  size="mini" v-model="item.name"></el-input>
             </div>
             <div class="fans-number">
-              <label for="">Number of fans</label>
-              <el-input type="text"  size="mini" v-model="item.fans" placeholder="please enter a number" @keyup.native="filterNumber1(item)"></el-input>
+              <label for="">Number of fans:</label>
+              <el-input type="text"  size="mini" v-model="item.fans"  @keyup.native="filterNumber1(item)"></el-input>
             </div>
           </div>
           <div class="bottom">
-             <label for="">Proof link </label>
+             <label for="">Proof link: </label>
             <el-input type="text"  size="mini" v-model="item.url"></el-input>
           </div>
         </div>
         <div class="channels-add-more" @click="addMoreChannel">
-          Add more channels <i class=" el-icon-plus"></i>
+          Add Channels <i class=" el-icon-plus"></i>
         </div>
       </el-form-item>
       <div class="submit-btn">
@@ -102,9 +102,9 @@ export default {
   data () {
     const validateEmailRule =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter your Email'))
+        return callback(new Error('Please enter Email'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Invalid email address'))
+        return callback(new Error('Invalid Email format.'))
       } else {
         callback()
       }
@@ -119,35 +119,38 @@ export default {
       redsForm: {
         api_token: getToken(),
         user_id: getUserId(),
-        fullname: 'ghost',
         email: getEmail(),
+        fullname: '',
         country: '',
-        mobile: 'awef',
-        income: 'awef',
+        mobile: '',
+        income: '',
         operation: 'Team',
-        introduction: 'aewf',
+        introduction: '',
         specialty: [],
         channels: []
       },
       rules: {
         fullname: [
-          {required: true ,message: 'Full Name  is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter full name.', trigger: 'blur'}
         ],
         email: [
           {validator: validateEmailRule, trigger: 'blur'}
         ],
         country: [
-          {required: true ,message: 'Country  is required', trigger: 'blur'}
+          {required: true ,message: 'Please select your country.', trigger: 'blur'}
         ],
         postcode: [
-          {required: true ,message: 'Postcode/Zip Code is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter post code.', trigger: 'blur'}
         ],
         mobile: [
-          {required: true ,message: 'Daytime phone date is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter your phone number.', trigger: 'blur'}
         ],
         income: [
-          {required: true ,message: 'Income situation per day is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter income situation.', trigger: 'blur'}
         ],
+        introduction: [
+          {required: true, message: 'The introduction is required.', trigger: 'blur'}
+        ]
       },
       expertiseList : [
         {
@@ -231,9 +234,12 @@ export default {
         url: '',
       },
       optionIncome: [
-        '$1000以下',
-        '$1000-$5000',
-        '$5000-$10000'
+        'Less than $1,000',
+        '$1,000 ~ $3,000',
+        '$3,000 ~ $5,000',
+        '$5,000 ~ $8,000',
+        '$8,000 ~ 10,000',
+        'More than $10,000'
       ],
       geolocation: [   
         ['AO', 'Angola'],   
@@ -457,14 +463,14 @@ export default {
         }
       })
       if (this.redsForm.channels.length === 0){
-        this.$snotify.error('Fill in at least one promotion channel!')
+        this.$snotify.error('Submit Failed! Fill in at least one promotion channel!')
         return false
       }
       return true
     },
     submit () {
       if (!this.isLogin()) {
-        this.$snotify.info('please log in first')
+        this.$snotify.error('Submit Failed! Please log in first.')
         return
       }
       this.$refs['redsForm'].validate((valid) => {
@@ -475,12 +481,12 @@ export default {
           this.$api.applyCelebritys(this.redsForm).then(res => {
             this.btnLoading = false
             if (res.code === 200) {
-              this.$snotify.success('Submit success, please wait for the result of the audit')
+              this.$snotify.success('Submit success, please wait for the result of the audit.')
               this.$router.push({path: '/personal/member/index'})
             }
           }).catch(err => {
             if (err.message === 'validation.phone') {
-              this.$snotify.error('Invalid phone')
+              this.$snotify.error('Submit Failed! Invalid phone.')
             }
             this.btnLoading = false
           })
@@ -506,7 +512,10 @@ export default {
     },
   },
   mounted () {
-  
+    if (!this.isLogin()) {
+      this.$router.push({path: '/opration-err/index'})
+      return
+    }
   }
 }
 </script>
@@ -558,7 +567,7 @@ export default {
           cursor: pointer;
           &.active {
             color: white;
-            background: #31383e;
+            background: #0072bc;
           }
         }
       }
@@ -595,7 +604,9 @@ export default {
                display: inline-block;
                float: right;
                .el-input {
-                 width: 60%;
+                  width: 58%;
+                  float: right;
+                  margin-right: 3%;
                }
             }
           }
@@ -605,7 +616,7 @@ export default {
             }
             .el-input {
               float: right;
-              width: 88%;
+              width: 91%;
               margin-right: 8px;
             }
           }

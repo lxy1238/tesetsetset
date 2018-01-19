@@ -8,33 +8,45 @@
         <div class="footer-details clearfix">
           <dl>
             <dt>Follow Us</dt>
-            <dd><a href="#">Twitter</a></dd>
-            <dd><a href="#">Facebook</a></dd>
-            <dd><a href="#">Instagram</a></dd>
-            <dd><a href="#">Pinterest</a></dd>
+            <dd><a href="https://twitter.com/db_DealsBank" target="_blank">Twitter</a></dd>
+            <dd><a href="https://www.facebook.com/dealsbank/" target="_blank">Facebook</a></dd>
+            <dd><a href="https://www.instagram.com/dealsbank_official/" target="_blank">Instagram</a></dd>
+            <dd><a href="https://www.pinterest.com/dealsbank/" target="_blank">Pinterest</a></dd>
           </dl>
           <dl>
             <dt>About</dt>
             <dd> 
-              <router-link to="/about/center/index">About</router-link> 
+              <router-link to="/about/center/index" target="_blank">About</router-link> 
             </dd>
-            <dd> <a href="#">FAQ</a> </dd>
+            <dd>
+               <router-link to="/about/center/faq" target="_blank">FAQs</router-link> 
+            </dd>
+            <dd>
+              <router-link to="/about/center/countact" target="_blank">Contact</router-link> 
+            </dd>
           </dl>
           <dl>
             <dt>Join Us</dt>
             <dd>
-              <router-link to="/about/center/influencer">Seller</router-link>
-              <!-- <a href="#">Seller</a> -->
+              <router-link to="/about/center/influencer" target="_blank">Influencer</router-link>
             </dd>
-            <!-- <dd><a href="#">Sensation</a></dd>
-            <dd><a href="#">Member</a></dd> -->
+            <dd>
+              <router-link to="/about/center/merchant" target="_blank">Merchant</router-link>
+            </dd>
+       
           </dl>
           <dl class="last">
             <dt>Help</dt>
-            <dd><a href="#">Customer Service</a></dd>
-            <dd><a href="#">Disputes & Reports</a></dd>
-            <dd><a href="#">Making Payment</a></dd>
-            <dd><a href="#">Delivery Options</a></dd>
+            <dd>
+              <router-link :to="{ path: '/about/center/faq', query: { id: 2 }}" target="_blank">What Can I Do</router-link>
+            </dd>
+             <dd>
+              <router-link :to="{ path: '/about/center/faq', query: { id: 11 }}" target="_blank">Affiliate PID</router-link>
+            </dd>
+             <dd>
+              <router-link :to="{ path: '/about/center/faq', query: { id: 9 }}" target="_blank">Trial Limitation</router-link>
+            </dd>
+            
           </dl>
         </div>
       </div>
@@ -42,10 +54,11 @@
     <div class="footer-bottom">
       <div class="footer-content clearfix">
         <div class="left">
-          ©2006-2017 dealsbank.com All rights reserved.
+          ©2018 Dealsbank.com All Rights Reserved.
         </div>
         <div class="right">
-          Privacy Policy   ●  Terms of Service   ●  Interest-Based Ads
+           <router-link to="/about/center/term" target="_blank"> Terms of Use</router-link>  ●  
+           <router-link to="/about/center/privacy" target="_blank"> Privacy Policy</router-link>
         </div>
       </div>
     </div>
@@ -72,6 +85,13 @@ export default {
     bottom: 0;
     z-index: 999;
     min-width:  @Width_content;
+     a {
+        animation-delay: 1s;
+        color: #d0d6da;
+        &:hover {
+        color: #fff;
+        }
+      }
     .footer-top {
       
       height: 22.22rem;
@@ -83,6 +103,8 @@ export default {
           display: inline-block;
           position: relative;
           top: 10px;
+          width: 195px;
+          height: 47px;
         }
       }
       .footer-details {
@@ -95,7 +117,7 @@ export default {
         dl {
           font-family: Arial, Helvetica, sans-serif;
           margin: 0;
-          font-size: 1rem;
+          font-size: 18px;
           width: 12.5rem;
           margin-right: 1.4rem;
           float: left;
@@ -104,22 +126,14 @@ export default {
             margin: 1.5rem 0 1.5rem;
           }
           dd {
-            font-size: 0.78rem;
+            font-size: 12px;
             margin: 0 0 1.5rem 0 ;
-            a {
-              animation-delay: 1s;
-              color: white;
-              &:hover {
-              color: #a8a9aa;
-              }
-            }
-            
           }
         }
       }
     }
     .footer-bottom {
-      font-size: 0.8rem;
+      font-size: 14px;
       color: #a8a9aa;
       height: 2rem;
       background: #1a2227;
@@ -128,7 +142,14 @@ export default {
         .fl;
       }
       .right {
-        .fr;
+        float: right;
+        a {
+          animation-delay: 1s;
+          color: #999;
+          &:hover {
+            color: #fff;
+          }
+        }
       }
     }
     .footer-content {

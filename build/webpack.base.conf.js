@@ -4,6 +4,7 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -71,6 +72,7 @@ module.exports = {
       $:'jquery',
       jQuery:'jquery',
       'window.jQuery':'jquery'
-    })
+    }),
+    new BundleAnalyzerPlugin()
   ]
 }

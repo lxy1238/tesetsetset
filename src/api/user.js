@@ -30,6 +30,13 @@ export const userActivate = data => fetch({
   data: qs.stringify(data)
 })
 
+//激活后手动发送右键
+export const getActivateEmail = data => fetch({
+  url: '/api/v1/user/get-active-email',
+  method: 'POST',
+  data: qs.stringify(data)
+})
+
 
 //登录
 

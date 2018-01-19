@@ -181,7 +181,6 @@ table {
   }
 }
 table td,th {
-  padding: 10px 0 10px 0;
   font-weight: normal;
 }
 table tbody tr td {
@@ -289,6 +288,44 @@ table tbody tr td {
 
 
 
+//google anniu
+.google_translate_element {
+  position: relative;
+  padding: 5px 5px 5px 5px;
+}
+#google_translate_element .goog-te-gadget-simple {
+  white-space: nowrap ;
+  padding: 0px ;
+  border: 0px;
+  height: 24px;
+  line-height: 21px;
+  background-color: transparent;
+  width: 80%;
+  // min-width: 128px;
+  background: white;
+  text-align: left;
+  border: 1px solid #eee;
+  margin: 0 auto;
+}
+.goog-te-menu-value {
+  span:nth-of-type(3){
+    display: none;
+  }
+  span:nth-of-type(2){
+    display: none;
+  }
+  img {
+    display: none;
+  }
+}
+.iconfont.icongoogle {
+  float: right;
+  margin-right: 5px;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+
 
 
 
@@ -312,7 +349,7 @@ table tbody tr td {
     // height: 345px !important
   }
   .trials-details-left {
-    // top: 10.3rem !important;
+    // top: 17rem !important;
     // display: none;  
   }
   // .trials-right-content.right {
@@ -320,6 +357,12 @@ table tbody tr td {
   // }
   .promotion-coupons {
     min-height: 660px !important;
+  }
+  .details-content .promotion {
+    min-height: 425px !important;
+  }
+  .flag-trial {
+    top: 1rem !important;
   }
 }
 
@@ -331,11 +374,17 @@ table tbody tr td {
   .promotion-coupons {
     min-height: 660px !important;
   }
+  .details-content .promotion {
+    min-height: 425px !important;
+  }
+  .flag-trial {
+    top: 1rem !important;
+  }
 }
 
 @media screen and (max-width: 1270px) {
   html {
-    font-size: 12px;
+    font-size: 12px !important;
   }
   .coupons-product {
     // height: 340px !important
@@ -354,7 +403,7 @@ table tbody tr td {
     width: 98% !important;
   }
   .trials-details-left {
-    // top: 12.09rem !important;  
+    // top: 18.80rem !important;  
   }
   .login-y.user-info {
     padding: 0 !important;
@@ -366,6 +415,13 @@ table tbody tr td {
   .promotion-coupons {
     min-height: 630px !important;
   }
+  .details-content .promotion {
+    min-height: 390px !important;
+  }
+  .flag-trial {
+    margin-top: -0.4rem !important;
+  }
+  
 }
 
 // @media screen and (max-width: 1115px) {

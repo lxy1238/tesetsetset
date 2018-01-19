@@ -92,9 +92,6 @@
                 </li>
               </ul>
             </div>
-            <div class="caluse-item-footer">
-              If you have any questions about our Privacy Policy, or you would like to cancel your account, please contact us at support@DealsBank.com
-            </div>
           </div>
         </div>
       </div>
@@ -152,10 +149,6 @@ export default {
       font-size: 18px;
       color: #333;
       margin-bottom: 30px;
-    }
-    .caluse-item-footer {
-      color: #0072bc;
-      font-style: italic;
     }
   }
 </style>

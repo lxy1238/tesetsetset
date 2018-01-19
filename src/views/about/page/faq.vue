@@ -22,368 +22,178 @@
               <div class="all-question">
                 <div class="question-item" id="question0">
                   <div class="question-title">
-                    What is DealPlus?
+                    What is DealsBank?
                   </div>
                   <div class="question-content">
-                    <p>DealsPlus is a user-generated social shopping site where users can find, share, discuss, and enjoy the best deals and coupons available online. It is FREE to use, and FREE to join! </p>
                     <p>
-                      Keep in mind that we are NOT an auction or retailer site, and we don't sell any products directly. We help you find the best bargains out there, then send you to retailers' sites to purchase those products at their discounted prices.
-                    </p>  
+                      DealsBank is a platform which provides discounted promotional information by user, carefully screened to pick out the most cost-effective promotional information by professional online shoppers and then proceeds promotional sharing by user. We are not only a promotional site, but also a product marketing center, which are a sharing union of a large number of users and online shoppers. We devote ourselves to spreading high-quality promotional messages quickly to detonate sales, which not just bring real discount information for friends and fans, but earn huge commissions at the same time. 
+                    </p> 
                   </div>
                 </div>
                 <div class="question-item" id="question1">
                   <div class="question-title">
-                    How do I search for questions and answers about a specific topic?
+                    What are points and levels?
                   </div>
                   <div class="question-content">
-                    <p>Just use the search field on the Ask a Question homepage. We’ll do our best to show you questions and answers related to the topic you’re searching.</p> 
+                    <p>
+                      <span>Your points are an ever-changing score that reflects your activity and credibility on DealsBank. </span><br />
+                      <span>The more active of a participant you are on DealsBank, the more points you gain.</span><br />
+                      <span>Member Points</span>
+                      <ul>
+                        <li>1. Register account---10 points</li>
+                        <li>2. Successfully release coupons---20 points</li>
+                        <li>3. Log in every day---5 points</li>
+                        <li>4. Successfully distribute trial products---20 points</li>
+                        <li>5. Bring a new registered user---50 points</li>
+                        <li>6. Complete product trial---50 points</li>
+                        <li>7. Product trial reviews (includes video)---20 points</li>
+                        <li>8. Product trial reviews (includes picture)---10 points</li>
+                      </ul>
+                      <ul>
+                        <span>Membership Levels</span><br />
+                        <span>The number of posts = the number of successfully releasing coupons + the number of successfully releasing trial products</span>
+                        <li>1. Level 1  the number of posts: 0</li>
+                        <li>2. Level 2  the number of posts: 25</li>
+                        <li>3. Level 3  the number of posts: 100</li>
+                        <li>4. Level 4  the number of posts: 300</li>
+                        <li>5. Level 5  the number of posts: 500</li>
+                        <li>6. Level 6  the number of posts: 1000</li>
+                        <li>7. Level 7  the number of posts: 2000</li>
+                        <li>8. Level 8  the number of posts: 3000</li>
+                        <li>9. Level 9  the number of posts: 4000</li>
+                        <li>10. Level 10 the number of posts: 6000</li>
+                      </ul>
+                    </p>
                   </div>
                 </div>
                  <div class="question-item" id="question2">
                   <div class="question-title">
-                    What are points? 
+                    What can I do on DealsBank?
                   </div>
                   <div class="question-content">
                     <p>
-                      Your points are an ever-changing score that reflects your activity and credibility on DealsPlus. The more active of a participant you are on DealsPlus, the more points you gain. As you gain more points, you will unlock new avatars to use on the website. 
-                    </p> 
-                    <p>
-                      You can earn points by voting, posting, commenting, or flagging a deal or coupon. You can also earn or lose points by getting upvotes and downvotes on deals you post.
-                    </p> 
+                      As a registered DealsBank member, you can receive coupons, apply for product trial and earn money. As long as you submit your affiliate ID in Member Center, share or repost our information on our platform and bring the deal, you will have a third-party affiliate bonus.
+                    </p>
                   </div>
                 </div>
                  <div class="question-item" id="question3">
                   <div class="question-title">
-                    How do I follow a user?
+                    Is DealsBank free to use? 
                   </div>
                   <div class="question-content">
                     <p>
-                      Just click the "follow" button! On a deal page or a user's profile page, you'll find it below the user's name and next to their number of fans.
-                    </p> 
+                      Yes! DealsBank is FREE to use and FREE to join.
+                    </p>
                   </div>
                 </div>
                  <div class="question-item" id="question4">
                   <div class="question-title">
-                    What happens when I follow a user?
+                    Why is the price on DealsBank different from the price on the retailer's website? 
                   </div>
                   <div class="question-content">
                     <p>
-                      When you follow a user you become their fan (everyone likes having fans, right?). Also, when viewing Hot or Fresh deals, you can choose to only see those posted by the users you're following. Additionally, you can only receive messages from users that you are following.
+                      The reason why the price is different may be that you did not use coupons when you went to settle accounts, or that the coupons have expired and the merchants have modified the prices. 
                     </p> 
+                    <p>
+                      If you find the price does not match, you can report the promotional information on details page, our system will promptly shut down the promotion, so as not to mislead the consumer.
+                    </p>
                   </div>
                 </div>
                  <div class="question-item" id="question5">
                   <div class="question-title">
-                    What is the "+" button?
+                    What if I forgot my password? 
                   </div>
                   <div class="question-content">
                     <p>
-                      When you click the "+" button (or "plus button"), it's kinda like saying "thanks," "awesome," "good find," or simply, "I like it!" You're also casting a vote to have that deal featured in Popular Deals.
+                      When you log in for DealsBank, click "Forgot password?" link to enter your login email, and then click "Request Password?". The system will send a password reset link to your e-mail, check the e-mail and follow the instructions. 
                     </p> 
                   </div>
                 </div>
                  <div class="question-item" id="question6">
                   <div class="question-title">
-                    What can I do on DealsPlus?
+                    Who can submit coupons and product trials?
                   </div>
                   <div class="question-content">
-                    <p>
-                      As a registered DealsPlus member, you can submit deals and coupons, ask questions, share shopping tips, plus the deals you like, follow your favorite users, receive e-mail alerts, and even make money! And if you're not a registered user, you can still browse our huge database of money saving deals and coupons.
-                    </p> 
+                   <p>
+                     Only successfully applied to become the influencer and merchant of DealsBank can submit coupons. Only the merchant can submit product trial. In the future, all registered users can submit coupons.
+                   </p>
                   </div>
                 </div>
                  <div class="question-item" id="question7">
                   <div class="question-title">
-                    Is DealsPlus free to use? 
+                   What should we pay attention to during submitting coupons and product trials?
                   </div>
                   <div class="question-content">
-                    <p>
-                      Yes! DealsPlus is FREE to use and FREE to join.
-                    </p> 
+                   <p>
+                     You must pay attention to the integrity of the information, the expiration date of the activity, the price and the accuracy of coupon code. A good primary image will attract more people's attention. 
+                   </p>
                   </div>
                 </div>
                  <div class="question-item" id="question8">
                   <div class="question-title">
-                    What are "Hot" and "Fresh" deals? And what's "Heating Up"?
+                   Could I receive refund if I submit overtime reviews after conducting product trial?
                   </div>
                   <div class="question-content">
                     <p>
-                      Hot Deals are the deals you see right on the DealsPlus homepage. Through saves and views, the DealsPlus community has declared these to be the best deals of the moment! 
+                      No. If you submit overtime reviews, you cannot receive refunds according to the rules. Over deadline, DealsBank will refund the money to the merchant, so that DealsBank does not refund to the user.
                     </p>
                     <p>
-                      Fresh Deals are recently submitted deals that have not yet become Hot Deals. If you see a Fresh Deal that you think deserves an upgrade to the homepage, make sure to save it, view it, and maybe even leave a comment. 
-                    </p> 
-                    <p>
-                      Deals that are Heating Up are the ones well on their way to being Hot. If you think a deal that's Heating Up is homepage worthy, then go ahead and give it a thumbs up.
+                      DealsBank requires users to upload a trial review address within 15 days after placing an order.
                     </p>
                   </div>
                 </div>
                  <div class="question-item" id="question9">
                   <div class="question-title">
-                    Why is the price on DealsPlus different from the price on the retailer's website?
+                    What is the limitation of product trial?
                   </div>
                   <div class="question-content">
-                    <span>
-                      Here are the most likely reasons for mismatched prices ...
-                    </span> 
-                    <ul>
-                      <li>
-                        ● You may need to add the product to your cart, use a coupon code, or send in a mail in rebate in order to get the product at its reduced price. Make sure you read the details in the deal post to see what you need to do in order to receive your discount.
-                      </li>
-                      <li>
-                        ● The price may have dropped! If you see a lower price on the retailers site than on DealsPlus, then it looks like you've found a price drop. Make sure to edit the deal with the new price or leave a comment to let other users know that the product is available at a lower price.
-                      </li>
-                      <li>
-                        ● The deal may have expired! If the retailers price is higher than on DealsPlus, and there are no codes or rebates, then unfortunately, the deal has probably expired. Flag the deal as expired, or leave a comment saying that the deal is no longer available.
-                      </li>
-                    </ul>
+                    <p>
+                      Four “only one time” principle--- 1 registered user has only 1product trial opportunity in 1 online shopping platform within 1 month. And DealsBank requires users to upload a trial review address within 15 days after placing an order.
+                    </p>
                   </div>
                 </div>
                  <div class="question-item" id="question10">
                   <div class="question-title">
-                    What are custom alerts?
+                    Under what circumstances my account will be frozen?
                   </div>
                   <div class="question-content">
                     <p>
-                      Custom alerts allow you to add a keyword to your alert list. That way, if a deal is added to DealsPlus with your keyword in it, you will be alerted immediately. For example, if you add the keyword "laptop" to your list, you will receive an e-mail every time there's a deal with the word "laptop" in it.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question11">
-                  <div class="question-title">
-                    Does DealsPlus have email subscriptions and/or RSS Feeds? 
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Yes! In fact, we have both.
-                    </p> 
-                    <p>
-                      We offer coupon alert subscriptions for your favorite stores!
-                    </p>
-                    <p>
-                      To receive coupon alerts, visit any coupon page (Kohl's Coupons for example). Simply enter your email address in the field provided where you see "Never miss a single coupon for (Your Store)" and click "Subscribe." Once you do that, open your confirmation email and verify your subscription!
-                    </p>
-                    <p>
-                      Emails also contain today's top deals and blog posts! Please note that you will only receive an email when a new alert is sent for your subscribed stores, so subscribe to more stores to get emails every day!
-                    </p>
-                    <p>
-                      To unsubscribe, visit your profile page to manage the subscriptions to each store or click "Unsubscribe" at the bottom of your email.
-                    </p>
-                    <p>
-                      DealsPlus has multiple RSS feeds, which you can subscribe to using iGoogle, My Yahoo!, Bloglines, and more:
-                    </p>
-                    <p>
-                      <span>&nbsp;&nbsp;&nbsp;&nbsp;Deals</span><br/>
-                      <span>&nbsp;&nbsp;&nbsp;&nbsp;All Deals</span>
+                      Only when you provided false product trial review, were reported by others, contacted merchants privately, accepted the bribe of the merchant or conducted other violations of the DealsBank policy can your account will be frozen.
                     </p>
                   </div>
                 </div>
-                <div class="questionk-item" id="question12">
+                <div class="questionk-item" id="question11">
                   <div class="question-title">
-                    What if I forgot my password?
+                    What is Affiliate PID?
                   </div>
                   <div class="question-content">
                     <p>
-                      Happens to the best of us. Just go here and enter the email address that you used to sign up for DealsPlus.
+                      This is the only promotion ID available to you from third-party affiliate platforms, such as Amazon Affiliate Program, Rakuten, Shareasale, CJ, and others.
+                    </p>
+                    <p>
+                      DealsBank currently only supports Amazon Affiliate, and when you successfully registered as an Amazon AffiliateProgram user, Amazon will give you a promotion ID. And you add your Amazon Affiliate PID to DealsBank and after successfully logging in DealsBank, you will be able to earn Amazon affiliate commissions by sharing and reposting the Amazon promotional information on DealsBank via successful deals.
                     </p>
                   </div>
                 </div>
               
+                 <div class="question-item" id="question12">
+                  <div class="question-title">
+                    Why did my product trial qualification of successful application was canceled?
+                  </div>
+                  <div class="question-content">
+                    <p>
+                      When you successfully apply for a product trial, you must submit a true order number within 24 hours. If you don’t provide order number within 24 hours or the order number is not true, your trial qualification will be canceled.
+                    </p>
+                  </div>
+                </div>
                  <div class="question-item" id="question13">
                   <div class="question-title">
-                    Does DealsPlus have its own language or something ... ? 
-                  </div>
-                  <div class="question-content">
-                    <span>
-                      Sort of! Here's some terminology you might find helpful.
-                    </span>
-                    <ul>
-                      <li><strong>DP</strong> - DealsPlus</li>
-                      <li><strong>Plusses</strong> - The number of times deal has been voted for.</li>
-                      <li><strong>FS</strong> - Free Shipping</li>
-                      <li>
-                        <strong>MIR </strong>
-                         - Mail in Rebate - Provided by the manufacturer. Generally, you must show proof of purchase (receipt, UPC bar code) in order to receive a rebate.
-                      </li>
-                      <li><strong>AR</strong> - After Rebate</li>
-                      <li><strong>BOGO</strong> - Buy One Get One</li>
-                      <li><strong>S/H</strong> - Shipping and Handling</li>
-                      <li><strong>YMMV</strong> - Your mileage may vary</li>
-                      <li><strong>OOS</strong> - Out of stock</li>
-                      <li><strong>FAR</strong> - Free After Rebate</li>
-                      <li><strong>AC</strong> - After Coupon</li>
-                      <li><strong>OTD</strong> - Out the Door</li>
-                      <li><strong>PM</strong> - Private Message</li>
-                      <li><strong>OP</strong> - Original Poster</li>
-                    </ul>
-                  </div>
-                </div>
-                 <div class="question-item" id="question14">
-                  <div class="question-title">
-                    How do I submit a deal? 
+                   How to modify the content template of coupon?
                   </div>
                   <div class="question-content">
                     <p>
-                      Just click the big "+" button at the top right of any page, then select "Deals." Next, you'll paste the URL of the product you'd like to post, then click "Continue". If your deal isn't a duplicate, it will be posted right to "Fresh Deals"! If the deal is a duplicate, a message will pop up, giving you the option to continue, submit a new deal, or edit. If you'd like to update the price, or edit the details of the deal, go for it. Please only select to continue if the deal you're submitting is different from the duplicate deal displayed.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question15">
-                  <div class="question-title">
-                    What information should I include when I submit a deal?
-                  </div>
-                  <div class="question-content">
-                    <p>Just use the search field on the Ask a Question homepage. We’ll do our best to show you questions and answers related to the topic you’re searching.</p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question16">
-                  <div class="question-title">
-                    How do I search for questions and answers about a specific topic?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      DealsPlus makes its best attempt to grab all the information about your product that it can, but it's far from perfect. Make sure you give your deal a once over to correct any mistakes and to add any missing information before you submit it. Common mistakes include: missing dollar signs '$', incomplete or inaccurate titles, missing images, etc.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question17">
-                  <div class="question-title">
-                    I just submitted a deal, and its not showing?!
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      If you are a newly registered member, all of your deal submissions will be moderated by the DealsPlus team, in order to prevent spam. If you are not a newly registered member and your deals still don't seem to be showing up, you can contact Technical Support.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question18">
-                  <div class="question-title">
-                    Oops! I messed up ... How do I edit my deal?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      To edit a deal, simply find the deal page and click "Edit," on the right hand side. You can edit most deal information, but only original posters can change/edit deal images.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question19">
-                  <div class="question-title">
-                    How does a deal become a "Hot Deal"? Is there anything I can do to get my deal on the front page?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      There are all kinds of factors used to determine what deals make it to the front page, including the number of saves and clicks a deal receives within a certain period of time, and the number of flags or spam reports associated with it. So when it comes down to it, if you'd like to see your deal on the front page, the best thing you can do is post a really good deal!
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question20">
-                  <div class="question-title">
-                    What are those plusses under my avatar on my profile page?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Those plusses indicate your DealsPlus "level." The more active you are, the more plusses you'll have, and the higher your level will be. When you plus a deal the plus rating of that deal increases by your "level" amount.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question21">
-                  <div class="question-title">
-                    Are there any advantages to being a top DealsPlus user? 
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      There will be soon! Stay tuned, because top users are about to get some special privileges.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question22">
-                  <div class="question-title">
-                    What are DealsPlus Tools?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Our goal is to improve your online shopping experience. And right now, we offer two tools -- the DealsPlus bookmarklet and the DealsPlus Toolbar.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question23">
-                  <div class="question-title">
-                    What is the DealsPlus Bookmarklet?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      The DealsPlus Bookmarklet makes it quick and easy to share deals, by letting you upload products to DealsPlus with just the click of a button. By following the directions for your specific browser, you can download the bookmarklet and immediately start submitting deals.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question24">
-                  <div class="question-title">
-                    Why isn't the bookmarklet accurate all the time?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Unfortunately, the bookmarklet won't ever be 100% accurate. This is due to the fact that different websites are structured differently, making it difficult for the bookmarklet to consistently grab the correct information. Because the information is sometimes inaccurate, we suggest that you give your deal a once over before submitting it to make sure everything is correct.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question25">
-                  <div class="question-title">
-                   Any tips and tricks for using the DealsPlus Bookmarklet?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      For sure! One helpful hint is that you can choose to grab specific text to include in your deal by selecting it with you mouse before clicking "Add to DealsPlus." This will automatically post the selected text in either the Title or the Description section of your deal. The bookmarklet will automatically choose the section you're most likely selecting for.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question26">
-                  <div class="question-title">
-                    I tried to submit a deal using the bookmarklet, and the submission page came up blank. What gives?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      There could be a number of things going on here. One possibility is that you may have tried to submit a deal from a non-retail product page, which the bookmarklet is unable to read. Another thing to keep in mind, the bookmarklet has a timeout of 20 seconds, which means that if the server of the URL you are trying to submit is slow or down, the DealsPlus bookmarklet will only keep trying for 20 seconds before it defaults to a blank page.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question27">
-                  <div class="question-title">
-                    How do I ask a question or post a tip?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Click the "+" button on the upper right hand corner of any page and then click to add a Topic/Picture. Now write out your question and tag it with the interests that it is most relevant to. Someone will respond quickly.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question28">
-                  <div class="question-title">
-                    What kinds of questions can I ask?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Feel free to ask questions about DealsPlus, specific deals or coupons, products you’re interested in, stores or websites where you shop, hobbies DIY projects, in short, anything you are curious about. All we ask is that you try and ask the question in the interest where its most relevant so that you get the most relevant answer.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question29">
-                  <div class="question-title">
-                    What kinds of tips can I share?
-                  </div>
-                  <div class="question-content">
-                    <p>
-                      Our community is made up of savvy shoppers looking for the best bargains. We encourage you to share any and all tips and tricks that you use to shop smart and save money.
-                    </p> 
-                  </div>
-                </div>
-                 <div class="question-item" id="question30">
-                  <div class="question-title">
-                    How do I share an answer? 
-                  </div>
-                  <div class="question-content">
-                    <p>
-                    Simple! Just reply in the comments and the questioner will receive a notification of your reply.
-                    </p> 
+                      As for the modify content template page, the left is the label and the right is the layout of the content. Different labels correspond to the different coupon information, such as the label # Platform #, which represents the name of the online shopping platform. Different content layout generates different content. In order to make it easier to show coupon content to your fans or friends, our platform allows each user to customize your own content.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -402,41 +212,28 @@ export default {
     return {
       titleMsg: 'FAQs - DealsBank',
       questions: [
-        {text: 'What is DealsPlus?'},
-        {text: 'How do I search for questions and answers about a specific topic?'},
-        {text: 'What are points?'},
-        {text: 'How do I follow a user?'},
-        {text: 'What happens when I follow a user?'},
-        {text: 'What is the "+" button?'},
-        {text: 'What can I do on DealsPlus?'},
-        {text: 'Is DealsPlus free to use?'},
-        {text: 'What are "Hot" and "Fresh" deals? And what\'s "Heating Up"?'},
-        {text: 'Why is the price on DealsPlus different from the price on the retailer\'s website?'},
-        {text: 'What are custom alerts?'},
-        {text: 'Does DealsPlus have email subscriptions and/or RSS Feeds?'},
+        {text: 'What is DealsBank?'},
+        {text: 'What are points and levels?'},
+        {text: 'What can I do on DealsBank?'},
+        {text: 'Is DealsBank free to use? '},
+        {text: 'Why is the price on DealsBank different from the price on the retailer\'s website?'},
         {text: 'What if I forgot my password?'},
-        {text: 'Does DealsPlus have its own language or something ... ?'},
-        {text: 'How do I submit a deal?'},
-        {text: 'What information should I include when I submit a deal?'},
-        {text: 'I just submitted a deal, and its not showing?!'},
-        {text: 'Oops! I messed up ... How do I edit my deal?'},
-        {text: 'How does a deal become a "Hot Deal"? Is there anything I can do to get my deal on the front page?'},
-        {text: 'What are those plusses under my avatar on my profile page??'},
-        {text: 'Are there any advantages to being a top DealsPlus user?'},
-        {text: 'What are DealsPlus Tools?'},
-        {text: 'What is the DealsPlus Bookmarklet?'},
-        {text: 'Why isn\'t the bookmarklet accurate all the time?'},
-        {text: 'Any tips and tricks for using the DealsPlus Bookmarklet?'},
-        {text: 'I tried to submit a deal using the bookmarklet, and the submission page came up blank. What gives?'},
-        {text: 'How do I ask a question or post a tip?'},
-        {text: 'What kinds of questions can I ask?'},
-        {text: 'What kinds of tips can I share?'},
-        {text: 'How do I share an answer?'},
+        {text: 'Who can submit coupons and product trials?'},
+        {text: 'What should we pay attention to during submitting coupons and product trials?'},
+        {text: 'Could I receive refund if I submit overtime reviews after conducting product trial?'},
+        {text: 'What is the limitation of product trial?'},
+        {text: 'Under what circumstances my account will be frozen?'},
+        {text: 'What is Affiliate PID？'},
+        {text: 'Why did my product trial qualification of successful application was canceled?'},
+        {text: 'How to modify the content template of coupon?'},
       ]
     }
   },
   mounted () {    
-   
+    if (this.$route.query.id) {
+      this.gotoQuestion(this.$route.query.id)
+    }
+    
   },
   methods: {  
     gotoQuestion (index) {

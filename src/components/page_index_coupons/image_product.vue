@@ -31,7 +31,7 @@
         </el-tooltip>
       </div>
      </div> 
-      <p class="platfrom content"  :title="couponsDetails.product_title">{{couponsDetails.website}}</p>
+      <p class="platfrom content"  :title="couponsDetails.product_title" @click.stop="gotoWibsite(couponsDetails)">{{couponsDetails.website}}</p>
       <div class="descript" :title="couponsDetails.product_title">{{couponsDetails.product_title}}</div>
       <slot name="price"></slot>
       <div class="content viewcoupons" :title="couponsDetails.product_title">
@@ -89,13 +89,21 @@ export default {
 
     //跳转到dealsbank链接
     dealsbankUrl () {
-      return location.host + '/coupons/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) +  (getUserId() ? '?promoter=' + getUserId() : '')
+      return 'https://' + location.host + '/coupons/' + 
+              base64Encode(this.couponsDetails.id) + '/' + 
+              base64Encode(this.country_id) +  '/' +
+              (getUserId() ? base64Encode(getUserId()) : '')
     },
 
     //跳转到 goto amazon 链接页面
     gotoAmazonUrl () {
-      return location.host + '/goto/' + base64Encode(this.couponsDetails.id) + '/' + base64Encode(this.country_id) + '/' +base64Encode(getUserId() ?  getUserId() : '')
-    }
+      return  'https://' + location.host + '/goto/product/coupon/' + 
+              base64Encode(this.couponsDetails.id) + '/' + 
+              base64Encode(this.country_id) +
+              (getUserId() ? '/' +  base64Encode(getUserId()) : '')
+    },
+
+  
   },
   mounted () {
     this.init()
@@ -199,6 +207,16 @@ export default {
         arr.splice(index, 1)
       }
     },
+
+    gotoWibsite (details) {
+      let product
+      if (details.current_img) {
+        product = 'coupon'
+      } else {
+        product = 'trial'
+      }
+      window.open(`/goto/platform/${product}/${base64Encode(this.couponsDetails.id)}/${base64Encode(this.country_id)}/${base64Encode(getUserId() ?  getUserId() : '')}`)
+    },
     copy (e) {
       Clip(e)
     },
@@ -284,7 +302,7 @@ export default {
     }
     .com-right {
       margin-left: 10px;
-      font-size: 0.88rem;
+      font-size: 13px;
       color: red;
     }
   }

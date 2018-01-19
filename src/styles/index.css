@@ -11,7 +11,7 @@
 }
 .sign-dialog .el-dialog.el-dialog--small {
   width: 458px;
-  min-height: 500px;
+  min-height: 350px;
   padding-bottom: 40px;
 }
 .sign-dialog .el-dialog__header {
@@ -27,8 +27,16 @@
 .template-dialog .el-dialog.el-dialog--small {
   width: 1000px;
 }
-.el-dialog.el-dialog--small {
+.el-dialog.el-dialog--small,
+.el-dialog.el-dialog--tiny {
   border-radius: 10px;
+}
+.el-dialog.el-dialog--tiny {
+  width: 600px;
+  padding-bottom: 50px;
+}
+.not-trials-dialog-first .el-dialog.el-dialog--tiny {
+  min-height: 350px !important;
 }
 .el-checkbox__label {
   font-size: 12px !important;
@@ -213,7 +221,6 @@ table th {
 }
 table td,
 th {
-  padding: 10px 0 10px 0;
   font-weight: normal;
 }
 table tbody tr td {
@@ -350,6 +357,38 @@ table tbody tr td {
   background: #8fc2e5;
   border-color: #8fc2e5;
 }
+.google_translate_element {
+  position: relative;
+  padding: 5px 5px 5px 5px;
+}
+#google_translate_element .goog-te-gadget-simple {
+  white-space: nowrap ;
+  padding: 0px ;
+  border: 0px;
+  height: 24px;
+  line-height: 21px;
+  background-color: transparent;
+  width: 80%;
+  background: white;
+  text-align: left;
+  border: 1px solid #eee;
+  margin: 0 auto;
+}
+.goog-te-menu-value span:nth-of-type(3) {
+  display: none;
+}
+.goog-te-menu-value span:nth-of-type(2) {
+  display: none;
+}
+.goog-te-menu-value img {
+  display: none;
+}
+.iconfont.icongoogle {
+  float: right;
+  margin-right: 5px;
+  margin-top: 2px;
+  font-size: 12px;
+}
 @media screen and (max-width: 1557px) {
   html {
     font-size: 14.9px;
@@ -357,15 +396,27 @@ table tbody tr td {
   .promotion-coupons {
     min-height: 660px !important;
   }
+  .details-content .promotion {
+    min-height: 425px !important;
+  }
+  .flag-trial {
+    top: 1rem !important;
+  }
 }
 @media screen and (max-width: 1389px) {
   .promotion-coupons {
     min-height: 660px !important;
   }
+  .details-content .promotion {
+    min-height: 425px !important;
+  }
+  .flag-trial {
+    top: 1rem !important;
+  }
 }
 @media screen and (max-width: 1270px) {
   html {
-    font-size: 12px;
+    font-size: 12px !important;
   }
   .coupons-product .btn-coupons {
     height: 2.5rem !important;
@@ -385,6 +436,12 @@ table tbody tr td {
   }
   .promotion-coupons {
     min-height: 630px !important;
+  }
+  .details-content .promotion {
+    min-height: 390px !important;
+  }
+  .flag-trial {
+    margin-top: -0.4rem !important;
   }
 }
 @media screen and (max-width: 1280px) {

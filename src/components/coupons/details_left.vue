@@ -49,8 +49,6 @@ export default {
     return {
       activeNum: 0,
       country_id: parseInt(getStore('country_id')) || 1,
-      amazonUrl: '',
-      promoPid: '12345678'
     }
   },
   props: {
@@ -80,42 +78,15 @@ export default {
     ...mapGetters([
       'currentRouter'
     ]),
-    imgLen () {
-      return this.imgList.length
-    },
   },
   methods: {
-    //页面图片效果
-    emitdata () {
-      this.$emit('send', this.imgList[0])
-    },
+   
     //图片效果
     hover (i) {
       this.activeNum = i
-      // this.emitdata(i)
     },
-    pre () {
-      if (this.activeNum === 0) {
-        this.activeNum = this.imgLen - 1
-      } else {
-        this.activeNum--
-      }
-      // this.emitdata(this.activeNum)
-    },
-    next () {
-      if (this.activeNum === this.imgLen - 1) {
-        this.activeNum = 0
-      } else {
-        this.activeNum++
-      }
-      // this.emitdata(this.activeNum)
-    },
-    
     //跳转到商家或者红人发布优惠券的页面
     gotouser () {
-      if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {
-        return
-      }
       this.$router.push({path: '/merchant/' + base64Encode(this.userInfo.user_id)})
     },
 
@@ -124,8 +95,7 @@ export default {
         return
       }
       let router = this.currentRouter.replace('/coupons', '')
-      let promoterId = this.$route.query.promoter ? this.$route.query.promoter : ''
-      window.open('/goto' + router + '/' + base64Encode(promoterId))
+      window.open('/goto/product/coupon' + router)
     }
   }
 }
@@ -133,12 +103,9 @@ export default {
 
 <style lang="less" scoped>
 .details-left {
-  // position: fixed;
   float: left;
   width: 26.9rem;
-  // height: 44.44rem;
   .img {
-    // height: 20rem;
     background: white;
     border-radius: 5px;
     margin-bottom: 1rem;
@@ -168,22 +135,6 @@ export default {
       margin-top: 0.8rem;
       padding: 1.2rem 0 0 0;
       text-align: center;
-      span {
-        cursor: pointer;
-        position: absolute;
-        top: 1.5rem;
-        transform: rotate(90deg);
-        &.left {
-          transform: rotate(-90deg);
-          left: 1rem;
-        }
-        &.right {
-          right: .5rem;
-        }
-        i {
-          font-size: 2rem;
-        }
-      }
       img {
         width: 3rem;
         height: 3rem;
@@ -241,7 +192,7 @@ export default {
         position: relative;
         top: -0.1rem;
         left: .5rem;
-        font-size: 0.61rem;
+        font-size: 12px;
         background: #ec5d1c;
         border-radius: 4px;
         color: white;

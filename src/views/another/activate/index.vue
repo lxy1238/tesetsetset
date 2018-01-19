@@ -1,11 +1,22 @@
 <template>
   <div class="activate">
       
-      <div class="email-content">
+      <div class="email-content" v-if="activate === 1">
         <img src="../../../assets/email.png" />
         <div class="success-text">
           <p class="text-top">
             Email is verified successfully.
+          </p>
+          <p class="text-bottom">
+            The email address {{email}} has been verified successfully, please <a class="link" href="javascript:void(0);" @click="activateLogin">login</a>  again.
+          </p>
+        </div>
+      </div>
+       <div class="email-content" v-if="activate === 2">
+        <img src="../../../assets/login-remind.png" :class="{fail: activate === 2}"/>
+        <div class="success-text">
+          <p class="text-top">
+            The mailbox has been activated successfully or does not exist.
           </p>
           <p class="text-bottom">
             The email address {{email}} has been verified successfully, please login again.
@@ -18,7 +29,7 @@
 </template>
 
 <script>
-import { setToken, setUserId, setEmail } from '@/utils/auth'
+import { removeToken, removeUserId, removeEmail } from '@/utils/auth'
 import footerSelf from '@/components/global/footer.vue'
 export default {
   name: 'activate',
@@ -27,7 +38,7 @@ export default {
   },
   data () {
     return {
-      activate: true,
+      activate: 0,
       resData: '',
     }
   },
@@ -37,31 +48,33 @@ export default {
     }
   },
   mounted () {
-    this.$api.userActivate({'email': this.$route.params.email}).then(res => {
+    this.$api.userActivate({'email': this.$route.params.email, 'api_token': this.$route.params.token}).then(res => {
       if (res.code === 200) {
-        this.activate = true
+        removeToken()
+        removeUserId()
+        removeEmail()
         this.resData = res.data
-        setToken(res.data.api_token)
-        setUserId(res.data.id)
-        setEmail(this.$route.params.email)
-      }
+        this.Login()
+      } 
     }).catch(error => {
+      this.activate = 2
       console.log(error)
     })
   },
   methods: {
     Login () {
       this.$api.updateLogin({'api_token': this.resData.api_token,'user_id': this.resData.id}).then(() => {
+        this.activate = 1
       }).catch(error => {
         console.log('登录记录更新失败' + error)
       })
-      this.$store.dispatch('GenerateRoutes', { roles: ['member'] }).then(() => {
-        this.$router.addRoutes(this.$store.getters.addRouters)
-        this.$router.push({path: '/'})
-      })
+      // this.$store.dispatch('GenerateRoutes', { roles: ['member'] }).then(() => {
+      //   this.$router.addRoutes(this.$store.getters.addRouters)
+      // })
     },
-    gotoindex () {
-      this.$router.push({path: '/'})
+    activateLogin () {
+      this.$root.eventHub.$emit('isLoginInfo')
+      // this.$router.push({path: '/'})
     }
   }
 }
@@ -73,13 +86,17 @@ export default {
       padding: 130px 0 0 150px;
       img {
         float: left;
+        &.fail {
+          position: relative;
+          top: 20px;
+        }
       }
       .success-text {
         position: relative;
         top: 38px;
       }
       .text-top {
-        font-size: 30px;
+        font-size: 28px;
         color: #0072bc;
       }
       .text-bottom {

@@ -23,16 +23,16 @@
           </td>
           <td class="oprate">
             <template v-if="item.status == 0">
-            <a href="javascript:void(0);" @click="editShop(item)">edit</a>
-            <a href="javascript:void(0);" @click="deleteShop(item)">delete</a>
+            <a href="javascript:void(0);" @click="editShop(item)">Edit</a>
+            <a href="javascript:void(0);" @click="deleteShop(item)">Delete</a>
             </template>
             <template v-if="item.status == 1">
             <!-- <a href="javascript:void(0);">delete</a> -->
             </template>
             <template  v-if="item.status == 2">
-            <a href="javascript:void(0);" @click="editShop(item)">edit</a>
-            <a href="javascript:void(0);" @click="getDetails(item)">details</a>
-            <a href="javascript:void(0);" @click="deleteShop(item)">delete</a>
+            <a href="javascript:void(0);" @click="editShop(item)">Ddit</a>
+            <a href="javascript:void(0);" @click="getDetails(item)">Details</a>
+            <a href="javascript:void(0);" @click="deleteShop(item)">Delete</a>
             </template>
           </td>
         </tr>
@@ -52,7 +52,7 @@
      <el-dialog :visible.sync = "addStoreDialog" class="add-store-dialog" >
       <span slot="title" class="title">Add Store</span>
         <div class="dialog-body">
-        <el-form :model="addStoreForm" ref="addStoreForm" :rules="rules" label-width="100px">
+        <el-form :model="addStoreForm" ref="addStoreForm" :rules="rules" label-width="110px">
           <el-form-item label="Website: " prop="platform_id">
             <el-select v-model="addStoreForm.platform_id" @change="websiteChange">
           <el-option 
@@ -98,12 +98,12 @@ export default {
   data () {
     return {
       rules: {
-        platform_id: [{type:'number', required: true, message: 'website is required', trigger: 'blur' }],
-        store_id: [{ required: true, message: 'store id is required', trigger: 'blur' }],
-        store_name: [{ required: true, message: 'store name is required', trigger: 'blur' }],
-        store_url: [{ required: true, message: 'store url is required' ,trigger: 'blur' }],
+        platform_id: [{type:'number', required: true, message: 'The website is required.', trigger: 'blur' }],
+        store_id: [{ required: true, message: 'The store id is required.', trigger: 'blur' }],
+        store_name: [{ required: true, message: 'The store name is required.', trigger: 'blur' }],
+        store_url: [{ required: true, message: 'The store URL is required.' ,trigger: 'blur' }],
       },
-      thLists: ['Website' , 'Store ID', 'Store Name', 'State', 'Operation',],
+      thLists: ['Website' , 'Store ID', 'Store Name', 'Status', 'Operation',],
       trLists: [],
       storeDatas: [
         {
@@ -203,26 +203,26 @@ export default {
         this.$api.addStore(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('add store success!')
+            this.$snotify.success('Submit Successfully!')
             this.addStoreDialog = false
             this.getStoreList()
           }
         }).catch(error => {
           this.saveLoading = false
-          this.$snotify.error(error.message)
+          this.$snotify.error('Submit Failed! ' + error.message )
           this.addStoreDialog = false
         })
       } else {
         this.$api.editStore(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('edit store success!')
+            this.$snotify.success('Submit Successfully!')
             this.addStoreDialog = false
             this.getStoreList()
           }
         }).catch(error => {
           this.saveLoading = false
-          this.$snotify.error(error.message)
+          this.$snotify.error('Submit Failed! ' + error.message)
           this.addStoreDialog = false
         })
       }
@@ -278,18 +278,18 @@ export default {
 
 <style lang="less" >
 @import url('../../../styles/mixin.less');
+.table {
+  td, th {
+    padding: 10px;
+  }
+}
   .store-settings {
     .title-bottom {
       .add-store-btn {
         .btn-h(7rem, 2.5rem, #78b6de,#78b6de, #fff);
-        font-size: 1rem;
         position: absolute;
         right: 0;
         top: 10px;
-        &:active {
-          background: darken(#78b6de, 10%);
-          border-color: darken(#78b6de, 10%);
-        }
       }
     }
   }
@@ -308,16 +308,11 @@ export default {
       width: 300px;
     }
     .add-store-footer {
-      button {
-        .btn-h(230px, 47px, #84BB3A, #84BB3A, #fff);
-        font-size: 25px;
-        &:active {
-          background: darken(#84BB3A, 10%);
-          border-color: darken(#84BB3A, 10%);
-        }
-
-      }
       text-align: center;
+      button {
+        .btn-h(180px, 47px, #84BB3A, #84BB3A, #fff);
+        margin-left: 64px;
+      }
     }
   }
   .oprate {

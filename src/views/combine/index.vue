@@ -81,14 +81,14 @@ export default {
       }
       .text1 {
         color: #808080;
-        font-size: 13.25px;
+        font-size: 13px;
         width: 400px;
         margin: 20px auto;
       }
       .text2 {
         
         color: #1a1a1a;
-        font-size: 13.25px;
+        font-size: 13px;
       }
       .img {
         position: relative;
@@ -140,7 +140,7 @@ export default {
       }
       .footer {
         color: #0072bc;
-        font-size: 13.25px;
+        font-size: 13px;
       }
     }
   }

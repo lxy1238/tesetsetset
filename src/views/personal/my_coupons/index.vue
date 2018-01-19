@@ -12,14 +12,14 @@
               {{item.coupons.product_title}} 
           </div>
           <div class="pro-info">
-            <span class="old-price line-through">{{currency}}{{item.coupons.product_price}}</span><br />
+            <span class="old-price ">{{currency}}{{item.coupons.discount_price}}</span><br />
             <!-- <span class="old-price">{{currency}}{{item.coupons.discount_price}}</span> -->
             <span class="coupons-price"><i>Coupon</i> <b>{{currency}}{{(item.coupons.product_price * item.coupons.discount_rate / 100).toFixed(2)}}</b></span>
             <span class="proportion"><b>{{item.coupons.discount_rate}}%</b> <i>off</i></span>
           </div>
         </div>
         <div class="card-bottom" >
-          <span class="code" :title="item.coupons.coupon_code">{{item.coupons.coupon_code}}</span>
+          <span class="code" :title="item.code.code">{{item.code.code}}</span>
           <button class="go-to-amazon" @click="gotoAmazon(item)"> <a :href="item.coupons.product_url" target="_blank">Go to Amazon </a> </button>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default {
       })
     },
     gotoAmazon (item) {
-      window.open('/goto/' + base64Encode(item.coupon_id) + '/' + base64Encode(this.country_id) + '/')
+      window.open('/goto/product/coupon/' + base64Encode(item.coupon_id) + '/' + base64Encode(this.country_id) + '/')
     }
   }
 }
@@ -124,7 +124,7 @@ export default {
         .expried {
           position: absolute;
           z-index: 222;
-          font-size: .78rem;
+          font-size: 12px;
           width: 100%;
           height: 2rem;
           line-height: 2rem;
@@ -168,6 +168,8 @@ export default {
             }
             .coupons-price{ 
               font-size: 13px;
+              display: inline-block;
+              margin-right: 20px;
               i {
                 color: #808080;
               }
@@ -213,7 +215,7 @@ export default {
           }
           .go-to-amazon {
             .btn-h(8rem, 1.8rem, #84ba3a, #84ba3a, #fff);
-            font-size: 0.68rem;
+            font-size: 12px;
             position: relative;
             line-height: 1.8rem;
             top: 0px;

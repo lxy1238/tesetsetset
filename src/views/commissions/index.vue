@@ -285,7 +285,7 @@ export default {
               height: 100%;
               text-align: center;
               padding: 10px 0 0 0;
-              font-size: 14.13px;
+              font-size: 14px;
               color: #8a8a8a;
               .discount-rate {
                 color:#0095f8;

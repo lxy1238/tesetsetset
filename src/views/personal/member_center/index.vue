@@ -16,25 +16,28 @@
           <div class="name-level">
             <span class="name">{{username}}</span>
             <span class="level reds-color" v-if="roles[0] == 'celebrity'">Influencer</span>
-            <span class="level merchant-color" v-if="roles[0] == 'merchant'">Merchant</span>
-            <template v-if="celebrityData && merchantData">
-              <template v-if="celebrityData.status === 0 && merchantData.status === 1">
-                <span class="remind-info red" v-if="celebrityData"> (Apply for a influencer is under review)</span>
+            <span class="level merchant-color" v-else-if="roles[0] == 'merchant'">Merchant</span>
+            <template v-else> 
+                <template v-if="celebrityData && merchantData">
+                <template v-if="celebrityData.status === 0 && merchantData.status === 2">
+                  <span class="remind-info red" v-if="celebrityData"> (Apply for a influencer is under review)</span>
+                </template>
+                <template  v-if="celebrityData.status === 2 && merchantData.status === 0">
+                  <span class="remind-info red" v-if="merchantData"> (Apply for a merchant is under review)</span>
+                </template>
+                <template v-if="celebrityData.status === 2 && merchantData.status === 2">
+                  <span class="remind-info red" v-if="merchantData.updated_at > celebrityData.updated_at">(Apply for a merchant , not approved.)</span>
+                  <span class="remind-info red" v-else>(Apply for a influencer , not approved.)</span>
+                </template>
               </template>
-              <template  v-if="celebrityData.status === 2 && merchantData.status === 0">
-                <span class="remind-info red" v-if="merchantData"> (Apply for a merchant is under review)</span>
+              <template v-if="celebrityData && !merchantData">
+                <span class="remind-info red" v-if="celebrityData.status === 0">(Apply for a influencer is under review)</span>
+                <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer , not approved.)</span>
               </template>
-              <template v-if="celebrityData.status === 0 && merchantData.status === 2">
-                <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer or merchant , Audit not passed)</span>
+              <template v-if="!celebrityData && merchantData">
+                <span class="remind-info red" v-if="merchantData.status === 0">(Apply for a merchant is under review)</span>
+                <span class="remind-info red" v-if="merchantData.status === 2">(Apply for a merchant , not approved.)</span>
               </template>
-            </template>
-            <template v-if="celebrityData && !merchantData">
-              <span class="remind-info red" v-if="celebrityData.status === 0">(Apply for a influencer is under review)</span>
-              <span class="remind-info red" v-if="celebrityData.status === 2">(Apply for a influencer , Audit not passed)</span>
-            </template>
-            <template v-if="!celebrityData && merchantData">
-              <span class="remind-info red" v-if="merchantData.status === 0">(Apply for a merchant is under review)</span>
-              <span class="remind-info red" v-if="merchantData.status === 2">(Apply for a merchant , Audit not passed)</span>
             </template>
             
           </div>

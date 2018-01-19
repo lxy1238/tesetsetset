@@ -42,7 +42,7 @@ export default {
       } else if(value.length < 8 || value.length > 20  ){
         callback(new Error ('Must be at least 8 to 20 characters.'))
       } else if (this.pidForm.password === this.pidForm.oldpassword) {
-        callback(new Error('The new password can\'t be the same as the old one'))
+        callback(new Error('The new password can\'t be the same as the old.'))
       } else {
         callback()
       }
@@ -58,7 +58,7 @@ export default {
       },
       rules:{
         oldpassword: [
-          { required: true, message: 'Please enter the original password', trigger: 'blur' },
+          { required: true, message: 'Please enter the original password.', trigger: 'blur' },
           { min: 8, max: 20, message: 'Must be at least 8 to 20 characters.', trigger: 'blur' }
         ],
         password: [
@@ -93,10 +93,10 @@ export default {
           this.$api.resetPassword(this.pidForm).then(res => {
             this.saveLoading = false
             if (res.code === 402) {
-              this.$snotify.error(res.message)
+              this.$snotify.error('Submit Failed! ' + res.message)
               return false
             } else {
-              this.$snotify.success('reset password success!!!')
+              this.$snotify.success('Submit Successfully!')
               this.$router.push({path: '/personal/member/index'})
             }
           })

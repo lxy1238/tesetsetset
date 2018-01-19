@@ -61,7 +61,7 @@ export default {
     let reg =  /^\d+(\.\d{1,2})?$/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the withdraw amount'))
+        return callback(new Error('Please enter the withdraw amount. '))
       } else if(parseFloat(value) == 0 ){
         callback(new Error ('Invalid withdraw amount.'))
       } else if(!reg.test(value)){
@@ -180,9 +180,11 @@ export default {
       this.withdrawForm.rmb_withdraw_amount = NumMul(this.withdrawForm.rmb_exchange, this.withdrawForm.withdraw_amount)
       this.$api.withdrawApi(this.withdrawForm).then(res => {
         if (res.code === 200) {
-          this.withdrawDialog = true
+          // this.withdrawDialog = true
+          this.$snotify.success('Submit Successfully! The withdrawal is successful and we will deal with it within three working days.')
           this.clearInput()
           this.initData()
+          this.$router.push({path: '/wallet/financial'})
         }
       }).catch(err => {
         console.log(err)
@@ -222,7 +224,7 @@ export default {
 @import url('../../../styles/mixin.less');
   .withdraw {
     .withdraw-form {
-      height: 330px;
+      height: 340px;
     }
     .el-form-item {
       display: inline-block;

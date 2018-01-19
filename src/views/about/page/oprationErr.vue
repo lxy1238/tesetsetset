@@ -3,11 +3,21 @@
     <div class="about-page">
       <div class="about-content">
         <div class="head-crumbs"  >
-            <span class=" gray-s">Home > Email Verified</span> 
+            <span class=" gray-s">Home > Operation Error</span> 
         </div>
         <div class="card">
           <div class="card-content">
-           <activate-email></activate-email>
+             <div class="email-content">
+              <img src="../../../assets/login-remind.png" />
+              <div class="success-text">
+                <p class="text-top">
+                  To apply after logining.
+                </p>
+                <p class="text-bottom">
+                  You must login to access the application page.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -16,16 +26,12 @@
 </template>
 
 <script>
-import activateEmail from '../../another/activate/index'
 export default {
   name: 'about_email',
   data () {
     return {
-      titleMsg: 'Email Verified'
+      titleMsg: 'Operation Error'
     }
-  },
-  components: {
-    activateEmail
   },
   mounted () {    //钩子函数，等于vue1.0中的ready
    
@@ -84,8 +90,28 @@ export default {
     width: 1100px;
     margin: 0 auto;
     padding: 40px 0 70px 0;
-    p {
-      margin: 0 0 40px 0;
+   
+    
+    .email-content {
+      padding: 130px 0 0 280px;
+      img {
+        float: left;
+      }
+      .success-text {
+        position: relative;
+        top: 19px;
+      }
+      .text-top {
+        font-size: 30px;
+        color: #0072bc;
+      }
+      .text-bottom {
+        font-size: 14px;
+        color: #808080;
+      }
     }
+  }
+  .about-center .about-page .about-content .card .card-content p {
+      margin: 0 0 8px 0;
   }
 </style>

@@ -15,7 +15,7 @@
                      @gotodetails="gotodetails">
           <template slot="price" v-if="couponsDetails.coupons">
            <p class="price content">
-            <span class="price-right">{{currency}}{{couponsDetails.coupons.product_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.coupons.discount_price}}</span>
             <span class="remove" @click.stop="removePromotion(couponsDetails.coupons.id)">
               <i class="el-icon-delete" title="Remove"></i>
             </span>
@@ -125,7 +125,8 @@ export default {
         return
       }
       this.$confirm('Do you really want to delete all?', 'remove all', {
-        confirmButtonText: 'confirm'
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
       })
         .then(() => {
           this.$api.promotionUserRemove(this.removeAllRequestData)
@@ -175,11 +176,6 @@ export default {
     position: relative;
     border-bottom: 1px solid #e6e6e6;
     margin-bottom: 5px;
-  }
-  .title {
-    font-size: 1.5rem;
-    margin: 5px 0;
-    font-weight: normal;
   }
   .remove-all {
     position: absolute;

@@ -2,7 +2,7 @@
   <div class="enter-reds">
     <div class="enter-reds-content">
       <div class="title-s">
-        Contact information
+        Contact Information
       </div>
       <el-form 
             :model="sellerForm" 
@@ -36,15 +36,15 @@
         </el-select>
       </el-form-item>
    
-      <el-form-item label="Post Code: "  prop="postal" >
-        <el-input v-model="sellerForm.postal"  class="textarea" @keyup.native="filterNumber"></el-input>
+      <el-form-item label="Post code: "  prop="postal" >
+        <el-input v-model="sellerForm.postal"  class="textarea" ></el-input>
       </el-form-item>
        <el-form-item label="Phone: " prop="mobile" >
-        <el-input v-model="sellerForm.mobile"  class="textarea" placeholder="+86" @keyup.native="filterNumber"></el-input>
+        <el-input v-model="sellerForm.mobile"  class="textarea"  @keyup.native="filterNumber"></el-input>
       </el-form-item>
    
       <div class="title-s">
-        Store information
+        Store Information
       </div>
        <el-form-item label="Website: " prop="platform" class="item-inline"  >
         <el-select v-model="sellerForm.platform" filterable >
@@ -66,7 +66,7 @@
         <el-input v-model="sellerForm.store_url" type="text" ></el-input>
       </el-form-item>
       <el-form-item class="submit-btn">
-        <button type="button" @click="submit" :loading="btnLoading">Submit</button>
+        <el-button type="button" @click="submit" :loading="btnLoading">Submit</el-button>
       </el-form-item>
     </el-form>
     </div>
@@ -81,9 +81,9 @@ export default {
   data () {
     const validateEmailRule =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter your Email'))
+        return callback(new Error('Please enter Email.'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Invalid email address'))
+        return callback(new Error('Invalid Email format.'))
       } else {
         callback()
       }
@@ -122,40 +122,40 @@ export default {
       },
       rules: {
         fullname: [
-          {required: true ,message: 'full name required', trigger: 'blur'}
+          {required: true ,message: 'Please enter full name.', trigger: 'blur'}
         ],
         email: [
           {validator: validateEmailRule, trigger: 'blur'}
         ],
         country: [
-          {required: true ,message: 'country  is required', trigger: 'blur'}
+          {required: true ,message: 'Please select your country.', trigger: 'blur'}
         ],
         province: [
-          {required: true ,message: 'province/stateis required', trigger: 'blur'}
+          {required: true ,message: 'Please enter province name.', trigger: 'blur'}
         ],
         city: [
-          {required: true ,message: 'city/town title is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter city name.', trigger: 'blur'}
         ],
         addr: [
-          {required: true ,message: 'street address is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter street address.', trigger: 'blur'}
         ],
         postal: [
-          {required: true ,message: 'postal is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter post code.', trigger: 'blur'}
         ],
         mobile: [
-          {required: true ,message: 'daytime phone  is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter your phone number.', trigger: 'blur'}
         ],
         store_id: [
-          {required: true ,message: 'Store ID is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter store ID.', trigger: 'blur'}
         ],
         store_name: [
-          {required: true ,message: 'Store name required', trigger: 'blur'}
+          {required: true ,message: 'Please enter store name.', trigger: 'blur'}
         ],
         store_url: [
-          {required: true ,message: 'Store URL is required', trigger: 'blur'}
+          {required: true ,message: 'Please enter store URL.', trigger: 'blur'}
         ],
         platform: [
-          {required: true ,message: 'owned platform quantity per day is required', trigger: 'blur'}
+          {required: true ,message: 'Please select website.', trigger: 'blur'}
         ],
       },
       geolocation: [   
@@ -352,7 +352,7 @@ export default {
   methods: {
     init () {
       if (!this.isLogin()) {
-        this.$snotify.info('please log in first')
+        this.$router.push({path: '/opration-err/index'})
         return
       }
       this.getPlatformCateInfo()
@@ -361,20 +361,22 @@ export default {
       this.$refs['sellerForm'].validate((valid) => {
         if(valid) {
           if (!this.isLogin()) {
-            this.$snotify.info('please log in first')
+            this.$snotify.error('Submit Failed! Please log in first.')
             return
           }
           this.btnLoading = true
           this.$api.applyMerchant(this.sellerForm).then(res => {
             this.btnLoading = false
             if (res.code === 200) {
-              this.$snotify.success('Submit success, please wait for the result of the audit')
+              this.$snotify.success('Submit Successfully! please wait for the result of the audit.')
               this.$refs['sellerForm'].resetFields()
               this.$router.push({path: '/personal/member/index'})
             }
           }).catch(err => {
             if (err.message === 'validation.phone') {
-              this.$snotify.error('Invalid phone')
+              this.$snotify.error('Submit Failed! Invalid phone.')
+            } else {
+              this.$snotify.error(err.message)
             }
             this.btnLoading = false
           })

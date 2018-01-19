@@ -75,7 +75,7 @@ export default {
         menu_id: 0,
         keyword: '',
       },
-      titleMsg: 'Product testing, Product trial, Authoritative and Reliable Product ReviewServices on Dealsbank.com'
+      titleMsg: 'Product testing, Product trial, Authoritative and Reliable Product Review Services on Dealsbank.com'
     }
   },
   components: {
@@ -266,7 +266,7 @@ export default {
 }
 .trials-explain {
   width: 99.05%;
-  height: 5.5rem;
+  // height: 5.5rem;
   // padding: 1rem 0;
   border: 1px solid #e1e1e1;
   background: white;
@@ -286,7 +286,7 @@ export default {
     color: #666;
   }
   .content {
-    font-size: 0.8rem;
+    font-size: 13px;
     color: #b2b2b2;
   }
   .icon-icon_huaban {

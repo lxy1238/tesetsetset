@@ -54,19 +54,19 @@ export default {
   data () {
     const validateEmailRule =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter your Email'))
+        return callback(new Error('Please enter your Email.'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Invalid email address'))
+        return callback(new Error('Invalid Email format.'))
       } else {
         callback()
       }
     }
     return {
       rules: {
-        topic: [{required: true, message: 'please enter the topic' ,trigger: 'blur' }],
+        topic: [{required: true, message: 'Please enter the topic.' ,trigger: 'blur' }],
         email: [{ validator:validateEmailRule ,trigger: 'blur' }],
-        title: [{required: true, message: 'please enter the subject' ,trigger: 'blur' }],
-        content: [{required: true, message: 'please enter the content' ,trigger: 'blur' }],
+        title: [{required: true, message: 'Please enter the subject.' ,trigger: 'blur' }],
+        content: [{required: true, message: 'Please enter the content.' ,trigger: 'blur' }],
       },
       titleMsg: 'Contact DealsBank',
       countactFrom: {
@@ -139,7 +139,7 @@ export default {
             this.btnLoading = false
             console.log(res.code)
             if (res.code === 200) {
-              this.$snotify.success('submit successfully, We will deal with it as soon as possible')
+              this.$snotify.success('Submit Successfully! We will deal with it as soon as possible.')
               this.$refs['countactFrom'].resetFields()
             }
           }).catch(err => {

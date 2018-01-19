@@ -1,7 +1,6 @@
 import axios from 'axios'
 import store from '../store'
 
-import { Message, MessageBox } from 'element-ui'
 import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css'// Progress 进度条样式
 // import { getToken } from '@/utils/auth'
@@ -51,11 +50,11 @@ service.interceptors.response.use(
   error => {
     // 请求接口失败
     console.log('err ' + error )
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 10 * 1000
-    })
+    // Message({
+    //   message: error.message,
+    //   type: 'error',
+    //   duration: 10 * 1000
+    // })
     NProgress.done()
     return Promise.reject(error)
   }

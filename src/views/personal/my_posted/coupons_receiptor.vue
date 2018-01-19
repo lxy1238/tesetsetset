@@ -18,8 +18,8 @@
         </thead>
         <tbody >
           <tr v-for="item in trLists">
-            <td>
-              <img class="product-img" :src="couponsDetails.product_img.split(',')[0]" alt="">
+            <td class="img">
+              <img :src="couponsDetails.product_img.split(',')[0]" alt="">
             </td>
             <td class="product-details" @click="gotoDetails(item.id)">
               <div>amazon</div>
@@ -187,9 +187,15 @@ export default {
 }
 
 .coupons-table {
-  .product-img {
-    width: 5rem;
-    height: 4rem;
+     td,th { 
+    padding: 10px;
+  }
+  .img {
+    width: 100px;
+    img {
+      width: 70px;
+      height: 70px;
+    }
   }
   .table-product-title {
       height: 28px;

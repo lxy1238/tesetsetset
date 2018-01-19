@@ -109,7 +109,7 @@ export default {
         this.$api.userAlliancePID(requestData).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('save success')
+            this.$snotify.success('Submit Successfully!')
           }
         }).catch(err => {
           console.log(err)

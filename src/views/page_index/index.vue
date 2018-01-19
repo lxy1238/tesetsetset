@@ -19,7 +19,7 @@
                      @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.discount_price}}</span>
           </p>
           <p class="price content clearfix">
             <span class="price-left"><i>Coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>

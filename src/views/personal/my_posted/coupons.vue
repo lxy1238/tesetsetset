@@ -311,7 +311,7 @@ export default {
           this.$api.couponDetele(this.couponDeteleRequestData).then(res => {
             console.log(res)
             this.getUserPickCoupons()
-            this.$snotify.success('delete success!')
+            this.$snotify.success('Submit Successfully!')
           })
           
         })
@@ -349,9 +349,9 @@ export default {
     //更新优惠券
     updateRunStatus (id, run_status) {
       if (run_status == 'close') {
-        this.$confirm('Determine close trial?', 'reminder', {
-          confirmButtonText: 'confirm',
-          cancelButtonText: 'cancel',
+        this.$confirm('Are you sure to close this promotion?', 'Friendly reminder', {
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
           type: 'warning'
         }).then(() => {
           this.updateRunStatusFun(id, run_status)
@@ -382,13 +382,20 @@ export default {
 @import url("../../../styles/mixin.less");
 
 .coupons-table {
+  td,th { 
+    padding: 10px;
+  }
   font-size: 12px;
   .product-img {
     width: 5rem;
     height: 4rem;
   }
   .img {
-    width: 160px;
+    width: 100px;
+    img {
+      width: 70px;
+      height: 70px;
+    }
   }
   .coupons-table-title {
     text-align: left;
@@ -404,6 +411,7 @@ export default {
     }
   }
   .operation {
+    border-right: 1px solid #e1e1e1;
     .link {
       margin-bottom: 10px;
     }

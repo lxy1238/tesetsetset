@@ -19,24 +19,22 @@
 export default {  
   name: 'affiliate_pid',
   data () {
-    const validateConfirmPass =  (rule, value, callback) => {
+    const validateNewPass =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the pass'))
+        return callback(new Error('Please enter the new password.'))
       } else if(value.length < 8 || value.length > 20  ){
-        callback(new Error ('Use at least 8 characters and No more than 20 characters, It is case sensitive.'))
-      } else if (this.pidForm.password !== this.pidForm.password_confirmation) {
-        callback(new Error('Entered passwords differ'))
+        callback(new Error ('Use at least 8 characters and No more than 20 characters, it is case sensitive.'))
       } else {
         callback()
       }
     }
-    const validateNewPass =  (rule, value, callback) => {
+    const validateConfirmPass =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter the pass'))
+        return callback(new Error('Please enter the confirm password.'))
       } else if(value.length < 8 || value.length > 20  ){
-        callback(new Error ('Use at least 8 characters and No more than 20 characters, It is case sensitive.'))
-      } else if (this.pidForm.password === this.pidForm.oldpassword) {
-        callback(new Error('The new password can\'t be the same as the old one'))
+        callback(new Error ('Use at least 8 characters and No more than 20 characters, it is case sensitive.'))
+      } else if (this.pidForm.password !== this.pidForm.password_confirmation) {
+        callback(new Error('The confirm password does not match new password.'))
       } else {
         callback()
       }
@@ -75,15 +73,15 @@ export default {
           this.$api.checkRetrievePassword(this.pidForm).then(res => {
             this.submitLoading = false
             if (res.code === 200) {
-              this.$snotify.success('reset password success!!!')
+              this.$snotify.success('Submit Successfully! ')
               setTimeout( () => {
                 this.$router.push({path: '/'})
               }, 500)
             } else {
-              this.$snotify.error(res.message)
               return false
             }
-          }).catch(() => {
+          }).catch(err => {
+            this.$snotify.error('Submit Failed! ' + err.message )
             this.submitLoading = false
           })
         } else {
@@ -116,7 +114,6 @@ export default {
     margin-top: 60px;
     button {
       .btn-h(10rem, 3rem , #85ba3b, #85ba3b, #fff);
-      font-size: 1.4rem;
     }
   }
 }

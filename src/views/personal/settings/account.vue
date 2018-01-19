@@ -94,13 +94,13 @@ export default {
       var isJPG = file.type === 'image/jpeg'
       var isGIF = file.type === 'image/gif'
       var isPNG = file.type === 'image/png'
-      var isLt500K = file.size / 1024 / 500 < 1
+      var isLt500K = file.size / 1024 / 1024 < 1
 
       if (!(isJPG || isGIF || isPNG)) {
-        this.$snotify.error('上传头像图片只能是 JPG 格式!')
+        this.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
       }
       if (!isLt500K) {
-        this.$snotify.error('上传头像图片大小不能超过 500kb!')
+        this.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
       }
       if ((isJPG || isGIF || isPNG) && isLt500K) {
         var formData = new FormData()
@@ -129,7 +129,7 @@ export default {
         .then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('reset info success')
+            this.$snotify.success('Submit Successfully!')
             this.$store.dispatch('GetInfo')
             document.body.scrollTop = document.documentElement.scrollTop = 0
           }
@@ -154,7 +154,7 @@ export default {
       margin-right: 10px;
     }
     span {
-      font-size: 0.88rem;
+      font-size: 13px;
       color: #666;
     }
     height: 32px;
@@ -166,7 +166,7 @@ export default {
       margin-right: 10px;
     }
     span {
-      font-size: 0.88rem;
+      font-size: 13px;
       color: #666;
     }
     height: 32px;

@@ -10,7 +10,7 @@
       <div class="content">
         <div class="head-text">
           <p>
-            We are the bridge between the online celebrities and businesses. Aim to get more accurate traffic, quicklyimprove business performance and solve business promotion problems, we gather a group of excellent people to provide great promotion strategy.
+            We are the bridge between the online celebrities and businesses. Aim to get more accurate traffic, quickly improve business performance and solve business promotion problems, we gather a group of excellent people to provide great promotion strategy.
           </p>
           <p>
             Become a business partner of us, then you can post coupons and product trials.
@@ -23,7 +23,7 @@
               Coupons
             </div>
             <div class="text">
-                Merchants issue a certain number of couponsand ensure that their promotion price is competitive.The wide-range forwarding and sharing of online celebrities will bring a large number of orders. It is the simplest, most scientific, lowest-cost marketing mode.
+                Merchants issue a certain number of coupons and ensure that their promotion price is competitive.The wide-range forwarding and sharing of online celebrities will bring a large number of orders. It is the simplest, most scientific, lowest-cost marketing mode.
             </div>
           </div>
           <div class="card-item">
@@ -32,7 +32,7 @@
                 Trials
               </div>
               <div class="text">
-                Merchants give a certain number of products, and attract buyers to order, including online stars. And buyers can get a full refund or partial refund if they use the productsand post real evaluations. This is a quick way to help businesses build user experience as the real evaluation can provide purchasereference and benefit to the improvementplan of the product.
+                Merchants give a certain number of products, and attract buyers to order, including online stars. And buyers can get a full refund or partial refund if they use the products and post real evaluations. This is a quick way to help businesses build user experience as the real evaluation can provide purchase reference and benefit to the improvement plan of the product.
               </div>
           </div>
         </div>
@@ -48,7 +48,7 @@
               The products should not infringe others' intellectual property rights.
             </li>
             <li>
-              Werejectinferior products and the product information must be real.
+              We reject inferior products and the product information must be real.
             </li>
             <li>
               The promotional price must be competitive, otherwise it may not be passed.
@@ -71,11 +71,9 @@
         </template>
         <template v-else >
           <div class="remind-info">
-            <p class="red center" v-if="rolesName === 'merchant'">Congratulations, you have become a merchant,  
-              <a href="javascript:void(0);" @click="gotoMember">click to view</a>  
+            <p class="red center" v-if="rolesName === 'merchant'">Congratulations, you are already our cooperation merchant! 
             </p>
-            <p class="red center" v-if="rolesName === 'celebrity'">Congratulations, you have become a influencer, 
-              <a href="javascript:void(0);"  @click="gotoMember">click to view</a>
+            <p class="red center" v-if="rolesName === 'celebrity'">Influencer can not apply for becoming our cooperation merchant simultaneously.
             </p>
             <p class="red center" v-if="merchantData && merchantData.status === 0">You have applied to become a merchant, under review ...</p>
             <p class="red center" v-if="celebrityData && celebrityData.status === 0">You have applied to become a influencer, under review ...</p>

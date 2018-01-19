@@ -9,8 +9,8 @@
     <el-form :model="couponsForm" :rules="rules" ref="couponsForm" label-width="140px" class="coupons-form" >
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" class="item-url" >
-          <el-input class="url-input" v-model="couponsForm.product_url"  @blur="getPlatformCateInfo" ></el-input>
-          <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">Get</el-button>
+          <el-input class="url-input" v-model="couponsForm.product_url"   ></el-input>
+          <!-- <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">Get</el-button> -->
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline" >
           <el-select v-model="couponsForm.website"  @change="websiteChange">
@@ -31,37 +31,6 @@
               :value="item.id">
             </el-option>
           </el-select>
-          <!-- <select-self  :list="options"  @child="getSelectValue" v-model="couponsForm.menu_name"></select-self>    -->
-        </el-form-item>
-        <el-form-item label="List price: " prop="product_price" class="item-inline" required>
-          <el-input class="input-price-fee input-money " v-model="couponsForm.product_price" >
-            <template slot="prepend">{{currency}}</template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Shipping fee: "  class="item-inline" prop="shipping_fee">
-          <el-input class="input-price-fee input-money " @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee" >
-            <template slot="prepend">{{currency}}</template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Image"  prop="product_img_s">
-          <el-upload 
-                class="upload-demo-img" 
-                action="upload"
-                :on-remove="handleRemoveP" 
-                :before-upload="beforeAvatarUploadP" 
-                :file-list="couponsForm.product_img_s"
-                ref="upload"
-                list-type="picture">
-              <el-button size="small" type="primary">Upload</el-button>
-              <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,1M max,6 photos at most.</div>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="Title: " prop="product_title" class="item-large" >
-          <el-input v-model="couponsForm.product_title">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Reason: " prop="product_reason"  class="item-large">
-          <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea"></el-input>
         </el-form-item>
       </template> 
       <template v-if="couponsForm.menu">
@@ -76,34 +45,45 @@
           <el-input class="input-price-fee"  v-model="couponsForm.menu.name" disabled >
           </el-input>
         </el-form-item>
-        <el-form-item label="List price: " class="item-inline"  prop="product_price"  >
+          <!-- <ul class="is-editor-img">
+            <li v-for="item in couponsForm.product_img_s"><img :src="item.url" alt="" ></li>
+          </ul> -->
+      </template>
+       <el-form-item label="List price: " class="item-inline"  prop="product_price"  >
           <el-input class="input-price-fee input-money "  v-model="couponsForm.product_price"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: "  class="item-inline" >
-          <el-input class="input-price-fee"  v-model="couponsForm.shipping_fee"  disabled>
+          <el-input class="input-price-fee input-money"  @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="Image: "  >
-          <ul class="is-editor-img">
-            <li v-for="item in couponsForm.product_img_s"><img :src="item.url" alt="" ></li>
-          </ul>
-        </el-form-item>
-        <el-form-item label="Title: "  class="item-large" >
-          <el-input v-model="couponsForm.product_title" disabled>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Reason: " class="item-large" >
-          <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea" disabled></el-input>
-        </el-form-item>
-      </template>
+      <el-form-item label="Image:"  prop="product_img_s">
+        <el-upload 
+              class="upload-demo-img" 
+              action="upload"
+              :on-remove="handleRemoveP" 
+              :before-upload="beforeAvatarUploadP" 
+              :file-list="couponsForm.product_img_s"
+              ref="upload"
+              list-type="picture">
+            <el-button size="small" type="primary">Upload</el-button>
+            <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,1M max,6 photos at most.</div>
+        </el-upload>
+      </el-form-item>
+      <el-form-item label="Title: "  class="item-large" >
+        <el-input v-model="couponsForm.product_title" >
+        </el-input>
+      </el-form-item>
+      <el-form-item label="Reason: " class="item-large" >
+        <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea" :maxLength="150"  placeholder="The maximum input is 150 characters" ></el-input>
+      </el-form-item>
     <div class="title-s">
        Coupon Information
     </div>
     <el-form-item label="Valid date: " class="item-inline"  prop="valid_date" >
-      <el-date-picker size="large"  v-model="couponsForm.valid_date" :picker-options="pickerOptions1"></el-date-picker>
+      <el-date-picker v-model="couponsForm.valid_date" :picker-options="pickerOptions1"></el-date-picker>
     </el-form-item>
      <el-form-item label="Discount rate(%): " class="item-inline" prop="discount_rate" >
       <el-input class="input-price-fee" @blur="filterDiscount('discount_rate')" v-model="couponsForm.discount_rate" >
@@ -116,7 +96,7 @@
     </el-form-item>
     <el-form-item label="Type: " class="item-inline1" >
       <el-radio class="radio" title="The same coupon code for everyone." v-model="couponsForm.use_type" label="Unlimited">Unlimited</el-radio>
-      <!-- <el-radio class="radio" title="Everyone has a unique coupon code." v-model="couponsForm.use_type" label="Alone">Alone</el-radio> -->
+      <el-radio class="radio" title="Everyone has a unique coupon code." v-model="couponsForm.use_type" label="Alone">Alone</el-radio>
     </el-form-item>
     <el-form-item label="Coupon code: " class="item-inline" prop="coupon_code">
       <el-input v-model="couponsForm.coupon_code" v-if="couponsForm.use_type === 'Unlimited'"></el-input>
@@ -136,7 +116,6 @@ import { mapGetters } from 'vuex'
 import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { toTimestamp } from '@/utils/date'
-import selectSelf from '@/components/sectionVue/el-select-s.vue'
 import axios from 'axios'
 // import qs from 'qs'
 export default {
@@ -152,6 +131,35 @@ export default {
         callback()
       }
     }
+    const validateUrl = (rule, value, callback) => {
+      if (!this.couponsForm.product_url) {
+        return
+      }
+      this.optionsWebsite = []
+      this.$api.getPlatformCate(this.requestData)
+        .then(res => {
+          if(res.data.length <= 0) {return}
+          for (let i of res.data) {
+            let ObjWebsite = {
+              label: '',
+              id: ''
+            }
+            ObjWebsite.label = i.provider
+            ObjWebsite.id = i.id
+            if (this.couponsForm.product_url.search(i.url) >= 0 && this.couponsForm.product_url.includes('/dp/')) {
+              this.couponsForm.website = i.provider
+              this.optionsWebsite.push(ObjWebsite)
+              callback()
+            } else {
+              callback(new Error('In the current country, the product URL is invalid.'))
+            }
+          }
+        })
+        .catch(error => {
+          callback()
+          console.log(error)
+        })
+    }
     return {
       country_id: parseInt(getStore('country_id')) || 1,
       pickerOptions1: {
@@ -160,16 +168,19 @@ export default {
         },
       },
       rules: {
-        product_url: [{ required: true, message: 'The product URL is required.', trigger: 'blur' }],
+        product_url: [
+          { required: true, message: 'The product URL is required.', trigger: 'blur' },
+          {validator: validateUrl, trigger: 'blur'}
+        ],
         product_price: [{ validator: validateMoney, trigger: 'blur' }],
-        website: [{ required: true, message: 'website is required', trigger: 'blur' }],
-        menu_id: [{type:'number', required: true, message: 'category is required' ,trigger: 'blur' }],
-        menu_name: [{required: true, message: 'category is required' ,trigger: 'blur' }],
+        website: [{ required: true, message: 'The website is required.', trigger: 'blur' }],
+        menu_id: [{type:'number', required: true, message: 'The category is required.' ,trigger: 'blur' }],
+        menu_name: [{required: true, message: 'The category is required.' ,trigger: 'blur' }],
         product_img_s: [
           {
             type: 'array',
             required: true,
-            message: 'Please Upload image',
+            message: 'Please upload image.',
             trigger: 'change'
           }
         ],
@@ -234,12 +245,8 @@ export default {
       saveLoading: false,
     }
   },
-  components: {
-    selectSelf
-  },
   mounted () {
     this.init()
-
   },
   computed: {
     ...mapGetters(['user_id', 'username', 'token']),
@@ -255,6 +262,7 @@ export default {
       this.isEditor()
       this.getHeadCateListInfo()
       this.filterInput()
+      this.imgChange()
     },
 
     //数据初始化
@@ -415,7 +423,7 @@ export default {
         .then( (res) =>{
           this.getinfoBtn = false
           if (!res.data.data) {
-            this.$snotify.info('Failed to obtain commodity information!!!')
+            this.$snotify.info('Failed to obtain commodity information!')
           }
           
           setTimeout(() => {
@@ -431,7 +439,7 @@ export default {
             this.couponsForm.product_price = data.product_price ? data.product_price : '',
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
-              this.$snotify.error('please enter a right url')
+              this.$snotify.error('Submit Failed! please enter a right url.')
             }
           }, 500)
         })
@@ -442,35 +450,6 @@ export default {
      
     },
 
-
-    //获取平台品类信息
-    getPlatformCateInfo () {
-      if (!this.couponsForm.product_url) {
-        return
-      }
-      this.optionsWebsite = []
-      this.$api.getPlatformCate(this.requestData)
-        .then(res => {
-          if(res.data.length <= 0) {return}
-          for (let i of res.data) {
-            let ObjWebsite = {
-              label: '',
-              id: ''
-            }
-            ObjWebsite.label = i.provider
-            ObjWebsite.id = i.id
-            if (this.couponsForm.product_url.search(i.url) >= 0) {
-              this.couponsForm.website = i.provider
-              this.optionsWebsite.push(ObjWebsite)
-            } else {
-              this.$snotify.error('The country can only issue products under the platform')
-            }
-          }
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    },
 
     //平台发生改变
     websiteChange (label) {
@@ -491,13 +470,13 @@ export default {
 
       let limitF = true
       if (!(isJPG || isGIF || isPNG)) {
-        this.$snotify.error('上传图片只能是 JPG/GIF/PNG格式!')
+        this.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
       }
       if (!isLt500K) {
-        this.$snotify.error('上传图片文件大小 不能超过 1M!')
+        this.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
       }
       if (this.couponsForm.product_img_s.length >= 6) {
-        this.$snotify.error('最多只能上传6张图片！')
+        this.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
         limitF = false
       }
       if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
@@ -527,7 +506,7 @@ export default {
         this.$api.editorCoupon(data).then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('issue coupon success')
+            this.$snotify.success('Submit Successfully!')
             this.$router.push({ path: '/posted/coupons' })
           }
         }).catch(error => {
@@ -656,6 +635,9 @@ export default {
     width: 100px;
     float: left;
     margin-right: 1%;
+    img {
+      max-width: 70px !important;
+    }
   }
   .footer-btn {
     text-align: center;

@@ -34,19 +34,19 @@
                 Go to Amazon 
               </button>
               <div class="right">
-                <div class="top" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> <i class="link">Flag this trials</i> </div>
+                <div class="top" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i> <i class="link">Flag this trial</i> </div>
                 <select name="" id="" v-model="selected" @change="selectProblem"  v-if="isFlagCoupon">
                 <option v-for="(item, index) in options" :value="item" :label="item" >{{item}}</option>
               </select>
               </div>
-               <div class="inline-b question" v-if="selected !== 'Choose reason'">
-                  <div class="wrong"><span>What’s wrong with this deal?</span></div>
-                  <div class="submit">
-                    <input type="text" v-model="addProblemData.content" @keyup.enter="problemSubmit">
-                    <el-button type="button" @click="addProblemSubmit" :loading="problemBtnLoading"><span>Submit</span></el-button>
-                    <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
-                  </div>
+              <div class="inline-b question" v-if="selected !== 'Choose reason'">
+                <div class="wrong"><span>What’s wrong with this deal?</span></div>
+                <div class="submit">
+                  <input type="text" v-model="addProblemData.content" @keyup.enter="problemSubmit">
+                  <el-button type="button" @click="addProblemSubmit" :loading="problemBtnLoading"><span>Submit</span></el-button>
+                  <div class=" error" v-if="!addProblemData.content && addProblemData.menu">Please describe the problem</div>
                 </div>
+              </div>
             </div>
             <img class="amazon" :src="logoImg[trialDetail.website]" alt="">
           </div>
@@ -203,7 +203,7 @@ export default {
     },
     
     gotoAmazon (url) {
-      window.open(url)
+      window.open(url + '&tag=dealsbank')
     },
 
     //进入页面获取到产品详情 以及id
@@ -273,7 +273,7 @@ export default {
         return
       }
       if (this.addProblemData.content.length > 30) {
-        this.$snotify.error('You can only type 30 characters')
+        this.$snotify.error('Submit Failed! You can only type 30 characters.')
         return
       }
       this.problemBtnLoading = true
@@ -314,7 +314,7 @@ export default {
   width: 99.05%;
   .details {
     position: relative;
-    min-height: 29rem;
+    min-height: 30rem;
     background: white;
     margin-bottom: 1.3rem;
     border-radius: 5px;
@@ -341,7 +341,7 @@ export default {
           del {
             color: #808080;
             display: inline-block;
-            margin-right: 30px;
+            margin-right: 10px;
           }
           span {
             display: inline-block;
@@ -354,8 +354,8 @@ export default {
           color: #333;
           margin-bottom: .6rem;
           span {
-            font-size: 1.3rem;
-            font-weight: bold;
+            font-size: 13px;
+            color: #808080;
           }
           .merchant-reward {
             display: inline-block;
@@ -366,8 +366,9 @@ export default {
               font-weight: 400;
             }
             .merchant-reward-money {
-              font-style: italic;
-              color: #D82323;
+              font-weight: 700;
+              color: #333;
+              font-size: 16px;
             }
             
           }
@@ -380,8 +381,8 @@ export default {
       .title {
         width: 35rem;
         font-size: 21px;
-        height: 42px;
-        line-height: 1;
+        height: 52px;
+        line-height: 1.21;
         overflow: hidden;
         color: #1a1a1a;
         font-weight: bold;
@@ -434,8 +435,6 @@ export default {
               color: #808080;
             }
           }
-
-
         }
       }
     }
@@ -458,6 +457,7 @@ export default {
       margin-bottom: 1rem;
       button {
         .btn-h(6rem, 1.7rem, #84bb3a, #84bb3a, #fff);
+        font-size: .8rem;
       }
     }
   } 
@@ -476,7 +476,7 @@ export default {
       .content {
         padding-bottom: 1rem;
         color: #808080;
-        font-size: 0.88rem;
+        font-size: 13px;
         .text {
           width: 75%;
         }
@@ -510,6 +510,7 @@ export default {
       button {
         .btn-h(5rem, 1.8rem, #7db135, #7db135, #fff);
         line-height: 0.4;
+        font-size: .8rem;
       }
       .error {
         position: absolute;

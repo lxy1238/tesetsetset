@@ -3,8 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 // 解决ie9 不支持promise问题
-import 'babel-polyfill'
-require('es6-promise').polyfill()
+// import 'babel-polyfill'
+// require('es6-promise').polyfill()
 import router from './router'  // 路由配置文件
 import store from './store'    // 全局状态管理
 import api from './api/index'  //所有的接口
@@ -61,7 +61,7 @@ import {
   Rate,
   Loading,
   MessageBox,
-  Message,
+  // Message,
   Checkbox
 } from 'element-ui'
 
@@ -88,7 +88,7 @@ Vue.prototype.$loading = Loading.service
 Vue.prototype.$msgbox = MessageBox
 Vue.prototype.$alert = MessageBox.alert
 Vue.prototype.$confirm = MessageBox.confirm
-Vue.prototype.$message = Message
+// Vue.prototype.$message = Message
 
 
 // import 'bootstrap/dist/css/bootstrap.css'

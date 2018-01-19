@@ -4,7 +4,7 @@
     <div class="pages-content clearfix">
       <div class="blank-s">
       </div>
-      <div class="merchant">
+      <div class="merchant" v-if="userInfo.username" v-title="titleMsg" >
          <div class="user">
           <div class=" head">
             <img v-if="userInfo.avatar_img" :src="userInfo.avatar_img" alt="">
@@ -34,7 +34,7 @@
             @gotodetails="gotodetails">
           <template slot="price">
           <p class="price content">
-            <span class="price-right">{{currency}}{{couponsDetails.product_price}}</span>
+            <span class="price-right">{{currency}}{{couponsDetails.discount_price}}</span>
           </p>
           <p class="price content clearfix">
             <span class="price-left"><i>coupon</i> {{currency}}{{(couponsDetails.product_price - couponsDetails.discount_price).toFixed(2)}}</span>
@@ -88,7 +88,8 @@ export default {
       },
       requestUserData: {
         user_id: ''
-      }
+      },
+      titleMsg: '123',
     }
   },
   computed: {
@@ -133,6 +134,7 @@ export default {
       this.$api.postedUserInfo (this.requestCouponData).then(res => {
         res.data.joined_date = timestampFormat(res.data.joined_date)
         this.userInfo = res.data
+        this.titleMsg = res.data.username + ' – DealsBank'
       }).catch(error => {
         console.log(error + ' postedUserInfo')
       })
@@ -198,6 +200,8 @@ export default {
   margin-bottom: 1rem;
   background: white;
   padding-top: 27px;
+  border: 1px solid #c7c7c7;
+  border-radius: 4px;
   .user {
     padding-left: 20px;
     height: 140px;
@@ -232,6 +236,7 @@ export default {
         font-size: 13px;
         color: white;
         padding: 2px 10px;
+        border-radius: 4px;
       }
       .join, .coupons-posted, .footer {
         margin-bottom: 15px;

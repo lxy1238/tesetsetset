@@ -28,16 +28,19 @@
                    <img v-if="avatar_img" :src="avatar_img" />
                    <img v-else src="../../assets/user.png" alt="user" />
                  </div>
-                 <div class="absolute username" :class="{member: roles[0] == 'member'}">{{username}}</div>
+                 <div class="absolute username" :class="{member: roles[0] == 'member'}">{{username}}
+                   
+                 </div>
                  <div class="absolute tag " v-if="roles[0] == 'celebrity'">
                    <span class="reds-color">Influencer</span>
                  </div>
                  <div class="absolute tag " v-if="roles[0] == 'merchant'">
                    <span class="merchant-color">Merchant</span>
                  </div>
+                 <i v-if="!showDropdownU" class="iconfont icon-xiangxia"></i>
+                <i v-else class="iconfont icon-icon-"></i>
                  <div class="icon">
-                   <i v-if="!showDropdownU" class="iconfont icon-xiangxia"></i>
-                   <i v-else class="iconfont icon-icon-"></i>
+                   
                 </div>
                </div>
                <div v-if="showDropdownU" class="dropdown" style="position: absolute">
@@ -92,7 +95,7 @@
      <div class="blank"></div>
 
      <!-- login-form -->
-     <el-dialog :visible.sync = "loginDialog" class="sign-dialog" >
+     <el-dialog :visible.sync = "loginDialog" class="sign-dialog"  >
       <!-- <span slot="title" class="title">Log In</span> -->
         
         <div class="dialog-body">
@@ -114,10 +117,10 @@
                 <div class="line"></div>
             </div>
             <el-form :model="loginform" :rules="rulesLogin" ref="loginform"  >
-              <el-form-item  prop="email">
+              <el-form-item  prop="email" v-if="loginDialog">
                 <el-input v-model="loginform.email" placeholder="Email Address"></el-input>
               </el-form-item>
-              <el-form-item  prop="password">
+              <el-form-item  prop="password" v-if="loginDialog">
                 <el-input type="password" v-model="loginform.password" placeholder="Password"></el-input>
               </el-form-item>
               <div class="remember">
@@ -127,7 +130,7 @@
                 </div>
               </div>
               <el-form-item >
-                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Login In</el-button>
+                <el-button class="sign-up-btn login" @click="Login" :loading="loginLoading">Log In</el-button>
               </el-form-item>
 
             </el-form>
@@ -231,6 +234,24 @@
         </div>
      </el-dialog>
 
+
+       <!--发送右键-->
+      <el-dialog :visible.sync = "sendEmailDialog" class="sign-dialog" >
+        <div class="send-email">
+          <p class="sorry-text">Activeation Email Has Been Sent.</p>
+
+          <p>An account activation email has been sent to your email.</p>
+          <p class="footer-p">
+            If it isn't there, please check your Spam/Junk/Bulk mail folder.
+          </p>
+          <div class="send-footer">
+            <el-button class="send-button" @click="reSendEmail" v-if="!isSendEmail">Resend Activeation Email</el-button>
+            <el-button type="info" disabled class="btn-disabled" v-else>Sending after {{seconds}} seconds </el-button>
+          </div>
+        </div>
+     </el-dialog>
+
+
     
    </div>
 </template>
@@ -246,24 +267,24 @@ export default {
   data () {
     const validateEmailRule =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter your Email'))
+        return callback(new Error('Please enter your Email.'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Invalid email address'))
+        return callback(new Error('Invalid email address.'))
       } else {
         callback()
       }
     }
     const validateEmailRule1 =  (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('Please enter your Email'))
+        return callback(new Error('Please enter your Email.'))
       } else if (!validateEmail(value)) {
-        return callback(new Error('Invalid email address'))
+        return callback(new Error('Invalid email address.'))
       } else {
         this.$api.checkEmail({email: value}).then(res => {
           if (!res.data) {
             callback()
           } else {
-            callback(new Error('This email is already in use'))
+            callback(new Error('The Email has been used.'))
           }
         })
       }
@@ -278,6 +299,33 @@ export default {
       }).catch(() => {
         callback()
       })
+    }
+    const validateLoginEmail = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please enter your Email.'))
+      } else if (!validateEmail(value)) {
+        return callback(new Error('Invalid email address.'))
+      } else {
+        this.$api.checkEmail({email: value}).then(res => {
+          if (!res.data) {
+            return callback(new Error('The Email is Invalid.')) 
+          } else if (res.data && res.data.status === 'waiting') {
+            return callback(new Error('Please login to the email activation account.'))
+          } else if (res.data && res.data.status === 'normal') {
+            return callback()
+          }
+        })
+        
+      }
+    }
+    const validateLoginPass = (rule, value, callback) => {
+      if (this.loginform.email) {
+        this.$api.login(this.loginform).then(res => {
+          callback()            
+        }).catch(err => {
+          callback(new Error('The password is incorrect.'))
+        })
+      }
     }
     return {
       signform: {
@@ -299,22 +347,23 @@ export default {
           {  validator:validateEmailRule1 , trigger: 'blur' },
         ],
         username: [
-          { required: true, message: 'Please enter your username', trigger: 'blur' },
+          { required: true, message: 'Please enter your username.', trigger: 'blur' },
           { min: 3, max: 16, message: 'Use at least 3 characters, It is case sensitive.', trigger: 'blur' },
           {  validator:validateUsername , trigger: 'blur' },
         ],
         password: [
-          { required: true, message: 'Please enter your password', trigger: 'blur' },
+          { required: true, message: 'Please enter your password.', trigger: 'blur' },
           { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' }
         ]
       },
       rulesLogin: {
         email: [
-          { validator:validateEmailRule, trigger: 'blur' },
+          { validator:validateLoginEmail, trigger: 'blur' },
         ],
         password: [
-          { required: true, message: 'Please enter your password', trigger: 'blur' },
-          { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' }
+          { required: true, message: 'Please enter your password.', trigger: 'blur' },
+          { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' },
+          { validator:validateLoginPass, trigger: 'blur' },
         ]
       },
       rules: {
@@ -338,6 +387,9 @@ export default {
       loginDialog: false,
       signDialog: false,
       resetPassword: false,
+      sendEmailDialog: false,
+      isSendEmail: false,
+      seconds: 60,
       showDropdownC: false,
       showDropdownL: false,
       showDropdownU: false,
@@ -360,7 +412,8 @@ export default {
         'Canada': require('../../assets/Canada.png'),
         'Australia': require('../../assets/australia.png')
       },
-      initLanguageSuccess: false  //判断翻译插件是否加载完成
+      initLanguageSuccess: false,  //判断翻译插件是否加载完成
+      sendEmailnum: '',
     }
   },
   props: {
@@ -636,45 +689,47 @@ export default {
       
       this.signSubmit('signform', () => {
         this.signloading = true
-        this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email
+        this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email + '/'
         this.$api.sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
             this.signloading = false
-            this.$snotify.success('Please login to the mailbox for activation validation')
+            // this.$snotify.success('Please login to the mailbox for activation validation.')
+            this.sendEmailnum = this.signform.email
+            this.sendEmailDialog = true
             this.$refs['signform'].resetFields()
           } 
         }).catch(error => {
-          this.$snotify.error(error.message)
+          this.$snotify.error('Submit Failed! ' + error.message)
           this.signloading = false
-          console.error('sign fail' + error)
         })
       })
     },
     Login () {
       this.signSubmit('loginform', () => {
         this.loginLoading = true
-        console.log(this.loginform)
         this.$store.dispatch('Login', this.loginform).then(res => {
           if (res.code == 200) {
             if(this.loginform.remember == true) {
               setPass(base64Encode(this.loginform.password))
             }
             this.loginDialog = false
+            this.loginLoading = false
             this.$refs['loginform'].resetFields()
           }
           this.$store.dispatch('GetInfo').then(res => {
             const roles =[ res.data.type ]
-            this.loginLoading = false
             this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
               this.$router.addRoutes(this.$store.getters.addRouters)
               this.isLogin = getToken()
+              if (this.currentRouter.search('/activate') >= 0) {
+                this.$router.push({path: '/'})
+              }
             })
           })
         }).catch(err => {
-          this.$snotify.error(err.message)
+          this.$snotify.error('Submit Failed! ' + err.message)
           this.loginLoading = false
-          console.log(err+ ' login2')
         })    
       })
     },
@@ -686,11 +741,11 @@ export default {
           if (res.code === 200) {
             this.resetLoading = false
             this.hideAllDialog()
-            this.$snotify.success('Please click the link to change the password')
+            this.$snotify.success('The reset passwrod Email has been sent.')
           }
         }).catch(err => {
           this.resetLoading = false
-          this.$snotify.error(err.message)
+          this.$snotify.error('Submit Failed! ' + err.message)
         })
       })
     },
@@ -723,7 +778,7 @@ export default {
       var startApp = function () {
         gapi.load('auth2', function (){
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-rn937lo6bq8qjcvhj26in1joc2lngeck.apps.googleusercontent.com',
+            client_id: '308959858897-deq7102qpgo6ku4763p75rl734skf0mf.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
@@ -739,7 +794,7 @@ export default {
       var onSuccess = function (user) {
         var profile = user.getBasicProfile()
         let data = {
-          client_id : '308959858897-rn937lo6bq8qjcvhj26in1joc2lngeck.apps.googleusercontent.com',
+          client_id : '308959858897-deq7102qpgo6ku4763p75rl734skf0mf.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token
@@ -801,7 +856,6 @@ export default {
             }).catch(err => {
               console.log(err)
             })
-
           }else{
             console.log('获取登陆用户相关信息失败！')
           }
@@ -814,7 +868,6 @@ export default {
       FB.login((response) => { 
         this.statusChangeCallback(response)  //登录回调函数
       },{scope: 'email'})  //需要获取的信息scope
-      
     },
 
     //第三方登录回调
@@ -836,11 +889,8 @@ export default {
         if (res.data.email) {
           this.resetform.email = res.data.email
           this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + res.data.email + '/'
-          this.$api.retrievePassword(this.resetform).then(res => {
-            console.log(res)
-          }).catch(err => {
-            console.log(err.message)
-          })       
+          this.$api.retrievePassword(this.resetform).then(() => {
+          })      
         }
       }
     },
@@ -859,9 +909,14 @@ export default {
 
       window.googleTranslateElementInit =  () => {
         this.initLanguageSuccess = true
-        console.log(123)
         setTimeout(() => {
-          new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element')
+          new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element', function (){console.log(123)})
+          $('.goog-te-gadget-icon').css({
+            'width': '10px',
+            'height': '10px',
+            'background': 'url(http://i02.i.aliimg.com/wimg/buyer/single/google-translate-logo.png) 0px 0px no-repeat'
+          })
+          $('.goog-te-menu-value').append('<i class="iconfont icon-xiangxia icongoogle"></i>')
         }, 300)
       }
     },
@@ -871,14 +926,33 @@ export default {
     },
     gotoTerm () {
       window.open('/about/center/term')
-    }
+    },
 
+    reSendEmail () {
+      this.isSendEmail = true
+      let sendEmailData = {
+        activate_url: '',
+        email: ''
+      }
+      sendEmailData.activate_url = location.protocol + '//' + location.host + '/activate/' +  this.sendEmailnum + '/'
+      sendEmailData.email = this.sendEmailnum
+      this.$api.getActivateEmail(sendEmailData).then(() => {
+      })
+      let timer = setInterval(() => {
+        this.seconds--
+        if (this.seconds === 0) {
+          this.isSendEmail = false
+          clearInterval(timer)
+        }
+      }, 1000)
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 @import url("../../styles/mixin.less");
+
 .header-all {
   height: 95px;
 }
@@ -1293,5 +1367,48 @@ export default {
   .el-checkbox__label {
     font-size: 10px;
   }
+}
+.send-email {
+  p {
+      height: 30px;
+      color: #808080;
+      font-size: 13px;
+      &.sorry-text {
+        font-weight: 700;
+        font-size: 18px;
+        color: #333;
+        margin-top: 40px;
+      }
+      .link {
+        font-size: 15px;
+        font-weight: 700;
+      }
+    }
+    p, div {
+      text-align: left;
+      padding-left: 65px;
+      &.footer-p {
+        margin-top: -20px;
+      }
+    }
+    .send-button {
+      .btn-h(300px, 36px, #7fbadf, #7fbadf, #fff);
+    }
+    .send-button-succ {
+      background-color: #7fbadf;
+      border-color: #7fbadf;
+        &:hover {
+        background: darken(#7fbadf, 5%);
+        border-color: darken(#7fbadf, 5%);
+        }
+        &:active {
+          background: lighten(#7fbadf, 5%);
+          border-color: lighten(#7fbadf, 5%);
+        }
+    }
+    .btn-disabled {
+      width: 300px;
+      margin-left: 0;
+    }
 }
 </style>

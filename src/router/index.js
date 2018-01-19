@@ -24,7 +24,7 @@ export const constantRouterMap = [
       component: _import('trials/index')
     },
     {
-      path: '/coupons/:couponsId/:countryId',
+      path: '/coupons/:couponsId/:countryId/:promoterId?',
       component: _import('coupons/index')
     },
     {
@@ -35,45 +35,41 @@ export const constantRouterMap = [
       path: '/merchant/:userId',
       component: _import('merchant/index')
     },
-    {
-      path: '/successTrials/:trialId/:countryId',
-      component: _import('trials_details/apply_success')
-    },
+    // {
+    //   path: '/successTrials/:trialId/:countryId',
+    //   component: _import('trials_details/apply_success')
+    // },
      
      
     ]
   },
   //申请入驻、 佣金计算、 激活、 忘记密码
-  // {
-  //   path: '/enter/index',
-  //   component: another,
-  //   children: [
-  //     {
-  //       path: '/enter/invite',
-  //       component: _import('enter_s/invite')
-  //     },
-  //     // {
-  //     //   path: '/commissions/index',
-  //     //   component: _import('commissions/index')
-  //     // },
-     
-  //     // {
-  //     //   path: '/resetpass/:email/:token',
-  //     //   component: _import('another/resetpass/index')
-  //     // },
-  //   ]
-  // },
-  // {
-  //   path: '/activate/:email',
-  //   component: _import('another/activate/index')
-  // },
+  {
+    path: '/enter/index',
+    component: another,
+    children: [
+      {
+        path: '/activate/:email/:token',
+        component: _import('about/page/email')
+      },
+      {
+        path: '/opration-err/index',
+        component: _import('about/page/oprationErr')
+      },
+      // {
+      //   path: '/commissions/index',
+      //   component: _import('commissions/index')
+      // },
+    ]
+  },
+ 
   // {
   //   path: '/combine/index',
   //   component: _import('combine/index'),
   //   hidden: true
   // },
   {
-    path: '/goto/:couponId/:countryId/:promoterId?',
+    path: '/goto/:gotopage/:productName/:couponId/:countryId/:promoterId?',
     component: _import('goto/index'),
   },
 
@@ -119,14 +115,18 @@ export const aboutRouterMap = [
         path: 'privacy',
         component: _import('about/page/privacy')
       },
-      {
-        path: '/activate/:email',
-        component: _import('about/page/email')
-      },
+      // {
+      //   path: '/activate/:email/:token',
+      //   component: _import('about/page/email')
+      // },
       {
         path: '/resetpass/:email/:token',
         component: _import('about/page/resetpass')
       },
+      // {
+      //   path: 'opration-err',
+      //   component: _import('about/page/oprationErr')
+      // },
     ]
 
   }

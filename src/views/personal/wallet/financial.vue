@@ -121,5 +121,10 @@ export default {
     margin-bottom: 1rem;
   }
 }
+.table-self {
+  td,th {
+    padding: 10px;
+  }
+}
 
 </style>

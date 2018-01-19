@@ -1,9 +1,24 @@
 <template>
   <div class="broadside">
     <ul class="side-icons">
-      <li><i class="iconfont icon-facebookicon"></i></li>
-      <li><i class="iconfont icon-tuite1"></i></li>
-      <li><i class="iconfont icon-pinterestp"></i></li>
+      <li>
+          <a href="https://www.facebook.com/dealsbank/" target="_blank">
+            <i class="iconfont icon-facebookicon">
+            </i>
+          </a>
+      </li>
+       <li>
+          <a href="https://twitter.com/db_DealsBank/" target="_blank">
+            <i class="iconfont icon-tuite1">
+            </i>
+          </a>
+      </li>
+       <li>
+          <a href="https://www.pinterest.com/dealsbank/" target="_blank">
+            <i class="iconfont icon-pinterestp">
+            </i>
+          </a>
+      </li>
       <li @click="contactUs"><i class="iconfont icon-liaotian"></i></li>
       <li class="last" @click="goTop"><i class="iconfont icon-icon_huaban" ></i></li>
     </ul>
@@ -51,8 +66,13 @@ export default {
         background: #fff;
         color: #c2c2c2;
         cursor: pointer;
+        a {
+          color: #c2c2c2;
+        }
         &:hover {
-          color: #fff;
+          a {
+            color: #fff;
+          }
           background: #0077c5;
         }
         border-bottom: 1px solid #c7c7c7;

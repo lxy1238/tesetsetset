@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             <tr v-for="item in trLists" v-if="trLists.length != 0">
-              <td>
+              <td class="img">
                 <img class="trials-table-img" :src="item.product_img.split(',')[0]" alt="">
               </td>
               <!-- title -->
@@ -127,8 +127,8 @@
               <div class="blue" v-if="item.status === 1 && item.run_status ==  all_run_status[3] && !item.isExpired ">Stop</div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired">Close</div>
               <div class="red" v-if=" item.isExpired ">Expired</div>
-              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && !item.moneyIsEnough">Underbalance</div>
-              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && item.moneyIsEnough">钱够了</div>
+              <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && !item.moneyIsEnough">Insufficient Balance</div>
+              <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && item.moneyIsEnough">Sufficient Balance</div>
             </td>
             <td class="operation">
               <template v-if="item.status === 0 && !item.isExpired">
@@ -155,10 +155,10 @@
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
               </template>
                <template v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && item.moneyIsEnough">
-                <div> <a href="javascript:void(0)"  @click="payTrialsActive(item)">online</a></div>
+                <div> <a href="javascript:void(0)"  @click="payTrialsActive(item)">Release</a></div>
               </template>
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && !item.moneyIsEnough">
-                <div> <a href="javascript:void(0)"  @click="gotoRecharge">recharge</a></div>
+                <div> <a href="javascript:void(0)"  @click="gotoRecharge">Recharge</a></div>
               </template>
             </td>
             </tr>
@@ -369,7 +369,7 @@ export default {
           this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
             this.getPostTrialsList()
           })
-          this.$snotify.success('Delete success')
+          this.$snotify.success('Submit Successfully!')
         })
         .catch(() => {
           console.log('cancel')
@@ -409,9 +409,9 @@ export default {
     //更新优惠券 判断close 的时候给与提示信息
     updateRunStatus (id, run_status) {
       if (run_status == 'close') {
-        this.$confirm('Determine close trial?', 'reminder', {
-          confirmButtonText: 'confirm',
-          cancelButtonText: 'cancel',
+        this.$confirm('Are you sure to close this trial?', 'Friendly reminder', {
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
           type: 'warning'
         }).then(() => {
           this.updateRunStatusFun(id, run_status)
@@ -438,9 +438,9 @@ export default {
 
     //充值之后商户自己触发按钮手动上线
     payTrialsActive (item) {
-      this.$confirm('Determine deleting trial?', 'reminder', {
-        confirmButtonText: 'confirm',
-        cancelButtonText: 'cancel',
+      this.$confirm('Determine product launch?', 'Friendly reminder', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         type: 'warning'
       }).then(() => {
         this.payTrialsActiveData.trial_id = item.id
@@ -449,7 +449,6 @@ export default {
             this.getPostTrialsList()
           }
         }).catch(err => {
-          this.$snotify.error(err)
           console.log(err)
         })
       }).catch(() => {
@@ -477,7 +476,15 @@ export default {
     width: 5rem;
     height: 4rem;
   }
-  
+  .img {
+    width: 100px;
+    img {
+      width: 70px;
+    }
+  }
+   td,th { 
+    padding: 10px;
+  }
 }
 .trials-title {
   width: 120px;
@@ -489,6 +496,7 @@ export default {
     cursor: pointer;
   }
 }
+
 .cost {
   width: 60px;
 }

@@ -35,7 +35,7 @@
           </thead>
           <tbody>
             <tr v-for="item in trLists" v-if="trLists.length != 0">
-              <td>
+              <td class="img">
                 <img class="trials-table-img" :src="trialDetails.product_img.split(',')[0]" alt="">
               </td>
               <!-- title -->
@@ -119,17 +119,17 @@
                 <!-- Status -->
               <td>
                 <div v-if="item.status === 0 && item.run_status == 'normal' && (!item.appraise || (item.appraise && item.appraise.status === 0))"> 
-                  Waiting for review
+                  Ordered
                 </div>
                 <div v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1"> 
-                  To be confirmed
+                  Pending
                 </div>
                 <div v-if="item.status === 0 && item.isExpired" class="red"> 
                   Expired
                 </div>
 
                 <div v-if="item.status === 2" class="red"> 
-                  Decline
+                  Pending
                 </div>
                 <div v-if="item.status === 1" class="green"> 
                   Complete
@@ -137,7 +137,7 @@
               </td>
             
                 <!-- Operation -->
-              <td>
+              <!-- <td>
                 <template v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1">
                   <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
                 </template>
@@ -147,7 +147,7 @@
                  <template v-if="item.status === 1">
                   <div></div>
                 </template>
-              </td>
+              </td> -->
             </tr>
             <tr v-if="trLists.length === 0">
               <td colspan="13">No Data</td>
@@ -231,7 +231,7 @@ export default {
     return {
       thLists: ['Image', 'Title', 'Price' , 'User', 'Order date', 'Order number', 
         'Review', 'Shipping fee', 'Platform fee', 'Refund', 
-        'Cost', 'Status', 'Operation'
+        'Cost', 'Status'
       ],
       trLists: [],
       DeclineDetails: false,
@@ -401,12 +401,21 @@ export default {
 @import url('../../../styles/mixin.less');
 .table-trials-posted {
   font-size: 10px !important;
+    td,th { 
+    padding: 10px;
+  }
   .trials-table-img {
     width: 5rem;
     height: 4rem;
   }
   .trials-receiptor-review-td {
     width: 180px;
+  }
+  .img {
+    width: 100px;
+    img {
+      width: 70px;
+    }
   }
 }
 
@@ -453,4 +462,5 @@ export default {
 .el-dialog--tiny {
   width: 600px;
 }
+
 </style>

@@ -20,7 +20,7 @@
 .sign-dialog {
   .el-dialog.el-dialog--small {
     width: 458px;
-    min-height: 500px;
+    min-height: 350px;
     padding-bottom: 40px;
   }
   .el-dialog__header {
@@ -41,8 +41,17 @@
   }
 }
 
-.el-dialog.el-dialog--small {
+.el-dialog.el-dialog--small,.el-dialog.el-dialog--tiny {
   border-radius: 10px;
+}
+.el-dialog.el-dialog--tiny {
+  width: 600px;
+  padding-bottom: 50px;
+}
+.not-trials-dialog-first {
+  .el-dialog.el-dialog--tiny {
+    min-height: 350px !important;
+  }
 }
 
 .el-checkbox__label {
