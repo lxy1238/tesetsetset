@@ -41,7 +41,7 @@
               <router-link :to="{ path: '/about/center/faq', query: { id: 2 }}" target="_blank">What Can I Do</router-link>
             </dd>
              <dd>
-              <router-link :to="{ path: '/about/center/faq', query: { id: 11 }}" target="_blank">Affiliate PID</router-link>
+              <router-link :to="{ path: '/about/center/faq', query: { id: 11 }}" target="_blank">Affiliate ID</router-link>
             </dd>
              <dd>
               <router-link :to="{ path: '/about/center/faq', query: { id: 9 }}" target="_blank">Trial Limitation</router-link>

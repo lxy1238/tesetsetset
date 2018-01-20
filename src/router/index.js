@@ -282,7 +282,7 @@ export const asyncRouterMap = [
       },
       {
         path: '/settings/apiManagement',
-        text: 'Affiliate PID',
+        text: 'Affiliate ID',
         component: _import('personal/settings/apiManagement')
       },
       {

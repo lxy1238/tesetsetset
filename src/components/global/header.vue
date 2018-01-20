@@ -911,12 +911,13 @@ export default {
         this.initLanguageSuccess = true
         setTimeout(() => {
           new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, multilanguagePage: true}, 'google_translate_element', function (){console.log(123)})
-          $('.goog-te-gadget-icon').css({
-            'width': '10px',
-            'height': '10px',
-            'background': 'url(http://i02.i.aliimg.com/wimg/buyer/single/google-translate-logo.png) 0px 0px no-repeat'
-          })
-          $('.goog-te-menu-value').append('<i class="iconfont icon-xiangxia icongoogle"></i>')
+          var obj = document.getElementsByClassName('goog-te-gadget-icon')[0]
+          obj.style.width= '10px'
+          obj.style.height = '10px'
+          obj.style.background = 'url(http://i02.i.aliimg.com/wimg/buyer/single/google-translate-logo.png) 0px 0px no-repeat'
+          let iDiv = document.createElement('i')
+          iDiv.className = 'iconfont icon-xiangxia icongoogle'
+          document.getElementsByClassName('goog-te-menu-value')[0].appendChild(iDiv)
         }, 300)
       }
     },

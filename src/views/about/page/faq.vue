@@ -164,14 +164,14 @@
                 </div>
                 <div class="questionk-item" id="question11">
                   <div class="question-title">
-                    What is Affiliate PID?
+                    What is Affiliate ID?
                   </div>
                   <div class="question-content">
                     <p>
-                      This is the only promotion ID available to you from third-party affiliate platforms, such as Amazon Affiliate Program, Rakuten, Shareasale, CJ, and others.
+                      This is the only Tracking ID available to you from third-party affiliate platforms, such as Amazon Affiliate Program, Rakuten, Shareasale, CJ, and others.
                     </p>
                     <p>
-                      DealsBank currently only supports Amazon Affiliate, and when you successfully registered as an Amazon AffiliateProgram user, Amazon will give you a promotion ID. And you add your Amazon Affiliate PID to DealsBank and after successfully logging in DealsBank, you will be able to earn Amazon affiliate commissions by sharing and reposting the Amazon promotional information on DealsBank via successful deals.
+                      DealsBank currently only supports Amazon Affiliate, and when you successfully registered as an Amazon Affiliate Program user, Amazon will give you a Tracking ID. And you add your Amazon Affiliate ID to DealsBank and after successfully logging in DealsBank, you will be able to earn Amazon affiliate commissions by sharing and reposting the Amazon promotional information on DealsBank via successful deals.
                     </p>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export default {
         {text: 'Could I receive refund if I submit overtime reviews after conducting product trial?'},
         {text: 'What is the limitation of product trial?'},
         {text: 'Under what circumstances my account will be frozen?'},
-        {text: 'What is Affiliate PID？'},
+        {text: 'What is Affiliate ID？'},
         {text: 'Why did my product trial qualification of successful application was canceled?'},
         {text: 'How to modify the content template of coupon?'},
       ]

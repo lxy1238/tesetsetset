@@ -785,7 +785,7 @@ export default {
           }
         }
         .tabs-body {
-          text-align: center;
+          // text-align: center;
           // min-width: 1000px;
           width: 100%;
           margin: 0 auto;

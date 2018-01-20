@@ -1,10 +1,10 @@
 <template>
   <div class="affiliate-pid">
     <div class="title">Settings</div>
-    <div class="title-s" v-title="'Affiliate PID'">Affiliate PID</div>
+    <div class="title-s" v-title="'Affiliate ID'">Affiliate ID</div>
      <a class="goto-getpid link" :href="howToGetPid[country_id]" target="_blank" v-if="country_id <= 8">I don’t know how to get it?</a>
       <div v-for="item in platformArr" class="item-pid">  
-        <label class="capitalize">{{item.provider + ' Affiliate PID'}} :</label>
+        <label class="capitalize">{{item.provider + ' Tracking  ID'}} :</label>
         <el-input  v-model="item.pid"  v-if="country_id === 9" disabled></el-input>
         <el-input  v-model="item.pid"  v-else></el-input>
       </div>

@@ -5,7 +5,7 @@
 
 <script>
 import {  base64Decode } from '@/utils/randomString'
-import { validateAmazonHost, validateKeyword } from '@/utils/validate'
+import { validateAmazonHost } from '@/utils/validate'
 export default {
   name: 'goto',
   data () {
@@ -21,12 +21,30 @@ export default {
         id: base64Decode(this.$route.params.couponId),
       },
       user_id: base64Decode(this.$route.params.promoterId),
-      country_id: base64Decode(this.$route.params.countryId),
+      country_id: parseInt(base64Decode(this.$route.params.countryId)),
       coupon_id: base64Decode(this.$route.params.couponId),
       amazonLink: '',
-      promoterPid: 'dealsbank',
+      promoterPid1: 'dealsbankamz-20',
+      promoterPid2: 'dealsbankamz-21',
+      promoterPid3: 'dealsbankamz-21',
       link: '',
       fullscreenLoading: true
+    }
+  },
+  computed: {
+    promoterPid: {
+      set (value) {
+        this.promoterPid1 = value
+      },
+      get () {
+        if (this.country_id === 1) {
+          return this.promoterPid1
+        } else if (this.country_id === 2){
+          return this.promoterPid2
+        } else {
+          return this.promoterPid3
+        }
+      }
     }
   },
   mounted () {
@@ -40,20 +58,30 @@ export default {
           .then(res => {
             this.amazonLink = res.data.product_url
             let urlArr = validateAmazonHost(this.amazonLink)
-            let keyword = validateKeyword(this.amazonLink)
+            // let keyword = validateKeyword(this.amazonLink)
             this.hasPromoter(res.data).then(() => {
               if (this.$route.params.gotopage === 'platform') {
-                if (keyword) {
-                  location.href = `https://${urlArr[1]}?keywords=${keyword[1]}&tag=${this.promoterPid}`
-                }
                 location.href = `https://${urlArr[1]}?tag=${this.promoterPid}`
                 return
               }
-              if (keyword) {
-                this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?keywords=${keyword[1]}&tag=${this.promoterPid}`
+              if (this.amazonLink.includes('https://') || this.amazonLink.includes('http://')) {
+                if (this.amazonLink.includes('?')){
+                  this.link = `${this.amazonLink}&tag=${this.promoterPid}`
+                } else {
+                  this.link = `${this.amazonLink}?tag=${this.promoterPid}`
+                }
               } else {
-                this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}`
+                if (this.amazonLink.includes('?')){
+                  this.link = `https://${this.amazonLink}&tag=${this.promoterPid}`
+                } else {
+                  this.link = `https://${this.amazonLink}?tag=${this.promoterPid}`
+                }
               }
+              // if (keyword) {
+              //   this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}`
+              // } else {
+              //   this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}`
+              // }
               location.href = this.link
             })
           })
@@ -65,20 +93,30 @@ export default {
           .then(res => {
             this.amazonLink = res.data.product_url
             let urlArr = validateAmazonHost(this.amazonLink)
-            let keyword = validateKeyword(this.amazonLink)
+            // let keyword = validateKeyword(this.amazonLink)
             this.hasPromoter(res.data).then(() => {
               if (this.$route.params.gotopage === 'platform') {
-                if (keyword) {
-                  location.href = `https://${urlArr[1]}?keywords=${keyword[1]}&tag=${this.promoterPid}`
-                }
                 location.href = `https://${urlArr[1]}?tag=${this.promoterPid}`
                 return
               }
-              if (keyword) {
-                this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?keywords=${keyword[1]}&tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+              if (this.amazonLink.includes('https://') || this.amazonLink.includes('http://')) {
+                if (this.amazonLink.includes('?')){
+                  this.link = `${this.amazonLink}&tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+                } else {
+                  this.link = `${this.amazonLink}?tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+                }
               } else {
-                this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+                if (this.amazonLink.includes('?')){
+                  this.link = `https://${this.amazonLink}&tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+                } else {
+                  this.link = `https://${this.amazonLink}?tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+                }
               }
+              // if (keyword) {
+              //   this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+              // } else {
+              //   this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+              // }
               location.href = this.link
             })
           })
@@ -106,7 +144,6 @@ export default {
           })
         } else {
           resolve()
-          this.promoterPid = 'dealsbank'
         }
       })
     },

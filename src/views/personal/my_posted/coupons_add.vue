@@ -77,7 +77,7 @@
         </el-input>
       </el-form-item>
       <el-form-item label="Reason: " class="item-large" >
-        <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea" :maxLength="150"  placeholder="The maximum input is 150 characters" ></el-input>
+        <el-input v-model="couponsForm.product_reason" type="textarea" :rows="8" class="textarea" :maxlength="150"  placeholder="The maximum input is 150 characters" ></el-input>
       </el-form-item>
     <div class="title-s">
        Coupon Information
@@ -122,6 +122,7 @@ export default {
   name: 'coupoons-add',
   data () {
     let reg =  /^\d+(\.\d{1,2})?$/
+    let regAsin = /\/dp\/([A-Z0-9]{10})[\/|\?| ]+/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
         return callback(new Error('The list price is required.'))
@@ -135,6 +136,7 @@ export default {
       if (!this.couponsForm.product_url) {
         return
       }
+      this.couponsForm.product_url = this.couponsForm.product_url + ' '
       this.optionsWebsite = []
       this.$api.getPlatformCate(this.requestData)
         .then(res => {
@@ -146,11 +148,13 @@ export default {
             }
             ObjWebsite.label = i.provider
             ObjWebsite.id = i.id
-            if (this.couponsForm.product_url.search(i.url) >= 0 && this.couponsForm.product_url.includes('/dp/')) {
+            if (this.couponsForm.product_url.search(i.url) >= 0 && regAsin.test(this.couponsForm.product_url)) {
               this.couponsForm.website = i.provider
               this.optionsWebsite.push(ObjWebsite)
+              this.couponsForm.product_url = this.couponsForm.product_url.trim()
               callback()
             } else {
+              this.couponsForm.product_url = this.couponsForm.product_url.trim()
               callback(new Error('In the current country, the product URL is invalid.'))
             }
           }

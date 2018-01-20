@@ -125,20 +125,21 @@ export default {
     },
     //限制只能输入数字和.
     filterInput () {
+      let inputMoney = document.querySelector('.input-money .el-input__inner')
       if (this.country_id === 4) {
-        $('.input-money .el-input__inner').eq(0).keypress((e) => {
+        inputMoney.onkeypress = (e) => {
           let code = e.keyCode || e.which || e.charCode
           if (!((code <= 57 && code >= 48) || code === 8)) {
             return false
           }
-        })
+        }
       } else {
-        $('.input-money .el-input__inner').eq(0).keypress((e) => {
+        inputMoney.onkeypress = (e) => {
           let code = e.keyCode || e.which || e.charCode
           if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
             return false
           }
-        })
+        }
       }
     },
     withdrawSubmit (formName, callback) {

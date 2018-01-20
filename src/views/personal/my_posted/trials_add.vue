@@ -181,6 +181,7 @@ export default {
   name: 'trials_add',
   data () {
     let reg =  /^\d+(\.\d{1,2})?$/
+    let regAsin = /\/dp\/([A-Z0-9]{10})[\/|\?| ]+/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
         return callback(new Error('The list price is required.'))
@@ -191,6 +192,10 @@ export default {
       }
     }
     const validateUrl = (rule, value, callback) => {
+      if (!this.trialsForm.product_url) {
+        return
+      }
+      this.trialsForm.product_url = this.couponsForm.product_url + ' '
       this.optionsWebsite = []
       this.$api.getPlatformCate(this.requestData)
         .then(res => {
@@ -202,11 +207,13 @@ export default {
             }
             ObjWebsite.label = i.provider
             ObjWebsite.id = i.id
-            if (this.trialsForm.product_url.search(i.url) >= 0 && this.trialsForm.product_url.includes('/dp/')) {
+            if (this.trialsForm.product_url.search(i.url) >= 0 && regAsin.test(this.trialsForm.product_url)) {
               this.trialsForm.website = i.provider
               this.optionsWebsite.push(ObjWebsite)
+              this.trialsForm.product_url = this.couponsForm.product_url.trim()
               callback()
             } else {
+              this.trialsForm.product_url = this.couponsForm.product_url.trim()
               callback(new Error('In the current country, the product URL is invalid.'))
             }
           }
@@ -214,13 +221,6 @@ export default {
         .catch(error => {
           console.log(error)
         })
-    }
-    const validateQuantity = (rule, value, callback) => {
-      if ( Number(this.trialsForm.quantity_per_day) > Number(this.trialsForm.total_quantity) ) {
-        callback(new Error('The quantity per day can not greater than total quantity!'))
-      } else {
-        callback()
-      }
     }
 
     return {
@@ -307,11 +307,9 @@ export default {
         ],
         quantity_per_day: [
           { required: true ,message: 'The quantity per day is required.', trigger: 'blur'},
-          // {validator: validateQuantity, trigger: 'blur'}
         ],
         total_quantity: [
           { required: true ,message: 'The total quantity is required.', trigger: 'blur'},
-          // {validator: validateQuantity, trigger: 'blur'}
         ]
       },
       fileList2: [
@@ -628,13 +626,20 @@ export default {
       }  
     },
 
-    radioChange (i) {
-      console.log(i)
-    },
 
 
     //上传图片
     beforeAvatarUploadP (file) {
+      // var reader = new FileReader()
+      // reader.readAsDataURL(file)
+      // reader.onload = function (theFile) {
+      //   var image = new Image()
+      //   image.src = theFile.target.result
+      //   image.onload = function () {
+      //     alert('图片的宽度为'+this.width+',长度为'+this.height)
+      //   }
+      // }
+      // return
       var isJPG = file.type === 'image/jpeg'
       var isGIF = file.type === 'image/gif'
       var isPNG = file.type === 'image/png'

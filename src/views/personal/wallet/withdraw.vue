@@ -135,12 +135,23 @@ export default {
     },
     //限制只能输入数字和.  e.keyCode 不兼容 火狐浏览器，需要调整
     filterInput () {
-      $('.input-money .el-input__inner').eq(0).keypress((e) => {
-        let code = e.keyCode || e.which || e.charCode
-        if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
-          return false
+      let inputMoney = document.querySelector('.input-money .el-input__inner')
+      if (this.country_id === 4) {
+        inputMoney.onkeypress = (e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!((code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
         }
-      })
+      } else {
+        inputMoney.onkeypress = (e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!(code === 46  || (code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        }
+      }
+      
     },
 
     keyupMoney () {
@@ -180,7 +191,6 @@ export default {
       this.withdrawForm.rmb_withdraw_amount = NumMul(this.withdrawForm.rmb_exchange, this.withdrawForm.withdraw_amount)
       this.$api.withdrawApi(this.withdrawForm).then(res => {
         if (res.code === 200) {
-          // this.withdrawDialog = true
           this.$snotify.success('Submit Successfully! The withdrawal is successful and we will deal with it within three working days.')
           this.clearInput()
           this.initData()
