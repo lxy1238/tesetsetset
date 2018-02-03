@@ -147,7 +147,7 @@ export default {
 
     //跳转到coupons 详情页面， 在localStroge 中设置couponId 传递过去
     gotodetails (id) {
-      this.$router.push({ path: '/coupons/' + base64Encode(id) + '/' + base64Encode(this.country_id) + (getUserId() ? '/' +  base64Encode(getUserId()) : '')})
+      this.$router.push({ path: '/coupons/' + base64Encode(id) + '/' + base64Encode(this.country_id) })
     },
 
     //获取首页所有优惠券的信息

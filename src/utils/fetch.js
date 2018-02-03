@@ -16,7 +16,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
-  NProgress.start()
+  // NProgress.start(90)
   return config
 }, error => {
   console.log(error) // for debug

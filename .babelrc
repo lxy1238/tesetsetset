@@ -14,5 +14,5 @@
       "plugins": ["istanbul"]
     }
   },
-  "plugins": [["component", [{"libraryName": "element-ui", "styleLibraryName": "theme-default"}]]]
+  "plugins": [["component", [{"libraryName": "element-ui", "styleLibraryName": "theme-default"}]],  "transform-runtime"]
 }

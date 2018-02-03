@@ -209,7 +209,7 @@ export default {
           this.withdrawForm.account_payee = getEmail()
           this.postWithdrawApi()
         } else if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['alipay']) {
-          this.withdrawForm.rmb_exchange = 1
+          // this.withdrawForm.rmb_exchange = 1
           this.postWithdrawApi()
         }
       })

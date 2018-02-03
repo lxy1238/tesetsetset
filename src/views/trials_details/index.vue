@@ -39,7 +39,7 @@
               <div class="refund-price">
                 <label>Trial price:</label>  
                 <span class="free" v-if="sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2) >= 0">Free</span>
-                <span v-else >{{currency}}{{add(trialDetailData.product_price, trialDetailData.shipping_fee).toFixed(2)}}</span>
+                <span v-else >{{currency}}{{sub(trialDetailData.product_price, trialDetailData.refund_price).toFixed(2)}}</span>
                 <span class="merchant-reward" >
                   <label>Refund amount: </label>
                   <i class="merchant-reward-money">{{currency}}{{add(trialDetailData.refund_price, trialDetailData.shipping_fee).toFixed(2)}}</i>
@@ -135,24 +135,8 @@
       </el-dialog>
 
 
-        <!-- 已经申请成功 情况2 点击已经申请成功的试用品 -->
-      <el-dialog  :visible.sync="applySuccessDialogFirst"  class="not-trials-dialog-first" size="tiny">
-          <p class="sorry-text" >Successful Application!</p>
 
-          <p>
-            Please place an order and submit the order number within 24 hours, or your product trial task will be canceled.
-          </p>
-          <p><a class="link" href="javascript:void(0);" @click="gotoAmazon">
-            Shop Amazon now to trial!
-            </a></p>
-          <div class="apply-first">
-            <el-input v-model="reqAddOrderData.order_number" placeholder="Your Order Number" @keyup.enter.native="orderSubmit"></el-input> 
-            <el-button :loading="confirmLoading" @click="submitOrderNumber">Save</el-button>
-          </div>
-          <div class="red" v-if="!reqAddOrderData.order_number && reqAddOrderData.isSubmit">The order number is required.</div>
-      </el-dialog>
-
-       <!-- 已经申请成功 情况2 点击已经申请成功的试用品 -->
+       <!-- 申请之前，显示试用品规则，需要用户确定 -->
       <el-dialog  :visible.sync="applySuccessDialog"  class="not-trials-dialog" size="tiny">
           <p class="sorry-text" >Can Not Apply Again On This Platform!</p>
 
@@ -168,6 +152,78 @@
              Please  <a class="link" href="javascript:void(0);" @click="gotoMytrials(0)" > 
             click to view</a> the progress of your task. 
           </p>
+      </el-dialog>
+
+
+        <!-- 已经申请成功 情况1 点击已经申请成功的试用品 -->
+      <el-dialog  :visible.sync="applySuccessDialogFirst"  class="not-trials-dialog-first" size="tiny">
+          <p class="sorry-text" >Successful Application!</p>
+
+          <p>
+            Please place an order and submit the order number within 2 hours, or your product trial task will be canceled.
+          </p>
+          <p><a class="link" href="javascript:void(0);" @click="gotoAmazon">
+            Shop Amazon now to trial!
+            </a></p>
+          <div class="apply-first">
+            <el-input v-model="reqAddOrderData.order_number" placeholder="Your Order Number" @keyup.enter.native="orderSubmit"></el-input> 
+            <el-button :loading="confirmLoading" @click="submitOrderNumber">Save</el-button>
+          </div>
+          <div class="red" v-if="!reqAddOrderData.order_number && reqAddOrderData.isSubmit">The order number is required.</div>
+      </el-dialog>
+
+       <!-- 已经申请成功 情况2 点击已经申请成功的试用品 -->
+      <el-dialog  :visible.sync="ruleDialog"  class="trials-policy-dialog" size="tiny">
+
+        <div class="head-title">
+              <h3> Product Trial Policy</h3>
+              <div class="head-text">
+                Please carefully read the product trial policies before applying for a product trial.
+              </div>
+            </div>
+           
+            
+            <ul>
+              <li>
+                1. User shall be voluntary to participate the product trial, which are initiated by the merchants.
+              </li>
+              <li>
+                2. Users must have clear understanding of their rights and obligations.
+              </li>
+              <li>
+                3. Before applying, please confirm that your buyer account is normal and you can post product review.
+              </li>
+              <li>
+                  4. In the following cases, no refund will be given:  <br />
+                (1). You fail to upload the product's rating link within 15 days after successfully placing an order.<br />
+                (2). Users upload a fake order number or fake review link.<br /> 
+                (3). Review that is obscene, offensive, threatening or dirty.<br />
+                (4). Provide merchants with untruthful comments by taking bribes and other transactions.<br />
+                (5). Restricted by sales platform, the buyer account can not post the product evaluation normally.<br />
+              </li>
+              <li>
+                5. Review content must be neutral, true, and trustworthy.
+              </li>
+              <li>
+                6. Within a month, for the same user, and on the same sales platform, there are two product trial opportunities for you, but you must have a successful trading order for the previous product trials.
+              </li>
+              <li>
+                7. The same person, can only register a user account on DealsBank. Otherwise, all his accounts will be permanently frozen.
+              </li>
+              <li>
+                8. After submitting the review link address, if the review is true and in line with the product trial policies, the system will refund within 3 working days.
+              </li>
+              <li>
+                9. Serving as an information platform, DealsBank can not guarantee the authenticity of the products, and users must make their own judgments before placing orders. If you have any after-sale quality problems, please contact the seller through the sales platform. DealsBank is not responsible to after-sale issues.
+              </li>
+            </ul>
+            <p class="head-text">
+              The behavior of clicking on the consent button means you accept our product trial policies, and fully understand your rights and obligations.
+            </p> 
+            <div class="try-again">
+              <el-button type="info" @click="agreePolicy">I Agree</el-button>
+            </div>
+
       </el-dialog>
 
      
@@ -208,25 +264,25 @@ export default {
         },
         {
           'title':'Submit the application and know the  results timely',
-          'content': 'Aftersubmitting the application, the system will promptly inform you of the results of the application, also the system will randomly selectusers, but a usercan only apply for the same product once, if unsuccessful, maybe you can try again for another product.',
+          'content': 'After submitting the application, the system will promptly inform you of the results of the application, also the system will randomly select users, but a user can only apply for the same product once, if unsuccessful, maybe you can try again for another product.',
           'imgL': require('../../assets/process02.png'),
           'imgR': require('../../assets/2.png')
         },
         {
           'title':'Buy immediately, upload order number',
-          'content': 'If you have a chance to get a trial, please place an order and complete the paymentwithin 24 hours, then return to our website, to find the taskin your member center, and upload the order number, the system will verify the authenticity of your order. If you do not upload the order number within 24 hours, your trial task will be canceled and you will not be able to proceed to the next step, also will not be refunded.',
+          'content': 'If you have a chance to get a trial, please place an order and complete the payment within 24 hours, then return to our website, to find the taskin your member center, and upload the order number, the system will verify the authenticity of your order. If you do not upload the order number within 24 hours, your trial task will be canceled and you will not be able to proceed to the next step, also will not be refunded.',
           'imgL': require('../../assets/process03.png'),
           'imgR': require('../../assets/3.png')
         },
         {
           'title':'Confirmreceipt, submit review',
-          'content': 'After receiving the goods, please carefully use your product, andupload your honest review within 15 days after ordered. The system will not allow you to submit an review until submission of the evaluation time. An objective and impartial review will help other customers to fully understand the product and contribute to improvingproducts for seller.',
+          'content': 'After receiving the goods, please carefully use your product, and upload your honest review within 15 days after ordered. The system will not allow you to submit an review until submission of the evaluation time. An objective and impartial review will help other customers to fully understand the product and contribute to improving products for seller.',
           'imgL': require('../../assets/process04.png'),
           'imgR': require('../../assets/4.png')
         },
         {
           'title':'Confirm the review, system refund',
-          'content': 'Our professional review team will assess the authenticity of your evaluation, our review is objective and fair, afterreviewing, the system will refundwithin 5 days.',
+          'content': 'Our professional review team will assess the authenticity of your evaluation, our review is objective and fair, after reviewing, the system will refund within 3 working days.',
           'imgL': require('../../assets/process05.png'),
           'imgR': require('../../assets/5.png')
         },
@@ -235,6 +291,7 @@ export default {
       notGetTrialsDialog: false,
       applySuccessDialog: false,
       applySuccessDialogFirst: false,
+      ruleDialog: false,
       btnLoading: false,
       hasSubmitOrder: false,
       confirmLoading: false,
@@ -285,6 +342,10 @@ export default {
         title: '',
         content: ''
       },
+      agreePolicyData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+      },
       isFlagCoupon: false,
       problemBtnLoading: false,
       options: [
@@ -298,11 +359,13 @@ export default {
       ],
       selected1: 'Choose reason',
       titleMsg: '',
+      trials_policy: 0,
     }
   },
   computed: {
     ...mapGetters([
-      'currentRouter'
+      'currentRouter',
+      'userBase'
     ]),
     leftTime () {
       if (this.trialDetailData.end_time) {
@@ -318,9 +381,14 @@ export default {
       }
     }
   },
+  watch: {
+    userBase () {
+      this.trials_policy = this.userBase.trials_policy
+    }
+  },
   mounted () {
     this.init()
-
+  
   },
   methods: {
     init () {
@@ -339,10 +407,17 @@ export default {
       this.$root.eventHub.$on('changeCurrency', data => {
         this.currency = data
       })
+
+      if (this.userBase.trials_policy) {
+        this.trials_policy = this.userBase.trials_policy
+      }
     },
+
+    
 
     //获取试用品详情
     getTrialDetail () {
+      this.isDataExit(this.reqData)
       this.$api.trialDetail(this.reqData).then(res => {
         this.getPostUserInfo(res.data.user_id)
         this.trialApplyData.trial_id = res.data.id
@@ -393,8 +468,26 @@ export default {
         return true
       }
     },
+    agreePolicy () {
+      this.isDataExit(this.agreePolicyData)
+      this.$api.trialsPolicy(this.agreePolicyData).then(res => {
+        if (res.code === 200) {
+          this.ruleDialog = false
+          this.userBase.trials_policy = 1
+          this.trials_policy = 1
+          this.$store.commit('SET_USERBASE', this.userBase)
+          this.trialsApplyBtn()
+        }
+      }).catch(() => {
+
+      })
+    },
     trialsApplyBtn () {
       if (!this.isLogin()) {
+        return
+      }
+      if (this.trials_policy === 0) {
+        this.ruleDialog = true
         return
       }
       if (this.trialDetailData.run_status === 'stop') {
@@ -407,11 +500,13 @@ export default {
         this.trialDetailData.user_id = getUserId()
       }
       this.btnLoading = true
+      this.isDataExit(this.trialApplyData)
       this.$api.trialApply(this.trialApplyData).then(res => {
         this.btnLoading = false
         if (res.code === 200) {
           if (res.data === 1) {
             // this.$router.push({ path: '/successTrials/' + this.$route.params.trialId + '/' + this.$route.params.countryId})
+            this.isDataExit(this.reqSuccedDetailsData0)
             this.$api.userApplySucced(this.reqSuccedDetailsData0).then(res => {
               this.amazonUrl = res.data[0].trials.product_url
               this.reqAddOrderData.id = res.data[0].id
@@ -426,6 +521,7 @@ export default {
       }).catch(error => {
         this.btnLoading = false
         if (error.code === 402) {
+          this.isDataExit(this.reqSuccedDetailsData0)
           this.$api.userApplySucced(this.reqSuccedDetailsData0).then(res => {
             if (res.data.length === 0) {
               this.hasSubmitOrder = true
@@ -468,6 +564,7 @@ export default {
         this.confirmLoading = false
         return
       }
+      this.isDataExit(this.reqAddOrderData)
       this.$api.userAddOrderNumber(this.reqAddOrderData).then(res => {
         if (res.code === 200) {
           this.$router.push({path: '/personal/my-trials/index', query: { status: 1 }})
@@ -493,6 +590,8 @@ export default {
       this.isFlagCoupon = !this.isFlagCoupon
       this.selected1 = 'Choose reason'
     },
+
+   
     //提交问题
     addProblemSubmit () {
       if (!this.isLogin()) {
@@ -976,6 +1075,22 @@ export default {
         color: red;
       }
     }
+  }
+}
+.trials-policy-dialog {
+  line-height: 1.42;
+  h3 {
+    text-align: center;
+    font-size: 18px;
+  }
+  .head-text {
+    text-align: left;
+  }
+  .head-title {
+    margin-top: -30px;
+  }
+  .try-again {
+    text-align: center;
   }
 }
 

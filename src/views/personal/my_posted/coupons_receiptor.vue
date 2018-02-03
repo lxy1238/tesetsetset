@@ -66,6 +66,9 @@
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
+import Vue from 'vue'
+import { DatePicker } from 'element-ui'
+Vue.use(DatePicker)
 export default {
   name: 'center_coupons',
   data () {

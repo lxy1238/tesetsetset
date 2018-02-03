@@ -68,6 +68,10 @@ export default {
         cursor: pointer;
         a {
           color: #c2c2c2;
+          display: inline-block;
+          color: #c2c2c2;
+          width: 100%;
+          height: 100%;
         }
         &:hover {
           a {

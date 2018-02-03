@@ -1,6 +1,8 @@
 <template>
   <div class="my-trials">
-    <div class="title-bottom" v-title="'My Trials'">My Trials</div>
+    <div class="title-bottom" v-title="'My Trials'">My Trials
+      <router-link class="link" to="/about/center/trials-policy">Trials Policy</router-link>
+    </div>
       <div class="tabs">
         <div class="head-s clearfix">
           <div class="tabs-label" 
@@ -28,13 +30,13 @@
                       <i class="free-price">{{currency}}{{item.trials.shipping_fee}}</i>
                     </span>
                     <span v-else>
-                       <label for="">Free shopping</label>
+                       <label for="">Free shipping</label>
                     </span>
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                         <i class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else>{{currency}}{{add(item.trials.product_price,item.trials.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" v-else>{{currency}}{{sub(item.trials.product_price,item.trials.refund_price).toFixed(2)}}</i>
                       </span>
                       <span>
                         <label class="refund-amount">Refund amount: </label>
@@ -82,13 +84,13 @@
                       <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
-                       <label for="">Free shopping</label>
+                       <label for="">Free shipping</label>
                     </span>
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                         <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.refund_price).toFixed(2)}}</i>
                       </span>
                       <span>
                         <label class="refund-amount">Refund amount: </label>
@@ -169,13 +171,13 @@
                       <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
-                       <label for="">Free shopping</label>
+                       <label for="">Free shipping</label>
                     </span>
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                         <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" v-else >{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
                       </span>
                       <span>
                         <label class="refund-amount">Refund amount: </label>
@@ -235,13 +237,13 @@
                       <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
                     <span v-else>
-                       <label for="">Free shopping</label>
+                       <label for="">Free shipping</label>
                     </span>
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                        <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.shipping_fee).toFixed(2)}}</i>
+                        <i class="trials-price" v-else >{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
                       </span>
                       <span>
                         <label class="refund-amount">Refund amount: </label>
@@ -703,6 +705,7 @@ export default {
                   position: absolute;
                   top: 0;
                   margin-left: 5px;
+                  z-index: 10;
                   &.goto-platform {
                       .btn-h(120px, 24px, #82b838, #82b838, #fff);
                       font-size: 13px;
@@ -727,7 +730,9 @@ export default {
               right: 10px;
               width: 36%;
               height: 118px;
+              z-index: 1;
               p {
+                z-index: -1;
                 strong {
                   color: #1a1a1a;
                 }
@@ -863,5 +868,12 @@ export default {
           }
         }
       }
+  }
+  .title-bottom {
+    .link {
+      float: right;
+      margin-top: 10px;
+      font-size: 16px;
+    }
   }
 </style>

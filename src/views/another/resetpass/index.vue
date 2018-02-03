@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import {  base64Decode } from '@/utils/randomString'
 export default {  
   name: 'affiliate_pid',
   data () {
@@ -69,7 +70,7 @@ export default {
         if (valid) {
           this.submitLoading = true
           this.pidForm.api_token = this.$route.params.token
-          this.pidForm.email = this.$route.params.email
+          this.pidForm.email =  base64Decode(this.$route.params.email) 
           this.$api.checkRetrievePassword(this.pidForm).then(res => {
             this.submitLoading = false
             if (res.code === 200) {

@@ -212,3 +212,11 @@ export const updateOrderStatus = data => fetch({
   method: 'POST',
   data: qs.stringify(data)
 })
+
+
+//使用政策
+export const trialsPolicy = data => fetch({
+  url: '/api/v1/trial/trial-policy',
+  method: 'POST',
+  data: qs.stringify(data)
+})

@@ -24,7 +24,8 @@
         </template>
         <template slot="price">
          <p class="trials-price content">
-          <span class="old"> <i >{{currency}}{{couponsDetails.product_price}} </i></span>
+          <!-- <span class="old" v-if="isEurope"> <i >{{currency}}{{couponsDetails.product_price.replace('.', ',')}} </i></span> -->
+          <span class="old" > <i >{{currency}}{{couponsDetails.product_price}} </i></span>
           <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) >= 0">
             <strong>Free</strong>  
           </span>
@@ -54,8 +55,10 @@ import couponsPro from '@/components/page_index_coupons/image_product.vue'
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import explain from '@/components/trials/explain.vue'
 import { getStore } from '@/utils/utils'
+import { getUserId } from '@/utils/auth'
 import { base64Encode } from '@/utils/randomString'
 import { NumAdd, NumSub } from '@/utils/calculate'
+import { COUNTRY_ID } from '@/status'
 export default {
   name: 'page_index',
   data () {
@@ -102,6 +105,16 @@ export default {
     },
     currency () {
       return getStore('currency') || '$'
+    },
+    isEurope () {
+      if (this.country_id === COUNTRY_ID['Germany'] || 
+          this.country_id === COUNTRY_ID['France'] ||
+          this.country_id === COUNTRY_ID['Italy'] ||
+          this.country_id === COUNTRY_ID['Spain'] ) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   watch: {
@@ -179,7 +192,7 @@ export default {
 
     //跳转到trials详情页面
     gotodetails (id) {
-      this.$router.push({ path: '/trialsDetails/' + base64Encode(id) + '/' + base64Encode(this.country_id)   })
+      this.$router.push({ path: '/trialsDetails/' + base64Encode(id) + '/' + base64Encode(this.country_id)  })
     },
 
     //根据页面尺寸宽度判断首页展示的商品数量

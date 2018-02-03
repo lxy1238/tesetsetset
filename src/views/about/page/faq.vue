@@ -176,7 +176,7 @@
                   </div>
                 </div>
               
-                 <div class="question-item" id="question12">
+                <div class="question-item" id="question12">
                   <div class="question-title">
                     Why did my product trial qualification of successful application was canceled?
                   </div>
@@ -186,13 +186,32 @@
                     </p>
                   </div>
                 </div>
-                 <div class="question-item" id="question13">
+                <div class="question-item" id="question13">
                   <div class="question-title">
                    How to modify the content template of coupon?
                   </div>
                   <div class="question-content">
                     <p>
                       As for the modify content template page, the left is the label and the right is the layout of the content. Different labels correspond to the different coupon information, such as the label # Platform #, which represents the name of the online shopping platform. Different content layout generates different content. In order to make it easier to show coupon content to your fans or friends, our platform allows each user to customize your own content.
+                    </p>
+                  </div>
+                </div>
+                <div class="question-item" id="question14">
+                  <div class="question-title">
+                   Make Money?
+                  </div>
+                  <div class="question-content">
+                    <p>
+                      DealsBank not only enables you to save money by offering reliable promotion information for you. What’s more, you can get free products by participating in product trials.
+                    </p>
+                    <p>
+                      The point is that the affiliate commissions are not exclusive any more. Anyone can get the commissions now! 
+                    </p>
+                    <p>
+                      When it comes to DealsBank, getting affiliate commissions is a straightforward task. 
+                    </p>
+                    <p>
+                      Instead of owning your own website, you just need to apply for an Affiliate ID on a third-party affiliate platform, and add the Affiliate ID in the Settings section of our User Center. After you login to DealsBank, you can place an order by clicking the link on DealsBank or share the DealsBank promotions with your friends, if the order is valid and successful, you can get the commission from the third-party affiliate platform.
                     </p>
                   </div>
                 </div>
@@ -226,14 +245,17 @@ export default {
         {text: 'What is Affiliate ID？'},
         {text: 'Why did my product trial qualification of successful application was canceled?'},
         {text: 'How to modify the content template of coupon?'},
+        {text: 'Make Money?'},
       ]
     }
   },
   mounted () {    
-    if (this.$route.query.id) {
-      this.gotoQuestion(this.$route.query.id)
+    if (!this.$route.query.id) {
+      return
     }
-    
+    setTimeout(() => {
+      this.gotoQuestion(this.$route.query.id)
+    })
   },
   methods: {  
     gotoQuestion (index) {

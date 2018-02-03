@@ -14,7 +14,7 @@
                   To apply after logining.
                 </p>
                 <p class="text-bottom">
-                  You must login to access the application page.
+                  You must <a class="link" href="javascript:void(0);" @click="activateLogin">login</a> to access the application page.
                 </p>
               </div>
             </div>
@@ -34,9 +34,12 @@ export default {
     }
   },
   mounted () {    //钩子函数，等于vue1.0中的ready
-   
+    console.log(this.$router)
   },
   methods: {
+    activateLogin () {
+      this.$root.eventHub.$emit('isLoginInfo')
+    }
   }
 }
 </script>

@@ -30,6 +30,7 @@
 
 <script>
 import { removeToken, removeUserId, removeEmail } from '@/utils/auth'
+import {  base64Decode } from '@/utils/randomString'
 import footerSelf from '@/components/global/footer.vue'
 export default {
   name: 'activate',
@@ -48,7 +49,7 @@ export default {
     }
   },
   mounted () {
-    this.$api.userActivate({'email': this.$route.params.email, 'api_token': this.$route.params.token}).then(res => {
+    this.$api.userActivate({'email': base64Decode(this.$route.params.email) , 'api_token': this.$route.params.token}).then(res => {
       if (res.code === 200) {
         removeToken()
         removeUserId()
@@ -74,7 +75,6 @@ export default {
     },
     activateLogin () {
       this.$root.eventHub.$emit('isLoginInfo')
-      // this.$router.push({path: '/'})
     }
   }
 }

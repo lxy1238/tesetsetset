@@ -46,6 +46,9 @@
              <dd>
               <router-link :to="{ path: '/about/center/faq', query: { id: 9 }}" target="_blank">Trial Limitation</router-link>
             </dd>
+            <dd>
+              <router-link :to="{ path: '/about/center/faq', query: { id: 14 }}" target="_blank">Make Money</router-link>
+            </dd>
             
           </dl>
         </div>

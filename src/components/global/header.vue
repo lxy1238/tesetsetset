@@ -4,7 +4,7 @@
        <div class="header-top">
          <div class="header-top-content">
            <div class="content">
-             <a href="javascript:void(0);"  @click="coupons"> 
+             <a href="javascript:void(0);"  @click="couponsLogo"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
              <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >Coupons</a>
@@ -101,7 +101,7 @@
         <div class="dialog-body">
           <div class="sign-dialog-head">
             <div class="center">Welcome to Dealsbank</div>
-            <p class="center">Log In to start saving.</p>
+            <p class="center">Log In to start saving and earning.</p>
           </div>
           <div class="top">
             <div class="facebook">
@@ -153,7 +153,7 @@
         <div class="dialog-body">
           <div class="sign-dialog-head">
             <div class="center">Join Dealsbank</div>
-            <p class="center">Share is funny.</p>
+            <p class="center">Not only saving, more to earning.</p>
           </div>
           <div class="top">
             <div class="facebook">
@@ -261,7 +261,7 @@ import { validateEmail } from '@/utils/validate.js'
 import { mapGetters } from 'vuex'
 import { getStore, setStore } from '@/utils/utils'
 import { base64Encode, base64Decode } from '@/utils/randomString'
-import { getEmail, getToken,getPass, setToken, setUserId ,setPass} from '@/utils/auth'
+import { getEmail, getToken,getPass, setToken, setUserId ,setPass, getUserId} from '@/utils/auth'
 export default {
   name: 'header',
   data () {
@@ -363,7 +363,7 @@ export default {
         password: [
           { required: true, message: 'Please enter your password.', trigger: 'blur' },
           { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' },
-          { validator:validateLoginPass, trigger: 'blur' },
+          { validator:validateLoginPass, trigger: 'submit' },
         ]
       },
       rules: {
@@ -438,6 +438,7 @@ export default {
       get () {
         for (var i of this.countryLists) {
           if (i.id === this.country_id) {
+            console.log(i.name)
             return i.name
           }
         }
@@ -471,6 +472,7 @@ export default {
       this.enterSubmitForm()
       this.getHeadCateListInfo()
       this.getOtherEvent()
+      this.initChat()
     },
     //数据初始化
     initData () {
@@ -587,10 +589,16 @@ export default {
       if (this.currentRouter.search('/trials') >= 0) {
         this.$router.push({path: '/trials/'+ item.name})
       } else {
-        this.$router.push({path: '/'+ item.name})
+        this.$router.push({path: '/coupon/'+ item.name})
       }
     },
     coupons () {
+      this.keyword = ''
+      this.selectedC = 0
+      this.selectedCoupon = 1
+      this.$router.push({ path: '/coupon/Top'})
+    },
+    couponsLogo () {
       this.keyword = ''
       this.selectedC = 0
       this.selectedCoupon = 1
@@ -600,7 +608,7 @@ export default {
       this.keyword = ''
       this.selectedC = 0
       this.selectedCoupon = 2      
-      this.$router.push({ path: '/trials/index' })
+      this.$router.push({ path: '/trials/Top' })
     },
     ShowLoginDialog () {
       setTimeout(() => {
@@ -689,7 +697,7 @@ export default {
       
       this.signSubmit('signform', () => {
         this.signloading = true
-        this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + this.signform.email + '/'
+        this.signform.activate_url = location.protocol + '//' + location.host + '/activate/' + base64Encode(this.signform.email)  + '/'
         this.$api.sign(this.signform).then(res => {
           if (res.code === 200) {
             this.signDialog = false
@@ -721,10 +729,22 @@ export default {
             const roles =[ res.data.type ]
             this.$store.dispatch('GenerateRoutes', { roles }).then(() => {
               this.$router.addRoutes(this.$store.getters.addRouters)
+              // this.$router.push({path: this.currentRouter, query:{promoter: getUserId()}})
               this.isLogin = getToken()
               if (this.currentRouter.search('/activate') >= 0) {
                 this.$router.push({path: '/'})
+                return
               }
+              if (this.currentRouter.search('/opration-err/index') >= 0) {
+                if (this.$route.query.apply == 'influence') {
+                  this.$router.push({path: '/about/center/influencer'})
+                  return
+                } else  if (this.$route.query.apply == 'merchant') {
+                  this.$router.push({path: '/about/center/merchant'})
+                  return
+                }
+              }
+              this.addPromoterId()
             })
           })
         }).catch(err => {
@@ -736,7 +756,7 @@ export default {
     resetPasswordBtn () {
       this.signSubmit('resetform', () => {
         this.resetLoading = true
-        this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + this.resetform.email + '/'
+        this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + base64Encode(this.resetform.email)  + '/'
         this.$api.retrievePassword(this.resetform).then(res => {
           if (res.code === 200) {
             this.resetLoading = false
@@ -748,6 +768,25 @@ export default {
           this.$snotify.error('Submit Failed! ' + err.message)
         })
       })
+    },
+
+    //判断用户是否登录，给链接中加上用户ID
+    addPromoterId () {
+      if (getUserId() && getToken() && 
+      (this.currentRouter.search('trialsDetails') >= 0 
+        || this.currentRouter.search('coupon') >= 0
+        || this.currentRouter.search('trials') >= 0
+        || this.currentRouter === '/'
+      ) ) {
+        if (this.$route.params.promoterId) {
+          return
+        }
+        if (this.currentRouter[this.currentRouter.length - 1] === '/') {
+          this.$router.push({path: this.currentRouter + (getUserId() ?   base64Encode(getUserId()) : '')})
+        } else {
+          this.$router.push({path: this.currentRouter + (getUserId() ? '/' +  base64Encode(getUserId()) : '')})
+        }
+      }
     },
 
     //登出
@@ -888,7 +927,7 @@ export default {
         }) 
         if (res.data.email) {
           this.resetform.email = res.data.email
-          this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + res.data.email + '/'
+          this.resetform.url = location.protocol + '//' + location.host + '/resetpass/' + base64Encode(res.data.email) + '/'
           this.$api.retrievePassword(this.resetform).then(() => {
           })      
         }
@@ -922,6 +961,17 @@ export default {
       }
     },
 
+    //在线聊天
+    initChat () {
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s); js.id = id
+        js.src = '//code.tidio.co/wwxicxxl9u01djk3x47kgpadzqfohwie.js'
+        fjs.parentNode.insertBefore(js, fjs)
+      }(document, 'script', 'tidioChat'))
+    },
+
     gotoPrivacy () {
       window.open('/about/center/privacy')
     },
@@ -935,11 +985,12 @@ export default {
         activate_url: '',
         email: ''
       }
-      sendEmailData.activate_url = location.protocol + '//' + location.host + '/activate/' +  this.sendEmailnum + '/'
+      sendEmailData.activate_url = location.protocol + '//' + location.host + '/activate/' +  base64Encode(this.sendEmailnum)  + '/'
       sendEmailData.email = this.sendEmailnum
       this.$api.getActivateEmail(sendEmailData).then(() => {
       })
       let timer = setInterval(() => {
+        this.seconds = 60
         this.seconds--
         if (this.seconds === 0) {
           this.isSendEmail = false

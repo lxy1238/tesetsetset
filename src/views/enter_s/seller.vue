@@ -352,7 +352,7 @@ export default {
   methods: {
     init () {
       if (!this.isLogin()) {
-        this.$router.push({path: '/opration-err/index'})
+        this.$router.push({path: '/opration-err/index', query: {apply: 'merchant'}})
         return
       }
       this.getPlatformCateInfo()

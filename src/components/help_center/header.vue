@@ -49,6 +49,10 @@ export default {
           name: 'Privacy Policy',
           link: '/about/center/privacy'
         },
+        {
+          name: 'Trials Policy',
+          link: '/about/center/trials-policy'
+        },
       ]
     }
   },
@@ -98,7 +102,7 @@ export default {
           font-size: 15px;
           color: #333;
           display: block;
-          margin-right: 30px;
+          margin-right: 20px;
           text-align: center;
           a {
             color: #333;

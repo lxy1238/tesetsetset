@@ -32,7 +32,7 @@
             </div>
             <div class="data-info">
               <span class="inline-b expried">Expried: {{couponDetail.valid_date}}</span>
-              <span class="inline-b" v-if="couponDetail.shipping_fee == '0.00'">Free shopping</span>
+              <span class="inline-b" v-if="couponDetail.shipping_fee == '0.00'">Free shipping</span>
               <span class="inline-b" v-else>Shipping fee: {{currency}}{{couponDetail.shipping_fee}}</span>
               <span class="inline-b right flagcoupon" @click="flagCoupon"><i class="iconfont icon-xiaohongqi"></i>  <i class="link">Flag this coupon</i>  </span>
             </div>
@@ -250,6 +250,7 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         coupon_id: base64Decode(this.$route.params.couponsId),
+        store_uid: '',
         use_type: '',
         username: '',
         generalize_uid: '',
@@ -267,6 +268,7 @@ export default {
         user_id: getUserId(),
         country_id: base64Decode(this.$route.params.countryId),
         coupon_id: base64Decode(this.$route.params.couponsId),
+        
       },
       //提交问题
       addProblemData: {
@@ -413,6 +415,7 @@ export default {
                           this.currency + res.data.discount_price + 
                           (res.data.shipping_fee == 0 ? ' + free shipping' : '')
           this.reqGetCodeData.use_type = res.data.use_type
+          this.reqGetCodeData.store_uid = res.data.user_id
         })
         .catch(error => {
           console.log(error + 'couponDetails')
@@ -507,11 +510,6 @@ export default {
     close () {
       this.showGetCodeDialog = false
     },
-
-    gotoTrials () {
-      this.$router.push({ path: '/trials' })
-    },
-    
 
 
     //获取该品类下的优惠券
@@ -987,6 +985,7 @@ export default {
             margin-top: 2rem;
             font-size: 13px;
             padding: 1rem;
+            line-height: 26px;
           }
         }
         .share-to-p {

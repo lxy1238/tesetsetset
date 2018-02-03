@@ -267,7 +267,7 @@ export default {
 
     //跳转到添加优惠券页面
     add () {
-      this.$router.push({ path: '/posted/coupons/add' })
+      this.$router.push({ path: '/posted/list-coupons/add' })
     },
 
     //发布的优惠券查询
@@ -287,7 +287,7 @@ export default {
       if (item.pick_numbers === 0) {
         return false
       }
-      this.$router.push({ path: '/posted/coupons/receiptor' })
+      this.$router.push({ path: '/posted/list-coupons/receiptor' })
       setStore('couponDetails', JSON.stringify(item))
     },
 
@@ -295,7 +295,7 @@ export default {
     EditCoupon (id) {
       console.log(id)
       //携带id 查询需要修改的数据，然后进行修改
-      this.$router.push({ path: '/posted/coupons/add', query: { editor: id } })
+      this.$router.push({ path: '/posted/list-coupons/add', query: { editor: id } })
     },
 
     //删除优惠券

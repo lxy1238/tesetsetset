@@ -4,7 +4,7 @@ import Vue from 'vue'
 import App from './App'
 // 解决ie9 不支持promise问题
 // import 'babel-polyfill'
-// require('es6-promise').polyfill()
+require('es6-promise').polyfill()
 import router from './router'  // 路由配置文件
 import store from './store'    // 全局状态管理
 import api from './api/index'  //所有的接口
@@ -14,25 +14,7 @@ import './directive/title/index'
 
 import Snotify from 'vue-snotify'
 Vue.use(Snotify)
-import VueHtml5Editor from 'vue-html5-editor'
-Vue.use(VueHtml5Editor,{
-  icons: {
-    text: 'iconfont icon-pencil',
-    color: 'iconfont icon-fa-paint-brush',
-    font: 'iconfont icon-font',
-    align: 'iconfont icon-alignmiddle',
-    list: 'iconfont icon-list',
-    link: 'iconfont icon-link',
-    unlink: 'iconfont icon-unlink',
-    tabulation: 'iconfont icon-table',
-    image: 'iconfont icon-image',
-    hr: 'iconfont icon-fa-minus',
-    eraser: 'iconfont icon-eraser',
-    undo: 'iconfont icon-shuaxin',
-    'full-screen': 'iconfont icon-fullscreen',
-  },
-  hiddenModules: ['info'],
-})
+
 
 
 
@@ -49,7 +31,7 @@ import {
   Select,
   Option,
   Button,
-  DatePicker,
+  // DatePicker,
   Tooltip,
   Form,
   FormItem,
@@ -72,7 +54,7 @@ Vue.use(Radio)
 Vue.use(Select)
 Vue.use(Option)
 Vue.use(Button)
-Vue.use(DatePicker)
+// Vue.use(DatePicker)
 Vue.use(Tooltip)
 Vue.use(Form)
 Vue.use(FormItem)

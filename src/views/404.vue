@@ -2,7 +2,7 @@
   <div class="not-found" v-title="'not found'">
     <img class="not-found-img" src="../assets/404.png" alt="404"/>
     <div class="text">
-      <span>ERROR !</span> <el-button type="info" ><router-link to="/">Home</router-link></el-button>
+      <span>ERROR !</span> <el-button type="info" @click="gotoIndex">Home</el-button>
     </div>
     <div class="footer-text">Sorry, the webpage you're visiting does not exist</div>
   </div>
@@ -10,6 +10,11 @@
 <script>
 export default {
   name: 'notFound',
+  methods: {
+    gotoIndex () {
+      this.$router.push({path: '/'})
+    }
+  }
 }
 </script>
 
@@ -27,6 +32,9 @@ export default {
     .text {
       a {
         color: white;
+        display: inline-block;
+        width: 72px;
+        height: 36px;
       }
       span {
         display: inline-block;

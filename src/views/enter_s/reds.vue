@@ -513,7 +513,7 @@ export default {
   },
   mounted () {
     if (!this.isLogin()) {
-      this.$router.push({path: '/opration-err/index'})
+      this.$router.push({path: '/opration-err/index', query:{apply: 'influence'}})
       return
     }
   }

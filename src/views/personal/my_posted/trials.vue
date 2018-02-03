@@ -44,7 +44,7 @@
           <tbody>
             <tr v-for="item in trLists" v-if="trLists.length != 0">
               <td class="img">
-                <img class="trials-table-img" :src="item.product_img.split(',')[0]" alt="">
+                <img class="trials-table-img" :src="item.product_img.split(',')[0]" alt="" @click="gotoAmazon(item)">
               </td>
               <!-- title -->
               <td class="trials-title">
@@ -278,14 +278,14 @@ export default {
     //页面跳转
     gotoPage (i) {
       this.requestdata.page = i
-      this.$router.push({path: '/posted/trials'})
+      this.$router.push({path: '/posted/list-trials'})
       this.requestdata.trial_id = ''
       this.getPostTrialsList()
     },
     
     //跳转到新增试用品页面
     add () {
-      this.$router.push({path: '/posted/trials/add'})
+      this.$router.push({path: '/posted/list-trials/add'})
     },
 
     //查询 trails
@@ -337,12 +337,17 @@ export default {
       }
     },
 
+    //跳转到亚马逊商品链接
+    gotoAmazon (item) {
+      window.open(item.product_url)
+    },
+
     //跳转到 领取优惠券的用户页面
     gotoTrailsreceiptor (item) {
       if (item.order_numbers === 0) {
         return false
       }
-      this.$router.push({ path: '/posted/trials/receiptor' })
+      this.$router.push({ path: '/posted/list-trials/receiptor' })
       setStore('trialDetails', JSON.stringify(item))
     },
 
@@ -354,7 +359,7 @@ export default {
     //编辑待审核状态下和审核未通过的优惠券   
     EditCoupon (id) {
       //携带id 查询需要修改的数据，然后进行修改
-      this.$router.push({ path: '/posted/trials/add', query: { editor: id } })
+      this.$router.push({ path: '/posted/list-trials/add', query: { editor: id } })
     },
 
     //删除优惠券
@@ -475,6 +480,7 @@ export default {
   .trials-table-img {
     width: 5rem;
     height: 4rem;
+    cursor: pointer;
   }
   .img {
     width: 100px;

@@ -2,7 +2,7 @@ import router from './router'
 import NProgress from 'nprogress' // Progress 进度条
 import 'nprogress/nprogress.css'// Progress 进度条样式
 import store from './store'
-import { getToken} from './utils/auth'
+import { getToken } from './utils/auth'
 // import { getInfo } from '@/api/login'
 
 var whiteList = ['/']
@@ -38,10 +38,9 @@ router.beforeEach((to, from, next) => {
     }
   }
   NProgress.done()
-  next()
 })
 
-router.afterEach(() => {
+router.afterEach((to, from) => {
   NProgress.done() // 结束Progress
 })
 

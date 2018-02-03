@@ -61,7 +61,7 @@ export default {
   data () {
     return {
       // thLists: ['Date', 'Serial Number', 'Type', 'Amount', 'result'],
-      thLists: ['Date', 'Serial Number', 'Issue', 'Issue ID', 'Type', 'Desctiption', 'Amount'],
+      thLists: ['Date', 'Serial Number', 'Issue', 'Issue ID', 'Type', 'Description', 'Amount'],
       trLists: [],
       allpage: undefined,
       showItem: 7,

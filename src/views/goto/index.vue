@@ -6,6 +6,7 @@
 <script>
 import {  base64Decode } from '@/utils/randomString'
 import { validateAmazonHost } from '@/utils/validate'
+import { COUNTRY_ID } from '@/status'
 export default {
   name: 'goto',
   data () {
@@ -24,25 +25,45 @@ export default {
       country_id: parseInt(base64Decode(this.$route.params.countryId)),
       coupon_id: base64Decode(this.$route.params.couponId),
       amazonLink: '',
-      promoterPid1: 'dealsbankamz-20',
-      promoterPid2: 'dealsbankamz-21',
-      promoterPid3: 'dealsbankamz-21',
+      ALL_COUNTRY_PID: {
+        'USA': 'dealsbankamz-20',
+        'UK': 'dealsbank-21',
+        'Germany': 'dealsbank02-21',
+        'Japan': 'dealsbank0f-22',
+        'France': 'dealsbank03-21',
+        'Italy': 'dealsbank0c-21',
+        'Spain': 'dealsbank05-21',
+        'Canada': 'dealsbank02-20',
+      },
+      promoterPid_another: '',
       link: '',
-      fullscreenLoading: true
+      fullscreenLoading: true,
+      
+
     }
   },
   computed: {
     promoterPid: {
       set (value) {
-        this.promoterPid1 = value
+        this.promoterPid_another = value
       },
       get () {
-        if (this.country_id === 1) {
-          return this.promoterPid1
-        } else if (this.country_id === 2){
-          return this.promoterPid2
-        } else {
-          return this.promoterPid3
+        if (this.country_id === COUNTRY_ID['USA']) {
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['USA']
+        } else if (this.country_id === COUNTRY_ID['UK']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['UK']
+        } else if (this.country_id === COUNTRY_ID['Germany']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['Germany']
+        } else if (this.country_id === COUNTRY_ID['Japan']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['Japan']
+        } else if (this.country_id === COUNTRY_ID['France']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['France']
+        } else if (this.country_id === COUNTRY_ID['Italy']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['Italy']
+        } else if (this.country_id === COUNTRY_ID['Spain']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['Spain']
+        } else if (this.country_id === COUNTRY_ID['Canada']){
+          return this.promoterPid_another || this.ALL_COUNTRY_PID['Canada']
         }
       }
     }
@@ -58,7 +79,7 @@ export default {
           .then(res => {
             this.amazonLink = res.data.product_url
             let urlArr = validateAmazonHost(this.amazonLink)
-            // let keyword = validateKeyword(this.amazonLink)
+            this.amazonLink = this.filterLink(this.amazonLink)
             this.hasPromoter(res.data).then(() => {
               if (this.$route.params.gotopage === 'platform') {
                 location.href = `https://${urlArr[1]}?tag=${this.promoterPid}`
@@ -82,6 +103,7 @@ export default {
               // } else {
               //   this.link = `https://${urlArr[1]}/dp/${urlArr[urlArr.length - 1]}?tag=${this.promoterPid}`
               // }
+              
               location.href = this.link
             })
           })
@@ -92,8 +114,10 @@ export default {
         this.$api.trialDetail(this.requestCouponDetails)
           .then(res => {
             this.amazonLink = res.data.product_url
+            console.log(res.data.product_url)
             let urlArr = validateAmazonHost(this.amazonLink)
-            // let keyword = validateKeyword(this.amazonLink)
+            this.amazonLink = this.filterLink(this.amazonLink)
+            console.log(this.amazonLink)
             this.hasPromoter(res.data).then(() => {
               if (this.$route.params.gotopage === 'platform') {
                 location.href = `https://${urlArr[1]}?tag=${this.promoterPid}`
@@ -121,7 +145,7 @@ export default {
             })
           })
           .catch(error => {
-            console.log(error + 'couponDetails')
+            console.log(error + 'trial Details')
           })
       }
     },
@@ -134,7 +158,7 @@ export default {
             for (let i of res.data) {
               if (i.platform_id === data.platform_id) {
                 if (i.PID) {
-                  this.promoterPid = i.PID
+                  this.promoterPid_another = i.PID
                 } 
               }
             }
@@ -147,6 +171,27 @@ export default {
         }
       })
     },
+
+    //处理链接
+    // 1、处理keywords 所有的%20 %2B  转化成 + 号
+    // 2、链接自带tag 参数 就去掉
+    // 3、链接知道店铺ID m=  也去掉
+    filterLink (link) {
+      let regKeyword = /keywords=([\w\+%]*)/
+      let regTag = /(&)?tag=([\w\+%]*)/
+      let regM = /(&)?m=([\w\+%]*)/
+      let newLink = this.amazonLink
+      if (regKeyword.test(link)) {
+        newLink = link.replace(regKeyword.exec(link)[0],regKeyword.exec(link)[0].replace('%20', '+').replace('%2B', '+'))
+      }
+      if (regTag.test(link)) {
+        newLink = newLink.replace(regTag.exec(link)[0], '')
+      }
+      if (regM.test(link)) {
+        newLink = newLink.replace(regM.exec(link)[0], '')
+      }
+      return newLink
+    }
   }
 }
 </script>

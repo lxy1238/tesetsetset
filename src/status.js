@@ -16,3 +16,16 @@ const CENSOR_PENDING = 0 //待审核
 const CENSOR_SUCCESS = 1 //审核通过
 const CENSOR_NOPASS  = 2 //拒绝
 
+//国家ID
+export const COUNTRY_ID = {
+  'USA': 1,
+  'UK': 2,
+  'Germany': 3,
+  'Japan': 4,
+  'France': 5,
+  'Italy': 6,
+  'Spain': 7,
+  'Canada': 8,
+  'Australia': 9
+}
+

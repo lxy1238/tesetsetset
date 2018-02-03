@@ -23,7 +23,7 @@
             <img  class="copy-img" :src="couponsDetails.current_img" />
             <div class="content-line ">{{couponsDetails.product_title}}</div>
             <div class="content-line">Only ***{{currency}} {{couponsDetails.discount_price}}*** after using coupons. </div>
-            <div class="content-line">Get {{currency}}{{sub(couponsDetails.product_price,couponsDetails.discount_price)}} coupons: {{dealsbankUrl}}</div>
+            <div class="content-line">Get {{currency}}{{sub(couponsDetails.product_price,couponsDetails.discount_price).toFixed(2)}} coupons: {{dealsbankUrl}}</div>
             <div class="content-line">Order now: {{gotoAmazonUrl}}</div>
             <div class="content-line">{{couponsDetails.product_reason}}</div>
           </div>

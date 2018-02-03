@@ -10,7 +10,7 @@
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" >
           <el-input class="url-input" v-model="trialsForm.product_url" ></el-input>
-          <!-- <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">Get</el-button> -->
+          <el-button class="get-pro-info"  type="button" @click="getProInfo(trialsForm.product_url)" :loading="getInfoLoading">Get</el-button>
         </el-form-item>
         <el-form-item label="Website: " prop="website" class="item-inline"  >
           <el-select v-model="trialsForm.website"  @change="websiteChange">
@@ -48,7 +48,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="Shipping fee: " prop="shipping_fee" class="item-inline"  >
-          <el-input class="url-input input-price-fee input-money " v-model="trialsForm.shipping_fee"  @blur="filterMoney('shipping_fee')" >
+          <el-input class="url-input input-price-fee input-money " v-model="trialsForm.shipping_fee"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -60,7 +60,7 @@
                 :before-upload="beforeAvatarUploadP" 
                   :file-list="trialsForm.product_img_s"
                 list-type="picture">
-              <el-button size="small" type="primary">Upload</el-button>
+              <el-button size="small" type="primary" :loading="uploadBtn">Upload</el-button>
               <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,500 KB max,6 photos at most.
               </div>
           </el-upload>
@@ -76,10 +76,10 @@
         <el-form-item label="Website: " prop="website" class="item-inline"  >
           <el-input class="url-input" v-model="trialsForm.website" disabled></el-input>
         </el-form-item>
-        <el-form-item label="Store: " prop="user_store_id" class="item-inline"  >
+        <el-form-item label="Store: " prop="user_store_id" class="item-inline"  v-if="trialsForm.user_store" >
           <el-input class="url-input" v-model="trialsForm.user_store.store_name" disabled></el-input>
         </el-form-item>
-        <el-form-item label="Category: " prop="menu_id" class="item-inline"   >
+        <el-form-item label="Category: " prop="menu_id" class="item-inline" v-if="trialsForm.menu"  >
          <el-input class="url-input" v-model="trialsForm.menu.name" disabled></el-input>
         </el-form-item>
         <el-form-item label="List price: "  prop="product_price"  class="item-inline" required >
@@ -149,7 +149,7 @@
         <el-radio class="radio" v-model="trialsForm.full_refund" label="0" >No</el-radio>
       </el-form-item>
       <el-form-item label="Per trial refund: " v-show="trialsForm.full_refund === '0'"  class="item-inline1" >
-        <el-input type="text" class=" input-money" v-model="trialsForm.refund_price" @blur="filterMoney('refund_price')"></el-input>
+        <el-input type="text" class=" input-money" v-model="trialsForm.refund_price" ></el-input>
       </el-form-item>
     <div class="title-s">
         Security Deposit
@@ -170,18 +170,42 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import Vue from 'vue'
 import axios from 'axios'
-// import qs from 'qs'
+import qs from 'qs'
+import { mapGetters } from 'vuex'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { NumAdd, NumMul } from '@/utils/calculate'
+import { COUNTRY_ID } from '@/status'
+
+import VueHtml5Editor from 'vue-html5-editor'
+Vue.use(VueHtml5Editor,{
+  icons: {
+    text: 'iconfont icon-pencil',
+    color: 'iconfont icon-fa-paint-brush',
+    font: 'iconfont icon-font',
+    align: 'iconfont icon-alignmiddle',
+    list: 'iconfont icon-list',
+    link: 'iconfont icon-link',
+    unlink: 'iconfont icon-unlink',
+    tabulation: 'iconfont icon-table',
+    image: 'iconfont icon-image',
+    hr: 'iconfont icon-fa-minus',
+    eraser: 'iconfont icon-eraser',
+    undo: 'iconfont icon-shuaxin',
+    'full-screen': 'iconfont icon-fullscreen',
+  },
+  hiddenModules: ['info'],
+})
+import { DatePicker } from 'element-ui'
+Vue.use(DatePicker)
 
 export default {
   name: 'trials_add',
   data () {
-    let reg =  /^\d+(\.\d{1,2})?$/
-    let regAsin = /\/dp\/([A-Z0-9]{10})[\/|\?| ]+/
+    let reg =  /^\d+([\.|,]\d{1,2})?$/
+    let regAsin = /\/dp(\/product)?\/([A-Z0-9]{10})[\/|\?| ]+/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
         return callback(new Error('The list price is required.'))
@@ -191,11 +215,18 @@ export default {
         callback()
       }
     }
+    const validateShippingFee =  (rule, value, callback) => {
+      if(value && !reg.test(value)){
+        callback(new Error ('Invalid amount'))
+      } else {
+        callback()
+      }
+    }
     const validateUrl = (rule, value, callback) => {
       if (!this.trialsForm.product_url) {
         return
       }
-      this.trialsForm.product_url = this.couponsForm.product_url + ' '
+      this.trialsForm.product_url = this.trialsForm.product_url + ' '
       this.optionsWebsite = []
       this.$api.getPlatformCate(this.requestData)
         .then(res => {
@@ -210,10 +241,9 @@ export default {
             if (this.trialsForm.product_url.search(i.url) >= 0 && regAsin.test(this.trialsForm.product_url)) {
               this.trialsForm.website = i.provider
               this.optionsWebsite.push(ObjWebsite)
-              this.trialsForm.product_url = this.couponsForm.product_url.trim()
+              this.trialsForm.product_url = this.trialsForm.product_url.trim()
               callback()
             } else {
-              this.trialsForm.product_url = this.couponsForm.product_url.trim()
               callback(new Error('In the current country, the product URL is invalid.'))
             }
           }
@@ -282,6 +312,9 @@ export default {
         product_price: [
           {validator: validateMoney, trigger: 'blur'}
         ],
+        shipping_fee: [
+          {validator: validateShippingFee, trigger: 'blur'}
+        ],
         product_img_s: [
           {
             type: 'array',
@@ -330,7 +363,8 @@ export default {
         id: '',
       },
       hasDetails: true,
-      hasDetailsLength: false
+      hasDetailsLength: false,
+      uploadBtn: false,
 
     }
   },
@@ -339,24 +373,49 @@ export default {
     ...mapGetters([
       'token',
       'user_id',
-      'username'
+      'username',
+      'countryInfo'
     ]),
     currency () {
       return getStore('currency') || '$'
     },
     refund_price_one () {
-      if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
-        return NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee).toFixed(2)
+      if (this.country_id === COUNTRY_ID['Japan']) {
+        if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
+          return NumAdd(this.trialsForm.refund_price.replace(',', ''), this.trialsForm.shipping_fee.replace(',', '')).toFixed(2)
+        } else {
+          return NumAdd(this.trialsForm.product_price.replace(',', ''), this.trialsForm.shipping_fee.replace(',', '')).toFixed(2)
+        }
       } else {
-        return NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee).toFixed(2)
+        if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
+          return NumAdd(this.trialsForm.refund_price.replace(',', '.'), this.trialsForm.shipping_fee.replace(',', '.')).toFixed(2)
+        } else {
+          return NumAdd(this.trialsForm.product_price.replace(',', '.'), this.trialsForm.shipping_fee.replace(',', '.')).toFixed(2)
+        }
       }
+      
     },
     refund_total_price () {
-      if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
-        return NumMul(NumAdd(this.trialsForm.refund_price, this.trialsForm.shipping_fee) , this.trialsForm.total_quantity).toFixed(2)
+      if (this.country_id === COUNTRY_ID['Japan']) {
+        if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
+          return NumMul(NumAdd(this.trialsForm.refund_price.replace(',', ''), this.trialsForm.shipping_fee.replace(',', '')) , this.trialsForm.total_quantity).toFixed(0) + ''
+        } else {
+          return NumMul(NumAdd(this.trialsForm.product_price.replace(',', ''), this.trialsForm.shipping_fee.replace(',', '')) , this.trialsForm.total_quantity).toFixed(0) + ''
+        }
+      } else if (this.isEurope()){
+        if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
+          return String(NumMul(NumAdd(this.trialsForm.refund_price.replace(',', '.'), this.trialsForm.shipping_fee.replace(',', '.')) , this.trialsForm.total_quantity).toFixed(2)).replace('.', ',') + ''
+        } else {
+          return String(NumMul(NumAdd(this.trialsForm.product_price.replace(',', '.'), this.trialsForm.shipping_fee.replace(',', '.')) , this.trialsForm.total_quantity).toFixed(2)).replace('.', ',') + ''
+        }
       } else {
-        return NumMul(NumAdd(this.trialsForm.product_price, this.trialsForm.shipping_fee) , this.trialsForm.total_quantity).toFixed(2)
+        if(this.trialsForm.refund_price && this.trialsForm.full_refund == '0') {
+          return String(NumMul(NumAdd(this.trialsForm.refund_price.replace(',', '.'), this.trialsForm.shipping_fee.replace(',', '.')) , this.trialsForm.total_quantity).toFixed(2)).replace(',', '.') + ''
+        } else {
+          return String(NumMul(NumAdd(this.trialsForm.product_price.replace(',', '.'), this.trialsForm.shipping_fee.replace(',', '.')) , this.trialsForm.total_quantity).toFixed(2)).replace(',', '.') + ''
+        }
       }
+      
     },
 
     //单个试用品的平台费用
@@ -368,21 +427,31 @@ export default {
       case 5:
       case 6:
       case 7:
-        if (this.trialsForm.product_price < 10) {
-          return NumMul(1, 1).toFixed(2)
-        } else if (this.trialsForm.product_price <= 20 && this.trialsForm.product_price >= 10) {
-          return NumMul(1, 2).toFixed(2)
-        } else if (this.trialsForm.product_price > 20) {
-          return NumMul(1, 3).toFixed(2)
+      case 8:
+      case 9:
+        if (this.trialsForm.product_price) {
+          if (this.trialsForm.product_price.replace(',', '.') < 10) {
+            return NumMul(1, 1).toFixed(2) + ''
+          } else if (this.trialsForm.product_price.replace(',', '.') <= 20 && this.trialsForm.product_price.replace(',', '.') >= 10) {
+            return NumMul(1, 2).toFixed(2) + ''
+          } else if (this.trialsForm.product_price.replace(',', '.') > 20) {
+            return NumMul(1, 3).toFixed(2) + ''
+          }
+        } else {
+          return ''
         }
         break
       case 4:
-        if (this.trialsForm.product_price < 1200) {
-          return NumMul(1, 120).toFixed(2)
-        } else if (this.trialsForm.product_price <= 2400 && this.trialsForm.product_price >= 1200) {
-          return NumMul(1, 240).toFixed(2)
-        } else if (this.trialsForm.product_price > 2400) {
-          return NumMul(1, 360).toFixed(2)
+        if (this.trialsForm.product_price) {
+          if (this.trialsForm.product_price.replace(',', '') < 1200) {
+            return NumMul(1, 120).toFixed(0) + ''
+          } else if (this.trialsForm.product_price.replace(',', '') <= 2400 && this.trialsForm.product_price.replace(',', '') >= 1200) {
+            return NumMul(1, 240).toFixed(0) + ''
+          } else if (this.trialsForm.product_price.replace(',', '') > 2400) {
+            return NumMul(1, 360).toFixed(0) + ''
+          }
+        } else {
+          return '0'
         }
         break
       default:
@@ -390,13 +459,25 @@ export default {
       }
     },
     platform_total_fee () {
-      return NumMul(this.platform_fee, this.trialsForm.total_quantity).toFixed(2)
+      if (this.country_id === COUNTRY_ID['Japan']) {
+        return NumMul(this.platform_fee, this.trialsForm.total_quantity.replace(',', '')).toFixed(0) + ''
+      } else if (this.isEurope()){
+        return String(NumMul(this.platform_fee, this.trialsForm.total_quantity.replace(',', '.')).toFixed(2)).replace('.', ',') + ''
+      } else {
+        return String(NumMul(this.platform_fee, this.trialsForm.total_quantity.replace(',', '.')).toFixed(2)).replace(',', '.') + ''
+      }
     },
     shipping_total_fee () {
-      return NumMul(this.trialsForm.shipping_fee, this.trialsForm.total_quantity).toFixed(2)
+      return NumMul(this.trialsForm.shipping_fee.replace(',', '.'), this.trialsForm.total_quantity).toFixed(2)
     },
     total_fee () {
-      return NumAdd(this.refund_total_price, this.platform_total_fee).toFixed(2)
+      if (this.country_id === COUNTRY_ID['Japan']) {
+        return NumAdd(this.refund_total_price.replace(',', '.'), this.platform_total_fee.replace(',', '.')).toFixed(0)
+      } else if (this.isEurope()){
+        return String(NumAdd(this.refund_total_price.replace(',', '.'), this.platform_total_fee.replace(',', '.')).toFixed(2)).replace('.', ',')
+      } else {
+        return String(NumAdd(this.refund_total_price.replace(',', '.'), this.platform_total_fee.replace(',', '.')).toFixed(2)).replace(',', '.')
+      }
     }
   },  
   mounted () {
@@ -427,10 +508,17 @@ export default {
     },
     //限制只能输入数字和.
     filterInput () {
-      if (this.country_id === 4) {
+      if (this.country_id === COUNTRY_ID['Japan']) {
         $('.input-money .el-input__inner').keypress((e) => {
           let code = e.keyCode || e.which || e.charCode
           if (!((code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      } else if (this.isEurope()) {
+        $('.input-money .el-input__inner').keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!(code === 46  || (code <= 57 && code >= 48) || code === 8 || code === 44)) {
             return false
           }
         })
@@ -457,6 +545,9 @@ export default {
     getTrialsStore () {
       this.$api.trialsStore(this.requestStoreData).then(res => {
         this.optionsStore = res.data
+        if (res.data.length !== 0) {
+          this.trialsForm.user_store_id = res.data[0].id
+        }
       }).catch(error => {
         console.log(error)
       })
@@ -504,7 +595,7 @@ export default {
             height: height,
             left: left,
             top: top,
-            border: '1px solid #00ff00',
+            border: '1px solid #ff0000',
             borderRadius: '5px',
             color: 'transparent'
           }))
@@ -575,15 +666,25 @@ export default {
       }, 500)
     },
 
+    isEurope () {
+      if (this.country_id === COUNTRY_ID['Germany'] || 
+          this.country_id === COUNTRY_ID['France'] ||
+          this.country_id === COUNTRY_ID['Italy'] ||
+          this.country_id === COUNTRY_ID['Spain'] ) {
+        return true
+      } else {
+        return false
+      }
+    },
+
     //通过输入链接获取所有产品信息
     getProInfo (url) {
-      // this.$snotify.info('For information on goods, please wait a moment')
       this.getInfoLoading = true
-      axios.get('//192.168.1.199:8008/index.php/api/asin', {
-        params: {
-          url: url,
-        }
-      })
+      axios.post('https://api.sellercool.com/api/v1/paa/asin', qs.stringify({
+        api_token: getToken(),
+        user_id: getUserId(),
+        url: url
+      }))
         .then( (res) =>{
           this.getInfoLoading = false
           setTimeout(() => {
@@ -597,9 +698,16 @@ export default {
                 newArr.push({url: e})
               }
             })
+            this.trialsForm.product_img_s = []
             this.trialsForm.product_img_s = newArr
             this.imgChange()
-            this.trialsForm.product_price = data.product_price ? data.product_price.replace(/,/g, '') : '' 
+            if (this.isEurope()) {
+              this.trialsForm.product_price = data.product_price ? data.product_price.replace(/\./g, '') : '' 
+            } else if (this.country_id === COUNTRY_ID['Japan']) {
+              this.trialsForm.product_price = data.product_price ? Number(data.product_price.replace(/,/g, '')) + '' : '' 
+            } else {
+              this.trialsForm.product_price = data.product_price ? data.product_price.replace(/,/g, '') : '' 
+            }
             this.trialsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$snotify.error('please enter a right url.')
@@ -630,48 +738,57 @@ export default {
 
     //上传图片
     beforeAvatarUploadP (file) {
-      // var reader = new FileReader()
-      // reader.readAsDataURL(file)
-      // reader.onload = function (theFile) {
-      //   var image = new Image()
-      //   image.src = theFile.target.result
-      //   image.onload = function () {
-      //     alert('图片的宽度为'+this.width+',长度为'+this.height)
-      //   }
-      // }
-      // return
-      var isJPG = file.type === 'image/jpeg'
-      var isGIF = file.type === 'image/gif'
-      var isPNG = file.type === 'image/png'
+      let that = this
+      let limitS = true
+      var reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = function (theFile) {
+        var image = new Image()
+        image.src = theFile.target.result
+        image.onload = function () {
+          if (this.width < 400 || this.height < 400) {
+            that.$snotify.error('Uploaded Unsuccessfully! Image size can not be less than 400X400.')
+            limitS = false
+          } else {
+            limitS = true
+            const isJPG = file.type === 'image/jpeg'
+            const isGIF = file.type === 'image/gif'
+            const isPNG = file.type === 'image/png'
 
-      var isLt500K = file.size / 1024 / 1024 < 1
+            const isLt500K = file.size / 1024 / 1024 <= 1
 
-      var limitF = true
-      if (!(isJPG || isGIF || isPNG)) {
-        this.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
-      }
-      if (!isLt500K) {
-        this.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
-      }
-      if (this.trialsForm.product_img_s.length >= 6) {
-        this.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
-        limitF = false
-      }
-      if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
-        var formData = new FormData()
-        formData.append('api_token', getToken())
-        formData.append('user_id', getUserId())
-        formData.append('file', file)
-        this.$api.uploadImg(formData)
-          .then(res => {
-            this.trialsForm.product_img_s.push({ url: res.data })
-            this.imgChange()
-          })
-          .catch(error => {
-            console.log(error)
-          })
-      } else {
-        return false
+            let limitF = true
+            if (!(isJPG || isGIF || isPNG)) {
+              that.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
+            }
+            if (!isLt500K) {
+              that.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
+            }
+            if (that.trialsForm.product_img_s.length >= 6) {
+              that.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
+              limitF = false
+            }
+            if ((isJPG || isGIF || isPNG) && isLt500K && limitF && limitS) {
+              that.uploadBtn = true
+              var formData = new FormData()
+              formData.append('api_token', getToken())
+              formData.append('user_id', getUserId())
+              formData.append('file', file)
+              that.$api.uploadImg(formData)
+                .then(res => {
+                  that.uploadBtn = false
+                  that.trialsForm.product_img_s.push({ url: res.data })
+                  that.imgChange()
+                })
+                .catch(error => {
+                  that.uploadBtn = false
+                  console.log(error)
+                })
+            } else {
+              return false
+            }
+          }
+        }
       }
     },
     handleRemoveP (file, fileList) {
@@ -685,7 +802,7 @@ export default {
           this.saveLoading = false
           if (res.code === 200) {
             this.$snotify.success('Submit Successfully!')
-            this.$router.push({ path: '/posted/trials' })
+            this.$router.push({ path: '/posted/list-trials' })
           }
         }).catch(error => {
           this.saveLoading = false
@@ -697,7 +814,7 @@ export default {
             this.saveLoading = false
             if (res.code === 200) {
               this.$snotify.success('Submit Successfully!')
-              this.$router.push({ path: '/posted/trials' })
+              this.$router.push({ path: '/posted/list-trials' })
             }
           })
           .catch(error => {
@@ -739,13 +856,31 @@ export default {
             this.$snotify.error('The quantity per day can not greater than total quantity!')
             return
           }
-          // if (this.trialsForm.product_details.length > 800) {
-          //   this.hasDetailsLength = true
-          //   // this.$snotify.error('The product details can not exceed 800 characters.')
-          //   return
-          // } else {
-          //   this.hasDetailsLength = false
-          // }
+          if (this.isEurope()) {
+            this.trialsFormSubmit.product_price =  this.trialsFormSubmit.product_price.replace(/,/g, '.')
+            this.trialsFormSubmit.shipping_fee =  this.trialsFormSubmit.shipping_fee.replace(/,/g, '.')
+            this.trialsFormSubmit.platform_total_fee =  this.trialsFormSubmit.platform_total_fee.replace(/,/g, '.')
+            this.trialsFormSubmit.refund_total_price =  this.trialsFormSubmit.refund_total_price.replace(/,/g, '.')
+            this.trialsFormSubmit.shipping_total_fee =  this.trialsFormSubmit.shipping_total_fee.replace(/,/g, '.')
+            this.trialsFormSubmit.total_fee =  this.trialsFormSubmit.total_fee.replace(/,/g, '.')
+            this.trialsFormSubmit.refund_price =  this.trialsFormSubmit.refund_price.replace(/,/g, '.')
+          }
+          this.trialsFormSubmit.product_url = this.filterLink(this.trialsFormSubmit.product_url)
+          //给链接加上店铺
+          this.optionsStore.forEach((e) => {
+            if (e.id === this.trialsFormSubmit.user_store_id) {
+              if (this.trialsFormSubmit.product_url.includes('?')) {
+                this.trialsFormSubmit.product_url = this.trialsFormSubmit.product_url + '&m=' + e.store_id
+              } else {
+                this.trialsFormSubmit.product_url = this.trialsFormSubmit.product_url + '?m=' + e.store_id
+              }
+            }
+          })
+          for (let country of this.countryInfo) {
+            if (country.id == this.country_id) {
+              this.trialsFormSubmit.bank_conversion_pri = country.bank_conversion_pri
+            }
+          }
           this.issueCoupon(this.trialsFormSubmit)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
@@ -754,6 +889,16 @@ export default {
         }
       })
     },
+
+    filterLink (link) {
+      let regM = /(&)?m=([\w\+%]*)/
+      let newLink = link
+      if (regM.test(link)) {
+        newLink = newLink.replace(regM.exec(link)[0], '')
+      }
+      return newLink
+    },
+
     //退出
     Cancel () {
       this.$router.go(-1)
@@ -776,6 +921,7 @@ export default {
       this.trialDetailsrequestData.id = this.$route.query.editor
       this.$api.trialEditDetail(this.trialDetailsrequestData).then(res => {
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
+        this.imgChange()
         let newArr = []
         newArr[0] = new Date(res.data.start_time * 1000)
         newArr[1] = new Date(res.data.end_time * 1000)

@@ -24,7 +24,7 @@
         </el-form-item>
         <el-form-item label="Gender: " prop="" class="account-item" >
           <el-radio v-model="accountForm.sex" label="男"><img class="sex-img" src="../../../assets/setting-account_1.png" alt="">Boy</el-radio>
-          <el-radio v-model="accountForm.sex" label="女"><img class="sex-img" src="../../../assets/setting-account_02.png" alt="">Gril</el-radio>
+          <el-radio v-model="accountForm.sex" label="女"><img class="sex-img" src="../../../assets/setting-account_02.png" alt="">Girl</el-radio>
         </el-form-item>
         <el-form-item label="Date of birth: " prop="" class="account-item" >
           <el-date-picker type="date" v-model="accountForm.birthday" ></el-date-picker>
@@ -53,6 +53,9 @@
 <script>
 import { getToken, getUserId } from '@/utils/auth'
 import { mapGetters } from 'vuex'
+import Vue from 'vue'
+import { DatePicker } from 'element-ui'
+Vue.use(DatePicker)
 export default {
   name: 'settings-account',
   data () {
@@ -129,7 +132,7 @@ export default {
         .then(res => {
           this.saveLoading = false
           if (res.code === 200) {
-            this.$snotify.success('Submit Successfully!')
+            this.$snotify.success('Submit Successfully!','')
             this.$store.dispatch('GetInfo')
             document.body.scrollTop = document.documentElement.scrollTop = 0
           }

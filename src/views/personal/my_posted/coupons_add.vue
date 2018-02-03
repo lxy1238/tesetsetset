@@ -10,7 +10,7 @@
       <template v-if="isEditorData">
         <el-form-item label="Product URL: " prop="product_url" class="item-url" >
           <el-input class="url-input" v-model="couponsForm.product_url"   ></el-input>
-          <!-- <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">Get</el-button> -->
+          <el-button class="get-pro-info"  type="button" @click="getProInfo(couponsForm.product_url)" :loading="getinfoBtn">Get</el-button>
         </el-form-item>
         <el-form-item label="Wedsite: " prop="website" class="item-inline" >
           <el-select v-model="couponsForm.website"  @change="websiteChange">
@@ -49,13 +49,13 @@
             <li v-for="item in couponsForm.product_img_s"><img :src="item.url" alt="" ></li>
           </ul> -->
       </template>
-       <el-form-item label="List price: " class="item-inline"  prop="product_price"  >
+       <el-form-item label="List price: " class="item-inline"  prop="product_price" required >
           <el-input class="input-price-fee input-money "  v-model="couponsForm.product_price"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="Shipping fee: "  class="item-inline" >
-          <el-input class="input-price-fee input-money"  @blur="filterMoney('shipping_fee')" v-model="couponsForm.shipping_fee"  >
+        <el-form-item label="Shipping fee: "  class="item-inline"  prop="shipping_fee">
+          <el-input class="input-price-fee input-money"   v-model="couponsForm.shipping_fee"  >
             <template slot="prepend">{{currency}}</template>
           </el-input>
         </el-form-item>
@@ -68,7 +68,7 @@
               :file-list="couponsForm.product_img_s"
               ref="upload"
               list-type="picture">
-            <el-button size="small" type="primary">Upload</el-button>
+            <el-button size="small" type="primary" :loading="uploadBtn">Upload</el-button>
             <div slot="tip" class="el-upload__tip">jpg, .gif, or .png accepted,1M max,6 photos at most.</div>
         </el-upload>
       </el-form-item>
@@ -117,17 +117,29 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getStore } from '@/utils/utils'
 import { toTimestamp } from '@/utils/date'
 import axios from 'axios'
-// import qs from 'qs'
+import qs from 'qs'
+import Vue from 'vue'
+import { DatePicker } from 'element-ui'
+import { COUNTRY_ID } from '@/status'
+Vue.use(DatePicker)
+
 export default {
   name: 'coupoons-add',
   data () {
-    let reg =  /^\d+(\.\d{1,2})?$/
-    let regAsin = /\/dp\/([A-Z0-9]{10})[\/|\?| ]+/
+    let reg =  /^\d+([\.|,]\d{1,2})?$/
+    let regAsin = /\/dp(\/product)?\/([A-Z0-9]{10})[\/|\?| ]+/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
         return callback(new Error('The list price is required.'))
       } else if(!reg.test(value)){
         callback(new Error ('Invalid price.'))
+      } else {
+        callback()
+      }
+    }
+    const validateShippingFee =  (rule, value, callback) => {
+      if(value && !reg.test(value)){
+        callback(new Error ('Invalid amount'))
       } else {
         callback()
       }
@@ -154,7 +166,6 @@ export default {
               this.couponsForm.product_url = this.couponsForm.product_url.trim()
               callback()
             } else {
-              this.couponsForm.product_url = this.couponsForm.product_url.trim()
               callback(new Error('In the current country, the product URL is invalid.'))
             }
           }
@@ -177,6 +188,7 @@ export default {
           {validator: validateUrl, trigger: 'blur'}
         ],
         product_price: [{ validator: validateMoney, trigger: 'blur' }],
+        shipping_fee: [{ validator: validateShippingFee, trigger: 'blur' }],
         website: [{ required: true, message: 'The website is required.', trigger: 'blur' }],
         menu_id: [{type:'number', required: true, message: 'The category is required.' ,trigger: 'blur' }],
         menu_name: [{required: true, message: 'The category is required.' ,trigger: 'blur' }],
@@ -247,6 +259,7 @@ export default {
       countryUrlIsRight: false,
       getinfoBtn: false,
       saveLoading: false,
+      uploadBtn: false,
     }
   },
   mounted () {
@@ -275,10 +288,17 @@ export default {
     },
     //限制只能输入数字和.
     filterInput () {
-      if (this.country_id === 4) {
+      if (this.country_id === COUNTRY_ID['Japan']) {
         $('.input-money .el-input__inner').keypress((e) => {
           let code = e.keyCode || e.which || e.charCode
           if (!((code <= 57 && code >= 48) || code === 8)) {
+            return false
+          }
+        })
+      } else if (this.isEurope()) {
+        $('.input-money .el-input__inner').keypress((e) => {
+          let code = e.keyCode || e.which || e.charCode
+          if (!(code === 46  || (code <= 57 && code >= 48) || code === 8 || code === 44)) {
             return false
           }
         })
@@ -343,7 +363,7 @@ export default {
             height: height,
             left: left,
             top: top,
-            border: '1px solid #00ff00',
+            border: '1px solid #ff0000',
             borderRadius: '5px',
             color: 'transparent'
           }))
@@ -418,12 +438,11 @@ export default {
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       this.getinfoBtn = true
-      // this.$snotify.info('For information on goods, please wait a moment')
-      axios.get('//192.168.1.199:8008/index.php/api/asin', {
-        params: {
-          url: url,
-        }
-      })
+      axios.post('https://api.sellercool.com/api/v1/paa/asin', qs.stringify({
+        api_token: getToken(),
+        user_id: getUserId(),
+        url: url
+      }))
         .then( (res) =>{
           this.getinfoBtn = false
           if (!res.data.data) {
@@ -440,7 +459,13 @@ export default {
             })
             this.couponsForm.product_img_s = newArr
             this.imgChange()
-            this.couponsForm.product_price = data.product_price ? data.product_price : '',
+            if (this.isEurope()) {
+              this.couponsForm.product_price = data.product_price ? data.product_price.replace(/\./g, '') : '' 
+            } else if (this.country_id === COUNTRY_ID['Japan']) {
+              this.couponsForm.product_price = data.product_price ? Number(data.product_price.replace(/,/g, '')) + '' : '' 
+            } else {
+              this.couponsForm.product_price = data.product_price ? data.product_price.replace(/,/g, '') : '' 
+            }
             this.couponsForm.product_title = data.product_title
             if (res.data.data.Error) {
               this.$snotify.error('Submit Failed! please enter a right url.')
@@ -452,6 +477,16 @@ export default {
           this.getinfoBtn = false
         })
      
+    },
+    isEurope () {
+      if (this.country_id === COUNTRY_ID['Germany'] || 
+          this.country_id === COUNTRY_ID['France'] ||
+          this.country_id === COUNTRY_ID['Italy'] ||
+          this.country_id === COUNTRY_ID['Spain'] ) {
+        return true
+      } else {
+        return false
+      }
     },
 
 
@@ -466,38 +501,57 @@ export default {
 
     //上传图片
     beforeAvatarUploadP (file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isGIF = file.type === 'image/gif'
-      const isPNG = file.type === 'image/png'
+      var that = this
+      let limitS = true
+      var reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = function (theFile) {
+        var image = new Image()
+        image.src = theFile.target.result
+        image.onload = function () {
+          if (this.width < 400 || this.height < 400) {
+            that.$snotify.error('Uploaded Unsuccessfully! Image size can not be less than 400X400.')
+            limitS = false
+          } else {
+            limitS = true
+            const isJPG = file.type === 'image/jpeg'
+            const isGIF = file.type === 'image/gif'
+            const isPNG = file.type === 'image/png'
 
-      const isLt500K = file.size / 1024 / 1024 <= 1
+            const isLt500K = file.size / 1024 / 1024 <= 1
 
-      let limitF = true
-      if (!(isJPG || isGIF || isPNG)) {
-        this.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
-      }
-      if (!isLt500K) {
-        this.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
-      }
-      if (this.couponsForm.product_img_s.length >= 6) {
-        this.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
-        limitF = false
-      }
-      if ((isJPG || isGIF || isPNG) && isLt500K && limitF) {
-        var formData = new FormData()
-        formData.append('api_token', getToken())
-        formData.append('user_id', getUserId())
-        formData.append('file', file)
-        this.$api.uploadImg(formData)
-          .then(res => {
-            this.couponsForm.product_img_s.push({ url: res.data })
-            this.imgChange()
-          })
-          .catch(error => {
-            console.log(error)
-          })
-      } else {
-        return false
+            let limitF = true
+            if (!(isJPG || isGIF || isPNG)) {
+              that.$snotify.error('Uploaded Unsuccessfully! The image format is incorrect.')
+            }
+            if (!isLt500K) {
+              that.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
+            }
+            if (that.couponsForm.product_img_s.length >= 6) {
+              that.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
+              limitF = false
+            }
+            if ((isJPG || isGIF || isPNG) && isLt500K && limitF && limitS) {
+              that.uploadBtn = true
+              var formData = new FormData()
+              formData.append('api_token', getToken())
+              formData.append('user_id', getUserId())
+              formData.append('file', file)
+              that.$api.uploadImg(formData)
+                .then(res => {
+                  that.uploadBtn = false
+                  that.couponsForm.product_img_s.push({ url: res.data })
+                  that.imgChange()
+                })
+                .catch(error => {
+                  that.uploadBtn = false
+                  console.log(error)
+                })
+            } else {
+              return false
+            }
+          }
+        }
       }
     },
     handleRemoveP (file, fileList) {
@@ -511,7 +565,7 @@ export default {
           this.saveLoading = false
           if (res.code === 200) {
             this.$snotify.success('Submit Successfully!')
-            this.$router.push({ path: '/posted/coupons' })
+            this.$router.push({ path: '/posted/list-coupons' })
           }
         }).catch(error => {
           this.saveLoading  = false
@@ -523,7 +577,7 @@ export default {
             this.saveLoading = false
             if (res.code === 200) {
               // this.$notify.success('issue coupon success')
-              this.$router.push({ path: '/posted/coupons' })
+              this.$router.push({ path: '/posted/list-coupons' })
             }
           })
           .catch(error => {
@@ -545,6 +599,11 @@ export default {
           if (this.$route.query.editor) {
             this.couponsFormSubmit.website = this.couponsForm.website
           }
+
+          if (this.isEurope()) {
+            this.couponsFormSubmit.product_price =  this.couponsFormSubmit.product_price.replace(/,/g, '.')
+            this.couponsFormSubmit.shipping_fee =  this.couponsFormSubmit.shipping_fee.replace(/,/g, '.')
+          } 
           this.issueCoupon(this.couponsFormSubmit)
         } else {
           document.body.scrollTop = document.documentElement.scrollTop = 0
@@ -583,6 +642,7 @@ export default {
       this.$api.editDetail(this.couponDetailsrequestData).then(res => {
         res.data.valid_date = new Date(res.data.valid_date * 1000)
         res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
+        this.imgChange()
         this.couponsForm = res.data
         this.couponsForm.api_token = getToken()
         this.couponsForm.user_id = getUserId()

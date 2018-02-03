@@ -15,12 +15,17 @@ export const constantRouterMap = [
     path: '/',
     component: home,
     children: [{
-      path: '/:menuId?',
+      path: '/:promoterId?',
+      name: 'index',
+      component: _import('page_index/index')
+    },
+    {
+      path: '/coupon/:menuId?/:promoterId?',
       name: 'home',
       component: _import('page_index/index')
     },
     {
-      path: '/trials/:menuId?',
+      path: '/trials/:menuId?/:promoterId?',
       component: _import('trials/index')
     },
     {
@@ -28,7 +33,7 @@ export const constantRouterMap = [
       component: _import('coupons/index')
     },
     {
-      path: '/trialsDetails/:trialId/:countryId',
+      path: '/trialsDetails/:trialId/:countryId/:promoterId?',
       component: _import('trials_details/index')
     },
     {
@@ -115,10 +120,15 @@ export const aboutRouterMap = [
         path: 'privacy',
         component: _import('about/page/privacy')
       },
+      {
+        path: 'trials-policy',
+        component: _import('about/page/trials_policy')
+      },
       // {
       //   path: '/activate/:email/:token',
       //   component: _import('about/page/email')
       // },
+      
       {
         path: '/resetpass/:email/:token',
         component: _import('about/page/resetpass')
@@ -158,7 +168,7 @@ export const asyncRouterMap = [
     }]
   },
   {
-    path: '/posted/coupons',
+    path: '/posted/list-coupons',
     redirect: '/posted/coupons',
     component: p_center,
     hasChilds: true,
@@ -167,34 +177,34 @@ export const asyncRouterMap = [
     meta: {role: ['merchant', 'celebrity']},
     children: [
       {
-        path: '/posted/coupons',
+        path: '/posted/list-coupons',
         text: 'Coupons',
         component: _import('personal/my_posted/coupons'),
       },
       {
-        path: '/posted/coupons/add',
+        path: '/posted/list-coupons/add',
         hidden: true,
         component: _import('personal/my_posted/coupons_add'),
       },
       {
-        path: '/posted/coupons/receiptor',
+        path: '/posted/list-coupons/receiptor',
         hidden: true,
         component: _import('personal/my_posted/coupons_receiptor'),
       },
       {
-        path: '/posted/trials',
+        path: '/posted/list-trials',
         text: 'Trials',
         component: _import('personal/my_posted/trials'),
         meta: {role: ['merchant']}
       },
       {
-        path: '/posted/trials/add',
+        path: '/posted/list-trials/add',
         hidden: true,
         component: _import('personal/my_posted/trials_add'),
         meta: {role: ['merchant']}
       },
       {
-        path: '/posted/trials/receiptor',
+        path: '/posted/list-trials/receiptor',
         hidden: true,
         component: _import('personal/my_posted/trials_receiptor'),
         meta: {role: ['merchant']}
