@@ -32,6 +32,7 @@ export default {
         'Japan': 'dealsbank0f-22',
         'France': 'dealsbank03-21',
         'Italy': 'dealsbank0c-21',
+        // 'Italy': 'yidaliymx-21',
         'Spain': 'dealsbank05-21',
         'Canada': 'dealsbank02-20',
       },
@@ -79,7 +80,7 @@ export default {
           .then(res => {
             this.amazonLink = res.data.product_url
             let urlArr = validateAmazonHost(this.amazonLink)
-            this.amazonLink = this.filterLink(this.amazonLink)
+            this.amazonLink = this.filterLink1(this.amazonLink)
             this.hasPromoter(res.data).then(() => {
               if (this.$route.params.gotopage === 'platform') {
                 location.href = `https://${urlArr[1]}?tag=${this.promoterPid}`
@@ -182,7 +183,7 @@ export default {
       let regM = /(&)?m=([\w\+%]*)/
       let newLink = this.amazonLink
       if (regKeyword.test(link)) {
-        newLink = link.replace(regKeyword.exec(link)[0],regKeyword.exec(link)[0].replace('%20', '+').replace('%2B', '+'))
+        newLink = link.replace(regKeyword.exec(link)[0],regKeyword.exec(link)[0].replace(/\%20/g, '+').replace(/\%2B/, '+'))
       }
       if (regTag.test(link)) {
         newLink = newLink.replace(regTag.exec(link)[0], '')
@@ -190,6 +191,19 @@ export default {
       if (regM.test(link)) {
         newLink = newLink.replace(regM.exec(link)[0], '')
       }
+      return newLink
+    },
+    filterLink1 (link) {
+      let regKeyword = /keywords=([\w\+%]*)/
+      let regTag = /(&)?tag=([\w\+%]*)/
+      let newLink = this.amazonLink
+      if (regKeyword.test(link)) {
+        newLink = link.replace(regKeyword.exec(link)[0],regKeyword.exec(link)[0].replace(/\%20/g, '+').replace(/\%2B/, '+'))
+      }
+      if (regTag.test(link)) {
+        newLink = newLink.replace(regTag.exec(link)[0], '')
+      }
+      
       return newLink
     }
   }

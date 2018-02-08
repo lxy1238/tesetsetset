@@ -1,7 +1,7 @@
 <template>
   <div class="my-trials">
     <div class="title-bottom" v-title="'My Trials'">My Trials
-      <router-link class="link" to="/about/center/trials-policy">Trials Policy</router-link>
+      <router-link class="link" to="/about/center/policy-trials">Trials Policy</router-link>
     </div>
       <div class="tabs">
         <div class="head-s clearfix">

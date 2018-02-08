@@ -16,7 +16,7 @@
         </div>
         <div class="right inline trials-right-content">
           <div class="promotion">
-            <img class="img"  :src="logoImg[trialDetailData.website]" alt="">
+            <img class="img"  :src="logoImg[trialDetailData.website]" alt="" @click="gotoAmazon">
             <div class="title" :title="trialDetailData.product_title">
               <span>
                 {{trialDetailData.product_title}}
@@ -162,9 +162,12 @@
           <p>
             Please place an order and submit the order number within 2 hours, or your product trial task will be canceled.
           </p>
-          <p><a class="link" href="javascript:void(0);" @click="gotoAmazon">
+          <p class=" shop-on-amazon">
+            <!-- <a class="link" href="javascript:void(0);" @click="gotoAmazon">
             Shop Amazon now to trial!
-            </a></p>
+            </a> -->
+            <el-button  @click="gotoAmazon">Shop on Amazon</el-button>
+            </p>
           <div class="apply-first">
             <el-input v-model="reqAddOrderData.order_number" placeholder="Your Order Number" @keyup.enter.native="orderSubmit"></el-input> 
             <el-button :loading="confirmLoading" @click="submitOrderNumber">Save</el-button>
@@ -681,6 +684,7 @@ export default {
         right: 1.5rem;
         top: 2rem;
         height: 35px;
+        cursor: pointer;
       }
       .title {
         width: 85%;
@@ -891,8 +895,9 @@ export default {
           margin-top: 1rem;
           display: inline-block;
           .content1 {
-            padding: 0 10px;
+            padding: 0 20px;
             width: 100%;
+            line-height: 18px;
             img {
               max-width: 100%;
             }
@@ -978,9 +983,17 @@ export default {
         .btn-h(100px, 36px, #84BA39, #84BA39, #fff);
       }
     }
+    .shop-on-amazon {
+      button {
+        .btn-h(200px, 36px, #84BA39, #84BA39, #fff);
+      }
+    }
     .red {
       text-align: left;
       padding-left: 95px;
+    }
+    .apply-first {
+      margin-top: 20px;
     }
   }
 

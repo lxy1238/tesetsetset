@@ -46,7 +46,9 @@ export default {
   },
   methods: {
     init () {
-      this.addPromoterId()
+      setTimeout(() => {
+        this.addPromoterId()
+      })
     },
     //判断用户是否登录，给链接中加上用户ID
     addPromoterId () {
@@ -58,11 +60,10 @@ export default {
       ) ) {
         if (this.$route.params.promoterId) {
           return
-        }
-        if (this.currentRouter[this.currentRouter.length - 1] === '/') {
-          this.$router.push({path: this.currentRouter + (getUserId() ?   base64Encode(getUserId()) : '')})
+        }else if (this.currentRouter[this.currentRouter.length - 1] === '/') {
+          this.$router.replace({path: this.currentRouter + (getUserId() ?   base64Encode(getUserId()) : '')})
         } else {
-          this.$router.push({path: this.currentRouter + (getUserId() ? '/' +  base64Encode(getUserId()) : '')})
+          this.$router.replace({path: this.currentRouter + (getUserId() ? '/' +  base64Encode(getUserId()) : '')})
         }
       }
     },

@@ -40,8 +40,8 @@
             <td class="applied-date">
               <div>{{item.created_at}}</div>
             </td>
-            <td class="coupon-code">
-              <div>{{couponsDetails.coupon_code}}</div>
+            <td class="coupon-code" v-if="item.code">
+              <div>{{item.code.code}}</div>
             </td>
           </tr>
           <tr v-if="trLists.length === 0">
@@ -135,7 +135,7 @@ export default {
       for (var i in this.couponsDetails) {
         this.couponsDetails[i] = couponsDetails[i]
       }
-      this.couponsDetails.coupon_code = `****${this.couponsDetails.coupon_code.slice(-4)}`
+      // this.couponsDetails.coupon_code = `****${this.couponsDetails.coupon_code.slice(-4)}`
     },
 
     //获取领取人列表信息

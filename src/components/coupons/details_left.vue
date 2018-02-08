@@ -92,6 +92,8 @@ export default {
 
     gotoCoupon () {
       if ((this.$router.currentRoute.path).search('trialsDetails') >= 0) {
+        let router1 = this.currentRouter.replace('/trialsDetails', '')
+        window.open('/goto/product/trial' + router1)
         return
       }
       let router = this.currentRouter.replace('/coupons', '')

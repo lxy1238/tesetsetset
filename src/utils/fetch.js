@@ -9,7 +9,8 @@ import 'nprogress/nprogress.css'// Progress 进度条样式
 // 创建axios实例
 
 const service = axios.create({
-  baseURL: process.env.BASE_API,
+  baseURL: location.host.search('dealsbank') >= 0 ? process.env.BASE_API : 'http://csapi.sellercool.com/',
+  // baseURL:  process.env.BASE_API ,
   timeout: 30000
 })
 

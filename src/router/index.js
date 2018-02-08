@@ -121,7 +121,7 @@ export const aboutRouterMap = [
         component: _import('about/page/privacy')
       },
       {
-        path: 'trials-policy',
+        path: 'policy-trials',
         component: _import('about/page/trials_policy')
       },
       // {

@@ -472,7 +472,7 @@ export default {
       this.enterSubmitForm()
       this.getHeadCateListInfo()
       this.getOtherEvent()
-      this.initChat()
+      // this.initChat()
     },
     //数据初始化
     initData () {
@@ -582,13 +582,28 @@ export default {
       
     },
 
+    //如果是当前路由的话，就不进行跳转
+    isCurrentRouter (routePath) {
+      if (this.currentRouter.search(routePath) >= 0) {
+        return true
+      } else {
+        return false
+      }
+    },
+
     //选择不同的分类时，跳转到相应的路由
     selectClassify (item) {
       this.selectedC = item.id
       this.keyword = ''
       if (this.currentRouter.search('/trials') >= 0) {
+        if (this.isCurrentRouter('/trials/'+ item.name)) {
+          return
+        }
         this.$router.push({path: '/trials/'+ item.name})
       } else {
+        if (this.isCurrentRouter('/coupon/'+ item.name)) {
+          return
+        }
         this.$router.push({path: '/coupon/'+ item.name})
       }
     },
@@ -596,18 +611,27 @@ export default {
       this.keyword = ''
       this.selectedC = 0
       this.selectedCoupon = 1
+      if (this.isCurrentRouter('/coupon/Top')) {
+        return
+      }
       this.$router.push({ path: '/coupon/Top'})
     },
     couponsLogo () {
       this.keyword = ''
       this.selectedC = 0
       this.selectedCoupon = 1
+      if (this.currentRouter.lastIndexOf('/') === 0) {
+        return
+      }
       this.$router.push({ path: '/'})
     },
     trials () {
       this.keyword = ''
       this.selectedC = 0
-      this.selectedCoupon = 2      
+      this.selectedCoupon = 2 
+      if (this.isCurrentRouter('/trials/Top')) {
+        return
+      }
       this.$router.push({ path: '/trials/Top' })
     },
     ShowLoginDialog () {
@@ -772,19 +796,21 @@ export default {
 
     //判断用户是否登录，给链接中加上用户ID
     addPromoterId () {
+      if (this.$route.params.promoterId) {
+        return
+      }
       if (getUserId() && getToken() && 
-      (this.currentRouter.search('trialsDetails') >= 0 
-        || this.currentRouter.search('coupon') >= 0
-        || this.currentRouter.search('trials') >= 0
+      (this.currentRouter.search('/trialsDetails') >= 0 
+        || this.currentRouter.search('/coupon') >= 0
+        || this.currentRouter.search('/trials') >= 0
         || this.currentRouter === '/'
       ) ) {
         if (this.$route.params.promoterId) {
           return
-        }
-        if (this.currentRouter[this.currentRouter.length - 1] === '/') {
-          this.$router.push({path: this.currentRouter + (getUserId() ?   base64Encode(getUserId()) : '')})
+        }else if (this.currentRouter[this.currentRouter.length - 1] === '/') {
+          this.$router.replace({path: this.currentRouter + (getUserId() ?   base64Encode(getUserId()) : '')})
         } else {
-          this.$router.push({path: this.currentRouter + (getUserId() ? '/' +  base64Encode(getUserId()) : '')})
+          this.$router.replace({path: this.currentRouter + (getUserId() ? '/' +  base64Encode(getUserId()) : '')})
         }
       }
     },

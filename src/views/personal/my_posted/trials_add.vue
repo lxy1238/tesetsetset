@@ -120,7 +120,7 @@
        <el-form-item label="Specifications: " prop="specifications" >
         <el-input v-model="trialsForm.specifications" type="textarea" class="textarea" :maxlength="50" placeholder="The maximum input is 50 characters"></el-input>
       </el-form-item>
-      <el-form-item label="Product details: " required>
+      <el-form-item label="Product details: " required class="product-details">
         <!-- <div id="summernote"></div> -->
           <vue-html5-editor :content="trialsForm.product_details" @change="update" :auto-height="true" :z-index="998"  :height="300"></vue-html5-editor>
           <span class="red" v-if="!hasDetails">The product details is required.</span>
@@ -333,7 +333,7 @@ export default {
           {required: true ,message: 'The reason is required.', trigger: 'blur'}
         ],
         specifications: [
-          {required: true ,message: 'The specifications is required.', trigger: 'blur'}
+          {required: true ,message: 'For merchant\'s reference only, please make sure that the same product of different specifications has consistent price. Merchant will undertake the price difference which is made by the merchant.', trigger: 'blur'}
         ],
         active_date: [
           {type: 'array',required: true ,message: 'The valid date is required.', trigger: 'change'}
@@ -498,6 +498,7 @@ export default {
     },
 
     update (value) {
+      
       this.trialsForm.product_details = value
       if (!this.trialsForm.product_details) {
         this.hasDetails = false
@@ -1044,5 +1045,8 @@ export default {
 }
 .el-icon-close {
   z-index: 2;
+}
+.product-details {
+  margin-top: 35px;
 }
 </style>

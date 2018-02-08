@@ -51,7 +51,7 @@ export default {
         },
         {
           name: 'Trials Policy',
-          link: '/about/center/trials-policy'
+          link: '/about/center/policy-trials'
         },
       ]
     }
