@@ -17,21 +17,22 @@ export const constantRouterMap = [
     children: [{
       path: '/:promoterId?',
       name: 'index',
-      component: _import('page_index/index')
+      // component: _import('page_index/index')
+      component: _import('trials/index')
     },
-    {
-      path: '/coupon/:menuId?/:promoterId?',
-      name: 'home',
-      component: _import('page_index/index')
-    },
+    // {
+    //   path: '/coupon/:menuId?/:promoterId?',
+    //   name: 'home',
+    //   component: _import('page_index/index')
+    // },
     {
       path: '/trials/:menuId?/:promoterId?',
       component: _import('trials/index')
     },
-    {
-      path: '/coupons/:couponsId/:countryId/:promoterId?',
-      component: _import('coupons/index')
-    },
+    // {
+    //   path: '/coupons/:couponsId/:countryId/:promoterId?',
+    //   component: _import('coupons/index')
+    // },
     {
       path: '/trialsDetails/:trialId/:countryId/:promoterId?',
       component: _import('trials_details/index')

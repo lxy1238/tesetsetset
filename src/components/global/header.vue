@@ -601,10 +601,14 @@ export default {
         }
         this.$router.push({path: '/trials/'+ item.name})
       } else {
-        if (this.isCurrentRouter('/coupon/'+ item.name)) {
+        if (this.isCurrentRouter('/trials/'+ item.name)) {
           return
         }
-        this.$router.push({path: '/coupon/'+ item.name})
+        this.$router.push({path: '/trials/'+ item.name})
+        // if (this.isCurrentRouter('/coupon/'+ item.name)) {
+        //   return
+        // }
+        // this.$router.push({path: '/coupon/'+ item.name})
       }
     },
     coupons () {
