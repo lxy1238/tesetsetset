@@ -56,18 +56,18 @@
         My Statistics
       </div>
       <div class="statistics clearfix">
-        <div class="statistics-child"  v-if="roles[0] == 'celebrity' || roles[0] == 'merchant' ">
+        <!-- <div class="statistics-child"  v-if="roles[0] == 'celebrity' || roles[0] == 'merchant' ">
           <span class="count link" @click="gotoAnotherRouter('/posted/coupons', userData.account.coupon_posteds)">{{userData.account.coupon_posteds}}</span>
           <p>Coupons posted</p>
-        </div>
+        </div> -->
         <div class="statistics-child" v-if="roles[0] == 'merchant'">
           <span class="count link"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
           <p>Trials posted</p>
         </div>
-        <div class="statistics-child">
+        <!-- <div class="statistics-child">
           <span class="count link"  @click="gotoAnotherRouter('/personal/my-coupons/index', userData.account.coupons)">{{userData.account.coupons}}</span>
           <p>My Coupons</p>
-        </div>
+        </div> -->
         <div class="statistics-child">
           <span class="count link"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
           <p>My Trials</p>

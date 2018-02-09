@@ -9,11 +9,11 @@
           </div>
           <div class="img-small">
             <!-- <span class="left" @click="pre"> <i class="iconfont icon-huidaodingbu-copy "></i> </span> -->
-            <img v-for="(item, index) in imgList" v-if="index <= 5" :src="item" alt="" @mouseover="hover(index)"  :class="{active: activeNum == index}">
+            <img v-for="(item, index) in imgList"  :src="item" alt="" @mouseover="hover(index)"  :class="{active: activeNum == index}">
             <!-- <span class="right" @click="next"> <i class="iconfont icon-huidaodingbu-copy"></i> </span> -->
           </div>
         </div>
-        <template v-if="userInfo.username">
+        <template v-if="false">
           <div class="user" >
             <div class=" head inline-b" >
               <img v-if="userInfo.avatar_img"  :src="userInfo.avatar_img" alt=""  @click="gotouser">
@@ -133,17 +133,21 @@ export default {
     }
     .img-small {
       position: relative;
-      height: 6.5rem;
+      height: 5rem;
       margin-top: 0.8rem;
-      padding: 1.2rem 0 0 0;
+      padding: 1.2rem 10px 0 10px;
       text-align: center;
+      display: flex;
+      justify-content: space-around;
       img {
-        width: 3rem;
-        height: 3rem;
-        border: 1px solid #e1e1e1;
-        padding: 0.3rem;
-        margin: 0 0 0 0.8rem;
-        cursor: pointer;
+        display: block;
+          width: 2.5rem;
+          height: 2.5rem;
+          border: 1px solid #e1e1e1;
+          /* padding: 0.3rem; */
+          // margin: 0 0 0 5px;
+          
+          cursor: pointer;
         &.active {
           border: 1px solid red;
         }

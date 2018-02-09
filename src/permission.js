@@ -7,7 +7,7 @@ import { getToken } from './utils/auth'
 
 var whiteList = ['/']
 let isNotFound = false
-router.beforeEach((to, from, next) => {
+router.beforeResolve((to, from, next) => {
   store.dispatch('setCurrentRouter', to.path)  //存储当前路由path
   NProgress.start()
   if (getToken()) {

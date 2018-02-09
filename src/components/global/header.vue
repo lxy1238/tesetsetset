@@ -7,8 +7,8 @@
              <a href="javascript:void(0);"  @click="couponsLogo"> 
                <img class="logo" src="../../assets/logo.png" alt="logo">
              </a>
-             <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >Coupons</a>
-             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">Trials</a>
+             <!-- <a class="inline-b coupons coupons-c" href="javascript:void(0);" @click="coupons" :class="{ active: selectedCoupon ===  1}" >Coupons</a>
+             <a class="inline-b coupons coupons-t" href="javascript:void(0);"  @click="trials" :class="{ active: selectedCoupon ===  2}">Trials</a> -->
               <!-- <a class="inline-b coupons commissions-s" href="javascript:void(0);"  @click="gotoCommissions">Commissions Inquire</a> -->
               <div class=" inline-b search" :class="{isnotLanguage: !initLanguageSuccess}">
                 <input class="inline-b " type="text" placeholder="Search" v-model="keyword" @keyup="headerSearch($event, keyword)" />  
@@ -235,7 +235,7 @@
      </el-dialog>
 
 
-       <!--发送右键-->
+       <!--发送邮件-->
       <el-dialog :visible.sync = "sendEmailDialog" class="sign-dialog" >
         <div class="send-email">
           <p class="sorry-text">Activeation Email Has Been Sent.</p>
@@ -247,6 +247,28 @@
           <div class="send-footer">
             <el-button class="send-button" @click="reSendEmail" v-if="!isSendEmail">Resend Activeation Email</el-button>
             <el-button type="info" disabled class="btn-disabled" v-else>Sending after {{seconds}} seconds </el-button>
+          </div>
+        </div>
+     </el-dialog>
+
+      <!--选择国家-->
+      <el-dialog :visible.sync = "selectCountryDialog" class="sign-dialog" >
+        <div class="send-email">
+          <h1 class="center">Select Country.</h1>
+
+          
+         
+          <div class="select-country">
+            <el-select v-model="firstSelectCountry" @change="selectCountry">
+              <el-option 
+                v-for="(item, index) in countryLists"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+                @click.native="clickoption(item)"
+                >
+              </el-option>
+          </el-select>
           </div>
         </div>
      </el-dialog>
@@ -388,6 +410,7 @@ export default {
       signDialog: false,
       resetPassword: false,
       sendEmailDialog: false,
+      selectCountryDialog: false,
       isSendEmail: false,
       seconds: 60,
       showDropdownC: false,
@@ -414,6 +437,7 @@ export default {
       },
       initLanguageSuccess: false,  //判断翻译插件是否加载完成
       sendEmailnum: '',
+      firstSelectCountry: '',
     }
   },
   props: {
@@ -472,6 +496,7 @@ export default {
       this.enterSubmitForm()
       this.getHeadCateListInfo()
       this.getOtherEvent()
+      this.isSelectCountry()
       // this.initChat()
     },
     //数据初始化
@@ -1027,6 +1052,19 @@ export default {
           clearInterval(timer)
         }
       }, 1000)
+    },
+    selectCountry (a) {
+      // console.log(a)
+    },
+    isSelectCountry () {
+      if (!getStore('country_id')) {
+        this.selectCountryDialog = true
+      } else {
+        this.selectCountryDialog = false
+      }
+    },
+    clickoption (item) {
+      this.filterCountry(item)
     }
   }
 }
@@ -1162,7 +1200,7 @@ export default {
                 &.tag {
                   height: 1rem;
                   top: 12px;
-                  width: 5.4rem;
+                  width: 5.6rem;
                   text-align: center;
                   left: 2.8rem;
                   span {
@@ -1248,7 +1286,7 @@ export default {
         }
         .search {
           .p(r);
-          width: 38%;
+          width: 58%;
           height: 36px;
           top: 15px;
           margin-right: 0.90rem;
@@ -1278,7 +1316,7 @@ export default {
             transform: rotate(180deg);
           }
           &.isnotLanguage {
-            width: 48%;
+            // width: 48%;
           }
         }
         .btn-h {
@@ -1491,6 +1529,10 @@ export default {
     .btn-disabled {
       width: 300px;
       margin-left: 0;
+    }
+
+    .select-country {
+      margin: 50px 0 0 -24px;
     }
 }
 </style>

@@ -163,35 +163,36 @@ export const asyncRouterMap = [
     component: p_center,
     text: 'My Promotions',
     hasChilds: false,
+    meta: {role: [ 'celebrity']},
     children: [{
       path: 'index',
       component: _import('personal/promotion/index')
     }]
   },
   {
-    path: '/posted/list-coupons',
-    redirect: '/posted/coupons',
+    path: '/posted/list-trials',
+    redirect: '/posted/list-trials',
     component: p_center,
-    hasChilds: true,
-    isToggle: false,
-    text: 'My Posted',
-    meta: {role: ['merchant', 'celebrity']},
+    // hasChilds: true,
+    // isToggle: false,
+    text: 'Trials Posted',
+    meta: {role: ['merchant']},
     children: [
-      {
-        path: '/posted/list-coupons',
-        text: 'Coupons',
-        component: _import('personal/my_posted/coupons'),
-      },
-      {
-        path: '/posted/list-coupons/add',
-        hidden: true,
-        component: _import('personal/my_posted/coupons_add'),
-      },
-      {
-        path: '/posted/list-coupons/receiptor',
-        hidden: true,
-        component: _import('personal/my_posted/coupons_receiptor'),
-      },
+      // {
+      //   path: '/posted/list-coupons',
+      //   text: 'Coupons',
+      //   component: _import('personal/my_posted/coupons'),
+      // },
+      // {
+      //   path: '/posted/list-coupons/add',
+      //   hidden: true,
+      //   component: _import('personal/my_posted/coupons_add'),
+      // },
+      // {
+      //   path: '/posted/list-coupons/receiptor',
+      //   hidden: true,
+      //   component: _import('personal/my_posted/coupons_receiptor'),
+      // },
       {
         path: '/posted/list-trials',
         text: 'Trials',
@@ -211,6 +212,18 @@ export const asyncRouterMap = [
         meta: {role: ['merchant']}
       }
     ]
+  },
+  {
+    path: '/trails/receiptor',
+    redirect: '/trails/receiptor/index',
+    component: p_center,
+    text: 'Trials Receiptor',
+    hasChilds: false,
+    meta: {role: [ 'merchant']},
+    children: [{
+      path: 'index',
+      component: _import('personal/promotion/index')
+    }]
   },
   {
     path: '/wallet/financial',
@@ -250,17 +263,33 @@ export const asyncRouterMap = [
       }
     ]
   },
+  // {
+  //   path: '/personal/my-coupons',
+  //   redirect: '/personal/my-coupons/index',
+  //   component: p_center,
+  //   text: 'My Coupons',
+  //   hasChilds: false,
+  //   children: [{
+  //     path: 'index',
+  //     component: _import('personal/my_coupons/index')
+  //   }]
+  // },
   {
-    path: '/personal/my-coupons',
-    redirect: '/personal/my-coupons/index',
+    path: '/personal/affiliate',
+    redirect: '/personal/affiliate/index',
     component: p_center,
-    text: 'My Coupons',
+    text: 'Affiliate ID',
     hasChilds: false,
     children: [{
       path: 'index',
-      component: _import('personal/my_coupons/index')
+      component: _import('personal/settings/apiManagement')
     }]
   },
+  // {
+  //   path: '/settings/apiManagement',
+  //   text: 'Affiliate ID',
+  //   component: _import('personal/settings/apiManagement')
+  // },
   {
     path: '/personal/my-trials',
     redirect: '/personal/my-trials/index',
@@ -291,11 +320,7 @@ export const asyncRouterMap = [
         component: _import('personal/settings/shop'),
         meta: {role: ['merchant']}
       },
-      {
-        path: '/settings/apiManagement',
-        text: 'Affiliate ID',
-        component: _import('personal/settings/apiManagement')
-      },
+     
       {
         path: '/settings/modify',
         text: 'Modify Password',

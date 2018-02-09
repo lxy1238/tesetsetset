@@ -681,7 +681,7 @@ export default {
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       this.getInfoLoading = true
-      axios.post('https://api.sellercool.com/api/v1/paa/asin', qs.stringify({
+      axios.post('http://csapi.sellercool.com/api/v1/paa/asin', qs.stringify({
         api_token: getToken(),
         user_id: getUserId(),
         url: url
@@ -717,7 +717,6 @@ export default {
         })
         .catch(function (err){
           this.getInfoLoading = false
-          console.log(err)
         })
      
     },
@@ -765,8 +764,8 @@ export default {
             if (!isLt500K) {
               that.$snotify.error('Uploaded Unsuccessfully! The image size exceeds 1MB.')
             }
-            if (that.trialsForm.product_img_s.length >= 6) {
-              that.$snotify.error('Uploaded Unsuccessfully! Up to six pictures can be uploaded!')
+            if (that.trialsForm.product_img_s.length >= 9) {
+              that.$snotify.error('Uploaded Unsuccessfully! Up to nine pictures can be uploaded!')
               limitF = false
             }
             if ((isJPG || isGIF || isPNG) && isLt500K && limitF && limitS) {
