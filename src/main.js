@@ -77,6 +77,9 @@ Vue.prototype.$confirm = MessageBox.confirm
 // 全局css样式,重置样式
 // import 'normalize.css'
 import 'element-ui/lib/theme-default/index.css'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 
 //验证权限

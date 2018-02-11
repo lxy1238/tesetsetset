@@ -122,10 +122,16 @@
       </el-form-item>
       <el-form-item label="Product details: " required class="product-details">
         <!-- <div id="summernote"></div> -->
-          <vue-html5-editor :content="trialsForm.product_details" @change="update" :auto-height="true" :z-index="998"  :height="300"></vue-html5-editor>
+          <!-- <vue-html5-editor :content="trialsForm.product_details" @change="update" :auto-height="true" :z-index="998"  :height="300"></vue-html5-editor> -->
+           <quill-editor v-model="trialsForm.product_details"
+                    ref="myQuillEditor"
+                    class="quill-editor"
+                    >
+          </quill-editor>
           <span class="red" v-if="!hasDetails">The product details is required.</span>
           <div class="red" v-else-if="hasDetailsLength">The product details can not exceed 800 characters.</div>
       </el-form-item>
+     
       <div class="title-s">
         Trial Information
       </div>
@@ -179,30 +185,36 @@ import { getToken, getUserId } from '@/utils/auth'
 import { NumAdd, NumMul } from '@/utils/calculate'
 import { COUNTRY_ID } from '@/status'
 
-import VueHtml5Editor from 'vue-html5-editor'
-Vue.use(VueHtml5Editor,{
-  icons: {
-    text: 'iconfont icon-pencil',
-    color: 'iconfont icon-fa-paint-brush',
-    font: 'iconfont icon-font',
-    align: 'iconfont icon-alignmiddle',
-    list: 'iconfont icon-list',
-    link: 'iconfont icon-link',
-    unlink: 'iconfont icon-unlink',
-    tabulation: 'iconfont icon-table',
-    image: 'iconfont icon-image',
-    hr: 'iconfont icon-fa-minus',
-    eraser: 'iconfont icon-eraser',
-    undo: 'iconfont icon-shuaxin',
-    'full-screen': 'iconfont icon-fullscreen',
-  },
-  hiddenModules: ['info'],
-})
+// import VueHtml5Editor from 'vue-html5-editor'
+// Vue.use(VueHtml5Editor,{
+//   icons: {
+//     text: 'iconfont icon-pencil',
+//     color: 'iconfont icon-fa-paint-brush',
+//     font: 'iconfont icon-font',
+//     align: 'iconfont icon-alignmiddle',
+//     list: 'iconfont icon-list',
+//     link: 'iconfont icon-link',
+//     unlink: 'iconfont icon-unlink',
+//     tabulation: 'iconfont icon-table',
+//     image: 'iconfont icon-image',
+//     hr: 'iconfont icon-fa-minus',
+//     eraser: 'iconfont icon-eraser',
+//     undo: 'iconfont icon-shuaxin',
+//     'full-screen': 'iconfont icon-fullscreen',
+//   },
+//   hiddenModules: ['info'],
+// })
+
+import { quillEditor } from 'vue-quill-editor'
+
 import { DatePicker } from 'element-ui'
 Vue.use(DatePicker)
 
 export default {
   name: 'trials_add',
+  components: {
+    quillEditor
+  },
   data () {
     let reg =  /^\d+([\.|,]\d{1,2})?$/
     let regAsin = /\/dp(\/product)?\/([A-Z0-9]{10})[\/|\?| ]+/

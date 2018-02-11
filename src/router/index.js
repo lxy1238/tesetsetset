@@ -166,7 +166,7 @@ export const asyncRouterMap = [
     meta: {role: [ 'celebrity']},
     children: [{
       path: 'index',
-      component: _import('personal/promotion/index')
+      component: _import('personal/promotion/promotion_red')
     }]
   },
   {
@@ -222,7 +222,7 @@ export const asyncRouterMap = [
     meta: {role: [ 'merchant']},
     children: [{
       path: 'index',
-      component: _import('personal/promotion/index')
+      component: _import('personal/my_posted/trials_receiptor_all')
     }]
   },
   {

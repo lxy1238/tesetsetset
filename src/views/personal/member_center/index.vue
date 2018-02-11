@@ -61,7 +61,7 @@
           <p>Coupons posted</p>
         </div> -->
         <div class="statistics-child" v-if="roles[0] == 'merchant'">
-          <span class="count link"  @click="gotoAnotherRouter('/posted/trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
+          <span class="count link"  @click="gotoAnotherRouter('/posted/list-trials', userData.account.trial_posteds)" >{{userData.account.trial_posteds}}</span>
           <p>Trials posted</p>
         </div>
         <!-- <div class="statistics-child">
@@ -72,7 +72,7 @@
           <span class="count link"  @click="gotoAnotherRouter('/personal/my-trials/index', userData.account.trials)">{{userData.account.trials}}</span>
           <p>My Trials</p>
         </div>
-        <div class="statistics-child last">
+        <div class="statistics-child last" v-if="roles[0] == 'celebrity'">
           <span class="count link"  @click="gotoAnotherRouter('/personal/promotion/index', userData.account.promotions)">{{userData.account.promotions}}</span>
           <p>My Promotions</p>
         </div>

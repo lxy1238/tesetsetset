@@ -33,7 +33,7 @@
 }
 .el-dialog.el-dialog--tiny {
   width: 600px;
-  padding-bottom: 50px;
+  padding-bottom: 30px;
 }
 .not-trials-dialog-first .el-dialog.el-dialog--tiny {
   min-height: 350px !important;
@@ -390,6 +390,13 @@ table tbody tr td {
   margin-top: 2px;
   font-size: 12px;
   right: 0;
+}
+.quill-editor .ql-toolbar {
+  line-height: 14px;
+}
+.quill-editor .ql-editor {
+  height: 300px;
+  overflow: auto;
 }
 @media screen and (max-width: 1557px) {
   html {

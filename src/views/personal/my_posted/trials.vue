@@ -2,8 +2,8 @@
   <div class="posted-coupons">
     <template>
        <div class="pro-header">
-        <h3 class="title">My Posted</h3>
-        <div class="title-s" v-title="'Trials Posted'">Trials Posted</div>
+        <!-- <h3 class="title">My Posted</h3> -->
+        <div class="title" v-title="'Trials Posted'">Trials Posted</div>
       </div>
  <div class="search-form">
       <label for="title">
