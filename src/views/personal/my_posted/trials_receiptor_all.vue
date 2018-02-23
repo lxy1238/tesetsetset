@@ -138,8 +138,8 @@
               </td>
             
                 <!-- Operation -->
-              <!-- <td>
-                <template v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1">
+              <td>
+                <template v-if="item.status === 0 && item.run_status == 'normal'">
                   <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
                 </template>
                 <template v-if="item.status === 2">
@@ -148,7 +148,7 @@
                  <template v-if="item.status === 1">
                   <div></div>
                 </template>
-              </td> -->
+              </td>
             </tr>
             <tr v-if="trLists.length === 0">
               <td colspan="13">No Data</td>
@@ -235,7 +235,7 @@ export default {
     return {
       thLists: ['Image', 'Title', 'Price' , 'User', 'Order date', 'Order number', 
         'Review', 'Shipping fee', 'Platform fee', 'Refund', 
-        'Cost', 'Status'
+        'Cost', 'Status', 'Operation'
       ],
       trLists: [],
       DeclineDetails: false,
@@ -437,12 +437,12 @@ export default {
 .try-again {
   text-align: center;
   margin-top: 10px;
-  button {
-    .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
-  }
-  .not-pass {
-    .btn-h(80px, 34px,#3399FF,#3399FF,red);
-  }
+  // button {
+  //   .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
+  // }
+  // .not-pass {
+  //   .btn-h(80px, 34px,#3399FF,#3399FF,red);
+  // }
 }
 .not-pass-select {
   position: relative;
@@ -450,15 +450,15 @@ export default {
   text-align: center;
   height: 22px;
   line-height: 22px;
-  select {
-    height: 22px;
-    position: relative;
-    top: 1px;
-  }
-  button {
-    .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
-    line-height: 1.5;
-  }
+  // select {
+  //   height: 22px;
+  //   position: relative;
+  //   top: 1px;
+  // }
+  // button {
+  //   .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
+  //   line-height: 1.5;
+  // }
 }
 .el-dialog--tiny {
   width: 600px;

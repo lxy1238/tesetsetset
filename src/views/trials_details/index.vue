@@ -57,12 +57,12 @@
               </div>
             </div>
             <div class="btn-promotion">
-                <div class="inline-b add-promo" v-if="!trialDetailData.trial_apply">
+                <div class="inline-b add-promo" >
                   <el-button @click="trialsApplyBtn($event)" :loading="btnLoading">Apply</el-button>
                 </div>
-                <div class="inline-b add-promo" v-else>
+                <!-- <div class="inline-b add-promo" v-else>
                   You have applied or you are not eligible
-                </div>
+                </div> -->
                  <!-- <span class="share">
                    <i class="text">Share on: </i> 
                    <a class="share-a" onclick="javascript:window.open('https://www.facebook.com/sharer.php?u='+encodeURIComponent(document.location.href)+'&t='+encodeURIComponent(document.title));void(0);" href="javascript:void(0);"><i class="iconfont icon-facebook1"></i></a>
@@ -90,7 +90,7 @@
           </div>
         </div>
           <div class="promotion-template clearfix">
-            <div class="tabs">
+            <div class="tabs-trials">
               <div class="head-s clearfix">
                 <div class="tabs-label" 
                     v-for="(item, index) in tabsHead"  
@@ -858,7 +858,7 @@ export default {
       border: 1px solid #d2d2d2;
       width: 66.5%;
       margin-left: 27.9rem;
-      .tabs {
+      .tabs-trials {
         .head-s {
           font-size: 1.33rem;
           height: 4rem;

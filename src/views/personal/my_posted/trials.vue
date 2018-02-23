@@ -136,8 +136,8 @@
                 <div> <a href="javascript:void(0)" @click="DeleteCoupon(item.id)">Delete</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status == all_run_status[3] && !item.isExpired ">
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[1])">Open</a></div>
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id, all_run_status[4])">Close</a></div>
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item, all_run_status[1])">Open</a></div>
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired"> 
                 <div> <a href="javascript:void(0)"  @click="showCloseDetails(item)">Details</a></div>
@@ -148,8 +148,8 @@
                 <div> <a href="javascript:void(0)" @click="showDetails(item)">Details</a></div>
               </template>
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway && !item.isExpired">
-                <div> <a href="javascript:void(0)" @click="updateRunStatus(item.id,  all_run_status[3])">Stop</a></div>
-                <div> <a href="javascript:void(0)"  @click="updateRunStatus(item.id,  all_run_status[4])">Close</a></div>
+                <div> <a href="javascript:void(0)" @click="updateRunStatus(item,  all_run_status[3])">Stop</a></div>
+                <div> <a href="javascript:void(0)"  @click="updateRunStatus(item,  all_run_status[4])">Close</a></div>
               </template>
                <template v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway && !item.isExpired">
                 <div> <a href="javascript:void(0)"  @click="showDetails(item)">Details</a></div>
@@ -412,19 +412,26 @@ export default {
     },
 
     //更新优惠券 判断close 的时候给与提示信息
-    updateRunStatus (id, run_status) {
+    updateRunStatus (item, run_status) {
+      //总数必须大于领取人的数量才能上线
+      if (run_status == 'active') {
+        if (item.total_quantity <= item.order_numbers) {
+          this.$snotify.error('There are no more trials.')
+          return
+        }
+      }
       if (run_status == 'close') {
         this.$confirm('Are you sure to close this trial?', 'Friendly reminder', {
           confirmButtonText: 'Yes',
           cancelButtonText: 'No',
           type: 'warning'
         }).then(() => {
-          this.updateRunStatusFun(id, run_status)
+          this.updateRunStatusFun(item.id, run_status)
         }).catch (error => {
           console.log(error)
         })
       } else {
-        this.updateRunStatusFun(id, run_status)
+        this.updateRunStatusFun(item.id, run_status)
       }
     },
 
@@ -465,10 +472,6 @@ export default {
     NumberSub (a, b) {
       return NumSub(a, b)
     }
-
-   
-   
-  
   }
 }
 </script>

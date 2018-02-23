@@ -137,8 +137,8 @@
               </td>
             
                 <!-- Operation -->
-              <!-- <td>
-                <template v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1">
+              <td>
+                <template v-if="item.status === 0 && item.run_status == 'normal'">
                   <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
                 </template>
                 <template v-if="item.status === 2">
@@ -147,7 +147,7 @@
                  <template v-if="item.status === 1">
                   <div></div>
                 </template>
-              </td> -->
+              </td>
             </tr>
             <tr v-if="trLists.length === 0">
               <td colspan="13">No Data</td>
@@ -178,36 +178,22 @@
 
        <!-- 审核-->
       <el-dialog  :visible.sync="DeclineDetails" title="check" class="not-trials-dialog" size="tiny">
-          <p>Order number: {{checkDetails.order_number}}</p>
-          <p>Review link: </p>
-          <p>
-            <a href="javasctipt:void(0);" @click="viewApprise(checkDetails.appraise_url)">
-              {{checkDetails.appraise_url}}
-            </a>
-          </p>
-          <p>
-            <span>Picture: {{checkDetails.appraise.picture}}</span>
-            <span>Video:  {{checkDetails.appraise.video}}</span>
-          </p>
-          <span class="star-label">Star Level: </span>
-             <el-rate  class="rate"
-                      v-model="checkDetails.appraise.review_star_rating"
-                      disabled
-                      text-color="#ff9900"
-                      >
-                    </el-rate>
+          <p class=" center">Order number: {{checkDetails.order_number}}</p>
+         
           <template v-if="checkDetails.status === 0">
           <div class="try-again">
-            <button @click="notPass" class="not-pass" >Not Pass</button>
-            <button @click="pass">Pass</button>
+            <el-button @click="notPass" type="danger" >Not Pass</el-button>
+            <el-button @click="pass" type="info">Pass</el-button>
           </div>
           <div class="not-pass-select" v-if="notPassData">
-            <select v-model="notPassReason">
-              <!-- <option value="">请选择未通过原因</option> -->
-              <option value="未查到订单"  >未查到订单</option>
-              <option value="评论与内容不符合">评论与内容不符合</option>
-            </select>
-             <button @click="notPassSubmit">Save</button>
+            <el-row>
+              <el-col :span="8" :offset="6">
+                <el-input placeholder="亚马逊客户ID"></el-input>
+              </el-col>
+              <el-col :span="3">
+                <el-button type="success" @click="notPassSubmit">Save</el-button>
+              </el-col> 
+            </el-row>
           </div>
           </template>
            <template v-if="checkDetails.status === 2">
@@ -234,7 +220,7 @@ export default {
     return {
       thLists: ['Image', 'Title', 'Price' , 'User', 'Order date', 'Order number', 
         'Review', 'Shipping fee', 'Platform fee', 'Refund', 
-        'Cost', 'Status'
+        'Cost', 'Status', 'Operation'
       ],
       trLists: [],
       DeclineDetails: false,
@@ -365,11 +351,10 @@ export default {
       
     },
     pass () {
-      this.notPassReason = ''
-      this.checkSubmit(1)
+      this.notPassData = !this.notPassData
+      // this.checkSubmit(1)
     },
     notPass () {
-      this.notPassData = !this.notPassData
     },
     notPassSubmit () {
       this.checkSubmit(2)
@@ -439,9 +424,9 @@ export default {
 .try-again {
   text-align: center;
   margin-top: 10px;
-  button {
-    .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
-  }
+  // button {
+  //   .btn-h(80px, 34px,#3399FF,#3399FF,#fff);
+  // }
   .not-pass {
     .btn-h(80px, 34px,#3399FF,#3399FF,red);
   }
@@ -457,10 +442,10 @@ export default {
     position: relative;
     top: 1px;
   }
-  button {
-    .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
-    line-height: 1.5;
-  }
+  // button {
+  //   .btn-h(60px, 22px,#85ba3b,#85ba3b,#fff);
+  //   line-height: 1.5;
+  // }
 }
 .el-dialog--tiny {
   width: 600px;
