@@ -21,7 +21,7 @@
         <el-option value="0" label="Pending"></el-option>
         <el-option value="1" label="Complete"></el-option>
         <el-option value="2" label="Decline"></el-option>
-      </el-select>
+      </el-select> 
 
 
       <button class="search" @click="postedCouponsSearch">Search</button>
@@ -137,19 +137,6 @@
                   Complete
                 </div>
               </td>
-            
-                <!-- Operation -->
-              <!-- <td>
-                <template v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1">
-                  <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
-                </template>
-                <template v-if="item.status === 2">
-                  <div> <a href="javascript:void(0)" @click="OrderDetails(item)">Details</a></div>
-                </template>
-                 <template v-if="item.status === 1">
-                  <div></div>
-                </template>
-              </td> -->
             </tr>
             <tr v-if="trLists.length === 0">
               <td colspan="13">No Data</td>
@@ -167,16 +154,6 @@
     </template>
 
 
-    <!-- 弹窗 -->
-        <!-- expiredDetail -->
-      <el-dialog  :visible.sync="expiredDetail" title="result" class="not-trials-dialog" size="tiny">
-          <p>用户超时未上评，保证金已退回账户</p>
-
-          <div class="try-again">
-            <button @click="check">check</button>
-          </div>
-
-      </el-dialog>
 
        <!-- 审核-->
       <el-dialog  :visible.sync="DeclineDetails" title="check" class="not-trials-dialog" size="tiny">
@@ -217,7 +194,6 @@
               {{checkDetails.censor_content}}
           </div>
           </template>
-
       </el-dialog>
   </div>
 </template>
@@ -234,9 +210,8 @@ export default {
   name: 'posted_trials',
   data () {
     return {
-      thLists: ['Image', 'Title', 'Price' , 'User', 'Order date', 'Order number', 
-        'Review', 'Shipping fee', 'Platform fee', 'Refund', 
-        'Cost', 'Status'
+      thLists: ['Order date', 'Image', 'Title' , 'Price', 'Applicant', 'Order number', 
+        'Bounties', 'Status'
       ],
       trLists: [],
       DeclineDetails: false,

@@ -384,7 +384,7 @@ export default {
         ],
         password: [
           { required: true, message: 'Please enter your password.', trigger: 'blur' },
-          { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' },
+          // { min: 8, max: 20, message: 'Use at least 8 characters, It is case sensitive.', trigger: 'blur' },
           { validator:validateLoginPass, trigger: 'submit' },
         ]
       },
@@ -872,7 +872,7 @@ export default {
       var startApp = function () {
         gapi.load('auth2', function (){
           let auth2 = gapi.auth2.init({
-            client_id: '308959858897-deq7102qpgo6ku4763p75rl734skf0mf.apps.googleusercontent.com',
+            client_id: '430818290850-d36fpelgum2jfdhpi8784c8a655l188q.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
@@ -888,7 +888,7 @@ export default {
       var onSuccess = function (user) {
         var profile = user.getBasicProfile()
         let data = {
-          client_id : '308959858897-deq7102qpgo6ku4763p75rl734skf0mf.apps.googleusercontent.com',
+          client_id : '430818290850-d36fpelgum2jfdhpi8784c8a655l188q.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token
@@ -921,7 +921,7 @@ export default {
       }(document, 'script', 'facebook-jssdk'))
       window.fbAsyncInit = function () {
         FB.init({
-          appId      : '908467375968806',
+          appId      : '596114204056534',
           cookie     : true,  // enable cookies to allow the server to access
           xfbml      : true,  // parse social plugins on this page
           version    : 'v2.11' // use graph api version 2.8
@@ -940,7 +940,7 @@ export default {
         FB.api('/me?fields=name,first_name,last_name,email', response => {
           if(response.email!=null){ 
             var data = {
-              app_id: '908467375968806',
+              app_id: '596114204056534',
               user_id: user_id,
               email: response.email,
               accessToken: accessToken

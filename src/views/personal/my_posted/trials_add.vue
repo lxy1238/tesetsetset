@@ -157,9 +157,30 @@
       <el-form-item label="Per trial refund: " v-show="trialsForm.full_refund === '0'"  class="item-inline1" >
         <el-input type="text" class=" input-money" v-model="trialsForm.refund_price" ></el-input>
       </el-form-item>
-    <div class="title-s">
-        Security Deposit
+
+      <div class="title-s">
+        Platform Fee for Per Order
       </div>
+      <div  class="slider-platform-fee">
+        <span class="demonstration">platform fee: {{value6}}</span>
+        <el-row>
+          <el-col :span="2" class="center" v-if="platform_fee">{{platform_fee}}</el-col>
+          <el-col :span="2" class="center" v-else>0.00</el-col>
+          <el-col :span="16" >
+            <el-slider
+              v-model="value6"
+              :step="0.2"
+              :min="Number(platform_fee)"
+              :max="20">
+            </el-slider>
+          </el-col>
+          <el-col :span="2" class="center">20.00</el-col>
+        </el-row>
+      </div>
+      <br />
+    <div class="title-s">
+      Security Deposit
+    </div>
     <div class="trials-money">
       <p class="money"><label>Total refund:</label> {{currency}}{{refund_total_price}}</p>
       <!-- <p class="money"><label>Shipping fee:</label> {{currency}}{{shipping_total_fee}}</p> -->
@@ -185,30 +206,11 @@ import { getToken, getUserId } from '@/utils/auth'
 import { NumAdd, NumMul } from '@/utils/calculate'
 import { COUNTRY_ID } from '@/status'
 
-// import VueHtml5Editor from 'vue-html5-editor'
-// Vue.use(VueHtml5Editor,{
-//   icons: {
-//     text: 'iconfont icon-pencil',
-//     color: 'iconfont icon-fa-paint-brush',
-//     font: 'iconfont icon-font',
-//     align: 'iconfont icon-alignmiddle',
-//     list: 'iconfont icon-list',
-//     link: 'iconfont icon-link',
-//     unlink: 'iconfont icon-unlink',
-//     tabulation: 'iconfont icon-table',
-//     image: 'iconfont icon-image',
-//     hr: 'iconfont icon-fa-minus',
-//     eraser: 'iconfont icon-eraser',
-//     undo: 'iconfont icon-shuaxin',
-//     'full-screen': 'iconfont icon-fullscreen',
-//   },
-//   hiddenModules: ['info'],
-// })
-
 import { quillEditor } from 'vue-quill-editor'
 
-import { DatePicker } from 'element-ui'
+import { DatePicker, Slider } from 'element-ui'
 Vue.use(DatePicker)
+Vue.use(Slider)
 
 export default {
   name: 'trials_add',
@@ -377,6 +379,7 @@ export default {
       hasDetails: true,
       hasDetailsLength: false,
       uploadBtn: false,
+      value6: 0,
 
     }
   },
@@ -1059,5 +1062,11 @@ export default {
 }
 .product-details {
   margin-top: 35px;
+}
+.slider-platform-fee {
+  .center {
+    height: 36px;
+    line-height: 36px;
+  }
 }
 </style>
