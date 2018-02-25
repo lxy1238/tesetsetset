@@ -105,7 +105,8 @@
 
                     <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Edit</button>
                     <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
-                    <div class="red" v-if="!item.order_number">Please enter the order number.</div>
+                    <div class="red" v-if="!item.order_number && !item.Modify">Please enter the order number.</div>
+                    <div class="red" v-if="!item.order_number && item.Modify">Order number error, please re-enter.</div>
                   </div>
                 </div>
                 <div class="right-content">
@@ -282,7 +283,6 @@ import { getToken, getUserId } from '@/utils/auth'
 import { getTimeDetail } from '@/utils/date.js'
 import { getStore } from '@/utils/utils'
 import { base64Encode } from '@/utils/randomString.js'
-import { validateURL } from '@/utils/validate.js'
 import { NumAdd, NumSub } from '@/utils/calculate'
 export default {
   name: 'my_trials',

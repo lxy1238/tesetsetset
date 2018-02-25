@@ -29,3 +29,10 @@ export const COUNTRY_ID = {
   'Australia': 9
 }
 
+
+//审核试用品 订单编号  1  成功   0  失败
+export const REFUSE_ORDER = {
+  SUCCESS: 1,
+  FAIL: 0
+}
+

@@ -118,8 +118,11 @@
            
                 <!-- Status -->
               <td>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && (!item.appraise || (item.appraise && item.appraise.status === 0))"> 
+                <div v-if="item.status === 0 && item.run_status == 'normal' && item.order_number"> 
                   Ordered
+                </div>
+                <div class="red" v-if="item.status === 0 && item.run_status == 'normal' && !item.order_number"> 
+                  Decline
                 </div>
                 <div v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1"> 
                   Pending
@@ -138,7 +141,7 @@
             
                 <!-- Operation -->
               <td>
-                <template v-if="item.status === 0 && item.run_status == 'normal'">
+                <template v-if="item.status === 0 && item.run_status == 'normal' && item.order_number">
                   <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
                 </template>
                 <template v-if="item.status === 2">
@@ -168,10 +171,10 @@
     <!-- 弹窗 -->
         <!-- expiredDetail -->
       <el-dialog  :visible.sync="expiredDetail" title="result" class="not-trials-dialog" size="tiny">
-          <p>用户超时未上评，保证金已退回账户</p>
+          <p class=" center">Order number: {{checkDetails.order_number}}</p>
 
           <div class="try-again">
-            <button @click="check">check</button>
+            Did not find the order
           </div>
 
       </el-dialog>
@@ -188,11 +191,17 @@
           <div class="not-pass-select" v-if="notPassData">
             <el-row>
               <el-col :span="8" :offset="6">
-                <el-input placeholder="亚马逊客户ID"></el-input>
+                <el-input v-model="CustomerID" placeholder="亚马逊客户ID"></el-input>
+                <div class="red" v-if="!CustomerID && isSubmitCustomerID">
+                  Please enter customer ID.
+                </div>
               </el-col>
               <el-col :span="3">
-                <el-button type="success" @click="notPassSubmit">Save</el-button>
+                <el-button type="success" @click="PassSubmit">Save</el-button>
               </el-col> 
+            </el-row>
+            <el-row>
+              
             </el-row>
           </div>
           </template>
@@ -208,11 +217,12 @@
 
 <script>
 import pagination from '@/components/page_index_coupons/pagination.vue'
+import Vue from 'vue'
+import { DatePicker } from 'element-ui'
 import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
-import Vue from 'vue'
-import { DatePicker } from 'element-ui'
+import { REFUSE_ORDER } from '@/status'
 Vue.use(DatePicker)
 export default {
   name: 'posted_trials',
@@ -235,7 +245,7 @@ export default {
           review_star_rating: '',
         }
       },
-      notPassReason:'未查到订单',
+      notPassReason:'',
       notPassData: false,
       allpage: undefined,
       showItem: 7,
@@ -254,9 +264,7 @@ export default {
       reqCheckData: {
         api_token: getToken(),
         user_id: getUserId(),
-        id: '',
-        status: '',
-        censor_content: '',
+        order_id: '',
       },
 
       searchForm: {
@@ -274,7 +282,9 @@ export default {
         platform_fee: '',
         refund_price: '',
         real_fee: '',
-      }
+      },
+      CustomerID: '',
+      isSubmitCustomerID: false
     }
   },
   components: {
@@ -355,15 +365,23 @@ export default {
       // this.checkSubmit(1)
     },
     notPass () {
+      this.reqCheckData.order_id = this.checkDetails.id
+      this.$api.refuseOrder(this.reqCheckData).then(res => {
+        if (res.data === REFUSE_ORDER['SUCCESS']) {
+          this.DeclineDetails = false
+          this.init()
+        }
+      })
     },
-    notPassSubmit () {
-      this.checkSubmit(2)
+    PassSubmit () {
+      this.isSubmitCustomerID = true
+      console.log('审核通过', this.CustomerID)
+
+      // this.checkSubmit(2)
     },
     //审核提交
     checkSubmit (status) {
-      this.reqCheckData.id = this.checkDetails.id
-      this.reqCheckData.censor_content = this.notPassReason
-      this.reqCheckData.status = status
+      this.reqCheckData.order_id = this.checkDetails.order_number
       this.$api.updateOrderStatus(this.reqCheckData).then(res => {
         if (res.code === 200) {
           this.DeclineDetails = false

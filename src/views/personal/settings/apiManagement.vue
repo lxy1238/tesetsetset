@@ -6,7 +6,7 @@
       <div v-for="item in platformArr" class="item-pid">  
         <label class="capitalize">{{item.provider + ' Tracking  ID'}} :</label>
         <el-input  v-model="item.pid"  v-if="country_id === 9" disabled></el-input>
-        <el-input  v-model="item.pid"  v-else></el-input>
+        <el-input  v-model="item.pid" @keyup.enter.native="submit"  v-else></el-input>
       </div>
     <div class="pid-footer">
       <el-button @click="submit" :loading="saveLoading">Save Settings</el-button>
@@ -35,7 +35,6 @@ export default {
         user_id: getUserId(),
         country_id: parseInt(getStore('country_id') || 1) 
       },
-      isApiPage: true,
       saveLoading: false,
       country_id: parseInt(getStore('country_id') || 1),
       howToGetPid: {
@@ -53,22 +52,9 @@ export default {
   mounted () {
     this.init()
   },
-  beforeDestory () {
-    this.isApiPage = false
-  },
   methods: {
     init () {
       this.getPlatformCateInfo()
-      this.enterEvent()
-    },
-    enterEvent () {
-      window.addEventListener('keyup', (e) => {
-        if (e.keyCode === 13 && this.isApiPage === true) {
-          this.submit()
-        } else {
-          return false
-        }
-      })
     },
     //获取该国家下的平台
     getPlatformCateInfo () {
