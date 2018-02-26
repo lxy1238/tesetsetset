@@ -872,7 +872,7 @@ export default {
       var startApp = function () {
         gapi.load('auth2', function (){
           let auth2 = gapi.auth2.init({
-            client_id: '430818290850-d36fpelgum2jfdhpi8784c8a655l188q.apps.googleusercontent.com',
+            client_id: '430818290850-a7ghmtknngdue55m5o8b28hutnvubd1k.apps.googleusercontent.com',
             cookiepolicy: 'single_host_origin',
             scope: 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email'    //需要获取的用户信息领域
           })
@@ -888,7 +888,7 @@ export default {
       var onSuccess = function (user) {
         var profile = user.getBasicProfile()
         let data = {
-          client_id : '430818290850-d36fpelgum2jfdhpi8784c8a655l188q.apps.googleusercontent.com',
+          client_id : '430818290850-a7ghmtknngdue55m5o8b28hutnvubd1k.apps.googleusercontent.com',
           user_id : profile.getId(),
           email : profile.getEmail(),
           id_token : user.getAuthResponse().id_token

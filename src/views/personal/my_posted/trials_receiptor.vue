@@ -141,7 +141,7 @@
             
                 <!-- Operation -->
               <td>
-                <template v-if="item.status === 0 && item.run_status == 'normal' && item.order_number">
+                <template v-if="item.status === 0 && item.run_status == 'normal' && item.order_number && !item.platform_user_id">
                   <div> <a href="javascript:void(0)" @click="confirmedOrder(item)">Confirmed</a></div>
                 </template>
                 <template v-if="item.status === 2">
@@ -265,6 +265,13 @@ export default {
         api_token: getToken(),
         user_id: getUserId(),
         order_id: '',
+        platform_user_id: '',
+      },
+
+      refuseData: {
+        api_token: getToken(),
+        user_id: getUserId(),
+        order_id: '',
       },
 
       searchForm: {
@@ -365,8 +372,8 @@ export default {
       // this.checkSubmit(1)
     },
     notPass () {
-      this.reqCheckData.order_id = this.checkDetails.id
-      this.$api.refuseOrder(this.reqCheckData).then(res => {
+      this.refuseData.order_id = this.checkDetails.id
+      this.$api.refuseOrder(this.refuseData).then(res => {
         if (res.data === REFUSE_ORDER['SUCCESS']) {
           this.DeclineDetails = false
           this.init()
@@ -374,10 +381,14 @@ export default {
       })
     },
     PassSubmit () {
-      this.isSubmitCustomerID = true
-      console.log('审核通过', this.CustomerID)
-
-      // this.checkSubmit(2)
+      this.reqCheckData.order_id = this.checkDetails.id
+      this.reqCheckData.platform_user_id = this.CustomerID
+      this.$api.addPlatformUserId(this.reqCheckData).then(res => {
+        if (res.code === 200) {
+          this.DeclineDetails = false
+          this.init()
+        }
+      })
     },
     //审核提交
     checkSubmit (status) {
@@ -397,8 +408,6 @@ export default {
         window.open('http://' + url)
       }
     },
-
-  
   }
 }
 </script>

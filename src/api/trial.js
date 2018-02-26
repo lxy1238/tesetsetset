@@ -219,9 +219,13 @@ export const refuseOrder = data => fetch({
   method: 'POST',
   data: qs.stringify(data)
 })
-
+ 
 //  审核领取人提交的订单号码---审核通过
-
+export const addPlatformUserId = data => fetch({
+  url: '/api/v1/trial/add-platform-user-id ',
+  method: 'POST',
+  data: qs.stringify(data)
+})
 
 //使用政策
 export const trialsPolicy = data => fetch({
