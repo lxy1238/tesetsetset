@@ -8,7 +8,7 @@
             Email is verified successfully.
           </p>
           <p class="text-bottom">
-            The email address {{email}} has been verified successfully, please <a class="link" href="javascript:void(0);" @click="activateLogin">login</a>  again.
+            The email has been verified successfully, please <a class="link" href="javascript:void(0);" @click="activateLogin">login</a>  again.
           </p>
         </div>
       </div>
@@ -19,7 +19,7 @@
             The mailbox has been activated successfully or does not exist.
           </p>
           <p class="text-bottom">
-            The email address {{email}} has been verified successfully, please login again.
+            The email has been verified successfully, please login again.
           </p>
         </div>
       </div>

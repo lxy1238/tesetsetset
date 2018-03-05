@@ -27,14 +27,18 @@
           <!-- <span class="old" v-if="isEurope"> <i >{{currency}}{{couponsDetails.product_price.replace('.', ',')}} </i></span> -->
           <span class="old" > <i >{{currency}}{{couponsDetails.product_price}} </i></span>
           <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) >= 0">
-            <strong>Free</strong>  
+            <strong>Free</strong>   
           </span>
           <span class="coupon-right" v-else>
             <strong> {{currency}}{{sub(couponsDetails.product_price, couponsDetails.refund_price).toFixed(2)}}</strong>  
           </span>
-          <!-- <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) > 0">
-            <strong class="full-refund"> +{{currency}}{{sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2)}}</strong>  
-          </span> -->
+           <span class="coupon-right" v-if="sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2) > 0">
+            <strong class="full-refund" :title="'Extra refund '+currency+sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2)+' to you.'">
+               +{{currency}}{{sub(couponsDetails.refund_price, couponsDetails.product_price).toFixed(2)}}
+            </strong>  
+          </span>
+          <p class="center"  v-if="roles[0] == 'celebrity'">Bounties: <span class="promotion-commission">{{currency}}{{ couponsDetails.promotion_commission}}</span></p>
+         
          </p>
          </template>
          <template slot="btn" >View Trials</template>
@@ -59,6 +63,7 @@ import { getUserId } from '@/utils/auth'
 import { base64Encode } from '@/utils/randomString'
 import { NumAdd, NumSub } from '@/utils/calculate'
 import { COUNTRY_ID } from '@/status'
+import { mapGetters } from 'vuex'
 export default {
   name: 'page_index',
   data () {
@@ -78,7 +83,7 @@ export default {
         menu_id: 0,
         keyword: '',
       },
-      titleMsg: 'Product testing, Product trial, Authoritative and Reliable Product Review Services on Dealsbank.com'
+      titleMsg: 'Product testing, Product trial, Authoritative and Reliable Product Review Services on Dealsbank.com',
     }
   },
   components: {
@@ -87,6 +92,9 @@ export default {
     explain
   },
   computed: {
+    ...mapGetters([
+      'roles'
+    ]),
     //导航条变化的时候触发查询需要展示商品的信息
     menu_name () {
       if (this.$route.params.menuId) {
@@ -115,7 +123,7 @@ export default {
       } else {
         return false
       }
-    }
+    },
   },
   watch: {
     menu_name () {
@@ -311,5 +319,8 @@ export default {
     display: inline-block;
     transform: rotate(90deg);
   }
+}
+.promotion-commission {
+  color: #FF3366;
 }
 </style>

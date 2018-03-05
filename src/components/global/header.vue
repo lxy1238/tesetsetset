@@ -254,19 +254,18 @@
       <!--选择国家-->
       <el-dialog :visible.sync = "selectCountryDialog" class="sign-dialog" >
         <div class="send-email">
-          <h1 class="center">Select Country.</h1>
-
-          
+          <h1 class="center">Select Country</h1>
          
           <div class="select-country">
-            <el-select v-model="firstSelectCountry" @change="selectCountry">
+            <el-select v-model="firstSelectCountry" @change="selectCountry" placeholder="Select your country">
               <el-option 
                 v-for="(item, index) in countryLists"
                 :key="item.id"
-                :label="item.name"
+                
                 :value="item.id"
                 @click.native="clickoption(item)"
                 >
+                <img :src="countryImg[item.name]" /> {{item.name}}
               </el-option>
           </el-select>
           </div>
@@ -342,9 +341,9 @@ export default {
     }
     const validateLoginPass = (rule, value, callback) => {
       if (this.loginform.email) {
-        this.$api.login(this.loginform).then(res => {
+        this.$api.login(this.loginform).then(() => {
           callback()            
-        }).catch(err => {
+        }).catch(() => {
           callback(new Error('The password is incorrect.'))
         })
       }
@@ -438,6 +437,7 @@ export default {
       initLanguageSuccess: false,  //判断翻译插件是否加载完成
       sendEmailnum: '',
       firstSelectCountry: '',
+      promiseCountry: ''
     }
   },
   props: {
@@ -462,7 +462,6 @@ export default {
       get () {
         for (var i of this.countryLists) {
           if (i.id === this.country_id) {
-            console.log(i.name)
             return i.name
           }
         }
@@ -475,6 +474,10 @@ export default {
   beforeCreate () {
     this.$store.dispatch('getCountryInfo').then(()=> {
       this.countryLists = this.countryInfo
+      this.promiseCountry = new Promise((resolve, reject) => {
+        console.log(1)
+        resolve()
+      })
     })
   },
   mounted () {
@@ -486,8 +489,12 @@ export default {
     this.$root.eventHub.$off('selectClassify1')
     this.$root.eventHub.$off('isLoginInfo')
     this.$root.eventHub.$off('changeCountryId')
-  },  
-
+  }, 
+  watch: {
+    countryLists () {
+      // console.log(this.promiseCountry)
+    }
+  },
   methods: {
     //初始化 
     init () {
@@ -574,6 +581,7 @@ export default {
       this.$root.eventHub.$on('changeCountryId', data => {
         this.selectedCountryShop = parseInt(data)
         setTimeout(() => {
+          console.log(this.countryLists)
           for (let i of this.countryLists) {
             if (i.id == data) {
               setStore('country_id',i.id)
@@ -582,7 +590,7 @@ export default {
               this.$root.eventHub.$emit('changeCurrency', i.currency)
             }
           }
-        }, 500)
+        }, 800)
       })
 
     },
@@ -851,7 +859,9 @@ export default {
 
     //获取头部品类列表
     getHeadCateListInfo () {
-      this.$api.getHeadCateList().then(res => {
+      let data = {}
+      data.country_id = this.country_id
+      this.$api.getHeadCateList(data).then(res => {
         this.classifyList = this.classifyList.concat(res.data)
         this.initData()
       }).catch(error => {
@@ -1057,11 +1067,14 @@ export default {
       // console.log(a)
     },
     isSelectCountry () {
-      if (!getStore('country_id')) {
-        this.selectCountryDialog = true
-      } else {
-        this.selectCountryDialog = false
-      }
+      setTimeout(() => {
+        if (!getStore('country_id')) {
+          this.selectCountryDialog = true
+        } else {
+          this.selectCountryDialog = false
+        }
+      }, 900)
+     
     },
     clickoption (item) {
       this.filterCountry(item)

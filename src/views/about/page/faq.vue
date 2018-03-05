@@ -148,7 +148,7 @@
                   </div>
                   <div class="question-content">
                     <p>
-                      Four “only one time” principle--- 1 registered user has only 1product trial opportunity in 1 online shopping platform within 1 month. And DealsBank requires users to upload a trial review address within 15 days after placing an order.
+                      Registered users need to complete the current trial before applying for the next task. DealsBank requires users to upload the trial review link within 15 days after placing an order.
                     </p>
                   </div>
                 </div>
@@ -215,6 +215,34 @@
                     </p>
                   </div>
                 </div>
+                 <div class="question-item" id="question15">
+                  <div class="question-title">
+                   How to withdraw?
+                  </div>
+                  <div class="question-content">
+                    <p>
+                      1.	Enter the member center home page and click the “cash withdrawal” button on the right to enter the cash withdrawal page.<br />
+                      2.	Find out “my wallet” button on the left menu of the member center, click “my wallet”, and then find “cash withdrawal” button, click it to enter the cash withdrawal page.
+                    </p>
+                    <p>
+                      After successful application for cash withdrawal, DealsBank will pay you the money (through Paypal or Giftcard, Alipay and other payment methods) within 3 business days.
+                    </p>
+                    <p>
+                     If you have just submitted a review link, the money cannot be immediately credited to your DealsBank account. You need to wait for the DealsBank to review your evaluations and after the approval, the money will enter your DealsBank account and you will be able to apply for withdrawals.
+                    </p>
+                  </div>
+                </div>
+                 <div class="question-item" id="question16">
+                  <div class="question-title">
+                   What to do if cannot upload the review link?
+                  </div>
+                  <div class="question-content">
+                    <p>
+                      DealsBank will not refund the users if the users failed to post product reviews due to buyer’s account or could not upload review link address on DealsBank.
+                      If you encounter this situation, DealsBank official requires users to apply for returns on third-party sales platform. 
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -246,6 +274,8 @@ export default {
         {text: 'Why did my product trial qualification of successful application was canceled?'},
         {text: 'How to modify the content template of coupon?'},
         {text: 'Make Money?'},
+        {text: 'How to withdraw?'},
+        {text: 'What to do if cannot upload the review link?'},
       ]
     }
   },

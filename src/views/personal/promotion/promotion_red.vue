@@ -3,7 +3,7 @@
   <div class="posted-coupons">
     <template>
        <div class="pro-header">
-        <h3 class="title">My Promotion</h3>
+        <h3 class="title">My Promotions</h3>
       </div>
  <div class="search-form">
       <label for="title">
@@ -18,9 +18,9 @@
         Status: 
       </label>
       <el-select name="" class=" form-control-bootstrap" clearable v-model="searchForm.status">
-        <el-option value="0" label="Pending"></el-option>
+        <el-option value="0" label="Processing"></el-option>
         <el-option value="1" label="Complete"></el-option>
-        <el-option value="2" label="Decline"></el-option>
+        <el-option value="2" label="Failure"></el-option>
       </el-select> 
 
 
@@ -36,20 +36,23 @@
           </thead>
           <tbody>
             <tr v-for="item in trLists" v-if="trLists.length != 0">
+              <!-- order_date -->
+              <td>
+                <div>
+                  {{item.apply_time}}
+                </div>
+              </td>
               <td class="img">
-                <img class="trials-table-img" :src="trialDetails.product_img.split(',')[0]" alt="">
+                <img class="trials-table-img" :src="item.product_img.split(',')[0]" alt="">
               </td>
               <!-- title -->
-              <td class="trials-title" v-if="trialDetails.menu">
-                <div class="trials-title-platform">{{trialDetails.website}}</div>
-                <div class="trials-title-text">{{trialDetails.product_title}}</div>
-                <a href="javascript:void(0);">{{trialDetails.menu.name}}</a>
+              <td class="trials-title" @click="gotoProtectUrl(item)">
+                {{item.product_title}}
               </td>
-              <td v-else>title-test</td>
               <!-- List price -->
               <td>
                 <div >
-                  {{currency}}{{Number(trialDetails.product_price)}}
+                  {{currency}}{{Number(item.product_price)}}
                 </div>
               </td>
               <!-- user -->
@@ -59,12 +62,7 @@
                 </div>
               </td>
 
-              <!-- order_date -->
-              <td>
-                <div>
-                  {{item.apply_time}}
-                </div>
-              </td>
+              
               
               <!-- order_number -->
               <td>
@@ -72,70 +70,25 @@
                   {{item.order_number}}
                 </div>
               </td>
-
-              <!-- review -->
-              <td class="trials-receiptor-review-td" >
-                <div class="trials-receiptor-review" v-if="item.appraise && item.appraise.status === 1">
-                  <el-rate  class="rate"
-                      v-model="item.appraise.review_star_rating"
-                      disabled
-                      text-color="#ff9900"
-                      >
-                    </el-rate>
-                    <div class="picture-video">
-                      <span class="picture">Picture: {{item.appraise.picture}}</span>
-                      <span class="video">Video: {{item.appraise.video}}</span>
-                    </div>
-                    <div class="view">
-                      <a href="javascript:void(0);"  @click="viewApprise(item.appraise_url)" >View</a>
-                    </div>
-                </div>
-              </td>
-              <!-- shipping fee -->
+                <!-- promotion_commission -->
               <td>
                 <div>
-                 {{currency}}{{Number(trialDetails.shipping_fee)}}
-                </div>
-              </td>
-
-              <!-- platform_fee -->
-              <td>
-                <div>
-                 {{currency}}{{Number(item.platform_fee)}}
-                </div>
-              </td>
-              <!-- refund -->
-              <td>
-                <div>
-                 {{currency}}{{Number(item.actual_total_refund)}}
-                </div>
-              </td>
-
-                <!-- Cost -->
-              <td>
-                <div>
-                 {{currency}}{{Number(item.store_total_fee)}}
+                   {{currency}}{{Number(item.promotion_commission)}}
                 </div>
               </td>
            
                 <!-- Status -->
               <td>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && (!item.appraise || (item.appraise && item.appraise.status === 0))"> 
-                  Ordered
-                </div>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1"> 
-                  Pending
-                </div>
-                <div v-if="item.status === 0 && item.isExpired" class="red"> 
-                  Expired
-                </div>
-
-                <div v-if="item.status === 2" class="red"> 
-                  Pending
+                <div v-if="item.status === 0 && item.run_status == 'normal'" class="blue"> 
+                  Processing
                 </div>
                 <div v-if="item.status === 1" class="green"> 
-                  Complete
+                Complete
                 </div>
+                <div v-if="item.status === 2" class="red"> 
+                  Failure
+                </div>
+              
               </td>
             </tr>
             <tr v-if="trLists.length === 0">
@@ -183,8 +136,8 @@
           <div class="not-pass-select" v-if="notPassData">
             <select v-model="notPassReason">
               <!-- <option value="">请选择未通过原因</option> -->
-              <option value="未查到订单"  >未查到订单</option>
-              <option value="评论与内容不符合">评论与内容不符合</option>
+              <option value="Comment does not exist."  >Comment does not exist.</option>
+              <option value="The comment does not correspond to the trial policy.">The comment does not correspond to the trial policy.</option>
             </select>
              <button @click="notPassSubmit">Save</button>
           </div>
@@ -202,6 +155,7 @@
 import pagination from '@/components/page_index_coupons/pagination.vue'
 import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
+import { base64Encode, base64Decode } from '@/utils/randomString'
 import { parseTime } from '@/utils/date'
 import Vue from 'vue'
 import { DatePicker } from 'element-ui'
@@ -210,6 +164,7 @@ export default {
   name: 'posted_trials',
   data () {
     return {
+      country_id: getStore('country_id') || 1,
       thLists: ['Order date', 'Image', 'Title' , 'Price', 'Applicant', 'Order number', 
         'Bounties', 'Status'
       ],
@@ -233,7 +188,8 @@ export default {
       requestdata: {
         api_token: getToken(),
         user_id: getUserId(),
-        trial_id: '',
+        p_uid: getUserId(),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 5,
         order_number: '',
@@ -290,7 +246,6 @@ export default {
     },
 
     initData () {
-      this.requestdata.trial_id = 99
     },
 
     //获取领取人列表接口
@@ -368,8 +323,9 @@ export default {
         window.open('http://' + url)
       }
     },
-
-  
+    gotoProtectUrl (item) {
+      window.open(`/goto/product/trial/${base64Encode(item.trial_id)}/${base64Encode(this.country_id)}`)
+    }
   }
 }
 </script>

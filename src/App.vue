@@ -9,8 +9,8 @@
 require('core-js/es7/array')
 require('core-js/es6/string')
 import { mapGetters } from 'vuex'
-import { getToken, getUserId } from '@/utils/auth'
-import { base64Encode } from '@/utils/randomString'
+import { getToken, getUserId, getPromotionId, setPromotionId } from '@/utils/auth'
+import { base64Encode, base64Decode } from '@/utils/randomString'
 export default {
   data () {
     return {
@@ -20,7 +20,8 @@ export default {
   name: 'app',
   computed: {
     ...mapGetters([
-      'currentRouter'
+      'currentRouter',
+      'roles'
     ])
   },
   watch: {
@@ -40,6 +41,12 @@ export default {
   beforeDestroy () {
   },
   mounted () {
+    setTimeout(() =>{
+      this.setPromotionIdCookie()
+    })
+  },
+  updated () {
+    this.setPromotionIdCookie()
   },
   beforeUpdate () {
     this.init()
@@ -67,6 +74,29 @@ export default {
         }
       }
     },
+
+    // 设置推广ID， 存入cookie
+    setPromotionIdCookie () {
+      //登录的情况下
+      if (getToken()) {
+        if (this.roles[0] == 'celebrity') {
+          setPromotionId(base64Decode(getUserId()))
+        } else {
+          if (getPromotionId()) {
+            return
+          } else {
+            setPromotionId(base64Decode(this.$route.params.promoterId))
+          }
+        }
+      } else {
+        if (getPromotionId()) {
+          return
+        } else {
+          setPromotionId(base64Decode(this.$route.params.promoterId))
+        }
+      }
+    }
+
   }
 }
 </script>

@@ -18,43 +18,43 @@
             
             <ul>
               <li>
-                1. User shall be voluntary to participate the product trial, which are initiated by the merchants.
+                1. User shall be voluntary to participate in the product trial, in which are initiated by the merchants. 
               </li>
               <li>
-                2. Users must have clear understanding of their rights and obligations.
+                2. Users must read and have clear understanding of both their rights and obligations.
               </li>
               <li>
-                3. Before applying, please confirm that your buyer account is normal and you can post product review.
+                3. Before applying, please confirm that your buyer account is normal and that you are able to post product review. 
               </li>
               <li>
-                  4. In the following cases, no refund will be given:  <br />
-                (1). You fail to upload the product's rating link within 15 days after successfully placing an order.<br />
-                (2). Users upload a fake order number or fake review link.<br /> 
-                (3). Review that is obscene, offensive, threatening or dirty.<br />
-                (4). Provide merchants with untruthful comments by taking bribes and other transactions.<br />
-                (5). Restricted by sales platform, the buyer account can not post the product evaluation normally.<br />
+                  4. In the following cases, pls understand that no refund will be provided:   <br />
+                (1). If you fail to upload the product's rating link within 15 days after successfully placing an order.  <br />
+                (2). If users upload a fake order number or fake review link. <br />
+                (3). If review posted is obscene, offensive, threatening or dirty. <br />
+                (4). If you provide merchants with untruthful comments by taking bribes and/or other transactions. <br />
+                (5). If restricted by sales platform, the buyer account can not post the product evaluation normally. <br />
               </li>
               <li>
                 5. Review content must be neutral, true, and trustworthy.
               </li>
               <li>
-                6. Within a month, for the same user, and on the same sales platform, there are two product trial opportunities for you, but you must have a successful trading order for the previous product trials.
+                6. Within a month (for the same user and on the same sales platform) there will be TWO product trial opportunities available to you, but for the second opportunity you first must have a successful trading order for the previous product trial. 
               </li>
               <li>
-                7. The same person, can only register a user account on DealsBank. Otherwise, all his accounts will be permanently frozen.
+               7. The same person, can only register one user account on DealsBank. If more than one account is discovered then this will conclude in all accounts being permanently frozen.  
               </li>
               <li>
-                8. After submitting the review link address, if the review is true and in line with the product trial policies, the system will refund within 3 working days.
+                8. After submitting the review link address, if the review is true and within our product trial policies, then the system will refund you within 3 working days.
               </li>
               <li>
-                9. Serving as an information platform, DealsBank can not guarantee the authenticity of the products, and users must make their own judgments before placing orders. If you have any after-sale quality problems, please contact the seller through the sales platform. DealsBank is not responsible to after-sale issues.
+               9. Serving as an information platform, DealsBank can not guarantee the authenticity of the products, and users must make their own judgments before placing orders. If you have any after-sale quality problems, please contact the seller through the sales platform. DealsBank is not responsible for after-sale issues. 
               </li>
             </ul>
 
             
 
             <p>
-              The behavior of clicking on the consent button means you accept our product trial policies, and fully understand your rights and obligations.
+              The behavior of clicking on the consent button means you accept our product trial policies, and that you fully understand your rights and obligations. We look forward to working with you, thank you!
             </p> 
           </div>
         </div>

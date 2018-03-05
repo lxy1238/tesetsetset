@@ -162,21 +162,25 @@
         Platform Fee for Per Order
       </div>
       <div  class="slider-platform-fee">
-        <span class="demonstration">platform fee: {{value6}}</span>
+        <!-- <span class="demonstration">Platform fee: {{currency}}{{promotion_commission}}</span> -->
         <el-row>
-          <el-col :span="2" class="center" v-if="platform_fee">{{platform_fee}}</el-col>
-          <el-col :span="2" class="center" v-else>0.00</el-col>
+          <el-col :span="2"  class="center" v-if="platform_fee">{{currency}}{{platform_fee}}</el-col>
+          <el-col :span="2" class="center" v-else>{{currency}}0</el-col>
           <el-col :span="16" >
             <el-slider
-              v-model="value6"
-              :step="0.2"
+              v-model="promotion_commission"
+              :step="this.country_id == 4 ? 1 : 0.2"
               :min="Number(platform_fee)"
-              :max="20">
+              :max="this.country_id == 4 ? 2400 : 20">
             </el-slider>
           </el-col>
-          <el-col :span="2" class="center">20.00</el-col>
+          <el-col :span="2" class="center">{{currency}}{{this.country_id == 4 ? 2400 : 20.00}}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="14" :offset="1" class="message" >The more platform bonus is offered, the faster this item will sell.</el-col>
         </el-row>
       </div>
+      <br />
       <br />
     <div class="title-s">
       Security Deposit
@@ -203,11 +207,11 @@ import qs from 'qs'
 import { mapGetters } from 'vuex'
 import { getStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
-import { NumAdd, NumMul } from '@/utils/calculate'
+import { NumAdd, NumMul, NumSub } from '@/utils/calculate'
 import { COUNTRY_ID } from '@/status'
 
-import { quillEditor } from 'vue-quill-editor'
 
+import { quillEditor } from 'vue-quill-editor'
 import { DatePicker, Slider } from 'element-ui'
 Vue.use(DatePicker)
 Vue.use(Slider)
@@ -219,7 +223,7 @@ export default {
   },
   data () {
     let reg =  /^\d+([\.|,]\d{1,2})?$/
-    let regAsin = /\/dp(\/product)?\/([A-Z0-9]{10})[\/|\?| ]+/
+    let regAsin = /\/dp(\/product)?\/([A-Z0-9]{10})[\/?|\?| ]+/
     const validateMoney =  (rule, value, callback) => {
       if (!value) {
         return callback(new Error('The list price is required.'))
@@ -263,7 +267,8 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error)
+          callback()
+          console.log(error, 123)
         })
     }
 
@@ -379,7 +384,7 @@ export default {
       hasDetails: true,
       hasDetailsLength: false,
       uploadBtn: false,
-      value6: 0,
+      promotion_commission: 0,
 
     }
   },
@@ -475,11 +480,11 @@ export default {
     },
     platform_total_fee () {
       if (this.country_id === COUNTRY_ID['Japan']) {
-        return NumMul(this.platform_fee, this.trialsForm.total_quantity.replace(',', '')).toFixed(0) + ''
+        return NumMul(this.promotion_commission, this.trialsForm.total_quantity.replace(',', '')).toFixed(0) + ''
       } else if (this.isEurope()){
-        return String(NumMul(this.platform_fee, this.trialsForm.total_quantity.replace(',', '.')).toFixed(2)).replace('.', ',') + ''
+        return String(NumMul(this.promotion_commission, this.trialsForm.total_quantity.replace(',', '.')).toFixed(2)).replace('.', ',') + ''
       } else {
-        return String(NumMul(this.platform_fee, this.trialsForm.total_quantity.replace(',', '.')).toFixed(2)).replace(',', '.') + ''
+        return String(NumMul(this.promotion_commission, this.trialsForm.total_quantity.replace(',', '.')).toFixed(2)).replace(',', '.') + ''
       }
     },
     shipping_total_fee () {
@@ -705,7 +710,7 @@ export default {
           this.getInfoLoading = false
           setTimeout(() => {
             if (!res.data.data) {
-              this.$snotify.info('Failed to obtain commodity information!!!')
+              this.$snotify.info('Fail to get the product information, please input it manually.')
             }
             let data = res.data.data
             let newArr = []
@@ -839,6 +844,7 @@ export default {
       } 
     },
     Submit () {
+      let regAsin = /\/dp(\/product)?\/([A-Z0-9]{10})[\/|\?| ]+/
       //element-ui 的表单验证
       // this.$refs.upload.submit();
       this.$refs['trialsForm'].validate(valid => {
@@ -848,11 +854,13 @@ export default {
           }
           this.trialsFormSubmit.start_time = parseInt((+this.trialsForm.active_date[0])/1000)
           this.trialsFormSubmit.end_time = parseInt((+this.trialsForm.active_date[1])/1000) + 86400 - 1
-          this.trialsFormSubmit.platform_fee = this.platform_fee
+          this.trialsFormSubmit.platform_fee = NumAdd(NumMul(NumSub(this.promotion_commission, this.platform_fee), 0.2), this.platform_fee) 
+          this.trialsFormSubmit.promotion_commission = NumMul(NumSub(this.promotion_commission, this.platform_fee), 0.8) 
           this.trialsFormSubmit.platform_total_fee = this.platform_total_fee
           this.trialsFormSubmit.refund_total_price  = this.refund_total_price 
           this.trialsFormSubmit.shipping_total_fee  = this.shipping_total_fee 
           this.trialsFormSubmit.total_fee  = this.total_fee
+          this.trialsFormSubmit.asin = regAsin.exec(this.trialsForm.product_url + ' ')[2]
           if (this.trialsFormSubmit.full_refund == '1') {
             this.trialsFormSubmit.refund_price = this.trialsFormSubmit.product_price
           }
@@ -948,6 +956,7 @@ export default {
         this.trialsForm.total_quantity = String(res.data.total_quantity)
         this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
         this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
+        this.promotion_commission = NumAdd(this.trialsForm.platform_fee, this.trialsForm.promotion_commission)
         setTimeout(() => {
           this.filterInput()
         }, 10)
@@ -1067,6 +1076,10 @@ export default {
   .center {
     height: 36px;
     line-height: 36px;
+  }
+  .message {
+    color: #8391a5;
+    margin-left: 5rem;
   }
 }
 </style>

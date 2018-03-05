@@ -49,6 +49,9 @@
             <dd>
               <router-link :to="{ path: '/about/center/faq', query: { id: 14 }}" target="_blank">Make Money</router-link>
             </dd>
+            <dd>
+              <router-link :to="{ path: '/about/center/faq', query: { id: 15 }}" target="_blank">How To Withdraw</router-link>
+            </dd>
             
           </dl>
         </div>

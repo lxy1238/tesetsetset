@@ -205,7 +205,7 @@ export default {
       country_id: getStore('country_id') || 1,
       allpage: undefined,
       showItem: 7,
-      nonApproval: 'self closing',
+      nonApproval: 'Product Closure Reasons',
       detailsDialog: false,
       all_run_status: ['pending','active', 'decline', 'stop', 'close', 'expired', 'underbalance' ],  // 待审核  暂停， 关闭 上线， 审核未通过  过期
       putaway: false,  //是否到达上架时间， 默认未到达
@@ -364,7 +364,7 @@ export default {
 
     //删除优惠券
     DeleteCoupon (id) {
-      this.$confirm('Are you sure to close this trial?', 'Friendly reminder', {
+      this.$confirm('Are you sure to close this trial?', 'Warm Notice', {
         confirmButtonText: 'Yes',
         cancelButtonText: 'No',
         type: 'warning'
@@ -402,7 +402,7 @@ export default {
       this.detailsDialog = true
       this.$api.couponProblemCensor(this.detailsRequestData).then(res => {
         if (!res.data) {
-          this.nonApproval = 'self closing'
+          this.nonApproval = 'Product Closure Reasons'
           return
         }
         this.nonApproval = res.data.revert
@@ -421,7 +421,7 @@ export default {
         }
       }
       if (run_status == 'close') {
-        this.$confirm('Are you sure to close this trial?', 'Friendly reminder', {
+        this.$confirm('Are you sure to close this trial?', 'Warm Notice', {
           confirmButtonText: 'Yes',
           cancelButtonText: 'No',
           type: 'warning'
@@ -450,7 +450,7 @@ export default {
 
     //充值之后商户自己触发按钮手动上线
     payTrialsActive (item) {
-      this.$confirm('Determine product launch?', 'Friendly reminder', {
+      this.$confirm('Be sure to let the product online?', 'Warm Notice', {
         confirmButtonText: 'Yes',
         cancelButtonText: 'No',
         type: 'warning'

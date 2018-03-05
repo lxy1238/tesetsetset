@@ -34,16 +34,24 @@
               <div class="price">
                 <span>List price: <del>{{currency}}{{trialDetailData.product_price}} </del></span> 
                 <span v-if="trialDetailData.shipping_fee != 0">Shipping fee: <del>{{currency}}{{trialDetailData.shipping_fee}}</del> </span>
-                <span v-else >Free Shipping</span>
+                <!-- <span v-else >Free Shipping</span> -->
               </div>
               <div class="refund-price">
                 <label>Trial price:</label>  
                 <span class="free" v-if="sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2) >= 0">Free</span>
                 <span v-else >{{currency}}{{sub(trialDetailData.product_price, trialDetailData.refund_price).toFixed(2)}}</span>
-                <span class="merchant-reward" >
-                  <label>Refund amount: </label>
-                  <i class="merchant-reward-money">{{currency}}{{add(trialDetailData.refund_price, trialDetailData.shipping_fee).toFixed(2)}}</i>
+                <span class="coupon-right" v-if="sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2) > 0">
+                  <strong class="full-refund" :title="'Extra refund '+currency+sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2)+' to you.'">
+                    +{{currency}}{{sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2)}}
+                  </strong>
+                  <i class="refund-message">
+                    (Extra refund {{currency}}{{sub(trialDetailData.refund_price, trialDetailData.product_price).toFixed(2)}}  to you.)
+                  </i>
                 </span>
+              </div>
+              <div class="refund-price">
+                <label>Refund amount: </label>
+                  <i class="merchant-reward-money">{{currency}}{{add(trialDetailData.refund_price, trialDetailData.shipping_fee).toFixed(2)}}</i>
               </div>
               <div class="reminder"><strong>Specifications: </strong>
                 <br />
@@ -89,6 +97,17 @@
             
           </div>
         </div>
+         <div class="promotion-template promotion-trmplate-top clearfix" v-if="roles[0] == 'celebrity'">
+            <div class="commission-title">
+              <span>
+                Influencer Reward
+              </span>
+            </div>
+            <div class="describe">
+              <span>Per Order Get Bounties: <b>{{currency}}{{ trialDetailData.promotion_commission}}</b>
+              </span>
+            </div>
+          </div>
           <div class="promotion-template clearfix">
             <div class="tabs-trials">
               <div class="head-s clearfix">
@@ -173,6 +192,7 @@
             <el-button :loading="confirmLoading" @click="submitOrderNumber">Save</el-button>
           </div>
           <div class="red" v-if="!reqAddOrderData.order_number && reqAddOrderData.isSubmit">The order number is required.</div>
+          <div class="red" v-else-if="formatError">Error in order number format.</div>
       </el-dialog>
 
        <!-- 已经申请成功 情况2 点击已经申请成功的试用品 -->
@@ -188,48 +208,47 @@
             
             <ul>
               <li>
-                1. User shall be voluntary to participate the product trial, which are initiated by the merchants.
+                1. User shall be voluntary to participate in the product trial, in which are initiated by the merchants. 
               </li>
               <li>
-                2. Users must have clear understanding of their rights and obligations.
+                2. Users must read and have clear understanding of both their rights and obligations. 
               </li>
               <li>
-                3. Before applying, please confirm that your buyer account is normal and you can post product review.
+                3. Before applying, please confirm that your buyer account is normal and that you are able to post product review. 
               </li>
               <li>
-                  4. In the following cases, no refund will be given:  <br />
-                (1). You fail to upload the product's rating link within 15 days after successfully placing an order.<br />
-                (2). Users upload a fake order number or fake review link.<br /> 
-                (3). Review that is obscene, offensive, threatening or dirty.<br />
-                (4). Provide merchants with untruthful comments by taking bribes and other transactions.<br />
-                (5). Restricted by sales platform, the buyer account can not post the product evaluation normally.<br />
+                 4. In the following cases, pls understand that no refund will be provided:   <br />
+              (1). If you fail to upload the product's rating link within 15 days after successfully placing an order.  <br />
+              (2). If users upload a fake order number or fake review link. <br />
+              (3). If review posted is obscene, offensive, threatening or dirty. <br />
+              (4). If you provide merchants with untruthful comments by taking bribes and/or other transactions. <br />
+              (5). If restricted by sales platform, the buyer account can not post the product evaluation normally. <br />
+
               </li>
               <li>
                 5. Review content must be neutral, true, and trustworthy.
               </li>
               <li>
-                6. Within a month, for the same user, and on the same sales platform, there are two product trial opportunities for you, but you must have a successful trading order for the previous product trials.
+               6. Within a month (for the same user and on the same sales platform) there will be TWO product trial opportunities available to you, but for the second opportunity you first must have a successful trading order for the previous product trial. 
               </li>
               <li>
-                7. The same person, can only register a user account on DealsBank. Otherwise, all his accounts will be permanently frozen.
+                7. The same person, can only register one user account on DealsBank. If more than one account is discovered then this will conclude in all accounts being permanently frozen. 
               </li>
               <li>
-                8. After submitting the review link address, if the review is true and in line with the product trial policies, the system will refund within 3 working days.
+               8. After submitting the review link address, if the review is true and within our product trial policies, then the system will refund you within 3 working days. 
               </li>
               <li>
-                9. Serving as an information platform, DealsBank can not guarantee the authenticity of the products, and users must make their own judgments before placing orders. If you have any after-sale quality problems, please contact the seller through the sales platform. DealsBank is not responsible to after-sale issues.
+               9. Serving as an information platform, DealsBank can not guarantee the authenticity of the products, and users must make their own judgments before placing orders. If you have any after-sale quality problems, please contact the seller through the sales platform. DealsBank is not responsible for after-sale issues. 
               </li>
             </ul>
             <p class="head-text">
-              The behavior of clicking on the consent button means you accept our product trial policies, and fully understand your rights and obligations.
+              The behavior of clicking on the consent button means you accept our product trial policies, and that you fully understand your rights and obligations. We look forward to working with you, thank you!
             </p> 
             <div class="try-again">
               <el-button type="info" @click="agreePolicy">I Agree</el-button>
             </div>
 
       </el-dialog>
-
-     
   </div>
 </template>
 
@@ -239,7 +258,7 @@ import explain from '@/components/trials/explain.vue'
 import { base64Encode, base64Decode } from '@/utils/randomString'
 import { timestampFormat, getTimeDetail } from '@/utils/date'
 import { getStore } from '@/utils/utils'
-import { getUserId, getToken } from '@/utils/auth'
+import { getToken, getUserId, getPromotionId } from '@/utils/auth'
 import { NumAdd, NumSub } from '@/utils/calculate'
 import { mapGetters } from 'vuex'
 export default {
@@ -329,6 +348,7 @@ export default {
         trial_id: '',
         country_id: base64Decode(this.$route.params.countryId),
         platform_id: '',
+        p_uid: getPromotionId(),
       },
       reqSuccedDetailsData0: {
         country_id: getStore('country_id') || 1,
@@ -363,12 +383,14 @@ export default {
       selected1: 'Choose reason',
       titleMsg: '',
       trials_policy: 0,
+      formatError: false,
     }
   },
   computed: {
     ...mapGetters([
       'currentRouter',
-      'userBase'
+      'userBase',
+      'roles'
     ]),
     leftTime () {
       if (this.trialDetailData.end_time) {
@@ -504,6 +526,7 @@ export default {
       }
       this.btnLoading = true
       this.isDataExit(this.trialApplyData)
+      this.trialApplyData.p_uid = getPromotionId()
       this.$api.trialApply(this.trialApplyData).then(res => {
         this.btnLoading = false
         if (res.code === 200) {
@@ -562,9 +585,15 @@ export default {
     //提交订单 号码
     submitOrderNumber () {
       this.confirmLoading = true
+      var reg = /^\d{3}-\d{7}-\d{7}$/
       if (!this.reqAddOrderData.order_number) {
         this.reqAddOrderData.isSubmit = true
         this.confirmLoading = false
+        return
+      }
+      if (!reg.test(this.reqAddOrderData.order_number)) {
+        this.confirmLoading = false
+        this.formatError = true
         return
       }
       this.isDataExit(this.reqAddOrderData)
@@ -746,6 +775,11 @@ export default {
           span {
             color: #808080;
           }
+          .merchant-reward-money {
+              font-weight: 700;
+              font-size: 13px;
+              color: #333;
+          }
           .merchant-reward {
             display: inline-block;
             margin-left: 10px;
@@ -760,6 +794,18 @@ export default {
               color: #333;
             }
             
+          }
+          .coupon-right {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            .full-refund {
+              font-style: italic;
+              color: #D82323;
+            }
+            .refund-message {
+              font-weight: 400;
+            }
           }
         }
         .reminder {
@@ -850,6 +896,7 @@ export default {
   
   }
 }
+  
   .promotion-template {
       background: white;
       border-radius: 5px;
@@ -951,6 +998,33 @@ export default {
         }
       }
     }
+    .promotion-trmplate-top {
+      margin-bottom: 1rem;
+      padding-bottom: 2rem;
+       position: relative;
+      height: 5.5rem;
+      background: white;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      .commission-title {
+        width: 70%;
+        font-size: 16px;
+        color: #1a1a1a;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .describe {
+        width: 90%;
+        font-size: 13px;
+        color: #808080;
+        margin-bottom: 1rem;
+        b {
+          font-size: 18px;
+          color: #ff3366;
+        }
+      }
+    }
   // trials申请失败
 .not-trials-dialog, .not-trials-dialog-first {
   .el-dialog.el-dialog--tiny {
@@ -1035,7 +1109,7 @@ export default {
   text-align: right;
   position: absolute;
   height: 1rem;
-  top: 1.1rem;
+  top: 0;
   right: 0rem;
   .right {
       margin-right: 2rem;

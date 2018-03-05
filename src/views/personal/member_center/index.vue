@@ -98,7 +98,7 @@
         <div class="recharge wallet" v-if="roles[0] == 'merchant'">
           <div class="wallet-child">
             <span class="money">{{currency}}{{userData.account.security_deposit}}</span>
-            <p>Security deposit</p>
+            <p>Required Security Deposit</p>
           </div>
           <div class="money-btn">
             <button @click="gotoAnotherRouter('/wallet/recharge')"><i class="iconfont icon-cunqian"></i> Recharge</button>

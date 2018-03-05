@@ -13,7 +13,7 @@
       </div>
       <div class="balance">
         <label class="left-label">
-          Security deposit:
+         Required security deposit:
         </label>
         <span class="balance-money balance-money-sd">
           {{currency}}{{useraccountInfo.security_deposit}}
@@ -197,7 +197,7 @@ export default {
       display: inline-block;
       text-align: right;
       margin-right: 5px;
-      width: 138px;
+      width: 178px;
       font-size: 14px;
       color: #48576a;
     }

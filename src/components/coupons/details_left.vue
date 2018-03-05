@@ -9,7 +9,7 @@
           </div>
           <div class="img-small">
             <!-- <span class="left" @click="pre"> <i class="iconfont icon-huidaodingbu-copy "></i> </span> -->
-            <img v-for="(item, index) in imgList"  :src="item" alt="" @mouseover="hover(index)"  :class="{active: activeNum == index}">
+            <img v-for="(item, index) in imgList" v-if="index < 9" :src="item" alt="" @mouseover="hover(index)"  :class="{active: activeNum == index}">
             <!-- <span class="right" @click="next"> <i class="iconfont icon-huidaodingbu-copy"></i> </span> -->
           </div>
         </div>
@@ -138,13 +138,14 @@ export default {
       padding: 1.2rem 10px 0 10px;
       text-align: center;
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       img {
         display: block;
           width: 2.5rem;
           height: 2.5rem;
           border: 1px solid #e1e1e1;
-          /* padding: 0.3rem; */
+          padding: 3px; 
+          margin-right: 5px;
           // margin: 0 0 0 5px;
           
           cursor: pointer;

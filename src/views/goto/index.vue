@@ -117,7 +117,7 @@ export default {
             this.amazonLink = res.data.product_url
             console.log(res.data.product_url)
             let urlArr = validateAmazonHost(this.amazonLink)
-            this.amazonLink = this.filterLink(this.amazonLink)
+            this.amazonLink = this.filterLink1(this.amazonLink)
             console.log(this.amazonLink)
             this.hasPromoter(res.data).then(() => {
               if (this.$route.params.gotopage === 'platform') {
@@ -126,7 +126,7 @@ export default {
               }
               if (this.amazonLink.includes('https://') || this.amazonLink.includes('http://')) {
                 if (this.amazonLink.includes('?')){
-                  this.link = `${this.amazonLink}&tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
+                  this.link = `${this.amazonLink}&tag=${this.promoterPid}`
                 } else {
                   this.link = `${this.amazonLink}?tag=${this.promoterPid}&m=${res.data.user_store.store_id}`
                 }

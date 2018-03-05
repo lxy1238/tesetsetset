@@ -23,22 +23,25 @@
                   <div class="info">
                     <span>
                       <label>List price: </label>
-                      <i class="free-price">{{currency}}{{item.trials.product_price}}</i>
+                      <i class="free-price-del">{{currency}}{{item.trials.product_price}}</i>
                     </span>
                     <span v-if="item.trials.shipping_fee != 0">
                       <label>Shipping fee: </label>
                       <i class="free-price">{{currency}}{{item.trials.shipping_fee}}</i>
                     </span>
-                    <span v-else>
+                    <!-- <span v-else>
                        <label for="">Free shipping</label>
-                    </span>
+                    </span> -->
                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                         <i class="free" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) >= 0">Free</i>
                         <i class="trials-price" v-else>{{currency}}{{sub(item.trials.product_price,item.trials.refund_price).toFixed(2)}}</i>
+                        <i class="free-full" :title="'Extra refund '+currency+sub(item.trials.refund_price, item.trials.product_price).toFixed(2)+' to you.'" v-if="sub(item.trials.refund_price, item.trials.product_price).toFixed(2) > 0">
+                          +{{currency}}{{sub(item.trials.refund_price, item.trials.product_price).toFixed(2)}}
+                        </i>
                       </span>
-                      <span>
+                      <span class="refund-amount-all">
                         <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.trials.refund_price, item.trials.shipping_fee).toFixed(2)}}</i>
                       </span>
@@ -50,6 +53,7 @@
                     <el-button class="order-number" type="button" @click="submitOrderNumber(item)" :loading="orderBtnLoading">Save</el-button>
                     <el-button class="order-number goto-platform" type="button" @click="gotoPlatform(item)" >Go to Amazon</el-button>
                     <div class="red" v-if="!item.order_number && item.hasOrderNumber">Please enter the order number.</div>
+                    <div class="red" v-else-if="item.formatError">Error in order number format.</div>
                   </div>
                 </div>
                 <div class="right-content">
@@ -83,16 +87,19 @@
                       <label>Shipping fee: </label>
                       <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
-                    <span v-else>
+                    <!-- <span v-else>
                        <label for="">Free shipping</label>
-                    </span>
-                    <div class="trials-price-all">
+                    </span> -->
+                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                         <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else >{{currency}}{{add(item.product_price,item.refund_price).toFixed(2)}}</i>
+                        <i class="trials-price" v-else>{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
+                        <i class="free-full" :title="'Extra refund '+currency+sub(item.refund_price, item.product_price).toFixed(2)+' to you.'" v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
+                          +{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}
+                        </i>
                       </span>
-                      <span>
+                      <span class="refund-amount-all">
                         <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
@@ -102,14 +109,23 @@
                     <span class="footer-span">Order number:</span>
                     <span class="footer-span" v-if="item.Modify">{{item.order_number}}</span>
                     <el-input v-else class="footer-input" v-model="item.order_number" @keyup.enter.native="editOrderSubmit(item)"></el-input>
-
-                    <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">Edit</button>
-                    <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
-                    <div class="red" v-if="!item.order_number && !item.Modify">Please enter the order number.</div>
-                    <div class="red" v-if="!item.order_number && item.Modify">Order number error, please re-enter.</div>
+                    <template v-if="!item.platform_user_id">
+                      <button v-if="item.Modify" class="order-number" type="button" @click="modifyOrderBtn(item)">
+                        <span v-if="item.order_number">
+                          Edit
+                        </span>
+                        <span v-else>
+                          Add  
+                        </span>  
+                      </button>
+                      <el-button v-else type="button" class="order-number" :loading="saveLoading" @click="editOrderNumberBtn(item)">Save</el-button>
+                      <div class="red" v-if="!item.order_number && !item.Modify">Please enter the order number.</div>
+                      <div class="red" v-else-if="!item.order_number && item.Modify">The order number is incorrect, please re-enter it.</div>
+                      <div class="red" v-else-if="item.formatError">Error in order number format.</div>
+                    </template>
                   </div>
                 </div>
-                <div class="right-content">
+                <div class="right-content" v-if="item.platform_user_id">
                   <template v-if="!item.modifyUrl">  
                     <div class="footer">
                       <span class="footer-span">Review URL:</span>
@@ -118,13 +134,14 @@
                        <div class="red" v-if="!item.appraise_url_input && item.notHasInputUrl">Please enter the review URL.</div>
                     </div>
                     <p>Please upload your review within 15 days after ordering and submit the link address for the review, otherwise your money can not refund to you.</p>
+                    <router-link :to="{ path: '/about/center/faq', query: { id: 16 }}" target="_blank">What to do if cannot upload the review link?</router-link>
                   </template>
                   <template v-else-if="item.status === 0  && item.modifyUrl">
                     <div class="pending">
                       <span class="pending-l">Pending</span>
                     </div>
                     <div class="pending">
-                      <a  href="javascript:void(0);" target="_blank" @click="viewApprise(item.appraise_url)" class="link">View Review</a>
+                      <a  href="javascript:void(0);"  @click="viewApprise(item.appraise_url)" class="link">View Review</a>
                     </div>
                     <div class="pending">
                       <button type="button" @click="modifyUrlBtn(item)">Edit</button>
@@ -171,16 +188,19 @@
                       <label>Shipping fee: </label>
                       <i class="free-price">{{currency}}{{item.shipping_fee}}</i>
                     </span>
-                    <span v-else>
+                    <!-- <span v-else>
                        <label for="">Free shipping</label>
-                    </span>
-                    <div class="trials-price-all">
+                    </span> -->
+                     <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
                         <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else >{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
+                        <i class="trials-price" v-else>{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
+                        <i class="free-full" :title="'Extra refund '+currency+sub(item.refund_price, item.product_price).toFixed(2)+' to you.'" v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
+                          +{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}
+                        </i>
                       </span>
-                      <span>
+                      <span class="refund-amount-all">
                         <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
@@ -214,8 +234,9 @@
                 </div>
               </div>
               <pagination
-                v-if="allpage && allpage != 1"
-                :allpage="allpage"
+               class="pagination-all-trials"
+                v-if="allpage2 && allpage2 != 1"
+                :allpage="allpage2"
                 :show-item="showItem"
                 :current="reqSuccedDetailsData2.page"
                 @handlecurrent="gotoPage2">
@@ -237,16 +258,19 @@
                       <label class="free-price">Shipping fee: </label>
                       <i>{{currency}}{{item.shipping_fee}}</i>
                     </span>
-                    <span v-else>
+                    <!-- <span v-else>
                        <label for="">Free shipping</label>
-                    </span>
-                    <div class="trials-price-all">
+                    </span> -->
+                      <div class="trials-price-all">
                       <span>
                         <label >Trial price: </label>
-                       <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
-                        <i class="trials-price" v-else >{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
+                        <i class="free" v-if="sub(item.refund_price, item.product_price).toFixed(2) >= 0">Free</i>
+                        <i class="trials-price" v-else>{{currency}}{{sub(item.product_price,item.refund_price).toFixed(2)}}</i>
+                        <i class="free-full" :title="'Extra refund '+currency+sub(item.refund_price, item.product_price).toFixed(2)+' to you.'" v-if="sub(item.refund_price, item.product_price).toFixed(2) > 0">
+                          +{{currency}}{{sub(item.refund_price, item.product_price).toFixed(2)}}
+                        </i>
                       </span>
-                      <span>
+                      <span class="refund-amount-all">
                         <label class="refund-amount">Refund amount: </label>
                         <i class="merchant-reward">{{currency}}{{add(item.refund_price, item.shipping_fee).toFixed(2)}}</i>
                       </span>
@@ -264,8 +288,9 @@ you will exceed the time limit of task.</p>
                 </div>
               </div>
               <pagination
-               v-if="allpage && allpage != 1"
-              :allpage="allpage"
+              class="pagination-all-trials"
+               v-if="allpage3 && allpage3 != 1"
+              :allpage="allpage3"
               :show-item="showItem"
               :current="reqSuccedDetailsData3.page"
               @handlecurrent="gotoPage3">
@@ -297,6 +322,8 @@ export default {
       ],
       selected: 0,
       allpage: undefined,
+      allpage2: undefined,
+      allpage3: undefined,
       showItem: 7,
       value5: 3.6,
       isExpried: false,
@@ -418,6 +445,7 @@ export default {
     getCompleteInfo () {
       this.$api.userApplyFinish(this.reqSuccedDetailsData2).then(res => {
         this.orderDetails2 = res.data.data
+        this.allpage2 = res.data.last_page
       })
     },
 
@@ -425,17 +453,24 @@ export default {
     getExpiredInfo () {
       this.$api.userApplyExpired(this.reqSuccedDetailsData3).then(res => {
         this.orderDetails3 = res.data.data
+        this.allpage3 = res.data.last_page
       })
     },
    
     //提交订单 号码
     submitOrderNumber (item) {
+      var reg = /^\d{3}-\d{7}-\d{7}$/
       if (!item.order_number) {
         item.hasOrderNumber = true
         return
       } else {
         item.hasOrderNumber = false
       }
+      if (!reg.test(item.order_number)) {
+        item.formatError = true
+        return
+      }
+      item.formatError = false
       this.orderBtnLoading = true
       this.reqAddOrderData.id = item.id
       this.reqAddOrderData.order_number = item.order_number
@@ -465,10 +500,18 @@ export default {
     },
     //修改订单号
     editOrderNumberBtn (item) {
+      var reg = /^\d{3}-\d{7}-\d{7}$/
+      this.saveLoading = true
       if (!item.order_number) {
+        this.saveLoading = false
         return
       }
-      this.saveLoading = true
+      if (!reg.test(item.order_number)) {
+        item.formatError = true
+        this.saveLoading = false
+        return
+      }
+      item.formatError = false
       this.reqAddOrderData.order_id = item.id
       this.reqAddOrderData.order_number = item.order_number
       this.$api.userOrderNumber(this.reqAddOrderData).then(res => {
@@ -632,7 +675,7 @@ export default {
         .wait-order {
           .order {
             position: relative;
-            height: 190px;
+            height: 200px;
             border-bottom: 1px solid #e1e1e1;
             padding: 38px 0 38px 160px;
             &.last {
@@ -664,26 +707,40 @@ export default {
                 margin-bottom: 10px;
                 span {
                   margin-right: 10px;
-                  font-size: 0.78rem;
+                  font-size: 13px;
                   label {
-                    color: #808080;
+                    color: #333;
                   }
                 }
                 .trials-price-all {
-                  margin-top: 5px;
+                  margin-top: 4px;
                   .refund-amount {
-                    color: #808080;
+                    color: #333;
                   }
                   .merchant-reward {
                     color: #333;
                     font-weight: 700;
                   }
+                  .refund-amount-all {
+                    display: block;
+                    margin-top: 5px;
+                  }
                 }
                 .free-price {
                   text-decoration: line-through;
                 }
+                .free-price-del {
+                  color: #808080;
+                  text-decoration: line-through;
+                }
                 .free {
                   // font-weight: 700;
+                }
+                .free-full {
+                  font-size: 18px;
+                  color: #ff3366;
+                  font-weight: 700;
+                  font-style: italic;
                 }
               }
               .footer {
@@ -875,5 +932,8 @@ export default {
       margin-top: 10px;
       font-size: 16px;
     }
+  }
+  .pagination-all-trials {
+    margin: 0 1rem 0 0 !important; 
   }
 </style>

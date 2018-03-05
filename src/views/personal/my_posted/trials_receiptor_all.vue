@@ -73,7 +73,7 @@
 
               <!-- review -->
               <td class="trials-receiptor-review-td" >
-                <div class="trials-receiptor-review" v-if="item.appraise && item.appraise.status === 1">
+                <div class="trials-receiptor-review" v-if="item.appraise ">
                   <el-rate  class="rate"
                       v-model="item.appraise.review_star_rating"
                       disabled
@@ -99,7 +99,7 @@
               <!-- platform_fee -->
               <td>
                 <div>
-                 {{currency}}{{Number(item.platform_fee)}}
+                 {{currency}}{{Number(add(item.platform_fee, item.promotion_commission))}}
                 </div>
               </td>
               <!-- refund -->
@@ -118,13 +118,13 @@
            
                 <!-- Status -->
               <td>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && item.order_number"> 
+                <div v-if="item.status === 0 && item.run_status == 'normal' && item.order_number && !item.platform_user_id" class="blue"> 
                   Ordered
                 </div>
-                <div class="red" v-if="item.status === 0 && item.run_status == 'normal' && !item.order_number"> 
+                <div v-if="item.status === 0 && item.run_status == 'normal' && !item.order_number && !item.platform_user_id" class="red"> 
                   Decline
                 </div>
-                <div v-if="item.status === 0 && item.run_status == 'normal' && item.appraise && item.appraise.status === 1"> 
+                <div v-if="item.status === 0 && item.run_status == 'normal' && item.platform_user_id" class="blue"> 
                   Pending
                 </div>
                 <div v-if="item.status === 0 && item.isExpired" class="red"> 
@@ -132,7 +132,7 @@
                 </div>
 
                 <div v-if="item.status === 2" class="red"> 
-                  Pending
+                  Decline
                 </div>
                 <div v-if="item.status === 1" class="green"> 
                   Complete
@@ -173,42 +173,57 @@
       <el-dialog  :visible.sync="expiredDetail" title="result" class="not-trials-dialog" size="tiny">
           <p class=" center">Order number: {{checkDetails.order_number}}</p>
 
-          <div class="try-again">
-            Did not find the order
+          <div class="try-again red">
+            {{checkDetails.censor_content}}
           </div>
 
       </el-dialog>
 
        <!-- 审核-->
-      <el-dialog  :visible.sync="DeclineDetails" title="check" class="not-trials-dialog" size="tiny">
-          <p class=" center">Order number: {{checkDetails.order_number}}</p>
-         
-          <template v-if="checkDetails.status === 0">
-          <div class="try-again">
-            <el-button @click="notPass" type="danger" >Not Pass</el-button>
-            <el-button @click="pass" type="info">Pass</el-button>
-          </div>
-          <div class="not-pass-select" v-if="notPassData">
-            <el-row>
-              <el-col :span="8" :offset="6">
-                <el-input v-model="CustomerID" placeholder="亚马逊客户ID"></el-input>
-                <div class="red" v-if="!CustomerID && isSubmitCustomerID">
-                  Please enter customer ID.
-                </div>
-              </el-col>
-              <el-col :span="3">
-                <el-button type="success" @click="PassSubmit">Save</el-button>
-              </el-col> 
-            </el-row>
-            <el-row>
-              
-            </el-row>
-          </div>
+      <el-dialog  :visible.sync="DeclineDetails"  class="not-trials-dialog" size="tiny">
+          <h3 class="check-order-header center">Confirm Order Number</h3>
+          
+          <el-row>
+            <el-col   :offset="6">
+              <div class=" ">Order number: {{checkDetails.order_number}}</div>
+            </el-col>
+          </el-row>
+          <!-- <template v-if="checkDetails.status === 0"> -->
+          <template >
+            <div class="try-again">
+              <!-- <el-button @click="notPass" type="danger" >Not Pass</el-button>
+              <el-button @click="pass" type="info">Pass</el-button> -->
+              <el-row>
+                <el-col  :span="2" :offset="6">
+                  <label class="label-status">Status: </label>
+                </el-col>
+                <el-col :span="10">
+                  <el-select v-model="checkState">
+                    <el-option value="0" label="Completed"></el-option>
+                    <el-option value="1" label="Unfinished" @click.native="notPass"></el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
+            </div>
+            <br />
+            <div class="not-pass-select" v-if="checkState == '0'" >
+              <el-row>
+                <el-col :span="8" :offset="6">
+                  <el-input v-model="CustomerID" placeholder="Buyer Profile ID"></el-input>
+                  <div class="red" v-if="!CustomerID && isSubmitCustomerID">
+                    Please enter customer ID.
+                  </div>
+                </el-col>
+                <el-col :span="3" :offset="1">
+                  <el-button type="success" @click="PassSubmit">Save</el-button>
+                </el-col> 
+              </el-row>
+            </div>
           </template>
-           <template v-if="checkDetails.status === 2">
-          <div class="try-again red">
-              {{checkDetails.censor_content}}
-          </div>
+          <template v-if="checkDetails.status === 2">
+            <div class="try-again red">
+                {{checkDetails.censor_content}}
+            </div>
           </template>
 
       </el-dialog>
@@ -223,6 +238,7 @@ import {  getStore, removeStore } from '@/utils/utils'
 import { getToken, getUserId } from '@/utils/auth'
 import { parseTime } from '@/utils/date'
 import { REFUSE_ORDER } from '@/status'
+import { NumAdd, NumSub } from '@/utils/calculate'
 Vue.use(DatePicker)
 export default {
   name: 'posted_trials',
@@ -235,6 +251,7 @@ export default {
       trLists: [],
       DeclineDetails: false,
       expiredDetail: false,
+      checkState: '0',
 
       checkDetails: {
         order_number: '',
@@ -252,12 +269,9 @@ export default {
       requestdata: {
         api_token: getToken(),
         user_id: getUserId(),
+        country_id: getStore('country_id') || 1,
         page: 1,
         page_size: 5,
-        order_number: '',
-        status: '',
-        start_time: '',
-        end_time: '',
       },
       //审核参数
       reqCheckData: {
@@ -309,18 +323,21 @@ export default {
   },
   methods: {
     init () {
-      this.initData()
       this.getReceiptorInfo()
     },
 
     initData () {
-      
+      this.requestdata.trial_id = JSON.parse(getStore('trialDetails')).id
+      var trialDetails = JSON.parse(getStore('trialDetails'))
+
+      this.trialDetails = trialDetails
     },
 
     //获取领取人列表接口
     getReceiptorInfo () {
       this.$api.trialOrder(this.requestdata).then(res => {
         this.trLists = res.data.data
+        this.allpage = res.data.last_page
         for (let i of this.trLists) {
           i.isExpired = (i.appraise_expiry_time < parseInt(new Date()/1000))
           i.apply_time = parseTime(i.apply_time, '{y}-{m}-{d}')
@@ -356,7 +373,7 @@ export default {
       if (item.status === 0) {
         this.expiredDetail = true
       } else if (item.status === 2) {
-        this.DeclineDetails = true
+        this.expiredDetail = true
       }
     },
     check () {
@@ -364,7 +381,6 @@ export default {
     },
     pass () {
       this.notPassData = !this.notPassData
-      // this.checkSubmit(1)
     },
     notPass () {
       this.refuseData.order_id = this.checkDetails.id
@@ -376,22 +392,16 @@ export default {
       })
     },
     PassSubmit () {
+      this.isSubmitCustomerID = true
       this.reqCheckData.order_id = this.checkDetails.id
       this.reqCheckData.platform_user_id = this.CustomerID
+      if (!this.CustomerID) {
+        return
+      }
       this.$api.addPlatformUserId(this.reqCheckData).then(res => {
         if (res.code === 200) {
           this.DeclineDetails = false
           this.init()
-        }
-      })
-    },
-    //审核提交
-    checkSubmit (status) {
-      this.reqCheckData.order_id = this.checkDetails.order_number
-      this.$api.updateOrderStatus(this.reqCheckData).then(res => {
-        if (res.code === 200) {
-          this.DeclineDetails = false
-          this.getReceiptorInfo()
         }
       })
     },
@@ -402,6 +412,13 @@ export default {
       } else {
         window.open('http://' + url)
       }
+    },
+
+    add (a, b) {
+      return NumAdd(a, b)
+    },
+    sub (a, b) {
+      return NumSub(a, b)
     },
   }
 }
@@ -434,6 +451,7 @@ export default {
   padding: 10px 0 10px 10px;
   cursor: pointer;
   .trials-title-text {
+    font-size: 12px;
     height: 28px;
     line-height: 1.21;
     overflow: hidden;
@@ -443,6 +461,9 @@ export default {
 .star-label {
   float: left;
 }
+.check-order-header {
+  margin-top: -20px;
+}
 .try-again {
   text-align: center;
   margin-top: 10px;
@@ -451,6 +472,10 @@ export default {
   // }
   .not-pass {
     .btn-h(80px, 34px,#3399FF,#3399FF,red);
+  }
+  .label-status {
+    height: 36px;
+    line-height: 36px;
   }
 }
 .not-pass-select {

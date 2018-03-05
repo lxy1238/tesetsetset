@@ -23,9 +23,10 @@ export const getPlatformCate = data => fetch({
 
 
 //获取首页头部的品类列表
-export const getHeadCateList = () => fetch({
+export const getHeadCateList = data => fetch({
   url: '/api/v1/platform/menu',
   method: 'POST',
+  data: qs.stringify(data)
 })
 
 

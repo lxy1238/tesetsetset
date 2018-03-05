@@ -4,6 +4,7 @@ const EMAIL = 'email'
 const PASSWORD = 'password'
 const TOKEN = 'token'
 const USER_ID = 'user_id'
+const PROMOTION_ID = 'promotion_id'
 
 //查询领取人的信息时要用到的，防止页面强制刷新后数据丢失
 
@@ -61,4 +62,18 @@ export function setUserId (email) {
 
 export function removeUserId () {
   return Cookie.remove(USER_ID)
+}
+
+//设置推广ID
+export function getPromotionId () {
+  return Cookie.get(PROMOTION_ID)
+}
+
+export function setPromotionId (promotion_id) {
+  // return Cookie.set(EMAIL, email)
+  return Cookie.set(PROMOTION_ID, promotion_id, { expires: expiresData })
+}
+
+export function removePromotionId () {
+  return Cookie.remove(PROMOTION_ID)
 }

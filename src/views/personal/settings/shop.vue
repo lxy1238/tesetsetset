@@ -30,7 +30,7 @@
             <!-- <a href="javascript:void(0);">delete</a> -->
             </template>
             <template  v-if="item.status == 2">
-            <a href="javascript:void(0);" @click="editShop(item)">Ddit</a>
+            <a href="javascript:void(0);" @click="editShop(item)">Edit</a>
             <a href="javascript:void(0);" @click="getDetails(item)">Details</a>
             <a href="javascript:void(0);" @click="deleteShop(item)">Delete</a>
             </template>
@@ -83,9 +83,9 @@
 
 
   <!-- 不通过详情 -->
-     <el-dialog :visible.sync = "declineDialog" title="result" class="deline-dialog" >
-          <h3 class="red text-center"> Decline </h3>
-          <p class="text-center">{{declineMsg}}</p>
+     <el-dialog :visible.sync = "declineDialog" title="result" class="add-store-dialog" >
+          <h3 class="red text-center center"> Decline </h3>
+          <p class="text-center center">{{declineMsg}}</p>
      </el-dialog>
   </div>
 </template>
