@@ -31,7 +31,16 @@
               </td>
               <td class="capitalize">{{item.business_type}}</td>
               <td class="capitalize">{{item.detail}}</td>
-              <td>{{currency}}{{item.trade_amount}}</td>
+              <td>
+                <div class="green" v-if="item.business_type == 'income'">
+                  +{{currency}}{{item.trade_amount}}
+                </div>
+                <div class="red" v-else>
+                  -{{currency}}{{item.trade_amount}}
+                </div>
+                
+
+              </td>
               <!-- <td>{{item.run_status}}</td> -->
             </tr>
             <tr v-if="trLists.length === 0" >

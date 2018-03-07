@@ -118,7 +118,7 @@
                 </div>
               </td>
                 <!-- Status -->
-               <td class="status">
+            <td class="status">
               <div class="blue" v-if="item.status === 0 && !item.isExpired ">Pending</div>
               <div class="green" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && item.putaway && !item.isExpired">Active </div>
               <div class="red" v-if="item.status === 1 && item.run_status ==  all_run_status[1] && !item.putaway && !item.isExpired">Close </div>
@@ -140,6 +140,7 @@
                 <div> <a href="javascript:void(0)" @click="updateRunStatus(item, all_run_status[4])">Close</a></div>
               </template>
               <template  v-if="item.status === 1 && item.run_status ==  all_run_status[4] && !item.isExpired"> 
+                <div> <a href="javascript:void(0)"  @click="copyTrials(item)">Copy</a></div>
                 <div> <a href="javascript:void(0)"  @click="showCloseDetails(item)">Details</a></div>
               </template>
               <template  v-if="item.status === 2 && !item.isExpired">
@@ -160,6 +161,9 @@
               <template v-if="item.status === 1 && item.run_status ==  all_run_status[6] && !item.isExpired && !item.moneyIsEnough">
                 <div> <a href="javascript:void(0)"  @click="gotoRecharge">Recharge</a></div>
               </template>
+              <div  v-if=" item.isExpired ">
+                <div> <a href="javascript:void(0)"  @click="copyTrials(item)">Copy</a></div>
+              </div>
             </td>
             </tr>
             <tr v-if="trLists.length === 0">
@@ -215,7 +219,7 @@ export default {
         api_token: getToken(),
         country_id: getStore('country_id') || 1,
         page: 1,
-        page_size: 5,
+        page_size: 10,
         product_title: '',
         menu_id: '',
         run_status: '',
@@ -286,6 +290,10 @@ export default {
     //跳转到新增试用品页面
     add () {
       this.$router.push({path: '/posted/list-trials/add'})
+    },
+
+    copyTrials (item) {
+      this.$router.push({path: '/posted/list-trials/add', query: {add: item.id}})
     },
 
     //查询 trails
@@ -371,7 +379,7 @@ export default {
       })
         .then(() => {
           this.couponDeteleRequestData.id = id
-          this.$api.trialDetele(this.couponDeteleRequestData).then(res => {
+          this.$api.trialDetele(this.couponDeteleRequestData).then(() => {
             this.getPostTrialsList()
           })
           this.$snotify.success('Submit Successfully!')

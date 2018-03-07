@@ -203,14 +203,41 @@ export default {
     },
     submit () {
       this.withdrawSubmit('withdrawForm', () => {
+        let amount = this.withdrawForm.account_payee
         if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['paypal']) {
-          this.postWithdrawApi()
+          const h = this.$createElement
+          this.$msgbox({
+            title: 'ayment Account Confirmation',
+            message: h('p', null, [
+              h('h5', null, amount),
+              h('i', { style: 'color: teal' }, 'Please confirm your payment account is correct. Users need to bear the corresponding loss of payment errors which are caused by personal reasons.  ')
+            ]),
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+          }).then(() => {
+            this.postWithdrawApi()
+          }).catch(() => {
+          })
         } else if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['amazon']) {
           this.withdrawForm.account_payee = getEmail()
           this.postWithdrawApi()
         } else if (this.withdrawForm.account_type === this.WITHDRAW_TYPE['alipay']) {
           // this.withdrawForm.rmb_exchange = 1
-          this.postWithdrawApi()
+          const h = this.$createElement
+          this.$msgbox({
+            title: 'ayment Account Confirmation',
+            message: h('p', null, [
+              h('h5', null, amount),
+              h('i', { style: 'color: teal' }, 'Please confirm your payment account is correct. Users need to bear the corresponding loss of payment errors which are caused by personal reasons.  ')
+            ]),
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+          }).then(() => {
+            this.postWithdrawApi()
+          }).catch(() => {
+          })
         }
       })
     },

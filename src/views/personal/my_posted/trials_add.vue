@@ -511,6 +511,7 @@ export default {
       this.getHeadCateListInfo()
       this.getTrialsStore()
       this.isEditor()
+      this.isAdd()
       this.filterInput()
     },
     initData () {
@@ -701,7 +702,7 @@ export default {
     //通过输入链接获取所有产品信息
     getProInfo (url) {
       this.getInfoLoading = true
-      axios.post('http://csapi.sellercool.com/api/v1/paa/asin', qs.stringify({
+      axios.post('https://api.sellercool.com/api/v1/paa/asin', qs.stringify({
         api_token: getToken(),
         user_id: getUserId(),
         url: url
@@ -950,6 +951,59 @@ export default {
         newArr[1] = new Date(res.data.end_time * 1000)
         res.data.active_date = newArr
         this.trialsForm = res.data
+        this.trialsForm.api_token = getToken()
+        this.trialsForm.user_id = getUserId()
+        this.trialsForm.user_name = this.username
+        this.trialsForm.total_quantity = String(res.data.total_quantity)
+        this.trialsForm.quantity_per_day = String(res.data.quantity_per_day)
+        this.trialsForm.country_id = parseInt(getStore('country_id')) || 1
+        this.promotion_commission = NumAdd(this.trialsForm.platform_fee, this.trialsForm.promotion_commission)
+        setTimeout(() => {
+          this.filterInput()
+        }, 10)
+      })
+    },
+    //新增 复制 判断是否有参数add
+    isAdd () {
+      if (!this.$route.query.add) {
+        return
+      }
+      this.isEditorData = true
+      this.trialDetailsrequestData.id = this.$route.query.add
+      this.$api.trialEditDetail(this.trialDetailsrequestData).then(res => {
+        res.data.product_img_s = res.data.product_img.split(',').map((e)=>{return {url: e}})
+        this.imgChange()
+        let newArr = []
+        newArr[0] = new Date(res.data.start_time * 1000)
+        newArr[1] = new Date(res.data.end_time * 1000)
+        res.data.active_date = newArr
+        this.trialsForm = res.data
+        if (!this.trialsForm.product_url) {
+          return
+        }
+        this.trialsForm.product_url = this.trialsForm.product_url + ' '
+        this.optionsWebsite = []
+        this.$api.getPlatformCate(this.requestData)
+          .then(res => {
+            if(res.data.length <= 0) {return}
+            for (let i of res.data) {
+              var ObjWebsite = {
+                label: '',
+                id: ''
+              }
+              ObjWebsite.label = i.provider
+              ObjWebsite.id = i.id
+              if (this.trialsForm.product_url.search(i.url) >= 0) {
+                this.trialsForm.website = i.provider
+                this.optionsWebsite.push(ObjWebsite)
+                this.trialsForm.product_url = this.trialsForm.product_url.trim()
+              } 
+            }
+            this.websiteChange(this.trialsForm.website)
+          })
+          .catch(error => {
+            console.log(error, 123)
+          })
         this.trialsForm.api_token = getToken()
         this.trialsForm.user_id = getUserId()
         this.trialsForm.user_name = this.username

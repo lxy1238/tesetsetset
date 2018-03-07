@@ -271,7 +271,7 @@ export default {
         user_id: getUserId(),
         country_id: getStore('country_id') || 1,
         page: 1,
-        page_size: 5,
+        page_size: 10,
       },
       //审核参数
       reqCheckData: {

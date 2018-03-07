@@ -518,6 +518,8 @@ export default {
           this.selectedC = i.id
         }
       }
+
+      this.initGoogle()
     },
 
     //document 全局事件添加 点击空白或者其他地方的时候下拉菜单消失
@@ -873,6 +875,19 @@ export default {
       this.$store.dispatch('getCountryInfo').then(()=> {
         this.countryLists = this.countryInfo
       })
+    },
+
+
+    //google 登录初始化
+    initGoogle () {
+      // Load the SDK asynchronously
+      (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0]
+        if (d.getElementById(id)) return
+        js = d.createElement(s); js.id = id
+        js.src = 'https://apis.google.com/js/api:client.js'
+        fjs.parentNode.insertBefore(js, fjs)
+      }(document, 'script', 'google-login-jssdk'))
     },
 
     //google 登录
